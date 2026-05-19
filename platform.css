@@ -895,6 +895,12 @@ select {
   line-height: 1.6;
 }
 
+.login-footnote a {
+  color: var(--ink);
+  font-weight: 700;
+  border-bottom: 1px solid var(--ink);
+}
+
 @media (max-width: 900px) {
   .section-head {
     display: flex;
