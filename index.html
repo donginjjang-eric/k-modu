@@ -1457,8 +1457,9 @@
       }
 
       .campaign-row {
-        grid-template-columns: 1fr;
-        padding: 0 24px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        padding: 0 18px;
       }
 
       .influencer-head {
@@ -1468,7 +1469,52 @@
       }
 
       .campaign .image {
-        height: 340px;
+        height: 210px;
+        margin-bottom: 9px;
+      }
+
+      .campaign h3 {
+        margin: 0 10px 5px;
+        font-size: 17px;
+        line-height: .96;
+      }
+
+      .campaign p {
+        margin: 0 10px 11px;
+        font-size: 8px;
+        line-height: 1.42;
+      }
+
+      .match-fit {
+        margin: 0 10px 10px;
+        padding-top: 9px;
+      }
+
+      .match-fit span {
+        font-size: 7px;
+      }
+
+      .match-fit strong {
+        font-size: 8px;
+      }
+
+      .influencer-stats {
+        margin: 0 10px 12px;
+      }
+
+      .influencer-stats span {
+        min-height: 40px;
+        padding: 6px 4px;
+        font-size: 7px;
+      }
+
+      .influencer-stats strong {
+        font-size: 12px;
+      }
+
+      .platform-tag {
+        margin: 0 10px 10px;
+        font-size: 8px;
       }
 
       .designer-editorial {
