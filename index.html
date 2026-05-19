@@ -117,6 +117,52 @@
       color: #050505;
     }
 
+    .menu-toggle {
+      display: none;
+      width: 38px;
+      height: 38px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(5, 5, 5, .16);
+      border-radius: 999px;
+      background: rgba(247, 247, 244, .86);
+      color: #050505;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .menu-toggle span,
+    .menu-toggle::before,
+    .menu-toggle::after {
+      content: "";
+      display: block;
+      width: 15px;
+      height: 1px;
+      background: currentColor;
+      transition: transform .22s ease, opacity .22s ease;
+    }
+
+    .menu-toggle {
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .nav.menu-open .menu-toggle span {
+      opacity: 0;
+    }
+
+    .nav.menu-open .menu-toggle::before {
+      transform: translateY(6px) rotate(45deg);
+    }
+
+    .nav.menu-open .menu-toggle::after {
+      transform: translateY(-6px) rotate(-45deg);
+    }
+
+    .mobile-menu {
+      display: none;
+    }
+
     .hero {
       position: relative;
       min-height: 820px;
@@ -1338,18 +1384,97 @@
 
       .nav {
         position: fixed;
-        padding: 22px 20px 0;
-        grid-template-columns: 1fr;
-        gap: 8px;
-        height: 118px;
+        grid-template-columns: 1fr auto;
+        height: 64px;
+        padding: 0 20px;
+        gap: 0;
+        align-items: center;
+        background: rgba(247, 247, 244, .72);
+        border-bottom-color: rgba(0, 0, 0, .06);
+        backdrop-filter: blur(12px);
       }
 
-      .nav-center {
-        gap: 20px;
+      .brand {
+        font-size: 18px;
       }
 
+      .nav-center,
       .nav-right {
-        justify-self: start;
+        display: none;
+      }
+
+      .menu-toggle {
+        display: inline-flex;
+      }
+
+      .mobile-menu {
+        position: fixed;
+        z-index: 49;
+        top: 64px;
+        left: 0;
+        right: 0;
+        display: grid;
+        gap: 1px;
+        padding: 12px 20px 20px;
+        background: rgba(247, 247, 244, .96);
+        border-bottom: 1px solid rgba(0, 0, 0, .08);
+        box-shadow: 0 20px 48px rgba(0, 0, 0, .1);
+        transform: translateY(-120%);
+        opacity: 0;
+        pointer-events: none;
+        transition: transform .24s ease, opacity .24s ease;
+      }
+
+      .nav.menu-open .mobile-menu {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .mobile-menu a {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 48px;
+        padding: 0 2px;
+        border-bottom: 1px solid rgba(0, 0, 0, .08);
+        font-size: 20px;
+        line-height: 1;
+        font-weight: 500;
+        letter-spacing: -.055em;
+        text-transform: uppercase;
+      }
+
+      .mobile-menu a::after {
+        content: "->";
+        font-size: 11px;
+        letter-spacing: 0;
+      }
+
+      .mobile-menu .mobile-utility {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding-top: 14px;
+        font-size: 11px;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+      }
+
+      .mobile-menu .mobile-login {
+        min-height: 34px;
+        padding: 0 18px;
+        border: 1px solid #050505;
+        border-radius: 999px;
+        background: #050505;
+        color: var(--paper);
+        font-size: 11px;
+        letter-spacing: .14em;
+      }
+
+      .mobile-menu .mobile-login::after {
+        content: none;
       }
 
       .hero {
@@ -1591,6 +1716,19 @@
           <a href="#">US</a>
         </div>
         <a class="login-btn" href="login.html">LOGIN</a>
+      </div>
+      <button class="menu-toggle" type="button" aria-label="메뉴 열기" aria-expanded="false">
+        <span></span>
+      </button>
+      <div class="mobile-menu" aria-label="Mobile navigation">
+        <a href="#about">About</a>
+        <a href="#influencers">Creators</a>
+        <a href="#campaign">Campaign</a>
+        <a href="#contact">Contact</a>
+        <div class="mobile-utility">
+          <span>KR / US</span>
+          <a class="mobile-login" href="login.html">LOGIN</a>
+        </div>
       </div>
     </header>
 
@@ -1955,6 +2093,21 @@
   };
   syncNav();
   window.addEventListener('scroll', syncNav, { passive: true });
+
+  const menuToggle = document.querySelector('.menu-toggle');
+  const closeMobileMenu = () => {
+    nav.classList.remove('menu-open');
+    menuToggle?.setAttribute('aria-expanded', 'false');
+  };
+
+  menuToggle?.addEventListener('click', () => {
+    const isOpen = nav.classList.toggle('menu-open');
+    menuToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  document.querySelectorAll('.mobile-menu a').forEach((link) => {
+    link.addEventListener('click', closeMobileMenu);
+  });
 
   const setFlowCopy = (mode) => {
     document.querySelectorAll('[data-copy-mode]').forEach((item) => {
