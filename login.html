@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | K-MODU</title>
+  <link rel="stylesheet" href="platform.css" />
+</head>
+<body>
+  <main class="platform">
+    <header class="topbar">
+      <a class="brand" href="index.html#home">K-MODU</a>
+      <nav class="topnav">
+        <a href="index.html#about">About</a>
+        <a href="index.html#influencers">Creators</a>
+        <a href="index.html#campaign">Campaign</a>
+        <a href="index.html#contact">Contact</a>
+      </nav>
+      <div class="top-actions">
+        <a href="apply.html">Apply</a>
+        <a class="pill" href="admin.html">Admin Demo</a>
+      </div>
+    </header>
+
+    <section class="login-shell">
+      <div class="login-visual">
+        <img src="assets/hero-group.png" alt="K-MODU campaign visual" />
+        <div class="login-visual-copy">
+          <p class="eyebrow">K-Fashion, All Connected</p>
+          <h1>Creator<br />Campaign<br />Access</h1>
+          <p>브랜드 신청, 캠페인 브리프, 크리에이터 매칭 상태를 한 곳에서 확인하는 K-MODU 파트너 로그인입니다.</p>
+        </div>
+      </div>
+
+      <div class="login-panel">
+        <div class="login-card">
+          <p class="eyebrow">Partner Login</p>
+          <h2>Sign in to K-MODU</h2>
+          <p>디자이너 브랜드와 관리자 모두 같은 로그인 화면에서 시작합니다. 현재 MVP에서는 화면 구성용 더미 버튼입니다.</p>
+
+          <div class="social-login" aria-label="SNS login options">
+            <a href="admin.html" aria-label="Continue with Google">
+              <span class="social-icon">G</span>
+              <span>Continue with Google</span>
+            </a>
+            <a href="admin.html" aria-label="Continue with Kakao">
+              <span class="social-icon">K</span>
+              <span>Continue with Kakao</span>
+            </a>
+            <a href="admin.html" aria-label="Continue with Naver">
+              <span class="social-icon">N</span>
+              <span>Continue with Naver</span>
+            </a>
+            <a href="admin.html" aria-label="Continue with Instagram">
+              <span class="social-icon">IG</span>
+              <span>Continue with Instagram</span>
+            </a>
+          </div>
+
+          <div class="login-divider">or</div>
+
+          <form action="admin.html">
+            <div class="form-grid" style="grid-template-columns: 1fr;">
+              <div class="field">
+                <label>Email</label>
+                <input type="email" placeholder="brand@company.com" />
+              </div>
+              <div class="field">
+                <label>Password</label>
+                <input type="password" placeholder="Password" />
+              </div>
+            </div>
+            <div class="form-actions">
+              <a class="pill light" href="apply.html">디자이너 등록</a>
+              <button class="pill" type="submit">Login</button>
+            </div>
+          </form>
+
+          <p class="login-footnote">아직 계정이 없다면 먼저 디자이너 브랜드 신청을 제출해주세요. 승인 후 파트너 계정이 발급됩니다.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
