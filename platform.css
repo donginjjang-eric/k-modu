@@ -742,7 +742,7 @@ select {
 .login-shell {
   min-height: calc(100vh - 68px);
   display: grid;
-  grid-template-columns: minmax(0, 1131px) minmax(420px, 1fr);
+  grid-template-columns: minmax(0, 700px) minmax(420px, 1fr);
   gap: 0;
 }
 
@@ -755,7 +755,7 @@ select {
 .login-visual img {
   display: block;
   width: 100%;
-  max-width: 1131px;
+  max-width: 700px;
   height: auto;
 }
 
