@@ -582,6 +582,121 @@ select {
   gap: 8px;
 }
 
+.campaign-board {
+  background: #f4f3ef;
+}
+
+.campaign-board .page-hero {
+  border-bottom: 0;
+  padding-bottom: 34px;
+}
+
+.board-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 28px;
+}
+
+.board-toolbar span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .52);
+  color: rgba(5, 5, 5, .66);
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.masonry-board {
+  columns: 4 230px;
+  column-gap: 18px;
+}
+
+.work-pin {
+  break-inside: avoid;
+  display: inline-block;
+  width: 100%;
+  margin: 0 0 18px;
+  background: #fff;
+  border: 1px solid rgba(5, 5, 5, .1);
+  vertical-align: top;
+}
+
+.work-pin.tall img {
+  aspect-ratio: 3 / 4.4;
+}
+
+.work-pin.wide img {
+  aspect-ratio: 4 / 3;
+}
+
+.work-pin img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  display: block;
+  object-fit: cover;
+  object-position: center top;
+  background: #eee;
+}
+
+.work-pin-body {
+  padding: 16px;
+}
+
+.work-pin-body h3 {
+  margin: 0 0 8px;
+  font-size: 24px;
+  line-height: .95;
+  letter-spacing: -.06em;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.work-pin-body p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+  word-break: keep-all;
+}
+
+.work-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 13px 0 15px;
+}
+
+.work-meta span {
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: rgba(5, 5, 5, .62);
+  font-size: 9px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.work-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #050505;
+  color: var(--paper);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
 .steps {
   counter-reset: step;
 }
@@ -817,6 +932,27 @@ select {
 
   .creator-list {
     gap: 14px;
+  }
+
+  .masonry-board {
+    columns: 2 150px;
+    column-gap: 12px;
+  }
+
+  .work-pin {
+    margin-bottom: 12px;
+  }
+
+  .work-pin-body {
+    padding: 12px;
+  }
+
+  .work-pin-body h3 {
+    font-size: 18px;
+  }
+
+  .work-pin-body p {
+    font-size: 10px;
   }
 
   .login-visual,
