@@ -925,6 +925,27 @@ select {
     grid-template-columns: 1fr;
   }
 
+  .grid.four {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .grid.four .card {
+    padding: 18px 16px;
+  }
+
+  .table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .table th,
+  .table td {
+    padding: 12px 14px;
+    font-size: 12px;
+  }
+
   .creator-directory .page-hero {
     padding-top: 72px;
   }
@@ -1003,6 +1024,23 @@ select {
     min-height: 30px;
     padding: 0 8px;
     font-size: 9px;
+  }
+
+  .form-block {
+    padding: 20px;
+  }
+
+  .metric {
+    padding: 12px 10px;
+  }
+
+  .metric strong {
+    font-size: 18px;
+  }
+
+  .metric span {
+    font-size: 8px;
+    letter-spacing: .08em;
   }
 
   .masonry-board {
