@@ -618,9 +618,12 @@ select {
 }
 
 .login-card > p {
-  margin: 16px 0 26px;
+  max-width: 380px;
+  margin: 18px 0 28px;
   color: var(--muted);
-  line-height: 1.65;
+  font-size: 14px;
+  line-height: 1.78;
+  word-break: keep-all;
 }
 
 .social-login {
@@ -732,6 +735,26 @@ select {
   .login-panel {
     border-left: 0;
     border-top: 0;
-    padding-top: 42px;
+    padding: 42px 30px 58px;
+    align-items: flex-start;
+  }
+
+  .login-card h2 {
+    max-width: 320px;
+    font-size: 39px;
+    line-height: .98;
+  }
+
+  .login-card > p {
+    max-width: 310px;
+    margin: 18px 0 28px;
+    font-size: 14px;
+    line-height: 1.82;
+  }
+
+  .login-footnote {
+    max-width: 310px;
+    line-height: 1.72;
+    word-break: keep-all;
   }
 }
