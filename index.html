@@ -1499,10 +1499,13 @@
         top: 64px;
         left: 0;
         right: 0;
+        bottom: 0;
         display: grid;
+        align-content: start;
         gap: 1px;
-        padding: 12px 20px 20px;
-        background: rgba(247, 247, 244, .96);
+        padding: 18px 24px max(28px, env(safe-area-inset-bottom));
+        overflow-y: auto;
+        background: #f7f7f4;
         border-bottom: 1px solid rgba(0, 0, 0, .08);
         box-shadow: 0 20px 48px rgba(0, 0, 0, .1);
         transform: translateY(-120%);

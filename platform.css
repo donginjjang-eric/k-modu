@@ -152,9 +152,12 @@ select {
   top: 64px;
   left: 0;
   right: 0;
+  bottom: 0;
   display: grid;
+  align-content: start;
   gap: 1px;
   padding: 12px 20px 20px;
+  overflow-y: auto;
   background: #f7f7f4;
   border-bottom: 1px solid rgba(0, 0, 0, .08);
   box-shadow: 0 20px 48px rgba(0, 0, 0, .1);
@@ -1333,7 +1336,7 @@ select {
 
   .platform-menu-panel {
     top: 64px;
-    padding: 12px 20px 20px;
+    padding: 18px 20px max(28px, env(safe-area-inset-bottom));
   }
 
   .grid.two,
@@ -1607,7 +1610,7 @@ select {
 
   .platform-menu-panel {
     top: 60px;
-    padding: 10px 16px 18px;
+    padding: 16px 24px max(28px, env(safe-area-inset-bottom));
   }
 
   .platform-menu-panel a {
