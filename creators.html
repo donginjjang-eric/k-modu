@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Creators | K-MODU</title>
+  <title>크리에이터 | K-MODU</title>
   <link rel="stylesheet" href="platform.css" />
 </head>
 <body>
@@ -11,135 +11,222 @@
     <header class="topbar">
       <a class="brand" href="index.html#home">K-MODU</a>
       <nav class="topnav">
-        <a href="index.html#about">About</a>
-        <a href="creators.html">Creators</a>
-        <a href="campaign.html">Campaign</a>
-        <a href="index.html#contact">Contact</a>
+        <a href="index.html#about">소개</a>
+        <a href="creators.html">크리에이터</a>
+        <a href="campaign.html">캠페인</a>
+        <a href="index.html#contact">문의</a>
       </nav>
       <div class="top-actions">
-        <a href="apply.html">Apply</a>
-        <a class="pill" href="login.html">Login</a>
+        <a href="apply.html">신청</a>
+        <a class="pill" href="login.html">로그인</a>
       </div>
       <details class="platform-menu">
         <summary aria-label="메뉴"><span></span></summary>
         <div class="platform-menu-panel">
-          <a href="index.html#about">About</a>
-          <a href="creators.html">Creators</a>
-          <a href="campaign.html">Campaign</a>
-          <a href="index.html#contact">Contact</a>
-          <a href="apply.html">Apply</a>
-          <a href="login.html">Login</a>
+          <a href="index.html#about">소개</a>
+          <a href="creators.html">크리에이터</a>
+          <a href="campaign.html">캠페인</a>
+          <a href="index.html#contact">문의</a>
+          <a href="apply.html">신청</a>
+          <a href="login.html">로그인</a>
         </div>
       </details>
     </header>
 
     <section class="page-hero">
-      <p class="eyebrow">Creator Directory</p>
-      <h1 class="page-title">U.S. TikTok Influencers</h1>
-      <p class="page-lead">K-MODU가 한국 디자이너 브랜드 캠페인에 맞춰 검토하는 미국 패션 크리에이터 리스트입니다. 브랜드 무드, 콘텐츠 스타일, 팔로워 규모, 평균 조회수, 매칭 적합도를 기준으로 확인할 수 있습니다.</p>
-      <div class="creator-filters" aria-label="Creator categories">
-        <span>Minimal Luxury</span>
-        <span>Street Luxury</span>
-        <span>Editorial Fashion</span>
-        <span>TikTok Try-on</span>
-        <span>Outfit Breakdown</span>
+      <p class="eyebrow">크리에이터 디렉토리</p>
+      <h1 class="page-title">미국 TikTok 크리에이터</h1>
+      <p class="page-lead">
+        <span>K-MODU가 한국 디자이너 브랜드 캠페인에 맞춰 검토하는 미국 패션 크리에이터 리스트입니다.</span>
+        <span>브랜드 무드, 콘텐츠 스타일, 팔로워 규모, 평균 조회수, 매칭 적합도를 기준으로 확인할 수 있습니다.</span>
+      </p>
+      <div class="creator-filters" aria-label="크리에이터 카테고리">
+        <span>미니멀 럭셔리</span>
+        <span>스트리트 럭셔리</span>
+        <span>에디토리얼 패션</span>
+        <span>TikTok 착장</span>
+        <span>스타일링 분석</span>
       </div>
     </section>
 
     <section class="section">
       <div class="section-head">
-        <h2>Creator Profiles</h2>
-        <a class="pill light" href="campaign-create.html">Create Matching Brief</a>
+        <h2>크리에이터 프로필</h2>
+        <a class="pill light" href="campaign-create.html">매칭 브리프 만들기</a>
       </div>
 
-      <div class="creator-list">
+      <div class="creator-viewbar" aria-label="크리에이터 표시 방식">
+        <div class="view-toggle" role="group" aria-label="보기 방식">
+          <button class="active" type="button" data-view-mode="grid">바둑판</button>
+          <button type="button" data-view-mode="list">리스트</button>
+        </div>
+        <span>검증된 TikTok 크리에이터 6명</span>
+      </div>
+
+      <div class="creator-list" id="creatorList">
         <article class="creator-card">
-          <img src="assets/us-female-01.png" alt="Mia Harper" />
+          <img src="assets/us-female-01.jpg" alt="Mia Harper" />
           <div class="card-body">
-            <span class="status">TikTok</span>
+            <span class="status">TikTok 크리에이터</span>
             <h3>MIA HARPER</h3>
-            <p>New York / Minimal Styling</p>
-            <div class="score"><span>Brand × Creator Fit</span><strong>92%</strong></div>
-            <p>Quiet luxury, capsule wardrobe transitions, Korean designer discovery clips.</p>
-            <div class="creator-tags"><span>Minimal Luxury</span><span>Designer Discovery</span><span>Lookbook</span></div>
-            <div class="creator-meta"><span><strong>1.8M</strong>Followers</span><span><strong>420K</strong>Avg Views</span><span><strong>7.4%</strong>ER</span></div>
-            <div class="creator-actions"><a class="pill light" href="creator-detail.html">View Profile</a><a class="pill" href="campaign-create.html">매칭 요청</a></div>
+            <p>뉴욕 / 미니멀 스타일링</p>
+            <div class="score"><span>브랜드 × 크리에이터 적합도</span><strong>92%</strong></div>
+            <p>조용한 럭셔리 무드, 캡슐 워드로브 전환, 한국 디자이너 브랜드 발견 콘텐츠.</p>
+            <div class="creator-tags"><span>미니멀 럭셔리</span><span>디자이너 발견</span><span>룩북</span></div>
+            <div class="creator-meta"><span><strong>1.8M</strong>팔로워</span><span><strong>420K</strong>평균 조회</span><span><strong>7.4%</strong>참여율</span></div>
+            <div class="creator-actions"><a class="pill light" href="creator-detail.html">프로필 보기</a><a class="pill" href="campaign-create.html">매칭 요청</a></div>
           </div>
         </article>
 
         <article class="creator-card">
-          <img src="assets/us-female-02.png" alt="Avery Stone" />
+          <img src="assets/us-female-02.jpg" alt="Avery Stone" />
           <div class="card-body">
-            <span class="status">TikTok</span>
+            <span class="status">TikTok 크리에이터</span>
             <h3>AVERY STONE</h3>
-            <p>Los Angeles / Street Luxury</p>
-            <div class="score"><span>Brand × Creator Fit</span><strong>92%</strong></div>
-            <p>Street-to-editorial styling, launch videos, denim looks, outfit breakdowns.</p>
-            <div class="creator-tags"><span>Street Luxury</span><span>Denim Styling</span><span>Launch Video</span></div>
-            <div class="creator-meta"><span><strong>960K</strong>Followers</span><span><strong>310K</strong>Avg Views</span><span><strong>6.1%</strong>ER</span></div>
-            <div class="creator-actions"><a class="pill light" href="creator-detail.html">View Profile</a><a class="pill" href="campaign-create.html">매칭 요청</a></div>
+            <p>로스앤젤레스 / 스트리트 럭셔리</p>
+            <div class="score"><span>브랜드 × 크리에이터 적합도</span><strong>92%</strong></div>
+            <p>스트리트와 에디토리얼을 오가는 스타일링, 런칭 영상, 데님 룩 분석 콘텐츠.</p>
+            <div class="creator-tags"><span>스트리트 럭셔리</span><span>데님 스타일링</span><span>런칭 영상</span></div>
+            <div class="creator-meta"><span><strong>960K</strong>팔로워</span><span><strong>310K</strong>평균 조회</span><span><strong>6.1%</strong>참여율</span></div>
+            <div class="creator-actions"><a class="pill light" href="creator-detail.html">프로필 보기</a><a class="pill" href="campaign-create.html">매칭 요청</a></div>
           </div>
         </article>
 
         <article class="creator-card">
-          <img src="assets/us-female-03.png" alt="Noa Ellis" />
+          <img src="assets/us-influencer-1.jpg" alt="Noa Ellis" />
           <div class="card-body">
-            <span class="status">TikTok</span>
+            <span class="status">TikTok 크리에이터</span>
             <h3>NOA ELLIS</h3>
-            <p>Chicago / Editorial Fashion</p>
-            <div class="score"><span>Brand × Creator Fit</span><strong>89%</strong></div>
-            <p>Editorial try-ons, runway-inspired stories, emerging label discovery.</p>
-            <div class="creator-tags"><span>Editorial</span><span>Runway Mood</span><span>Try-on</span></div>
-            <div class="creator-meta"><span><strong>740K</strong>Followers</span><span><strong>185K</strong>Avg Views</span><span><strong>8.2%</strong>ER</span></div>
-            <div class="creator-actions"><a class="pill light" href="creator-detail.html">View Profile</a><a class="pill" href="campaign-create.html">매칭 요청</a></div>
+            <p>시카고 / 에디토리얼 패션</p>
+            <div class="score"><span>브랜드 × 크리에이터 적합도</span><strong>89%</strong></div>
+            <p>에디토리얼 착장, 런웨이 무드 스토리, 신진 브랜드 발견 콘텐츠.</p>
+            <div class="creator-tags"><span>에디토리얼</span><span>런웨이 무드</span><span>착장 리뷰</span></div>
+            <div class="creator-meta"><span><strong>740K</strong>팔로워</span><span><strong>185K</strong>평균 조회</span><span><strong>8.2%</strong>참여율</span></div>
+            <div class="creator-actions"><a class="pill light" href="creator-detail.html">프로필 보기</a><a class="pill" href="campaign-create.html">매칭 요청</a></div>
           </div>
         </article>
 
         <article class="creator-card">
-          <img src="assets/us-female-04.png" alt="Sloane Carter" />
+          <img src="assets/us-influencer-2.jpg" alt="Sloane Carter" />
           <div class="card-body">
-            <span class="status">TikTok</span>
+            <span class="status">TikTok 크리에이터</span>
             <h3>SLOANE CARTER</h3>
-            <p>Austin / Everyday Premium</p>
-            <div class="score"><span>Brand × Creator Fit</span><strong>84%</strong></div>
-            <p>Daily outfit styling, shopping moments, approachable premium fashion.</p>
-            <div class="creator-tags"><span>Daily Styling</span><span>Shopping Haul</span><span>Try-on</span></div>
-            <div class="creator-meta"><span><strong>520K</strong>Followers</span><span><strong>142K</strong>Avg Views</span><span><strong>5.8%</strong>ER</span></div>
-            <div class="creator-actions"><a class="pill light" href="creator-detail.html">View Profile</a><a class="pill" href="campaign-create.html">매칭 요청</a></div>
+            <p>오스틴 / 데일리 프리미엄</p>
+            <div class="score"><span>브랜드 × 크리에이터 적합도</span><strong>84%</strong></div>
+            <p>데일리 착장, 쇼핑 순간, 접근성 높은 프리미엄 패션 콘텐츠.</p>
+            <div class="creator-tags"><span>데일리 스타일링</span><span>쇼핑 콘텐츠</span><span>착장 리뷰</span></div>
+            <div class="creator-meta"><span><strong>520K</strong>팔로워</span><span><strong>142K</strong>평균 조회</span><span><strong>5.8%</strong>참여율</span></div>
+            <div class="creator-actions"><a class="pill light" href="creator-detail.html">프로필 보기</a><a class="pill" href="campaign-create.html">매칭 요청</a></div>
           </div>
         </article>
 
         <article class="creator-card">
-          <img src="assets/us-female-05.png" alt="Riley Monroe" />
+          <img src="assets/mainmodel_2.jpg" alt="Riley Monroe" />
           <div class="card-body">
-            <span class="status">TikTok</span>
+            <span class="status">TikTok 크리에이터</span>
             <h3>RILEY MONROE</h3>
-            <p>Miami / Resort Capsule</p>
-            <div class="score"><span>Brand × Creator Fit</span><strong>88%</strong></div>
-            <p>Resort styling, seasonal capsule looks, polished daily fashion clips.</p>
-            <div class="creator-tags"><span>Resortwear</span><span>Summer Capsule</span><span>Visual Campaign</span></div>
-            <div class="creator-meta"><span><strong>610K</strong>Followers</span><span><strong>166K</strong>Avg Views</span><span><strong>6.9%</strong>ER</span></div>
-            <div class="creator-actions"><a class="pill light" href="creator-detail.html">View Profile</a><a class="pill" href="campaign-create.html">매칭 요청</a></div>
+            <p>마이애미 / 리조트 캡슐</p>
+            <div class="score"><span>브랜드 × 크리에이터 적합도</span><strong>88%</strong></div>
+            <p>리조트 스타일링, 시즌 캡슐 룩, 정돈된 데일리 패션 클립.</p>
+            <div class="creator-tags"><span>리조트웨어</span><span>여름 캡슐</span><span>비주얼 캠페인</span></div>
+            <div class="creator-meta"><span><strong>610K</strong>팔로워</span><span><strong>166K</strong>평균 조회</span><span><strong>6.9%</strong>참여율</span></div>
+            <div class="creator-actions"><a class="pill light" href="creator-detail.html">프로필 보기</a><a class="pill" href="campaign-create.html">매칭 요청</a></div>
           </div>
         </article>
 
         <article class="creator-card">
-          <img src="assets/us-female-06.png" alt="Jade Kim" />
+          <img src="assets/mainmodel_3.png" alt="Jade Kim" />
           <div class="card-body">
-            <span class="status">TikTok</span>
+            <span class="status">TikTok 크리에이터</span>
             <h3>JADE KIM</h3>
-            <p>Seattle / K-Fashion Edit</p>
-            <div class="score"><span>Brand × Creator Fit</span><strong>90%</strong></div>
-            <p>K-fashion explainers, styling education, trend translation.</p>
-            <div class="creator-tags"><span>K-Fashion</span><span>Education</span><span>Trend</span></div>
-            <div class="creator-meta"><span><strong>680K</strong>Followers</span><span><strong>214K</strong>Avg Views</span><span><strong>7.8%</strong>ER</span></div>
-            <div class="creator-actions"><a class="pill light" href="creator-detail.html">View Profile</a><a class="pill" href="campaign-create.html">매칭 요청</a></div>
+            <p>시애틀 / K-패션 에디트</p>
+            <div class="score"><span>브랜드 × 크리에이터 적합도</span><strong>90%</strong></div>
+            <p>K-패션 설명, 스타일링 교육, 트렌드 번역 콘텐츠.</p>
+            <div class="creator-tags"><span>K-패션</span><span>스타일링 교육</span><span>트렌드</span></div>
+            <div class="creator-meta"><span><strong>680K</strong>팔로워</span><span><strong>214K</strong>평균 조회</span><span><strong>7.8%</strong>참여율</span></div>
+            <div class="creator-actions"><a class="pill light" href="creator-detail.html">프로필 보기</a><a class="pill" href="campaign-create.html">매칭 요청</a></div>
           </div>
         </article>
       </div>
     </section>
 
-    <footer class="footer-mini">K-MODU Creator Directory</footer>
+    <footer class="footer-mini">K-MODU 크리에이터 디렉토리</footer>
   </main>
+
+  <div class="modal-backdrop" id="modalBackdrop"></div>
+
+  <div class="creator-modal" id="creatorModal1">
+    <div class="modal-content coming-soon-card">
+      <button class="modal-close" aria-label="뒤로가기">‹</button>
+      <div class="modal-header">
+        <img src="assets/hero-group.jpg" alt="K-MODU creator preview" />
+      </div>
+      <div class="modal-body">
+        <p class="eyebrow">K-MODU Creator Profile</p>
+        <h2>준비중입니다</h2>
+        <p class="location">크리에이터 상세 프로필을 준비하고 있습니다.</p>
+        <p class="coming-soon-copy">곧 업데이트될 예정입니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const modals = document.querySelectorAll('.creator-modal');
+    const closeButtons = document.querySelectorAll('.modal-close');
+    const creatorList = document.getElementById('creatorList');
+    const viewModeButtons = document.querySelectorAll('[data-view-mode]');
+
+    viewModeButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        viewModeButtons.forEach((item) => item.classList.remove('active'));
+        button.classList.add('active');
+        creatorList.classList.toggle('list-view', button.dataset.viewMode === 'list');
+      });
+    });
+
+    // Keep profile links as modal triggers.
+    document.querySelectorAll('.creator-card .pill.light').forEach((btn, index) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        openModal('creatorModal1');
+      });
+      btn.textContent = '프로필 보기';
+    });
+
+    document.querySelectorAll('.creator-card').forEach((card, index) => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.creator-actions')) return;
+        openModal('creatorModal1');
+      });
+    });
+
+    function openModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.add('active');
+        modalBackdrop.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeModal() {
+      modals.forEach(modal => modal.classList.remove('active'));
+      modalBackdrop.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    closeButtons.forEach(btn => {
+      btn.addEventListener('click', closeModal);
+    });
+
+    modals.forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+    });
+
+    modalBackdrop.addEventListener('click', closeModal);
+  </script>
 </body>
 </html>
