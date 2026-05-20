@@ -33,6 +33,10 @@
       font-family: var(--font);
     }
 
+    body.menu-locked {
+      overflow: hidden;
+    }
+
     a {
       color: inherit;
       text-decoration: none;
@@ -1540,32 +1544,6 @@
         letter-spacing: 0;
       }
 
-      .mobile-menu .mobile-utility {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        padding-top: 14px;
-        font-size: 12px;
-        letter-spacing: .12em;
-        text-transform: uppercase;
-      }
-
-      .mobile-menu .mobile-login {
-        min-height: 34px;
-        padding: 0 18px;
-        border: 1px solid #050505;
-        border-radius: 999px;
-        background: #050505;
-        color: var(--paper);
-        font-size: 12px;
-        letter-spacing: .14em;
-      }
-
-      .mobile-menu .mobile-login::after {
-        content: none;
-      }
-
       .hero {
         min-height: 940px;
         padding-left: 20px;
@@ -1901,10 +1879,8 @@
         <a href="creators.html">크리에이터</a>
         <a href="campaign.html">캠페인</a>
         <a href="#contact">문의</a>
-        <div class="mobile-utility">
-          <span>KR / US</span>
-          <a class="mobile-login" href="login.html">로그인</a>
-        </div>
+        <a href="apply.html">신청</a>
+        <a href="login.html">로그인</a>
       </div>
     </header>
 
@@ -2238,11 +2214,13 @@
   const menuToggle = document.querySelector('.menu-toggle');
   const closeMobileMenu = () => {
     nav.classList.remove('menu-open');
+    document.body.classList.remove('menu-locked');
     menuToggle?.setAttribute('aria-expanded', 'false');
   };
 
   menuToggle?.addEventListener('click', () => {
     const isOpen = nav.classList.toggle('menu-open');
+    document.body.classList.toggle('menu-locked', isOpen);
     menuToggle.setAttribute('aria-expanded', String(isOpen));
   });
 
