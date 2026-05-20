@@ -1788,24 +1788,89 @@
       }
 
       .footer {
-        min-height: 520px;
-        padding: 66px 30px 260px;
+        min-height: auto;
+        padding: 54px 28px max(44px, env(safe-area-inset-bottom));
         background: #070707;
+        overflow: hidden;
       }
 
       .footer::before {
-        width: 120%;
-        height: 560px;
+        display: none;
       }
 
       .footer-model {
-        width: 180px;
+        display: none;
       }
 
       .foot-grid,
       .contact {
         width: 100%;
-        margin-left: 0;
+        margin: 0;
+      }
+
+      .ticker {
+        height: 34px;
+        justify-content: flex-start;
+        gap: 18px;
+        padding: 0 24px;
+        font-size: 9px;
+      }
+
+      .foot-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+        margin-top: 34px;
+        border-top: 1px solid rgba(255,255,255,.18);
+        border-bottom: 0;
+        padding: 0;
+      }
+
+      .foot-grid > div,
+      .contact > div {
+        padding: 18px 0;
+        border-bottom: 1px solid rgba(255,255,255,.14);
+      }
+
+      .foot-grid h4,
+      .contact h4 {
+        margin-bottom: 10px;
+        color: rgba(255,255,255,.54);
+        font-size: 9px;
+        letter-spacing: .12em;
+      }
+
+      .foot-grid p,
+      .contact p {
+        max-width: 320px;
+        color: rgba(255,255,255,.78);
+        font-size: 11px;
+        line-height: 1.75;
+        word-break: keep-all;
+      }
+
+      .contact {
+        grid-template-columns: 1fr;
+        gap: 0;
+        margin-top: 0;
+        border-top: 0;
+        padding-top: 0;
+      }
+
+      .social-icons {
+        gap: 12px;
+      }
+
+      .social-link {
+        width: 34px;
+        height: 34px;
+        border: 1px solid rgba(255,255,255,.18);
+        border-radius: 50%;
+        background: rgba(255,255,255,.04);
+      }
+
+      .social-link svg {
+        width: 18px;
+        height: 18px;
       }
     }
   </style>
