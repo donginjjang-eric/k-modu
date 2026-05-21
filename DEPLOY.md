@@ -23,9 +23,10 @@ Required shared assets:
 Run these before uploading:
 
 ```powershell
-git diff --check
-node -e "const fs=require('fs'); for (const f of fs.readdirSync('.').filter(f=>f.endsWith('.html'))) { const html=fs.readFileSync(f,'utf8'); const scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]); for (const s of scripts) new Function(s); } console.log('inline scripts ok');"
+powershell -ExecutionPolicy Bypass -File scripts/preflight.ps1
 ```
+
+For review order, see `REVIEW_WORKFLOW.md`.
 
 ## Server Notes
 
