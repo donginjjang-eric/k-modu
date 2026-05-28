@@ -11,12 +11,13 @@
     <header class="topbar">
       <a class="brand" href="index.html#home">K-MODU</a>
       <nav class="topnav">
-        <a href="admin.html">Brands</a>
-        <a href="campaign-create.html">Campaign</a>
-        <a href="campaign-result.html">Matching</a>
+        <a href="index.html#about">About</a>
+        <a href="designers.html" aria-current="page">Designers</a>
         <a href="creators.html">Creators</a>
+        <a href="index.html#contact">Contact</a>
       </nav>
       <div class="top-actions">
+        <button id="themeToggleBtn" aria-label="테마 전환" style="background:none; border:none; color:var(--ink); font-size:11px; font-weight:800; cursor:pointer; letter-spacing:.08em; padding:0; text-transform:uppercase; margin-right:12px; display:inline-flex; align-items:center;">DARK</button>
         <a href="index.html#home">Landing</a>
         <a class="pill" href="apply.html">New Apply</a>
       </div>
@@ -24,9 +25,9 @@
         <summary aria-label="메뉴"><span></span></summary>
         <div class="platform-menu-panel">
           <a href="index.html#about">About</a>
+          <a href="designers.html" aria-current="page">Designers</a>
           <a href="creators.html">Creators</a>
-          <a href="campaign.html">Campaign</a>
-          <a href="index.html#contact">Contact</a>
+        <a href="index.html#contact">Contact</a>
           <a href="apply.html">Apply</a>
           <a href="login.html">Login</a>
         </div>
@@ -41,17 +42,17 @@
 
     <section class="section">
       <div class="grid four">
-        <div class="card"><h3>12</h3><p>Submitted Brands</p></div>
-        <div class="card"><h3>5</h3><p>Reviewing</p></div>
-        <div class="card"><h3>3</h3><p>Campaign Ready</p></div>
-        <div class="card"><h3>2</h3><p>Matched</p></div>
+        <div class="card"><h3 id="statTotal">12</h3><p>Submitted Brands</p></div>
+        <div class="card"><h3 id="statReviewing">5</h3><p>Reviewing</p></div>
+        <div class="card"><h3 id="statReady">3</h3><p>Brief Ready</p></div>
+        <div class="card"><h3 id="statMatched">2</h3><p>Matched</p></div>
       </div>
     </section>
 
     <section class="section" style="padding-top: 0;">
       <div class="section-head">
         <h2>Applications</h2>
-        <a class="pill" href="campaign-create.html">Create Campaign</a>
+        <a class="pill" href="designer-brief.html">Create Designer Brief</a>
       </div>
       <table class="table">
         <thead>
@@ -65,39 +66,143 @@
             <th>Action</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>Maison Lune Seoul</td>
-            <td>Han Seo Yoon</td>
-            <td>South Korea</td>
-            <td>Minimal Womenswear</td>
-            <td><span class="status dark">Reviewing</span></td>
-            <td>2026.05.19</td>
-            <td><a href="brand-detail.html">View Detail</a></td>
-          </tr>
-          <tr>
-            <td>Archive Row</td>
-            <td>Kim Jae In</td>
-            <td>South Korea</td>
-            <td>Street Luxury</td>
-            <td><span class="status">Campaign Ready</span></td>
-            <td>2026.05.18</td>
-            <td><a href="campaign-create.html">Create Campaign</a></td>
-          </tr>
-          <tr>
-            <td>Studio Forme</td>
-            <td>Lee Min Ha</td>
-            <td>South Korea</td>
-            <td>Editorial Fashion</td>
-            <td><span class="status">Pending</span></td>
-            <td>2026.05.17</td>
-            <td><a href="brand-detail.html">View Detail</a></td>
-          </tr>
+        <tbody id="adminTableBody">
+          <!-- Dynamically populated via script -->
         </tbody>
       </table>
     </section>
 
     <footer class="footer-mini">K-MODU Admin MVP</footer>
   </main>
+
+  <script>
+    // --- 1. GLOBAL THEME MANAGER ---
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        document.body.classList.add('dark-theme');
+        if (themeToggleBtn) themeToggleBtn.textContent = 'LIGHT';
+      } else {
+        document.body.classList.remove('dark-theme');
+        if (themeToggleBtn) themeToggleBtn.textContent = 'DARK';
+      }
+    }
+
+    const savedTheme = localStorage.getItem('k_modu_theme') || 'light';
+    applyTheme(savedTheme);
+
+    if (themeToggleBtn) {
+      themeToggleBtn.addEventListener('click', () => {
+        const currentTheme = document.body.classList.contains('dark-theme') ? 'light' : 'dark';
+        localStorage.setItem('k_modu_theme', currentTheme);
+        applyTheme(currentTheme);
+      });
+    }
+
+    // --- 2. PIPELINE DATA MANAGER ---
+    const defaultBrands = [
+      { brand: 'Maison Lune Seoul', designer: 'Han Seo Yoon', country: 'South Korea', category: 'Minimal Womenswear', status: 'Reviewing', submitted: '2026.05.19' },
+      { brand: 'Archive Row', designer: 'Kim Jae In', country: 'South Korea', category: 'Street Luxury', status: 'Brief Ready', submitted: '2026.05.18' },
+      { brand: 'Studio Forme', designer: 'Lee Min Ha', country: 'South Korea', category: 'Editorial Fashion', status: 'Pending', submitted: '2026.05.17' }
+    ];
+
+    function getApplications() {
+      try {
+        const apps = localStorage.getItem('k_modu_applications');
+        if (!apps) {
+          localStorage.setItem('k_modu_applications', JSON.stringify(defaultBrands));
+          return defaultBrands;
+        }
+        return JSON.parse(apps);
+      } catch (err) {
+        return defaultBrands;
+      }
+    }
+
+    function saveApplications(apps) {
+      localStorage.setItem('k_modu_applications', JSON.stringify(apps));
+    }
+
+    function renderPipeline() {
+      const apps = getApplications();
+      const tbody = document.getElementById('adminTableBody');
+      tbody.innerHTML = '';
+
+      // Update Dashboard Stats
+      const total = apps.length;
+      const reviewing = apps.filter(a => a.status === 'Reviewing').length;
+      const ready = apps.filter(a => a.status === 'Brief Ready').length;
+      const pending = apps.filter(a => a.status === 'Pending').length;
+
+      document.getElementById('statTotal').textContent = total;
+      document.getElementById('statReviewing').textContent = reviewing;
+      document.getElementById('statReady').textContent = ready;
+      document.getElementById('statMatched').textContent = pending;
+
+      if (apps.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--muted); padding: 32px;">신청 데이터가 없습니다.</td></tr>`;
+        return;
+      }
+
+      apps.forEach((app, index) => {
+        const tr = document.createElement('tr');
+
+        let statusClass = 'status';
+        if (app.status === 'Reviewing') statusClass += ' dark';
+
+        let actionButtons = '';
+        if (app.status === 'Reviewing') {
+          actionButtons = `
+            <button onclick="updateStatus(${index}, 'Brief Ready')" class="pill" style="min-height: 24px; font-size: 8px; padding: 0 10px; cursor: pointer;">Approve</button>
+            <button onclick="deleteApp(${index})" class="pill light" style="min-height: 24px; font-size: 8px; padding: 0 10px; cursor: pointer; border-color: red; color: red; margin-left: 4px;">Delete</button>
+          `;
+        } else if (app.status === 'Brief Ready') {
+          actionButtons = `
+            <a href="designer-brief.html" class="pill" style="min-height: 24px; font-size: 8px; padding: 6px 10px; line-height: 1; display: inline-flex; align-items: center;">Create Designer Brief</a>
+            <button onclick="deleteApp(${index})" class="pill light" style="min-height: 24px; font-size: 8px; padding: 0 10px; cursor: pointer; border-color: red; color: red; margin-left: 4px;">Delete</button>
+          `;
+        } else {
+          actionButtons = `
+            <a href="brand-detail.html" class="pill light" style="min-height: 24px; font-size: 8px; padding: 6px 10px; line-height: 1; display: inline-flex; align-items: center;">View Detail</a>
+            <button onclick="deleteApp(${index})" class="pill light" style="min-height: 24px; font-size: 8px; padding: 0 10px; cursor: pointer; border-color: red; color: red; margin-left: 4px;">Delete</button>
+          `;
+        }
+
+        tr.innerHTML = `
+          <td><strong>${app.brand}</strong></td>
+          <td>${app.designer}</td>
+          <td>${app.country}</td>
+          <td>${app.category}</td>
+          <td><span class="${statusClass}">${app.status}</span></td>
+          <td>${app.submitted}</td>
+          <td style="white-space: nowrap;">${actionButtons}</td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    window.updateStatus = function(index, newStatus) {
+      const apps = getApplications();
+      if (apps[index]) {
+        apps[index].status = newStatus;
+        saveApplications(apps);
+        renderPipeline();
+      }
+    };
+
+    window.deleteApp = function(index) {
+      if (confirm('이 신청 내역을 삭제하시겠습니까?')) {
+        const apps = getApplications();
+        apps.splice(index, 1);
+        saveApplications(apps);
+        renderPipeline();
+      }
+    };
+
+    // Initial render
+    renderPipeline();
+  </script>
 </body>
 </html>

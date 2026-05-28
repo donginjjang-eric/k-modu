@@ -5,6 +5,189 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Application Complete | K-MODU</title>
   <link rel="stylesheet" href="platform.css" />
+  <style>
+    /* Toss-Style Success Screen Custom CSS */
+    .success-container {
+      max-width: 480px;
+      margin: 80px auto 100px;
+      padding: 0 24px;
+      text-align: center;
+    }
+
+    /* Animated Checkmark SVG */
+    .checkmark-wrapper {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 32px;
+    }
+
+    .checkmark {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: block;
+      stroke-width: 2;
+      stroke: var(--paper);
+      stroke-miterlimit: 10;
+      box-shadow: inset 0px 0px 0px var(--ink);
+      animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+    }
+
+    .checkmark-circle {
+      stroke-dasharray: 166;
+      stroke-dashoffset: 166;
+      stroke-width: 2;
+      stroke-miterlimit: 10;
+      stroke: var(--line);
+      fill: none;
+      animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+
+    .checkmark-check {
+      transform-origin: 50% 50%;
+      stroke-dasharray: 48;
+      stroke-dashoffset: 48;
+      stroke: var(--ink);
+      animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
+    }
+
+    @keyframes stroke {
+      100% {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    @keyframes scale {
+      0%, 100% {
+        transform: none;
+      }
+      50% {
+        transform: scale3d(1.1, 1.1, 1);
+      }
+    }
+
+    @keyframes fill {
+      100% {
+        box-shadow: inset 0px 0px 0px 40px var(--line);
+      }
+    }
+
+    /* Success Typography */
+    .success-title {
+      font-size: clamp(24px, 5vw, 30px);
+      font-weight: 700;
+      line-height: 1.36;
+      letter-spacing: -0.04em;
+      margin: 0 0 12px;
+      color: var(--ink);
+      white-space: pre-line;
+    }
+
+    .success-subtitle {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 0 0 40px;
+      font-weight: 400;
+      word-break: keep-all;
+    }
+
+    /* Toss Receipt Info Card */
+    .receipt-card {
+      background: var(--input-bg);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 24px 28px;
+      text-align: left;
+      margin-bottom: 48px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    }
+
+    .receipt-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 10px;
+    }
+
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .receipt-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .receipt-label {
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .receipt-value {
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .receipt-status-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 0 10px;
+      background: var(--ink);
+      color: var(--paper);
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+
+    /* Action Buttons */
+    .success-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .toss-btn {
+      width: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 54px;
+      border: none;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.24s ease;
+      outline: none;
+    }
+
+    .toss-btn.primary {
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    .toss-btn.secondary {
+      background: var(--line);
+      color: var(--ink);
+    }
+
+    .toss-btn.secondary:hover {
+      background: rgba(5, 5, 5, 0.08);
+    }
+    body.dark-theme .toss-btn.secondary:hover {
+      background: rgba(247, 247, 244, 0.08);
+    }
+  </style>
 </head>
 <body>
   <main class="platform">
@@ -12,60 +195,128 @@
       <a class="brand" href="index.html#home">K-MODU</a>
       <nav class="topnav">
         <a href="index.html#about">About</a>
+        <a href="designers.html">Designers</a>
         <a href="creators.html">Creators</a>
-        <a href="campaign.html">Campaign</a>
         <a href="index.html#contact">Contact</a>
       </nav>
       <div class="top-actions">
+        <button id="themeToggleBtn" aria-label="테마 전환" style="background:none; border:none; color:var(--ink); font-size:11px; font-weight:800; cursor:pointer; letter-spacing:.08em; padding:0; text-transform:uppercase; margin-right:12px; display:inline-flex; align-items:center;">DARK</button>
         <a href="admin.html">Admin</a>
-        <a class="pill" href="campaign-create.html">Create Brief</a>
+        <a class="pill" href="apply.html">Apply</a>
       </div>
       <details class="platform-menu">
         <summary aria-label="메뉴"><span></span></summary>
         <div class="platform-menu-panel">
           <a href="index.html#about">About</a>
+          <a href="designers.html">Designers</a>
           <a href="creators.html">Creators</a>
-          <a href="campaign.html">Campaign</a>
-          <a href="index.html#contact">Contact</a>
+        <a href="index.html#contact">Contact</a>
           <a href="apply.html">Apply</a>
           <a href="login.html">Login</a>
         </div>
       </details>
     </header>
 
-    <section class="page-hero">
-      <p class="eyebrow">Application Received</p>
-      <h1 class="page-title">Your Brand Is Now In Review</h1>
-      <p class="page-lead">K-MODU team will review your brand profile, lookbook, product assets, and campaign direction. Once approved, we will prepare your editorial campaign brief and creator matching list.</p>
-      <p class="page-lead">브랜드 신청이 접수되었습니다. K-MODU 팀이 브랜드 프로필, 룩북, 상품 정보, 캠페인 방향성을 검토한 뒤 글로벌 크리에이터 매칭을 위한 에디토리얼 캠페인 브리프를 준비합니다.</p>
-    </section>
+    <div class="success-container">
+      <!-- Animated Checkmark -->
+      <div class="checkmark-wrapper">
+        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+          <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+          <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+        </svg>
+      </div>
 
-    <section class="section">
-      <div class="steps">
-        <div class="step">
-          <h3>Brand Review</h3>
-          <p>제출된 브랜드 정보, 상품 이미지, 가격대, 해외 협업 가능 여부를 검토합니다.</p>
+      <!-- Personalized Dynamic Title -->
+      <h1 class="success-title" id="successTitle">브랜드 입점 신청이<br>성공적으로 완료되었습니다.</h1>
+      <p class="success-subtitle">제출해 주신 브랜드 스토리를 기반으로 크리에이터 매칭을 위한 검토가 곧바로 시작됩니다.</p>
+
+      <!-- Toss-style Receipt Card -->
+      <div class="receipt-card">
+        <h2 class="receipt-title">신청 브랜드 접수 영수증</h2>
+
+        <div class="receipt-row">
+          <span class="receipt-label">브랜드명</span>
+          <span class="receipt-value" id="receiptBrand">-</span>
         </div>
-        <div class="step">
-          <h3>Editorial Packaging</h3>
-          <p>브랜드 스토리와 대표 상품을 글로벌 크리에이터가 이해하기 쉬운 캠페인 브리프로 정리합니다.</p>
+
+        <div class="receipt-row">
+          <span class="receipt-label">디자이너</span>
+          <span class="receipt-value" id="receiptDesigner">-</span>
         </div>
-        <div class="step">
-          <h3>Creator Matching</h3>
-          <p>브랜드 무드, 상품 카테고리, 목표 시장에 맞는 미국 TikTok 패션 크리에이터 후보를 구성합니다.</p>
+
+        <div class="receipt-row">
+          <span class="receipt-label">접수 일시</span>
+          <span class="receipt-value" id="receiptDate">-</span>
         </div>
-        <div class="step">
-          <h3>Campaign Proposal</h3>
-          <p>추천 크리에이터, 콘텐츠 방향, 예상 산출물을 포함한 캠페인 제안서를 준비합니다.</p>
+
+        <div class="receipt-row">
+          <span class="receipt-label">심사 상태</span>
+          <span class="receipt-value">
+            <span class="receipt-status-badge">Reviewing</span>
+          </span>
         </div>
       </div>
-      <div class="form-actions">
-        <a class="pill light" href="index.html#home">Back To Landing</a>
-        <a class="pill" href="admin.html">View Admin Demo</a>
+
+      <!-- Action Buttons -->
+      <div class="success-actions">
+        <a href="admin.html" class="toss-btn primary">관리자 대시보드에서 확인</a>
+        <a href="index.html#home" class="toss-btn secondary">홈으로 돌아가기</a>
       </div>
-    </section>
+    </div>
 
     <footer class="footer-mini">K-MODU by MARKBRIDGE</footer>
   </main>
+
+  <script>
+    // --- 1. GLOBAL THEME MANAGER ---
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        document.body.classList.add('dark-theme');
+        if (themeToggleBtn) themeToggleBtn.textContent = 'LIGHT';
+      } else {
+        document.body.classList.remove('dark-theme');
+        if (themeToggleBtn) themeToggleBtn.textContent = 'DARK';
+      }
+    }
+
+    const savedTheme = localStorage.getItem('k_modu_theme') || 'light';
+    applyTheme(savedTheme);
+
+    if (themeToggleBtn) {
+      themeToggleBtn.addEventListener('click', () => {
+        const currentTheme = document.body.classList.contains('dark-theme') ? 'light' : 'dark';
+        localStorage.setItem('k_modu_theme', currentTheme);
+        applyTheme(currentTheme);
+      });
+    }
+
+    // --- 2. DYNAMIC RECEIPT DATA POPULATOR ---
+    try {
+      const apps = JSON.parse(localStorage.getItem('k_modu_applications')) || [];
+      if (apps.length > 0) {
+        const latestApp = apps[0];
+
+        // Populate personalized title
+        document.getElementById('successTitle').innerHTML = `${latestApp.brand} 브랜드의<br>신청이 완료되었습니다.`;
+
+        // Populate receipt cards
+        document.getElementById('receiptBrand').textContent = latestApp.brand;
+        document.getElementById('receiptDesigner').textContent = latestApp.designer;
+        document.getElementById('receiptDate').textContent = latestApp.submitted;
+      } else {
+        // Fallback for demo direct visits
+        const today = new Date();
+        const formattedDate = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}`;
+
+        document.getElementById('receiptBrand').textContent = "K-MODU 파트너";
+        document.getElementById('receiptDesigner').textContent = "검토 중";
+        document.getElementById('receiptDate').textContent = formattedDate;
+      }
+    } catch (e) {
+      // Fallback on error
+    }
+  </script>
 </body>
 </html>
