@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Designers | K-MODU</title>
+  <link rel="stylesheet" href="platform.css" />
+</head>
+<body>
+  <main class="platform designer-board">
+    <header class="topbar">
+      <a class="brand" href="index.html#home">K-MODU</a>
+      <nav class="topnav">
+        <a href="index.html#about">About</a>
+        <a href="designers.html" aria-current="page">Designers</a>
+        <a href="creators.html">Creators</a>
+        <a href="index.html#contact">Contact</a>
+      </nav>
+      <div class="top-actions">
+        <a href="designer-brief.html">Create Brief</a>
+        <a class="pill" href="login.html">Login</a>
+      </div>
+      <details class="platform-menu">
+        <summary aria-label="메뉴"><span></span></summary>
+        <div class="platform-menu-panel">
+          <a href="index.html#about">About</a>
+          <a href="designers.html" aria-current="page">Designers</a>
+          <a href="creators.html">Creators</a>
+          <a href="index.html#contact">Contact</a>
+          <a href="apply.html">Apply</a>
+          <a href="login.html">Login</a>
+        </div>
+      </details>
+    </header>
+
+    <section class="page-hero designer-hero">
+      <p class="eyebrow">Designer Profiles</p>
+      <h1 class="page-title">Designer Profiles Ready For Creators</h1>
+      <p class="page-lead">한국 디자이너 브랜드의 대표 룩, 시즌 무드, 협업 가능 포맷을 한눈에 볼 수 있는 프로필 보드입니다. 크리에이터는 브랜드 감도와 콘텐츠 방향을 보고 바로 협업을 제안할 수 있습니다.</p>
+      <div class="board-toolbar" aria-label="Designer profile filters">
+        <span>New Designer</span>
+        <span>Minimal Luxury</span>
+        <span>Street Luxury</span>
+        <span>Editorial</span>
+        <span>Product Seeding</span>
+        <span>TikTok Styling</span>
+      </div>
+      <div class="designer-scroll-cue" aria-hidden="true">
+        <span>아래로 내려 더 많은 디자이너 프로필 보기</span>
+      </div>
+    </section>
+
+    <section class="section designer-profile-section" style="padding-top: 28px;">
+      <div class="masonry-board" id="designerBoard" aria-label="Designer profile cards"></div>
+    </section>
+
+    <div class="designer-proposal-sheet" id="designerProposalSheet" aria-hidden="true">
+      <div class="designer-proposal-card" role="dialog" aria-modal="true" aria-labelledby="proposalBrandName">
+        <button class="designer-proposal-close" type="button" aria-label="닫기">‹</button>
+        <div class="designer-proposal-visual">
+          <img id="proposalImage" src="assets/designer-profile-real-01.png" alt="" />
+          <div class="designer-proposal-dots" id="proposalPortfolioDots" aria-label="Portfolio image navigation"></div>
+        </div>
+        <div class="designer-proposal-content">
+          <p class="designer-proposal-kicker">DESIGNER PROFILE / PORTFOLIO</p>
+          <h2 id="proposalBrandName">Maison Lune Seoul</h2>
+          <strong id="proposalBriefTitle">Representative looks and portfolio mood</strong>
+          <span id="proposalSummary">선택한 디자이너 브랜드의 대표 룩과 시즌 무드를 확인하세요.</span>
+          <div class="designer-proposal-tags" id="proposalTags"></div>
+          <div class="designer-profile-meta" id="proposalProfileMeta" aria-label="Designer profile details"></div>
+          <div class="designer-portfolio-note">
+            <h3>Portfolio Preview</h3>
+            <p>대표 이미지와 이어지는 룩북 컷을 순차적으로 보여줍니다.</p>
+          </div>
+          <div class="designer-portfolio-thumbs" id="proposalPortfolioThumbs" aria-label="Portfolio thumbnails"></div>
+          <div class="designer-asset-section">
+            <h3>Hero Products</h3>
+            <div class="designer-product-preview" id="proposalProductPreview" aria-label="Hero product images"></div>
+          </div>
+          <div class="designer-asset-section">
+            <h3>Available Samples</h3>
+            <div class="designer-sample-preview" id="proposalSamplePreview" aria-label="Available sample images"></div>
+          </div>
+          <div class="designer-proposal-grid">
+            <div>
+              <h3>Collaboration Ready</h3>
+              <div class="designer-proposal-pills">
+                <span>Product Seeding</span>
+                <span>Styling Reel</span>
+                <span>Editorial Try-on</span>
+              </div>
+            </div>
+            <div>
+              <h3>Creator Direction</h3>
+              <p id="proposalCreatorDirection">Minimal Luxury / Street Styling / Editorial Fashion</p>
+            </div>
+          </div>
+          <div class="designer-proposal-actions">
+            <a class="pill light" id="proposalBriefLink" href="designer-brief.html">이 브랜드와 협업하기</a>
+            <a class="pill" id="proposalMatchLink" href="designer-match.html">어울리는 크리에이터 보기</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer-mini">K-MODU Designer Profiles</footer>
+  </main>
+
+  <script>
+    const designerProfiles = [
+      ['tall', 'assets/designer-profile-real-01.png', 'Maison Lune Seoul', 'Minimal Luxury / Seoul', '구조적인 블랙 실루엣과 조용한 럭셔리 무드를 전개하는 디자이너 브랜드. 대표 룩은 데일리 스타일링과 에디토리얼 컷 모두에 적합합니다.', ['Outer', 'Quiet Luxury', 'Lookbook']],
+      ['', 'assets/campaign-kdesigner-02.png', 'Noir Atelier', 'Tailored Black / NY LA', '블랙 코트와 테일러링을 중심으로 한 프리미엄 아우터 브랜드. 첫 착장 공개, 소재 디테일, 아웃핏 전환 콘텐츠에 강합니다.', ['Coat', 'Launch', 'Detail']],
+      ['wide', 'assets/campaign-kdesigner-wide-07.png', 'Haneul Studio', 'Editorial Story / Seoul', '시즌 세계관과 그룹 에디토리얼을 강하게 보여주는 브랜드. 룩북 내러티브, 브랜드 필름, 캠페인 티저 협업에 어울립니다.', ['Editorial', 'Story', 'Brand Film']],
+      ['tall', 'assets/campaign-kdesigner-03.png', 'Serein Label', 'Daily Premium / Global', '일상복으로 해석 가능한 프리미엄 디자이너 상품을 제안합니다. Try-on, outfit breakdown, shopping moment 콘텐츠에 적합합니다.', ['Daily', 'Try-on', 'Mid Price']],
+      ['', 'assets/campaign-kdesigner-04.png', 'Denu Row', 'Street Luxury / Denim', '스트리트 감도와 프리미엄 데님 실루엣을 결합한 브랜드. 숏폼 스타일링, 착장 비교, 디테일 클로즈업에 강점이 있습니다.', ['Street', 'Denim', 'TikTok']],
+      ['wide', 'assets/campaign-kdesigner-wide-06.png', 'Aube Knit Lab', 'Accessory Seeding / Creator Fit', '니트, 가방, 재킷 디테일을 중심으로 한 상품형 브랜드. 크리에이터 착장 안에 자연스럽게 들어가는 시딩 콘텐츠에 적합합니다.', ['Accessory', 'Seeding', 'Fit Check']],
+      ['wide', 'assets/campaign-kdesigner-wide-04.png', 'Saison Archive', 'Season Mood / Brief Ready', '브랜드 철학, 대표 상품, 시즌 무드를 하나의 무드 보드로 정리하는 브랜드. 크리에이터 브리프 전환이 빠른 포트폴리오를 보유합니다.', ['Mood', 'Brief Ready', 'Look Assets']],
+      ['wide', 'assets/campaign-kdesigner-wide-08.png', 'Yoon Collective', 'Product Silhouette / Boots', '부츠, 와이드 팬츠, 코트 끝선처럼 하체 실루엣과 제품 라인이 선명한 브랜드. 제품 중심 스타일링 콘텐츠에 적합합니다.', ['Product', 'Boots', 'Silhouette']],
+      ['', 'assets/campaign-kdesigner-wide-01.png', 'Ligne Coat Lab', 'Coat Detail / Tailoring', '카라와 어깨선, 소매 구조를 가까이 보여주는 디테일 포트폴리오. 소재 설명형 콘텐츠와 브랜드 신뢰를 만들기에 좋습니다.', ['Tailoring', 'Close-up', 'Texture']],
+      ['wide', 'assets/campaign-kdesigner-wide-02.png', 'Moir Trouser Studio', 'Fit Detail / Daily', '셔츠 볼륨과 팬츠의 낙차를 섬세하게 보여주는 브랜드. 데일리 프리미엄 착장과 실루엣 분석 콘텐츠에 적합합니다.', ['Fit Detail', 'Daily', 'Texture']],
+      ['wide', 'assets/campaign-kdesigner-wide-03.png', 'Metal Denim Works', 'Denim Hardware / Street', '데님 질감과 메탈 액세서리, 팬츠 라인이 돋보이는 스트리트 럭셔리 브랜드. 저장 반응이 높은 디테일 컷에 강합니다.', ['Denim', 'Hardware', 'Street']],
+      ['wide', 'assets/campaign-kdesigner-wide-05.png', 'Atelier Rau', 'Atelier Fitting / Craft', '스타일리스트의 손, 드레이프, 허리선 조정 같은 백스테이지 컷이 강한 브랜드. 제작 과정형 콘텐츠와 잘 맞습니다.', ['Atelier', 'Fitting', 'Drape']],
+      ['', 'assets/campaign-kdesigner-05.png', 'Fit Archive', 'Creator Fit / Product', '크리에이터 착장에 자연스럽게 들어갈 수 있는 상품 중심 브랜드. 시딩, 착장 체크, 제품 중심 숏폼에 적합합니다.', ['Seeding', 'TikTok', 'Fit Check']],
+      ['', 'assets/campaign-kdesigner-06.png', 'Cream Line Project', 'Soft Tailoring / Minimal', '크림 톤 셔츠와 팬츠 중심의 부드러운 테일러링 브랜드. 미니멀 오피스 룩과 데일리 스타일링에 강합니다.', ['Minimal', 'Office', 'Soft Tailoring']],
+      ['', 'assets/campaign-kdesigner-07.png', 'Open Mode Seoul', 'Open Call / Editorial', '에디토리얼 패션 크리에이터를 위한 공개 협업형 브랜드. 무드가 맞는 크리에이터와 시즌 캠페인을 빠르게 만들 수 있습니다.', ['Open Call', 'Editorial', 'Creator']],
+      ['', 'assets/campaign-kdesigner-08.png', 'Mono Volume', 'Volume Shape / Premium', '볼륨감 있는 실루엣과 절제된 컬러로 브랜드 무드를 전개합니다. 착장 전환과 룩북 컷 모두에 적합한 포트폴리오입니다.', ['Volume', 'Premium', 'Look']],
+      ['tall', 'assets/designer-profile-01.png', 'Orne House', 'Structured Black / Seoul', '긴 블랙 코트와 와이드 팬츠로 브랜드의 구조적인 실루엣을 보여줍니다. 조용한 럭셔리 착장 콘텐츠에 적합합니다.', ['Black Coat', 'Quiet Luxury', 'Editorial']],
+      ['tall', 'assets/designer-profile-02.png', 'Liaison Room', 'Cream Shirt / Showroom', '크림 셔츠와 차콜 팬츠, 쇼룸 배경이 자연스러운 브랜드. 데일리 프리미엄 룩과 크리에이터 착장 컷에 어울립니다.', ['Showroom', 'Daily', 'Bag']],
+      ['tall', 'assets/designer-profile-03.png', 'Blue Pier Studio', 'Denim Street / Concrete', '데님 재킷과 와이드 팬츠를 건축적인 공간에서 보여주는 스트리트 브랜드. 글로벌 숏폼 스타일링에 강합니다.', ['Denim', 'Street', 'Concrete']],
+      ['wide', 'assets/designer-profile-04.png', 'Swatch Bureau', 'Atelier Table / Material', '원단 스와치와 재킷, 스케치가 함께 보이는 아틀리에 무드. 브랜드 철학과 소재 중심 콘텐츠에 적합합니다.', ['Swatch', 'Atelier', 'Material']],
+      ['tall', 'assets/designer-profile-05.png', 'Drape Ecru', 'Ivory Dress / Editorial', '아이보리 드레이프와 조각적인 실루엣이 강한 브랜드. 에디토리얼 착장과 룩북 영상으로 전환하기 좋습니다.', ['Dress', 'Drape', 'Editorial']],
+      ['tall', 'assets/designer-profile-06.png', 'Nocturne Walk', 'Evening Outer / City', '저녁 도시 조명과 차콜 아우터가 어울리는 브랜드. 차분하지만 드라마틱한 캠페인 컷에 적합합니다.', ['Outer', 'Evening', 'City']],
+      ['wide', 'assets/designer-profile-07.png', 'Hem Line Boots', 'Boots Detail / Coat', '부츠와 팬츠 밑단, 코트 끝선의 실루엣이 선명한 제품 컷. 저장형 디테일 콘텐츠에 강합니다.', ['Boots', 'Hem', 'Product']],
+      ['tall', 'assets/designer-profile-08.png', 'Ari Minimal', 'Asymmetric Black / Studio', '비대칭 블랙 톱과 테일러드 팬츠로 브랜드의 절제된 조형미를 보여줍니다. 하이패션 룩북 컷에 적합합니다.', ['Asymmetric', 'Black', 'Studio']],
+      ['tall', 'assets/designer-profile-09.png', 'Taupe Knit Club', 'Knit Daily / Atelier', '토프 니트와 플리츠 팬츠 중심의 데일리 럭셔리 브랜드. 쇼룸형 착장 소개와 시딩 콘텐츠에 어울립니다.', ['Knit', 'Daily', 'Atelier']],
+      ['tall', 'assets/designer-profile-10.png', 'Rooftop Noir', 'Leather Street / Dusk', '오버사이즈 레더 재킷과 아이보리 드레스의 대비가 강한 브랜드. 루프톱 캠페인과 스트리트 럭셔리에 적합합니다.', ['Leather', 'Rooftop', 'Street']],
+      ['wide', 'assets/designer-profile-11.png', 'Hardware Edit', 'Accessory Still / Seeding', '가방, 니트, 실버 하드웨어를 중심으로 한 상품형 브랜드. 제품 시딩과 디테일 컷에 적합합니다.', ['Accessory', 'Hardware', 'Seeding']],
+      ['tall', 'assets/designer-profile-12.png', 'Cream Coat Room', 'Long Coat / Winter', '크림 울 코트와 블랙 팬츠로 겨울 아우터 무드를 전개합니다. 조용한 프리미엄 스타일링 콘텐츠에 어울립니다.', ['Wool Coat', 'Winter', 'Minimal']],
+      ['tall', 'assets/designer-profile-13.png', 'Veil Structure', 'Sheer Black / Gallery', '시어 레이어와 구조적인 보디스가 돋보이는 브랜드. 갤러리형 에디토리얼 컷과 니치 디자이너 콘텐츠에 적합합니다.', ['Sheer', 'Gallery', 'Avant']],
+      ['wide', 'assets/designer-profile-14.png', 'Pinning Atelier', 'Craft Process / Fitting', '마네킹 피팅과 패턴 작업이 보이는 제작 과정형 포트폴리오. 브랜드의 장인성과 소재감을 전달하기 좋습니다.', ['Craft', 'Pattern', 'Fitting']],
+      ['tall', 'assets/designer-profile-15.png', 'Ivory Column', 'Knit Top / Long Skirt', '아이보리 니트 톱과 블랙 맥시 스커트의 컬럼 실루엣이 강한 브랜드. 데일리 럭셔리 착장 컷에 적합합니다.', ['Knit Top', 'Skirt', 'Column']],
+      ['tall', 'assets/designer-profile-16.png', 'Mirror Fit Seoul', 'Creator Fit / Mirror', '거울 피팅룸 무드의 자연스러운 착장 컷이 강한 브랜드. 크리에이터 착장 리뷰와 시딩 콘텐츠에 좋습니다.', ['Mirror Fit', 'Creator', 'Seeding']],
+      ['wide', 'assets/designer-profile-17.png', 'Two Look Office', 'Couple Editorial / Balcony', '블랙과 아이보리 테일러링을 함께 보여주는 에디토리얼 브랜드. 듀오 룩북과 캠페인 티저에 적합합니다.', ['Duo Look', 'Tailoring', 'Editorial']],
+      ['tall', 'assets/designer-profile-18.png', 'Navy Denim Lab', 'Dark Denim / Stairwell', '다크 네이비 데님 셋업을 중심으로 한 스트리트 브랜드. 계단과 산업적 공간의 무드가 잘 맞습니다.', ['Denim Set', 'Stairwell', 'Street']],
+      ['wide', 'assets/designer-profile-19.png', 'Pleat Detail', 'Shirt Sleeve / Belt', '셔츠 소매, 팬츠 플리츠, 벨트 하드웨어의 질감을 가까이 보여주는 디테일 컷. 상품 설명형 콘텐츠에 적합합니다.', ['Pleats', 'Belt', 'Detail']],
+      ['tall', 'assets/designer-profile-20.png', 'Long Vest Studio', 'Vest Layer / Gallery', '롱 베스트와 화이트 셔츠, 유려한 블랙 팬츠가 조화를 이루는 브랜드. 미니멀 갤러리 룩에 어울립니다.', ['Vest', 'Layering', 'Gallery']],
+      ['wide', 'assets/designer-profile-21.png', 'Seeding Table', 'Jacket Bag / Product', '크롭 재킷, 니트, 가방, 팬츠가 함께 구성된 상품 시딩 컷. 브랜드 캠페인 브리프용 이미지로 활용하기 좋습니다.', ['Jacket', 'Bag', 'Product']],
+      ['tall', 'assets/designer-profile-22.png', 'Olive Passage', 'Trench Coat / Transitional', '올리브 트렌치와 차콜 팬츠로 간절기 아우터를 제안하는 브랜드. 산책하듯 자연스러운 착장 컷에 적합합니다.', ['Trench', 'Olive', 'Outer']],
+      ['wide', 'assets/designer-profile-23.png', 'Platform Suit', 'Sculptural Suit / Studio', '조각적인 블랙 스커트 수트와 스튜디오 플랫폼 컷이 강한 브랜드. 하이패션 포트폴리오에 어울립니다.', ['Suit', 'Sculptural', 'Studio']],
+      ['tall', 'assets/designer-profile-24.png', 'Stair Ivory', 'Ivory Jacket / Charcoal Skirt', '아이보리 크롭 재킷과 차콜 롱스커트가 정돈된 브랜드. 실내 계단 배경의 데일리 프리미엄 컷에 적합합니다.', ['Ivory', 'Skirt', 'Daily']]
+    ];
+
+    const board = document.querySelector('#designerBoard');
+    const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    }[char]));
+
+    board.innerHTML = designerProfiles.map((item, index) => {
+      const [variant, image, name, kicker, description, tags] = item;
+      const classes = ['work-pin', variant].filter(Boolean).join(' ');
+      const tagHtml = tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join('');
+      const encodedTags = escapeHtml(tags.join('|'));
+      return `
+        <article class="${classes}" data-reveal data-index="${index}" data-brand="${escapeHtml(name)}" data-kicker="${escapeHtml(kicker)}" data-description="${escapeHtml(description)}" data-tags="${encodedTags}" data-image="${escapeHtml(image)}" style="--reveal-delay: ${(index % 8) * 46}ms">
+          <img src="${escapeHtml(image)}" alt="${escapeHtml(name)} designer profile look" loading="lazy" />
+          <div class="work-pin-body">
+            <p class="designer-kicker">${escapeHtml(kicker)}</p>
+            <h3>${escapeHtml(name)}</h3>
+            <p>${escapeHtml(description)}</p>
+            <div class="work-meta">${tagHtml}</div>
+            <a class="work-cta" href="designer-brief.html" data-proposal-trigger>협업 제안</a>
+          </div>
+        </article>`;
+    }).join('');
+
+    const proposalSheet = document.querySelector('#designerProposalSheet');
+    const proposalImage = document.querySelector('#proposalImage');
+    const proposalPortfolioDots = document.querySelector('#proposalPortfolioDots');
+    const proposalBrandName = document.querySelector('#proposalBrandName');
+    const proposalBriefTitle = document.querySelector('#proposalBriefTitle');
+    const proposalSummary = document.querySelector('#proposalSummary');
+    const proposalTags = document.querySelector('#proposalTags');
+    const proposalProfileMeta = document.querySelector('#proposalProfileMeta');
+    const proposalPortfolioThumbs = document.querySelector('#proposalPortfolioThumbs');
+    const proposalProductPreview = document.querySelector('#proposalProductPreview');
+    const proposalSamplePreview = document.querySelector('#proposalSamplePreview');
+    const proposalCreatorDirection = document.querySelector('#proposalCreatorDirection');
+    const proposalBriefLink = document.querySelector('#proposalBriefLink');
+    const proposalMatchLink = document.querySelector('#proposalMatchLink');
+    const proposalClose = document.querySelector('.designer-proposal-close');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let proposalGalleryImages = [];
+    let proposalGalleryIndex = 0;
+    let proposalGalleryTimer = null;
+
+    const getCreatorDirection = (tags) => {
+      const joined = tags.join(' ').toLowerCase();
+      if (joined.includes('street') || joined.includes('denim')) return 'Street Styling / TikTok Fit Check / Product Detail';
+      if (joined.includes('editorial') || joined.includes('avant') || joined.includes('gallery')) return 'Editorial Fashion / Brand Storytelling / Lookbook Try-on';
+      if (joined.includes('seeding') || joined.includes('product') || joined.includes('accessory')) return 'Product Seeding / Shopping Moment / Detail Review';
+      return 'Minimal Luxury / Styling Reel / Creator Try-on';
+    };
+
+    const getHeroProduct = (tags) => {
+      const joined = tags.join(' ').toLowerCase();
+      if (joined.includes('coat') || joined.includes('outer') || joined.includes('trench')) return 'Statement Outer';
+      if (joined.includes('denim')) return 'Denim Look';
+      if (joined.includes('boot')) return 'Boots Styling';
+      if (joined.includes('bag') || joined.includes('accessory') || joined.includes('hardware')) return 'Accessory Line';
+      if (joined.includes('knit')) return 'Knit Silhouette';
+      if (joined.includes('dress') || joined.includes('drape')) return 'Editorial Dress';
+      if (joined.includes('suit') || joined.includes('tailoring')) return 'Tailored Suit';
+      return tags[0] || 'Season Look';
+    };
+
+    const getDesignerMeta = (profileIndex, brand, kicker, tags) => {
+      const seasons = ['2026 SS', 'Capsule 01', 'Resort Edit', 'Pre-Fall 2026', 'Atelier Drop', 'Season Archive'];
+      const designerNames = ['Creative Team', 'J. Kim', 'Studio Director', 'Archive Lab', 'K. Lee', 'Design Room'];
+      const kickerParts = kicker.split('/').map((part) => part.trim()).filter(Boolean);
+      const city = kickerParts[1] || kickerParts[0] || 'Seoul';
+      const mood = kickerParts[0] || 'Designer Mood';
+      return {
+        designer: `${designerNames[profileIndex % designerNames.length]} / ${brand.split(' ')[0]}`,
+        season: seasons[profileIndex % seasons.length],
+        city,
+        mood,
+        heroProduct: getHeroProduct(tags),
+        lookbookCuts: 8 + (profileIndex % 7) * 2,
+        heroProducts: 2 + (profileIndex % 4),
+        samples: 3 + (profileIndex % 5)
+      };
+    };
+
+    const getProposalGalleryImages = (startIndex) => {
+      if (startIndex === 0) {
+        return [
+        'assets/designer-profile-real-01.png',
+        'assets/designer-profile-real-02.png',
+        'assets/designer-profile-real-03.png',
+          'assets/designer-profile-real-04.png',
+          'assets/designer-profile-real-05.png',
+          'assets/designer-profile-real-06.png',
+          'assets/designer-profile-real-07.png',
+          'assets/designer-profile-real-08.png'
+        ].map((image, index) => ({
+          image,
+          name: `Maison Lune Seoul portfolio ${index + 1}`
+        }));
+      }
+
+      const total = designerProfiles.length;
+      return [0, 1, 2, 3].map((offset) => {
+        const profile = designerProfiles[(startIndex + offset) % total];
+        return {
+          image: profile[1],
+          name: profile[2]
+        };
+      });
+    };
+
+    const getProposalAssetImages = (startIndex) => {
+      if (startIndex === 0) {
+        return {
+          products: [
+            'assets/designer-profile-real-09.png',
+            'assets/designer-profile-real-10.png'
+          ],
+          samples: [
+            'assets/designer-profile-real-11.png',
+            'assets/designer-profile-real-12.png',
+            'assets/designer-profile-real-13.png'
+          ]
+        };
+      }
+
+      const fallback = getProposalGalleryImages(startIndex);
+      return {
+        products: fallback.slice(0, 2).map((item) => item.image),
+        samples: fallback.slice(1, 4).map((item) => item.image)
+      };
+    };
+
+    const stopProposalGallery = () => {
+      if (!proposalGalleryTimer) return;
+      clearInterval(proposalGalleryTimer);
+      proposalGalleryTimer = null;
+    };
+
+    const setProposalGalleryImage = (index) => {
+      if (!proposalGalleryImages.length) return;
+      proposalGalleryIndex = index;
+      const item = proposalGalleryImages[proposalGalleryIndex];
+      proposalImage.classList.add('is-switching');
+      window.setTimeout(() => {
+        proposalImage.src = item.image;
+      proposalImage.alt = `${item.name} proposal portfolio visual`;
+        proposalImage.classList.remove('is-switching');
+      }, 120);
+      Array.from(proposalPortfolioDots.children).forEach((dot, dotIndex) => {
+        const isActive = dotIndex === proposalGalleryIndex;
+        dot.classList.toggle('is-active', isActive);
+        dot.setAttribute('aria-pressed', String(isActive));
+      });
+      Array.from(proposalPortfolioThumbs.children).forEach((thumb, thumbIndex) => {
+        const isActive = thumbIndex === proposalGalleryIndex;
+        thumb.classList.toggle('is-active', isActive);
+        thumb.setAttribute('aria-pressed', String(isActive));
+      });
+    };
+
+    const startProposalGallery = (startIndex) => {
+      stopProposalGallery();
+      proposalGalleryImages = getProposalGalleryImages(startIndex);
+      proposalGalleryIndex = 0;
+      proposalPortfolioDots.innerHTML = proposalGalleryImages.map((item, index) => (
+        `<button type="button" aria-label="${escapeHtml(item.name)} 포트폴리오 이미지 보기" aria-pressed="${index === 0 ? 'true' : 'false'}" class="${index === 0 ? 'is-active' : ''}"></button>`
+      )).join('');
+      proposalPortfolioThumbs.innerHTML = proposalGalleryImages.map((item, index) => (
+        `<button type="button" aria-label="${escapeHtml(item.name)} thumbnail" aria-pressed="${index === 0 ? 'true' : 'false'}" class="${index === 0 ? 'is-active' : ''}">
+          <img src="${escapeHtml(item.image)}" alt="" loading="lazy" />
+        </button>`
+      )).join('');
+      Array.from(proposalPortfolioDots.children).forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+          stopProposalGallery();
+          setProposalGalleryImage(index);
+          if (!reduceMotion) {
+            proposalGalleryTimer = window.setInterval(() => {
+              setProposalGalleryImage((proposalGalleryIndex + 1) % proposalGalleryImages.length);
+            }, 2400);
+          }
+        });
+      });
+      Array.from(proposalPortfolioThumbs.children).forEach((thumb, index) => {
+        thumb.addEventListener('click', () => {
+          stopProposalGallery();
+          setProposalGalleryImage(index);
+          if (!reduceMotion) {
+            proposalGalleryTimer = window.setInterval(() => {
+              setProposalGalleryImage((proposalGalleryIndex + 1) % proposalGalleryImages.length);
+            }, 2400);
+          }
+        });
+      });
+      setProposalGalleryImage(0);
+      if (!reduceMotion) {
+        proposalGalleryTimer = window.setInterval(() => {
+          setProposalGalleryImage((proposalGalleryIndex + 1) % proposalGalleryImages.length);
+        }, 2400);
+      }
+    };
+
+    const openProposalSheet = (card) => {
+      const brand = card.dataset.brand || 'Designer Brand';
+      const kicker = card.dataset.kicker || 'Designer Profile';
+      const description = card.dataset.description || '';
+      const tags = (card.dataset.tags || '').split('|').filter(Boolean);
+      const encodedBrand = encodeURIComponent(brand);
+      const profileIndex = Number(card.dataset.index || 0);
+      const meta = getDesignerMeta(profileIndex, brand, kicker, tags);
+
+      proposalBrandName.textContent = brand;
+      proposalBriefTitle.textContent = 'Representative looks and portfolio mood';
+      proposalSummary.textContent = description;
+      proposalTags.innerHTML = tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join('');
+      proposalProfileMeta.innerHTML = [
+        ['Designer', meta.designer],
+        ['Season', meta.season],
+        ['City', meta.city],
+        ['Hero Product', meta.heroProduct]
+      ].map(([label, value]) => `
+        <div>
+          <span>${label}</span>
+          <strong>${escapeHtml(value)}</strong>
+        </div>
+      `).join('');
+      const assets = getProposalAssetImages(profileIndex);
+      proposalProductPreview.innerHTML = assets.products.map((image, index) => `
+        <button type="button" data-asset-image="${escapeHtml(image)}" aria-label="Hero product ${index + 1}">
+          <img src="${escapeHtml(image)}" alt="" loading="lazy" />
+        </button>
+      `).join('');
+      proposalSamplePreview.innerHTML = assets.samples.map((image, index) => `
+        <button type="button" data-asset-image="${escapeHtml(image)}" aria-label="Available sample ${index + 1}">
+          <img src="${escapeHtml(image)}" alt="" loading="lazy" />
+        </button>
+      `).join('');
+      [...proposalProductPreview.children, ...proposalSamplePreview.children].forEach((button) => {
+        button.addEventListener('click', () => {
+          stopProposalGallery();
+          proposalImage.classList.add('is-switching');
+          window.setTimeout(() => {
+            proposalImage.src = button.dataset.assetImage;
+            proposalImage.alt = `${brand} asset preview`;
+            proposalImage.classList.remove('is-switching');
+          }, 120);
+          Array.from(proposalPortfolioDots.children).forEach((dot) => dot.classList.remove('is-active'));
+          Array.from(proposalPortfolioThumbs.children).forEach((thumb) => thumb.classList.remove('is-active'));
+        });
+      });
+      proposalCreatorDirection.textContent = getCreatorDirection(tags);
+      proposalBriefLink.href = `designer-brief.html?brand=${encodedBrand}`;
+      proposalMatchLink.href = `designer-match.html?brand=${encodedBrand}`;
+      startProposalGallery(profileIndex);
+
+      proposalSheet.classList.add('is-open');
+      proposalSheet.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('sheet-open');
+    };
+
+    const closeProposalSheet = () => {
+      stopProposalGallery();
+      proposalSheet.classList.remove('is-open');
+      proposalSheet.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('sheet-open');
+    };
+
+    document.querySelectorAll('[data-proposal-trigger]').forEach((trigger) => {
+      trigger.addEventListener('click', (event) => {
+        event.preventDefault();
+        const card = trigger.closest('.work-pin');
+        if (card) openProposalSheet(card);
+      });
+    });
+
+    proposalClose.addEventListener('click', closeProposalSheet);
+    proposalSheet.addEventListener('click', (event) => {
+      if (event.target === proposalSheet) closeProposalSheet();
+    });
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && proposalSheet.classList.contains('is-open')) closeProposalSheet();
+    });
+
+    const revealItems = document.querySelectorAll('[data-reveal]');
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      revealItems.forEach((item) => item.classList.add('is-visible'));
+    } else {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        });
+      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+      revealItems.forEach((item) => observer.observe(item));
+    }
+  </script>
+</body>
+</html>

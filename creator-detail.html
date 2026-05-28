@@ -11,22 +11,23 @@
     <header class="topbar">
       <a class="brand" href="index.html#home">K-MODU</a>
       <nav class="topnav">
-        <a href="admin.html">Brands</a>
-        <a href="campaign-create.html">Campaign</a>
-        <a href="campaign-result.html">Matching</a>
-        <a href="creators.html">Creators</a>
+        <a href="index.html#about">About</a>
+        <a href="designers.html">Designers</a>
+        <a href="creators.html" aria-current="page">Creators</a>
+        <a href="index.html#contact">Contact</a>
       </nav>
       <div class="top-actions">
-        <a href="campaign-result.html">Back</a>
-        <a class="pill" href="campaign-create.html">Request Matching</a>
+        <button id="themeToggleBtn" aria-label="테마 전환" style="background:none; border:none; color:var(--ink); font-size:11px; font-weight:800; cursor:pointer; letter-spacing:.08em; padding:0; text-transform:uppercase; margin-right:12px; display:inline-flex; align-items:center;">DARK</button>
+        <a href="designer-match.html">Back</a>
+        <a class="pill" href="designer-brief.html">Request Matching</a>
       </div>
       <details class="platform-menu">
         <summary aria-label="메뉴"><span></span></summary>
         <div class="platform-menu-panel">
           <a href="index.html#about">About</a>
-          <a href="creators.html">Creators</a>
-          <a href="campaign.html">Campaign</a>
-          <a href="index.html#contact">Contact</a>
+          <a href="designers.html">Designers</a>
+          <a href="creators.html" aria-current="page">Creators</a>
+        <a href="index.html#contact">Contact</a>
           <a href="apply.html">Apply</a>
           <a href="login.html">Login</a>
         </div>
@@ -69,5 +70,31 @@
 
     <footer class="footer-mini">Creator Profile / Matching View</footer>
   </main>
+
+  <script>
+    // --- 1. GLOBAL THEME MANAGER ---
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        document.body.classList.add('dark-theme');
+        if (themeToggleBtn) themeToggleBtn.textContent = 'LIGHT';
+      } else {
+        document.body.classList.remove('dark-theme');
+        if (themeToggleBtn) themeToggleBtn.textContent = 'DARK';
+      }
+    }
+
+    const savedTheme = localStorage.getItem('k_modu_theme') || 'light';
+    applyTheme(savedTheme);
+
+    if (themeToggleBtn) {
+      themeToggleBtn.addEventListener('click', () => {
+        const currentTheme = document.body.classList.contains('dark-theme') ? 'light' : 'dark';
+        localStorage.setItem('k_modu_theme', currentTheme);
+        applyTheme(currentTheme);
+      });
+    }
+  </script>
 </body>
 </html>

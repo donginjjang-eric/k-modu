@@ -1,175 +1,387 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>크리에이터 | K-MODU</title>
+  <title>Creators | K-MODU</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
   <link rel="stylesheet" href="platform.css" />
 </head>
 <body>
-  <main class="platform creator-directory">
-    <header class="topbar">
+  <main class="platform creator-market">
+    <header class="topbar creator-topbar">
       <a class="brand" href="index.html#home">K-MODU</a>
       <nav class="topnav">
-        <a href="index.html#about">소개</a>
-        <a href="creators.html">크리에이터</a>
-        <a href="campaign.html">캠페인</a>
-        <a href="index.html#contact">문의</a>
+        <a href="index.html#about">About</a>
+        <a href="designers.html">Designers</a>
+        <a href="creators.html" aria-current="page">Creators</a>
+        <a href="index.html#contact">Contact</a>
       </nav>
       <div class="top-actions">
-        <a href="apply.html">신청</a>
-        <a class="pill" href="login.html">로그인</a>
+        <button class="icon-btn" type="button" aria-label="Search creators">
+          <span></span>
+        </button>
+        <a href="apply.html">Creator Apply</a>
+        <a class="pill" href="login.html">Login</a>
       </div>
       <details class="platform-menu">
-        <summary aria-label="메뉴"><span></span></summary>
+        <summary aria-label="Menu"><span></span></summary>
         <div class="platform-menu-panel">
-          <a href="index.html#about">소개</a>
-          <a href="creators.html">크리에이터</a>
-          <a href="campaign.html">캠페인</a>
-          <a href="index.html#contact">문의</a>
-          <a href="apply.html">신청</a>
-          <a href="login.html">로그인</a>
+          <a href="index.html#about">About</a>
+          <a href="designers.html">Designers</a>
+          <a href="creators.html">Creators</a>
+        <a href="index.html#contact">Contact</a>
+          <a href="apply.html">Creator Apply</a>
+          <a href="login.html">Login</a>
         </div>
       </details>
     </header>
 
-    <section class="page-hero">
-      <p class="eyebrow">크리에이터 디렉토리</p>
-      <h1 class="page-title">미국 TikTok 크리에이터</h1>
-      <p class="page-lead">
-        <span>K-MODU가 한국 디자이너 브랜드 캠페인에 맞춰 검토하는 미국 패션 크리에이터 리스트입니다.</span>
-        <span>브랜드 무드, 콘텐츠 스타일, 팔로워 규모, 평균 조회수, 매칭 적합도를 기준으로 확인할 수 있습니다.</span>
+    <section class="creator-brief">
+      <div>
+        <p class="market-kicker">Creator Market</p>
+        <h1>Verified creators for Korean fashion brands.</h1>
+      </div>
+      <p>
+        K-MODU는 글로벌 크리에이터의 스타일, 오디언스, 콘텐츠 포맷, 브랜드 핏을 기준으로
+        한국 디자이너 브랜드에 맞는 캠페인 파트너를 선별합니다.
       </p>
-      <div class="creator-filters" aria-label="크리에이터 카테고리">
-        <span>미니멀 럭셔리</span>
-        <span>스트리트 럭셔리</span>
-        <span>에디토리얼 패션</span>
-        <span>TikTok 착장</span>
-        <span>스타일링 분석</span>
-      </div>
     </section>
 
-    <section class="section">
-      <div class="section-head">
-        <h2>크리에이터 프로필</h2>
-        <a class="pill light" href="campaign-create.html">매칭 브리프 만들기</a>
-      </div>
+    <section class="category-strip" aria-label="Creator categories">
+      <label class="mobile-category-control">
+        <span>Creator Category</span>
+        <select id="mobileCategorySelect" aria-label="Creator category">
+          <option value="all">전체</option>
+          <option value="Fashion Creator">패션 크리에이터</option>
+          <option value="TikTok Styling">TikTok Styling</option>
+          <option value="Instagram Editorial">Instagram Editorial</option>
+          <option value="YouTube Review">YouTube Review</option>
+          <option value="Global K-Fashion">Global K-Fashion</option>
+        </select>
+      </label>
+      <button class="category-card is-active" type="button" data-filter="all">
+        <span class="category-mark">ALL</span>
+        <strong>전체</strong>
+        <small>모든 검증 크리에이터</small>
+      </button>
+      <button class="category-card" type="button" data-filter="Fashion Creator">
+        <span class="category-mark">FC</span>
+        <strong>패션 크리에이터</strong>
+        <small>룩북, 스타일링, 데일리핏</small>
+      </button>
+      <button class="category-card" type="button" data-filter="TikTok Styling">
+        <span class="category-mark">TT</span>
+        <strong>TikTok Styling</strong>
+        <small>숏폼 전환과 바이럴</small>
+      </button>
+      <button class="category-card" type="button" data-filter="Instagram Editorial">
+        <span class="category-mark">IG</span>
+        <strong>Instagram Editorial</strong>
+        <small>비주얼 무드와 저장률</small>
+      </button>
+      <button class="category-card" type="button" data-filter="YouTube Review">
+        <span class="category-mark">YT</span>
+        <strong>YouTube Review</strong>
+        <small>리뷰, 하울, 착장 분석</small>
+      </button>
+      <button class="category-card" type="button" data-filter="Global K-Fashion">
+        <span class="category-mark">KR</span>
+        <strong>Global K-Fashion</strong>
+        <small>K-브랜드 이해도 높은 그룹</small>
+      </button>
+    </section>
 
-      <div class="creator-viewbar" aria-label="크리에이터 표시 방식">
-        <div class="view-toggle" role="group" aria-label="보기 방식">
-          <button class="active" type="button" data-view-mode="grid">바둑판</button>
-          <button type="button" data-view-mode="list">리스트</button>
+    <section class="market-shell">
+      <aside class="filter-panel" aria-label="Creator filters">
+        <div class="filter-head">
+          <button class="filter-toggle" type="button" aria-expanded="false" aria-controls="filterBody">
+            <strong>필터</strong>
+            <span>열기</span>
+          </button>
+          <button type="button" id="resetFilters">초기화</button>
         </div>
-        <span>검증된 TikTok 크리에이터 6명</span>
-      </div>
 
-      <div class="creator-list" id="creatorList">
-        <article class="creator-card">
-          <img src="assets/us-female-01.jpg" alt="Mia Harper" />
-          <div class="card-body">
-            <span class="status">TikTok 크리에이터</span>
-            <h3>MIA HARPER</h3>
-            <p>뉴욕 / 미니멀 스타일링</p>
-            <div class="score"><span>브랜드 × 크리에이터 적합도</span><strong>92%</strong></div>
-            <p>조용한 럭셔리 무드, 캡슐 워드로브 전환, 한국 디자이너 브랜드 발견 콘텐츠.</p>
-            <div class="creator-tags"><span>미니멀 럭셔리</span><span>디자이너 발견</span><span>룩북</span></div>
-            <div class="creator-meta"><span><strong>1.8M</strong>팔로워</span><span><strong>420K</strong>평균 조회</span><span><strong>7.4%</strong>참여율</span></div>
-            <div class="creator-actions"><a class="pill light" href="creator-detail.html">프로필 보기</a><a class="pill" href="campaign-create.html">매칭 요청</a></div>
+        <div class="filter-body" id="filterBody">
+          <div class="filter-group">
+            <h2>Status</h2>
+            <label><input type="checkbox" value="open" data-filter-key="status" /> 모집중</label>
+            <label><input type="checkbox" value="new" data-filter-key="status" /> 신규 등록</label>
+            <label><input type="checkbox" value="closing" data-filter-key="status" /> 마감임박</label>
           </div>
-        </article>
 
-        <article class="creator-card">
-          <img src="assets/us-female-02.jpg" alt="Avery Stone" />
-          <div class="card-body">
-            <span class="status">TikTok 크리에이터</span>
-            <h3>AVERY STONE</h3>
-            <p>로스앤젤레스 / 스트리트 럭셔리</p>
-            <div class="score"><span>브랜드 × 크리에이터 적합도</span><strong>92%</strong></div>
-            <p>스트리트와 에디토리얼을 오가는 스타일링, 런칭 영상, 데님 룩 분석 콘텐츠.</p>
-            <div class="creator-tags"><span>스트리트 럭셔리</span><span>데님 스타일링</span><span>런칭 영상</span></div>
-            <div class="creator-meta"><span><strong>960K</strong>팔로워</span><span><strong>310K</strong>평균 조회</span><span><strong>6.1%</strong>참여율</span></div>
-            <div class="creator-actions"><a class="pill light" href="creator-detail.html">프로필 보기</a><a class="pill" href="campaign-create.html">매칭 요청</a></div>
+          <div class="filter-group">
+            <h2>Platform</h2>
+            <label><input type="checkbox" value="TikTok" data-filter-key="platform" /> TikTok</label>
+            <label><input type="checkbox" value="Instagram" data-filter-key="platform" /> Instagram</label>
+            <label><input type="checkbox" value="YouTube" data-filter-key="platform" /> YouTube</label>
           </div>
-        </article>
 
-        <article class="creator-card">
-          <img src="assets/us-influencer-1.jpg" alt="Noa Ellis" />
-          <div class="card-body">
-            <span class="status">TikTok 크리에이터</span>
-            <h3>NOA ELLIS</h3>
-            <p>시카고 / 에디토리얼 패션</p>
-            <div class="score"><span>브랜드 × 크리에이터 적합도</span><strong>89%</strong></div>
-            <p>에디토리얼 착장, 런웨이 무드 스토리, 신진 브랜드 발견 콘텐츠.</p>
-            <div class="creator-tags"><span>에디토리얼</span><span>런웨이 무드</span><span>착장 리뷰</span></div>
-            <div class="creator-meta"><span><strong>740K</strong>팔로워</span><span><strong>185K</strong>평균 조회</span><span><strong>8.2%</strong>참여율</span></div>
-            <div class="creator-actions"><a class="pill light" href="creator-detail.html">프로필 보기</a><a class="pill" href="campaign-create.html">매칭 요청</a></div>
+          <div class="filter-group">
+            <h2>Creator Type</h2>
+            <label><input type="checkbox" value="Minimal" data-filter-key="type" /> Minimal</label>
+            <label><input type="checkbox" value="Street" data-filter-key="type" /> Street</label>
+            <label><input type="checkbox" value="Editorial" data-filter-key="type" /> Editorial</label>
+            <label><input type="checkbox" value="Daily" data-filter-key="type" /> Daily</label>
           </div>
-        </article>
 
-        <article class="creator-card">
-          <img src="assets/us-influencer-2.jpg" alt="Sloane Carter" />
-          <div class="card-body">
-            <span class="status">TikTok 크리에이터</span>
-            <h3>SLOANE CARTER</h3>
-            <p>오스틴 / 데일리 프리미엄</p>
-            <div class="score"><span>브랜드 × 크리에이터 적합도</span><strong>84%</strong></div>
-            <p>데일리 착장, 쇼핑 순간, 접근성 높은 프리미엄 패션 콘텐츠.</p>
-            <div class="creator-tags"><span>데일리 스타일링</span><span>쇼핑 콘텐츠</span><span>착장 리뷰</span></div>
-            <div class="creator-meta"><span><strong>520K</strong>팔로워</span><span><strong>142K</strong>평균 조회</span><span><strong>5.8%</strong>참여율</span></div>
-            <div class="creator-actions"><a class="pill light" href="creator-detail.html">프로필 보기</a><a class="pill" href="campaign-create.html">매칭 요청</a></div>
+          <div class="filter-group">
+            <h2>Market</h2>
+            <label><input type="checkbox" value="US" data-filter-key="market" /> United States</label>
+            <label><input type="checkbox" value="JP" data-filter-key="market" /> Japan</label>
+            <label><input type="checkbox" value="Global" data-filter-key="market" /> Global</label>
           </div>
-        </article>
 
-        <article class="creator-card">
-          <img src="assets/mainmodel_2.jpg" alt="Riley Monroe" />
-          <div class="card-body">
-            <span class="status">TikTok 크리에이터</span>
-            <h3>RILEY MONROE</h3>
-            <p>마이애미 / 리조트 캡슐</p>
-            <div class="score"><span>브랜드 × 크리에이터 적합도</span><strong>88%</strong></div>
-            <p>리조트 스타일링, 시즌 캡슐 룩, 정돈된 데일리 패션 클립.</p>
-            <div class="creator-tags"><span>리조트웨어</span><span>여름 캡슐</span><span>비주얼 캠페인</span></div>
-            <div class="creator-meta"><span><strong>610K</strong>팔로워</span><span><strong>166K</strong>평균 조회</span><span><strong>6.9%</strong>참여율</span></div>
-            <div class="creator-actions"><a class="pill light" href="creator-detail.html">프로필 보기</a><a class="pill" href="campaign-create.html">매칭 요청</a></div>
+          <div class="filter-group">
+            <h2>Fit Score</h2>
+            <label><input type="checkbox" value="90" data-filter-key="fit" /> 90% 이상</label>
+            <label><input type="checkbox" value="85" data-filter-key="fit" /> 85% 이상</label>
+            <label><input type="checkbox" value="80" data-filter-key="fit" /> 80% 이상</label>
           </div>
-        </article>
+        </div>
+      </aside>
 
-        <article class="creator-card">
-          <img src="assets/mainmodel_3.png" alt="Jade Kim" />
-          <div class="card-body">
-            <span class="status">TikTok 크리에이터</span>
-            <h3>JADE KIM</h3>
-            <p>시애틀 / K-패션 에디트</p>
-            <div class="score"><span>브랜드 × 크리에이터 적합도</span><strong>90%</strong></div>
-            <p>K-패션 설명, 스타일링 교육, 트렌드 번역 콘텐츠.</p>
-            <div class="creator-tags"><span>K-패션</span><span>스타일링 교육</span><span>트렌드</span></div>
-            <div class="creator-meta"><span><strong>680K</strong>팔로워</span><span><strong>214K</strong>평균 조회</span><span><strong>7.8%</strong>참여율</span></div>
-            <div class="creator-actions"><a class="pill light" href="creator-detail.html">프로필 보기</a><a class="pill" href="campaign-create.html">매칭 요청</a></div>
+      <section class="creator-board" aria-label="Creator results">
+        <div class="board-head">
+          <div>
+            <p>Creators <span>/</span> <strong id="resultCount">전체 12명</strong></p>
+            <h2>Recommended Matching Board</h2>
           </div>
-        </article>
-      </div>
+          <div class="board-tools">
+            <label class="search-field">
+              <span>Search</span>
+              <input id="creatorSearch" type="search" placeholder="Name, city, style" />
+            </label>
+            <select id="sortSelect" aria-label="Sort creators">
+              <option value="fit">Fit Score</option>
+              <option value="followers">Followers</option>
+              <option value="er">Engagement</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="creator-grid" id="creatorGrid">
+          <article class="market-card" data-category="Fashion Creator TikTok Styling Global K-Fashion" data-status="open new" data-platform="TikTok" data-type="Minimal" data-market="US" data-fit="94" data-followers="1800000" data-er="7.4" data-search="mia harper new york minimal luxury k-fashion">
+            <div class="thumb"><img src="assets/us-female-01.png" alt="Mia Harper" /><span class="flag">TOP MATCH</span><button type="button" aria-label="Save Mia Harper">♡</button></div>
+            <div class="market-card-body"><div class="badges"><span>TikTok</span><span>OPEN</span><span>US</span></div><h3>Mia Harper</h3><p>Minimal luxury / New York / K-fashion discovery</p><div class="mini-stats"><span><strong>1.8M</strong>Followers</span><span><strong>7.4%</strong>ER</span></div><strong class="reward">94% FIT</strong></div>
+          </article>
+
+          <article class="market-card" data-category="Fashion Creator TikTok Styling" data-status="open" data-platform="TikTok" data-type="Street" data-market="US" data-fit="91" data-followers="960000" data-er="6.1" data-search="avery stone los angeles street luxury denim">
+            <div class="thumb"><img src="assets/us-female-02.png" alt="Avery Stone" /><span class="flag">NEW</span><button type="button" aria-label="Save Avery Stone">♡</button></div>
+            <div class="market-card-body"><div class="badges"><span>TikTok</span><span>D-12</span><span>US</span></div><h3>Avery Stone</h3><p>Street luxury / Los Angeles / launch styling</p><div class="mini-stats"><span><strong>960K</strong>Followers</span><span><strong>6.1%</strong>ER</span></div><strong class="reward">91% FIT</strong></div>
+          </article>
+
+          <article class="market-card" data-category="Fashion Creator Instagram Editorial Global K-Fashion" data-status="open" data-platform="Instagram" data-type="Editorial" data-market="Global" data-fit="90" data-followers="740000" data-er="8.2" data-search="noa ellis chicago editorial fashion runway mood">
+            <div class="thumb"><img src="assets/us-female-03.png" alt="Noa Ellis" /><button type="button" aria-label="Save Noa Ellis">♡</button></div>
+            <div class="market-card-body"><div class="badges"><span>Instagram</span><span>OPEN</span><span>GLOBAL</span></div><h3>Noa Ellis</h3><p>Editorial fashion / Chicago / runway stories</p><div class="mini-stats"><span><strong>740K</strong>Followers</span><span><strong>8.2%</strong>ER</span></div><strong class="reward">90% FIT</strong></div>
+          </article>
+
+          <article class="market-card" data-category="Fashion Creator TikTok Styling YouTube Review" data-status="closing" data-platform="YouTube" data-type="Daily" data-market="US" data-fit="86" data-followers="520000" data-er="5.8" data-search="sloane carter austin everyday premium shopping haul">
+            <div class="thumb"><img src="assets/us-female-04.png" alt="Sloane Carter" /><span class="flag">D-3</span><button type="button" aria-label="Save Sloane Carter">♡</button></div>
+            <div class="market-card-body"><div class="badges"><span>YouTube</span><span>D-3</span><span>US</span></div><h3>Sloane Carter</h3><p>Everyday premium / Austin / shopping haul</p><div class="mini-stats"><span><strong>520K</strong>Followers</span><span><strong>5.8%</strong>ER</span></div><strong class="reward">86% FIT</strong></div>
+          </article>
+
+          <article class="market-card" data-category="Fashion Creator Instagram Editorial" data-status="open new" data-platform="Instagram" data-type="Minimal" data-market="US" data-fit="88" data-followers="610000" data-er="6.9" data-search="riley monroe miami resort capsule summer">
+            <div class="thumb"><img src="assets/us-female-05.png" alt="Riley Monroe" /><span class="flag">NEW</span><button type="button" aria-label="Save Riley Monroe">♡</button></div>
+            <div class="market-card-body"><div class="badges"><span>Instagram</span><span>OPEN</span><span>US</span></div><h3>Riley Monroe</h3><p>Resort capsule / Miami / visual campaign</p><div class="mini-stats"><span><strong>610K</strong>Followers</span><span><strong>6.9%</strong>ER</span></div><strong class="reward">88% FIT</strong></div>
+          </article>
+
+          <article class="market-card" data-category="TikTok Styling Global K-Fashion YouTube Review" data-status="open" data-platform="TikTok" data-type="Editorial" data-market="Global" data-fit="93" data-followers="680000" data-er="7.8" data-search="jade kim seattle k-fashion education trend">
+            <div class="thumb"><img src="assets/us-female-06.png" alt="Jade Kim" /><span class="flag">K-FIT</span><button type="button" aria-label="Save Jade Kim">♡</button></div>
+            <div class="market-card-body"><div class="badges"><span>TikTok</span><span>OPEN</span><span>GLOBAL</span></div><h3>Jade Kim</h3><p>K-fashion edit / Seattle / trend translation</p><div class="mini-stats"><span><strong>680K</strong>Followers</span><span><strong>7.8%</strong>ER</span></div><strong class="reward">93% FIT</strong></div>
+          </article>
+
+          <article class="market-card" data-category="Fashion Creator Instagram Editorial" data-status="open" data-platform="Instagram" data-type="Editorial" data-market="US" data-fit="87" data-followers="430000" data-er="9.1" data-search="carmen vale avant minimal niche designer">
+            <div class="thumb"><img src="assets/us-female-07.png" alt="Carmen Vale" /><button type="button" aria-label="Save Carmen Vale">♡</button></div>
+            <div class="market-card-body"><div class="badges"><span>Instagram</span><span>OPEN</span><span>US</span></div><h3>Carmen Vale</h3><p>Avant minimal / niche designer / high-save content</p><div class="mini-stats"><span><strong>430K</strong>Followers</span><span><strong>9.1%</strong>ER</span></div><strong class="reward">87% FIT</strong></div>
+          </article>
+
+          <article class="market-card" data-category="Fashion Creator YouTube Review" data-status="closing" data-platform="YouTube" data-type="Daily" data-market="US" data-fit="85" data-followers="390000" data-er="5.5" data-search="elle brooks workwear premium basics capsule">
+            <div class="thumb"><img src="assets/us-female-08.png" alt="Elle Brooks" /><span class="flag">D-5</span><button type="button" aria-label="Save Elle Brooks">♡</button></div>
+            <div class="market-card-body"><div class="badges"><span>YouTube</span><span>D-5</span><span>US</span></div><h3>Elle Brooks</h3><p>Workwear edit / premium basics / capsule wardrobe</p><div class="mini-stats"><span><strong>390K</strong>Followers</span><span><strong>5.5%</strong>ER</span></div><strong class="reward">85% FIT</strong></div>
+          </article>
+
+          <article class="market-card" data-category="Fashion Creator TikTok Styling" data-status="open" data-platform="TikTok" data-type="Street" data-market="JP" data-fit="84" data-followers="310000" data-er="6.7" data-search="lana rei tokyo street edit denim utility">
+            <div class="thumb"><img src="assets/mainmodel_2.png" alt="Lana Rei" /><button type="button" aria-label="Save Lana Rei">♡</button></div>
+            <div class="market-card-body"><div class="badges"><span>TikTok</span><span>OPEN</span><span>JP</span></div><h3>Lana Rei</h3><p>Tokyo street edit / denim utility / youth trend</p><div class="mini-stats"><span><strong>310K</strong>Followers</span><span><strong>6.7%</strong>ER</span></div><strong class="reward">84% FIT</strong></div>
+          </article>
+
+          <article class="market-card" data-category="Instagram Editorial Global K-Fashion" data-status="new" data-platform="Instagram" data-type="Minimal" data-market="Global" data-fit="89" data-followers="455000" data-er="7.2" data-search="serena park global minimal tailoring korean designer">
+            <div class="thumb"><img src="assets/mainmodel_3.png" alt="Serena Park" /><span class="flag">NEW</span><button type="button" aria-label="Save Serena Park">♡</button></div>
+            <div class="market-card-body"><div class="badges"><span>Instagram</span><span>NEW</span><span>GLOBAL</span></div><h3>Serena Park</h3><p>Minimal tailoring / Korean designer discovery</p><div class="mini-stats"><span><strong>455K</strong>Followers</span><span><strong>7.2%</strong>ER</span></div><strong class="reward">89% FIT</strong></div>
+          </article>
+
+          <article class="market-card is-muted" data-category="YouTube Review" data-status="closing" data-platform="YouTube" data-type="Daily" data-market="US" data-fit="79" data-followers="210000" data-er="4.8" data-search="morgan lee review haul casual styling">
+            <div class="thumb"><img src="assets/mainmodel_4.png" alt="Morgan Lee" /><span class="flag">CLOSING</span><button type="button" aria-label="Save Morgan Lee">♡</button></div>
+            <div class="market-card-body"><div class="badges"><span>YouTube</span><span>D-1</span><span>US</span></div><h3>Morgan Lee</h3><p>Review haul / casual styling / conversion test</p><div class="mini-stats"><span><strong>210K</strong>Followers</span><span><strong>4.8%</strong>ER</span></div><strong class="reward">79% FIT</strong></div>
+          </article>
+
+          <article class="market-card is-muted" data-category="Fashion Creator TikTok Styling" data-status="open" data-platform="TikTok" data-type="Daily" data-market="Global" data-fit="82" data-followers="275000" data-er="5.9" data-search="nina cloud daily outfit styling grwm">
+            <div class="thumb"><img src="assets/hero-model.png" alt="Nina Cloud" /><button type="button" aria-label="Save Nina Cloud">♡</button></div>
+            <div class="market-card-body"><div class="badges"><span>TikTok</span><span>OPEN</span><span>GLOBAL</span></div><h3>Nina Cloud</h3><p>Daily outfit / GRWM / product-led styling</p><div class="mini-stats"><span><strong>275K</strong>Followers</span><span><strong>5.9%</strong>ER</span></div><strong class="reward">82% FIT</strong></div>
+          </article>
+        </div>
+      </section>
     </section>
 
-    <footer class="footer-mini">K-MODU 크리에이터 디렉토리</footer>
-  </main>
-
-  <div class="modal-backdrop" id="modalBackdrop"></div>
-
-  <div class="creator-modal" id="creatorModal1">
-    <div class="modal-content coming-soon-card">
-      <button class="modal-close" aria-label="뒤로가기">‹</button>
-      <div class="modal-header">
-        <img src="assets/hero-group.jpg" alt="K-MODU creator preview" />
-      </div>
-      <div class="modal-body">
-        <p class="eyebrow">K-MODU Creator Profile</p>
-        <h2>준비중입니다</h2>
-        <p class="location">크리에이터 상세 프로필을 준비하고 있습니다.</p>
-        <p class="coming-soon-copy">곧 업데이트될 예정입니다.</p>
+    <a class="floating-help" href="designer-brief.html">?</a>
+    <a class="scroll-top" href="#top" aria-label="Back to top">↑</a>
+    <div class="creator-profile-sheet" id="creatorProfileSheet" aria-hidden="true">
+      <div class="creator-profile-card" role="dialog" aria-modal="true" aria-labelledby="creatorSheetTitle">
+        <button class="creator-sheet-close" type="button" aria-label="닫기">‹</button>
+        <div class="creator-sheet-visual">
+          <img id="creatorSheetImg" src="assets/hero-group.png" alt="" />
+        </div>
+        <div class="creator-sheet-content">
+          <p>K-MODU CREATOR PROFILE</p>
+          <h2 id="creatorSheetTitle">준비중입니다</h2>
+          <strong id="creatorSheetName">Creator Profile</strong>
+          <span>크리에이터 상세 프로필을 준비하고 있습니다.</span>
+          <small>곧 업데이트될 예정입니다.</small>
+        </div>
       </div>
     </div>
-  </div>
+    <footer class="footer-mini">K-MODU Creator Matching Board</footer>
+  </main>
 
-  <script src="scripts/creators.js"></script>
+  <script>
+    const grid = document.getElementById('creatorGrid');
+    const cards = Array.from(grid.querySelectorAll('.market-card'));
+    const categoryButtons = Array.from(document.querySelectorAll('.category-card'));
+    const mobileCategorySelect = document.getElementById('mobileCategorySelect');
+    const filterInputs = Array.from(document.querySelectorAll('.filter-panel input[type="checkbox"]'));
+    const filterPanel = document.querySelector('.filter-panel');
+    const filterToggle = document.querySelector('.filter-toggle');
+    const searchInput = document.getElementById('creatorSearch');
+    const sortSelect = document.getElementById('sortSelect');
+    const resultCount = document.getElementById('resultCount');
+    const resetFilters = document.getElementById('resetFilters');
+    const creatorSheet = document.getElementById('creatorProfileSheet');
+    const creatorSheetImg = document.getElementById('creatorSheetImg');
+    const creatorSheetName = document.getElementById('creatorSheetName');
+    const creatorSheetClose = document.querySelector('.creator-sheet-close');
+    let activeCategory = 'all';
+
+    function selectedValues(key) {
+      return filterInputs
+        .filter((input) => input.dataset.filterKey === key && input.checked)
+        .map((input) => input.value);
+    }
+
+    function matchesAny(value, selected) {
+      return selected.length === 0 || selected.includes(value);
+    }
+
+    function updateBoard() {
+      const query = searchInput.value.trim().toLowerCase();
+      const statuses = selectedValues('status');
+      const platforms = selectedValues('platform');
+      const types = selectedValues('type');
+      const markets = selectedValues('market');
+      const fitValues = selectedValues('fit').map(Number);
+      const minFit = fitValues.length ? Math.max(...fitValues) : 0;
+
+      cards.sort((a, b) => Number(b.dataset[sortSelect.value]) - Number(a.dataset[sortSelect.value]));
+
+      let visibleCount = 0;
+      cards.forEach((card) => {
+        const categoryMatch = activeCategory === 'all' || card.dataset.category.includes(activeCategory);
+        const statusMatch = statuses.length === 0 || statuses.some((status) => card.dataset.status.includes(status));
+        const platformMatch = matchesAny(card.dataset.platform, platforms);
+        const typeMatch = matchesAny(card.dataset.type, types);
+        const marketMatch = matchesAny(card.dataset.market, markets);
+        const fitMatch = Number(card.dataset.fit) >= minFit;
+        const searchMatch = query === '' || card.dataset.search.includes(query);
+        const isVisible = categoryMatch && statusMatch && platformMatch && typeMatch && marketMatch && fitMatch && searchMatch;
+
+        card.hidden = !isVisible;
+        if (isVisible) visibleCount += 1;
+        grid.appendChild(card);
+      });
+
+      resultCount.textContent = `전체 ${visibleCount}명`;
+    }
+
+    categoryButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        categoryButtons.forEach((item) => item.classList.remove('is-active'));
+        button.classList.add('is-active');
+        activeCategory = button.dataset.filter;
+        mobileCategorySelect.value = activeCategory;
+        updateBoard();
+      });
+    });
+
+    mobileCategorySelect.addEventListener('change', () => {
+      activeCategory = mobileCategorySelect.value;
+      categoryButtons.forEach((item) => item.classList.toggle('is-active', item.dataset.filter === activeCategory));
+      updateBoard();
+    });
+
+    filterToggle.addEventListener('click', () => {
+      const isOpen = filterPanel.classList.toggle('is-open');
+      filterToggle.setAttribute('aria-expanded', String(isOpen));
+      filterToggle.querySelector('span').textContent = isOpen ? '닫기' : '열기';
+    });
+
+    filterInputs.forEach((input) => input.addEventListener('change', updateBoard));
+    searchInput.addEventListener('input', updateBoard);
+    sortSelect.addEventListener('change', updateBoard);
+    resetFilters.addEventListener('click', () => {
+      filterInputs.forEach((input) => {
+        input.checked = false;
+      });
+      searchInput.value = '';
+      activeCategory = 'all';
+      mobileCategorySelect.value = activeCategory;
+      categoryButtons.forEach((item) => item.classList.toggle('is-active', item.dataset.filter === 'all'));
+      updateBoard();
+    });
+
+    function closeCreatorSheet() {
+      creatorSheet.classList.remove('is-open');
+      creatorSheet.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('sheet-open');
+    }
+
+    cards.forEach((card) => {
+      card.tabIndex = 0;
+      card.setAttribute('role', 'button');
+      card.setAttribute('aria-label', `${card.querySelector('h3')?.textContent || 'Creator'} 프로필 보기`);
+
+      const openCreatorSheet = () => {
+        const img = card.querySelector('img');
+        const name = card.querySelector('h3')?.textContent || 'Creator Profile';
+        creatorSheetImg.src = img?.getAttribute('src') || 'assets/hero-group.png';
+        creatorSheetImg.alt = name;
+        creatorSheetName.textContent = name;
+        creatorSheet.classList.add('is-open');
+        creatorSheet.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('sheet-open');
+      };
+
+      card.addEventListener('click', (event) => {
+        if (event.target.closest('button')) return;
+        openCreatorSheet();
+      });
+
+      card.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          openCreatorSheet();
+        }
+      });
+    });
+
+    creatorSheetClose.addEventListener('click', closeCreatorSheet);
+    creatorSheet.addEventListener('click', (event) => {
+      if (event.target === creatorSheet) closeCreatorSheet();
+    });
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeCreatorSheet();
+    });
+
+    updateBoard();
+  </script>
 </body>
 </html>

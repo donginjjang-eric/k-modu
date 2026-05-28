@@ -1,10 +1,1822 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>K-MODU by MARKBRIDGE</title>
-  <link rel="stylesheet" href="home.css?v=20260521-menu1" />
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+  <style>
+    :root {
+      --outer: #101010;
+      --paper: #f7f7f4;
+      --ink: #050505;
+      --soft: #6f6f6f;
+      --hair: rgba(0, 0, 0, 0.13);
+      --font: "Pretendard", "Helvetica Neue", Helvetica, Arial, "Noto Sans KR", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--font);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .site {
+      width: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--paper);
+      box-shadow: none;
+    }
+
+    .nav {
+      position: fixed;
+      z-index: 50;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 68px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 0 clamp(32px, 5vw, 72px);
+      font-size: 11px;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+      background: rgba(247, 247, 244, 0);
+      transition: background .28s ease, border-color .28s ease, backdrop-filter .28s ease;
+      border-bottom: 1px solid rgba(0, 0, 0, 0);
+    }
+
+    .nav.is-scrolled {
+      background: rgba(247, 247, 244, .72);
+      border-bottom-color: rgba(0, 0, 0, .06);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: -.055em;
+    }
+
+    .nav-center {
+      display: flex;
+      gap: 54px;
+    }
+
+    .nav-center a[aria-current="page"],
+    .mobile-menu a[aria-current="page"] {
+      font-weight: 800;
+    }
+
+    .nav-right {
+      justify-self: end;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .locale-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(5, 5, 5, .62);
+      font-size: 11px;
+      letter-spacing: .08em;
+    }
+
+    .locale-switch .active {
+      color: #050505;
+      font-weight: 600;
+    }
+
+    .login-btn {
+      display: inline-flex;
+      height: 30px;
+      align-items: center;
+      justify-content: center;
+      padding: 0 18px;
+      border: 1px solid #050505;
+      border-radius: 999px;
+      background: #050505;
+      color: #f7f7f4;
+      font-size: 11px;
+      letter-spacing: .14em;
+      line-height: 1;
+    }
+
+    .login-btn:hover {
+      background: transparent;
+      color: #050505;
+    }
+
+    .menu-toggle {
+      display: none;
+      width: 38px;
+      height: 38px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(5, 5, 5, .16);
+      border-radius: 999px;
+      background: rgba(247, 247, 244, .86);
+      color: #050505;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .menu-toggle span,
+    .menu-toggle::before,
+    .menu-toggle::after {
+      content: "";
+      display: block;
+      width: 15px;
+      height: 1px;
+      background: currentColor;
+      transition: transform .22s ease, opacity .22s ease;
+    }
+
+    .menu-toggle {
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .nav.menu-open .menu-toggle span {
+      opacity: 0;
+    }
+
+    .nav.menu-open .menu-toggle::before {
+      transform: translateY(6px) rotate(45deg);
+    }
+
+    .nav.menu-open .menu-toggle::after {
+      transform: translateY(-6px) rotate(-45deg);
+    }
+
+    .mobile-menu {
+      display: none;
+    }
+
+    .hero {
+      position: relative;
+      min-height: 820px;
+      padding: 38px clamp(32px, 5vw, 72px) 0;
+    }
+
+    .hero-title {
+      position: absolute;
+      z-index: 3;
+      top: 126px;
+      left: 50%;
+      margin: 0;
+      font-size: clamp(76px, 10.5vw, 148px);
+      line-height: .82;
+      font-weight: 500;
+      letter-spacing: -.082em;
+      text-transform: uppercase;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      color: rgba(7, 7, 7, .055);
+    }
+
+    .byline {
+      position: absolute;
+      z-index: 8;
+      top: 252px;
+      left: 50%;
+      margin: 0;
+      font-size: clamp(10px, .9vw, 13px);
+      line-height: 1;
+      font-weight: 600;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      transform: translateX(-50%);
+      color: #111;
+      padding: 8px 14px 7px;
+      background: rgba(247, 247, 244, .86);
+      border: 1px solid rgba(0, 0, 0, .08);
+      border-radius: 999px;
+      box-shadow: 0 8px 26px rgba(0, 0, 0, .06);
+      white-space: nowrap;
+    }
+
+    .hero-copy {
+      position: absolute;
+      z-index: 9;
+      top: auto;
+      bottom: 92px;
+      left: clamp(32px, 7vw, 110px);
+      width: min(280px, 28vw);
+      padding: 16px 18px 15px;
+      background: rgba(247, 247, 244, .88);
+      border: 1px solid rgba(0, 0, 0, .08);
+      box-shadow: 0 18px 42px rgba(0, 0, 0, .07);
+    }
+
+    .hero-copy.right {
+      left: auto;
+      right: clamp(32px, 7vw, 110px);
+      top: auto;
+      bottom: 92px;
+      width: min(280px, 28vw);
+      padding: 16px 18px 15px;
+      background: rgba(247, 247, 244, .88);
+      border: 1px solid rgba(0, 0, 0, .08);
+      box-shadow: 0 18px 42px rgba(0, 0, 0, .07);
+    }
+
+    .hero-copy .kicker {
+      font-size: 24px;
+      line-height: .92;
+      margin-bottom: 14px;
+    }
+
+    .hero-copy .body {
+      font-size: 10px;
+      line-height: 1.55;
+    }
+
+    .hero-mini-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 28px;
+      margin-top: 14px;
+      padding: 0 13px;
+      border: 1px solid rgba(5, 5, 5, .88);
+      border-radius: 999px;
+      background: #050505;
+      color: var(--paper);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: -.01em;
+      transition: background .22s ease, color .22s ease, transform .22s ease;
+    }
+
+    .hero-mini-cta:hover {
+      background: transparent;
+      color: #050505;
+      transform: translateY(-2px);
+    }
+
+    .kicker {
+      margin: 0 0 12px;
+      font-size: 21px;
+      line-height: 1;
+      font-weight: 500;
+      letter-spacing: -.05em;
+      text-transform: uppercase;
+    }
+
+    .body {
+      margin: 0;
+      color: #1d1d1d;
+      font-size: 10px;
+      line-height: 1.52;
+      letter-spacing: .01em;
+    }
+
+    .models {
+      position: absolute;
+      z-index: 4;
+      left: 50%;
+      bottom: 82px;
+      width: min(78vw, 960px);
+      height: 690px;
+      transform: translateX(-50%);
+      pointer-events: none;
+      overflow: visible;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .hero-person {
+      display: block;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center bottom;
+    }
+
+    .inside {
+      position: relative;
+      padding: 112px clamp(34px, 6vw, 86px) 118px;
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    .inside-head {
+      width: min(1180px, 100%);
+      margin: 0 auto 42px;
+      display: grid;
+      grid-template-columns: minmax(260px, .9fr) minmax(320px, 1.1fr);
+      gap: clamp(32px, 6vw, 88px);
+      align-items: end;
+    }
+
+    .inside-title {
+      margin: 0;
+      font-size: clamp(58px, 8vw, 112px);
+      line-height: .86;
+      font-weight: 400;
+      letter-spacing: -.085em;
+      text-transform: uppercase;
+    }
+
+    .inside-lead {
+      width: min(440px, 100%);
+      margin: 0;
+      color: rgba(5, 5, 5, .64);
+      font-size: 12px;
+      line-height: 1.72;
+    }
+
+    .flow-grid {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border-top: 1px solid rgba(0, 0, 0, .18);
+      border-left: 1px solid rgba(0, 0, 0, .18);
+    }
+
+    .flow-step {
+      min-height: 310px;
+      padding: 24px 22px;
+      border-right: 1px solid rgba(0, 0, 0, .18);
+      border-bottom: 1px solid rgba(0, 0, 0, .18);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, .16);
+    }
+
+    .flow-step span {
+      color: rgba(5, 5, 5, .38);
+      font-size: 11px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    .flow-step h3 {
+      margin: 52px 0 18px;
+      font-size: 30px;
+      line-height: .94;
+      font-weight: 400;
+      letter-spacing: -.06em;
+      text-transform: uppercase;
+    }
+
+    .flow-step p {
+      margin: 0;
+      color: rgba(5, 5, 5, .66);
+      font-size: 11px;
+      line-height: 1.62;
+    }
+
+    .vision {
+      position: relative;
+      min-height: 760px;
+      padding: 190px 0 0;
+      text-align: center;
+    }
+
+    .vision::before {
+      content: "";
+      position: absolute;
+      z-index: 2;
+      top: -138px;
+      left: 50%;
+      width: 1px;
+      height: 298px;
+      background: linear-gradient(180deg, rgba(5, 5, 5, 0), rgba(5, 5, 5, .36), rgba(5, 5, 5, .08));
+    }
+
+    .match-node {
+      position: absolute;
+      z-index: 6;
+      top: 54px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 14px;
+      background: rgba(247, 247, 244, .92);
+      border: 1px solid rgba(0, 0, 0, .1);
+      border-radius: 999px;
+      color: #111;
+      font-size: 10px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .match-node::before,
+    .match-node::after {
+      content: "";
+      width: 22px;
+      height: 1px;
+      background: rgba(0, 0, 0, .32);
+    }
+
+    .strip {
+      position: absolute;
+      z-index: 1;
+      top: 222px;
+      left: 0;
+      right: 0;
+      height: 78px;
+      display: grid;
+      grid-template-columns: repeat(13, 1fr);
+      gap: 8px;
+      align-items: center;
+      padding: 0 24px;
+      overflow: hidden;
+      opacity: .78;
+    }
+
+    .thumb {
+      height: 76px;
+      overflow: hidden;
+      border: 1px solid rgba(0, 0, 0, .08);
+      background: #eee;
+      opacity: .72;
+    }
+
+    .thumb:nth-child(2n) {
+      opacity: .36;
+    }
+
+    .thumb img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: center top;
+    }
+
+    .vision h2 {
+      position: relative;
+      z-index: 4;
+      width: min(1120px, 92vw);
+      margin: 0 auto;
+      font-size: clamp(78px, 12.2vw, 168px);
+      line-height: .82;
+      font-weight: 500;
+      letter-spacing: -.095em;
+      text-transform: uppercase;
+      text-align: center;
+      color: #050505;
+    }
+
+    .vision h2 span {
+      display: block;
+    }
+
+    .vision h2 .line-soft {
+      color: rgba(5, 5, 5, .92);
+    }
+
+    .vision h2::after {
+      content: "K-MODU BY MARKBRIDGE";
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 28px;
+      margin-top: 22px;
+      padding: 0 18px;
+      border: 1px solid rgba(5, 5, 5, .16);
+      border-radius: 999px;
+      background: rgba(247, 247, 244, .78);
+      color: rgba(5, 5, 5, .68);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .18em;
+      line-height: 1;
+    }
+
+    .vision-subcopy {
+      position: relative;
+      z-index: 6;
+      width: min(520px, 84vw);
+      margin: 18px auto 0;
+      color: rgba(5, 5, 5, .64);
+      font-size: 12px;
+      line-height: 1.65;
+      text-align: center;
+      letter-spacing: 0;
+    }
+
+    .center-model {
+      position: absolute;
+      z-index: 5;
+      left: 50%;
+      top: 218px;
+      width: min(28vw, 390px);
+      height: 540px;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      overflow: visible;
+    }
+
+    .center-model img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+      object-position: center bottom;
+    }
+
+    .vision-copy {
+      position: absolute;
+      z-index: 3;
+      right: clamp(42px, 12vw, 180px);
+      top: 372px;
+      width: 166px;
+      text-align: left;
+    }
+
+    .looks {
+      display: grid;
+      grid-template-columns: minmax(0, .95fr) minmax(420px, 1fr);
+      gap: 64px;
+      width: min(100%, 1120px);
+      margin: 0 auto;
+      padding: 76px 40px 112px;
+      align-items: center;
+    }
+
+    .looks h2,
+    .previous h2 {
+      margin: 0;
+      font-size: 31px;
+      line-height: 1;
+      font-weight: 400;
+      letter-spacing: -.06em;
+      text-transform: uppercase;
+    }
+
+    .spec {
+      margin: 0 0 18px;
+      font-size: 18px;
+      line-height: .98;
+      font-weight: 400;
+      letter-spacing: -.05em;
+      text-transform: uppercase;
+    }
+
+    .spec small {
+      display: block;
+      margin-top: 5px;
+      font-size: 10px;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    .look-text {
+      margin: 18px 0 30px;
+      max-width: 420px;
+      color: rgba(5, 5, 5, .68);
+      font-size: 13px;
+      line-height: 1.72;
+    }
+
+    .process-list {
+      display: grid;
+      gap: 1px;
+      background: rgba(0, 0, 0, .12);
+      border: 1px solid rgba(0, 0, 0, .12);
+    }
+
+    .process-step {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 20px;
+      min-height: 92px;
+      padding: 20px;
+      background: var(--paper);
+    }
+
+    .process-step span {
+      color: rgba(5, 5, 5, .42);
+      font-size: 26px;
+      line-height: .9;
+      letter-spacing: -.06em;
+    }
+
+    .process-step h3 {
+      margin: 0 0 6px;
+      font-size: 20px;
+      line-height: .92;
+      font-weight: 400;
+      letter-spacing: -.06em;
+      text-transform: uppercase;
+    }
+
+    .process-step p {
+      margin: 0;
+      color: rgba(5, 5, 5, .62);
+      font-size: 11px;
+      line-height: 1.55;
+    }
+
+    .gallery {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 132px;
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .main-look {
+      height: 470px;
+      border: 1px solid rgba(0, 0, 0, .12);
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .main-look img,
+    .side-looks img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: center top;
+    }
+
+    .side-looks {
+      display: grid;
+      gap: 14px;
+    }
+
+    .side-looks .mini {
+      display: block;
+      width: 100%;
+      height: 107px;
+      border: 1px solid rgba(0, 0, 0, .12);
+      background: #fff;
+      overflow: hidden;
+      padding: 0;
+      appearance: none;
+      font: inherit;
+      cursor: pointer;
+      transition: border-color .18s ease, opacity .18s ease;
+    }
+
+    .side-looks .mini.is-active {
+      border-color: rgba(5, 5, 5, .72);
+    }
+
+    .side-looks .mini:not(.is-active) img {
+      opacity: .82;
+    }
+
+    .gallery-note {
+      position: absolute;
+      left: 24px;
+      bottom: 22px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 32px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: rgba(247, 247, 244, .86);
+      backdrop-filter: blur(10px);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .previous {
+      padding: 96px 0 118px;
+      background: #070707;
+      color: var(--paper);
+      text-align: left;
+    }
+
+    .influencer-head {
+      width: min(100%, 1180px);
+      margin: 0 auto 38px;
+      padding: 0 40px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .view-more {
+      display: inline-flex;
+      height: 34px;
+      align-items: center;
+      justify-content: center;
+      padding: 0 18px;
+      border: 1px solid rgba(247, 247, 244, .42);
+      border-radius: 999px;
+      color: var(--paper);
+      font-size: 10px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .view-more::after {
+      content: "->";
+      margin-left: 12px;
+    }
+
+    .campaign-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+      margin: 0 auto;
+      width: min(100%, 1180px);
+      padding: 0 40px;
+      text-align: left;
+    }
+
+    .campaign {
+      display: block;
+      padding: 0;
+      border: 1px solid rgba(0, 0, 0, .1);
+      background: #101010;
+      color: var(--paper);
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+      transition: transform .24s ease, border-color .24s ease;
+    }
+
+    .campaign:hover {
+      transform: translateY(-4px);
+      border-color: rgba(0, 0, 0, .34);
+    }
+
+    .campaign .image {
+      height: 260px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      background: #181818;
+    }
+
+    .campaign .image img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: center top;
+    }
+
+    .campaign h3 {
+      margin: 0 14px 5px;
+      font-size: 22px;
+      line-height: .95;
+      font-weight: 400;
+      letter-spacing: -.06em;
+      text-transform: uppercase;
+    }
+
+    .campaign p {
+      margin: 0 14px 14px;
+      color: rgba(247, 247, 244, .62);
+      font-size: 10px;
+      line-height: 1.45;
+    }
+
+    .match-fit {
+      margin: 0 14px 14px;
+      padding: 11px 0 0;
+      border-top: 1px solid rgba(247, 247, 244, .12);
+    }
+
+    .match-fit span {
+      display: block;
+      margin-bottom: 5px;
+      color: rgba(247, 247, 244, .46);
+      font-size: 8px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .match-fit strong {
+      color: rgba(247, 247, 244, .86);
+      font-size: 10px;
+      line-height: 1.35;
+      font-weight: 500;
+    }
+
+    .influencer-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      margin: 0 14px 16px;
+      background: rgba(247, 247, 244, .12);
+    }
+
+    .influencer-stats span {
+      display: grid;
+      gap: 4px;
+      min-height: 48px;
+      align-content: center;
+      background: #101010;
+      padding: 8px;
+      font-size: 9px;
+      text-transform: uppercase;
+      color: rgba(247, 247, 244, .48);
+    }
+
+    .influencer-stats strong {
+      color: var(--paper);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: -.04em;
+    }
+
+    .platform-tag {
+      display: inline-flex;
+      margin: 14px 14px 10px;
+      padding: 5px 8px;
+      border: 1px solid rgba(247, 247, 244, .24);
+      border-radius: 999px;
+      font-size: 9px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: rgba(247, 247, 244, .78);
+    }
+
+    .designer-editorial {
+      position: relative;
+      padding: 118px clamp(34px, 6vw, 86px) 126px;
+      background: var(--paper);
+      color: var(--ink);
+      overflow: hidden;
+    }
+
+    .designer-editorial::before {
+      content: "DESIGNER INDEX";
+      position: absolute;
+      top: 56px;
+      right: clamp(34px, 6vw, 86px);
+      color: rgba(5, 5, 5, .045);
+      font-size: clamp(64px, 10vw, 142px);
+      line-height: .8;
+      letter-spacing: -.08em;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .designer-layout {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: minmax(360px, 1.08fr) minmax(320px, .92fr);
+      gap: clamp(34px, 5vw, 72px);
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      align-items: end;
+    }
+
+    .designer-cover {
+      position: relative;
+      min-height: 640px;
+      border: 1px solid rgba(0, 0, 0, .12);
+      background: #eeeeea;
+      overflow: hidden;
+    }
+
+    .designer-cover img {
+      width: 100%;
+      height: 100%;
+      min-height: 640px;
+      display: block;
+      object-fit: cover;
+      object-position: center top;
+      filter: grayscale(100%);
+    }
+
+    .designer-cover-caption {
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, .48);
+      color: #fff;
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .designer-copy {
+      align-self: stretch;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 640px;
+    }
+
+    .designer-kicker {
+      margin: 0 0 18px;
+      font-size: 10px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: rgba(5, 5, 5, .48);
+    }
+
+    .designer-copy h2 {
+      margin: 0;
+      font-size: clamp(52px, 7vw, 96px);
+      line-height: .88;
+      font-weight: 400;
+      letter-spacing: -.08em;
+      text-transform: uppercase;
+    }
+
+    .designer-copy .body {
+      width: min(360px, 100%);
+      margin-top: 28px;
+      font-size: 12px;
+      line-height: 1.72;
+      color: rgba(5, 5, 5, .72);
+    }
+
+    .designer-meta {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      margin-top: 36px;
+      background: rgba(0, 0, 0, .14);
+      border: 1px solid rgba(0, 0, 0, .14);
+    }
+
+    .designer-meta span {
+      display: grid;
+      gap: 7px;
+      min-height: 78px;
+      align-content: center;
+      padding: 14px;
+      background: var(--paper);
+      font-size: 9px;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+      color: rgba(5, 5, 5, .46);
+    }
+
+    .designer-meta strong {
+      color: #050505;
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: -.04em;
+    }
+
+    .designer-stories {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      width: min(1180px, 100%);
+      margin: 44px auto 0;
+    }
+
+    .designer-story {
+      border-top: 1px solid rgba(0, 0, 0, .18);
+      padding-top: 16px;
+    }
+
+    .designer-story img {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      display: block;
+      object-fit: cover;
+      object-position: center top;
+      margin-bottom: 16px;
+      filter: grayscale(100%);
+    }
+
+    .designer-story h3 {
+      margin: 0 0 8px;
+      font-size: 25px;
+      line-height: .95;
+      font-weight: 400;
+      letter-spacing: -.06em;
+      text-transform: uppercase;
+    }
+
+    .designer-story p {
+      margin: 0;
+      max-width: 260px;
+      font-size: 10px;
+      line-height: 1.55;
+      color: rgba(5, 5, 5, .62);
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      background: rgba(5, 5, 5, .34);
+    }
+
+    .modal.is-open {
+      display: flex;
+    }
+
+    .modal-card {
+      width: min(980px, 100%);
+      max-height: min(760px, calc(100vh - 56px));
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      background: var(--paper);
+      border: 1px solid rgba(0, 0, 0, .14);
+      overflow: hidden;
+    }
+
+    .modal-card img {
+      width: 100%;
+      height: 100%;
+      min-height: 360px;
+      object-fit: cover;
+      object-position: center top;
+    }
+
+    .modal-content {
+      padding: 28px;
+      text-align: left;
+      overflow-y: auto;
+    }
+
+    .modal-content > .platform-tag {
+      margin: 0 0 14px;
+      border-color: rgba(5, 5, 5, .18);
+      color: rgba(5, 5, 5, .64);
+    }
+
+    .modal-content h3 {
+      margin: 0 0 12px;
+      font-size: 36px;
+      line-height: .9;
+      font-weight: 400;
+      letter-spacing: -.06em;
+      text-transform: uppercase;
+    }
+
+    .match-score {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 18px;
+      margin: 18px 0 16px;
+      padding: 16px 0;
+      border-top: 1px solid rgba(0, 0, 0, .14);
+      border-bottom: 1px solid rgba(0, 0, 0, .14);
+    }
+
+    .match-score span,
+    .modal-section h4 {
+      display: block;
+      margin: 0 0 7px;
+      color: rgba(5, 5, 5, .46);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .match-score strong {
+      font-size: 44px;
+      line-height: .86;
+      font-weight: 500;
+      letter-spacing: -.06em;
+    }
+
+    .match-score small {
+      color: rgba(5, 5, 5, .62);
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+
+    .modal-sections {
+      display: grid;
+      gap: 17px;
+      margin-top: 18px;
+    }
+
+    .modal-section {
+      padding-top: 15px;
+      border-top: 1px solid rgba(0, 0, 0, .1);
+    }
+
+    .modal-section p {
+      margin: 0;
+      color: rgba(5, 5, 5, .72);
+      font-size: 11px;
+      line-height: 1.62;
+    }
+
+    .modal-campaigns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .modal-campaigns span {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 0 9px;
+      border: 1px solid rgba(5, 5, 5, .14);
+      border-radius: 999px;
+      color: rgba(5, 5, 5, .72);
+      font-size: 9px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .modal-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .modal-request,
+    .modal-close {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 34px;
+      padding: 0 17px;
+      border: 1px solid #050505;
+      border-radius: 999px;
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .modal-request {
+      background: #050505;
+      color: var(--paper);
+      text-decoration: none;
+    }
+
+    .modal-close {
+      background: transparent;
+      color: #050505;
+    }
+
+    .previous .pager {
+      justify-content: center;
+      margin-top: 34px;
+    }
+
+    .claim {
+      position: relative;
+      min-height: 210px;
+      display: grid;
+      place-items: center;
+      gap: 14px;
+      align-content: center;
+      text-align: center;
+      background: var(--paper);
+    }
+
+    .claim p {
+      margin: 0;
+      color: rgba(5, 5, 5, .62);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .designer-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      min-width: 220px;
+      height: 54px;
+      padding: 0 30px;
+      border: 1px solid rgba(8,8,8,.9);
+      border-radius: 999px;
+      background: #080808;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -.02em;
+      text-decoration: none;
+      box-shadow: 0 18px 48px rgba(0,0,0,.18);
+      transition: transform .25s ease, background .25s ease, color .25s ease, box-shadow .25s ease;
+    }
+
+    .designer-cta:hover {
+      transform: translateY(-3px);
+      background: #fff;
+      color: #080808;
+      box-shadow: 0 22px 58px rgba(0,0,0,.22);
+    }
+
+    .footer {
+      position: relative;
+      min-height: 430px;
+      padding: 58px clamp(42px, 6vw, 88px) 44px;
+      background: #070707;
+      color: #f7f7f4;
+      font-size: 10px;
+      text-transform: uppercase;
+      overflow: visible;
+    }
+
+    .footer::before {
+      content: "";
+      position: absolute;
+      z-index: 1;
+      left: 50%;
+      bottom: 0;
+      width: min(100%, 1180px);
+      height: 600px;
+      transform: translateX(-50%);
+      background: url("foot_bg.png?v=202605190104") center bottom / contain no-repeat;
+      pointer-events: none;
+    }
+
+    .ticker {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 32px;
+      display: flex;
+      gap: 28px;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      overflow: hidden;
+      border-top: 0;
+      border-bottom: 1px solid rgba(255,255,255,.15);
+    }
+
+    .ticker span {
+      flex: 0 0 auto;
+    }
+
+    .footer-model {
+      display: none;
+    }
+
+    .footer-model.left {
+      left: 0;
+    }
+
+    .footer-model.right {
+      right: 0;
+      transform: scaleX(-1);
+    }
+
+    .foot-grid {
+      position: relative;
+      z-index: 3;
+      width: min(760px, 58vw);
+      margin: 68px auto 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.35fr;
+      gap: 36px;
+      border-top: 1px solid rgba(255,255,255,.16);
+      border-bottom: 1px solid rgba(255,255,255,.16);
+      padding: 20px 0;
+    }
+
+    .foot-grid h4,
+    .contact h4 {
+      margin: 0 0 18px;
+      font-size: 9px;
+      font-weight: 400;
+    }
+
+    .foot-grid p,
+    .contact p {
+      margin: 0;
+      color: rgba(255,255,255,.72);
+      line-height: 1.9;
+    }
+
+    .social-icons {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      color: #f8f8f8;
+      background: transparent;
+      border: 0;
+      text-decoration: none;
+      opacity: .82;
+      transition: opacity .25s ease, transform .25s ease;
+    }
+
+    .social-link:hover {
+      opacity: 1;
+      color: #fff;
+      transform: translateY(-2px);
+    }
+
+    .social-link svg {
+      width: 28px;
+      height: 28px;
+      display: block;
+    }
+
+    .contact {
+      position: relative;
+      z-index: 3;
+      width: min(760px, 58vw);
+      margin: 26px auto 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 35px;
+      border-top: 1px solid rgba(255,255,255,.12);
+      padding-top: 20px;
+    }
+
+    @media (max-width: 760px) {
+      .site {
+        width: 100%;
+        margin: 0;
+      }
+
+      .nav {
+        position: fixed;
+        grid-template-columns: 38px 1fr 38px;
+        height: 64px;
+        padding: 0 20px;
+        gap: 0;
+        align-items: center;
+        background: rgba(247, 247, 244, .72);
+        border-bottom-color: rgba(0, 0, 0, .06);
+        backdrop-filter: blur(12px);
+      }
+
+      .nav::after {
+        content: "";
+        display: block;
+        width: 38px;
+        height: 38px;
+        grid-column: 3;
+        grid-row: 1;
+      }
+
+      .brand {
+        grid-column: 2;
+        grid-row: 1;
+        justify-self: center;
+        font-size: 18px;
+      }
+
+      .nav-center,
+      .nav-right {
+        display: none;
+      }
+
+      .menu-toggle {
+        display: inline-flex;
+        grid-column: 1;
+        grid-row: 1;
+        justify-self: start;
+      }
+
+      .mobile-menu {
+        position: fixed;
+        z-index: 49;
+        top: 64px;
+        left: 0;
+        right: 0;
+        display: grid;
+        gap: 1px;
+        padding: 12px 20px 20px;
+        background: rgba(247, 247, 244, .96);
+        border-bottom: 1px solid rgba(0, 0, 0, .08);
+        box-shadow: 0 20px 48px rgba(0, 0, 0, .1);
+        transform: translateY(-120%);
+        opacity: 0;
+        pointer-events: none;
+        transition: transform .24s ease, opacity .24s ease;
+      }
+
+      .nav.menu-open .mobile-menu {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .mobile-menu a {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 48px;
+        padding: 0 2px;
+        border-bottom: 1px solid rgba(0, 0, 0, .08);
+        font-size: 20px;
+        line-height: 1;
+        font-weight: 500;
+        letter-spacing: -.055em;
+        text-transform: uppercase;
+      }
+
+      .mobile-menu a::after {
+        content: "->";
+        font-size: 11px;
+        letter-spacing: 0;
+      }
+
+      .mobile-menu .mobile-utility {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding-top: 14px;
+        font-size: 11px;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+      }
+
+      .mobile-menu .mobile-login {
+        min-height: 34px;
+        padding: 0 18px;
+        border: 1px solid #050505;
+        border-radius: 999px;
+        background: #050505;
+        color: var(--paper);
+        font-size: 11px;
+        letter-spacing: .14em;
+      }
+
+      .mobile-menu .mobile-login::after {
+        content: none;
+      }
+
+      .hero {
+        min-height: 940px;
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .hero-title {
+        left: 50%;
+        top: 142px;
+        font-size: 58px;
+      }
+
+      .byline {
+        left: 50%;
+      }
+
+      .byline {
+        top: 202px;
+        font-size: 10px;
+      }
+
+      .hero-copy,
+      .hero-copy.right {
+        top: auto;
+        bottom: auto;
+        left: 24px;
+        right: 24px;
+        width: auto;
+        padding: 18px 18px 17px;
+        background: rgba(247, 247, 244, .94);
+      }
+
+      .hero-copy.right {
+        top: 650px;
+      }
+
+      .hero-copy:not(.right) {
+        top: 784px;
+      }
+
+      .hero-copy .kicker {
+        font-size: 21px;
+        margin-bottom: 11px;
+      }
+
+      .hero-copy .body {
+        font-size: 10px;
+        line-height: 1.58;
+      }
+
+      .models {
+        top: 245px;
+        bottom: auto;
+        width: 112vw;
+        height: 392px;
+      }
+
+      .vision {
+        min-height: 790px;
+        padding-top: 170px;
+      }
+
+      .vision::before {
+        top: -120px;
+        height: 260px;
+      }
+
+      .match-node {
+        top: 42px;
+      }
+
+      .inside {
+        padding: 82px 24px 88px;
+      }
+
+      .inside-head,
+      .flow-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .inside-title {
+        font-size: clamp(48px, 15vw, 72px);
+      }
+
+      .flow-step {
+        min-height: 230px;
+      }
+
+      .vision h2 {
+        width: 94%;
+        font-size: clamp(54px, 16vw, 82px);
+        line-height: .86;
+      }
+
+      .vision-subcopy {
+        width: min(330px, 86vw);
+        font-size: 11px;
+      }
+
+      .center-model {
+        top: 318px;
+        width: min(78vw, 320px);
+        height: 430px;
+      }
+
+      .looks {
+        grid-template-columns: 1fr;
+        padding: 20px 38px 80px;
+      }
+
+      .campaign-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        padding: 0 18px;
+      }
+
+      .influencer-head {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 0 24px;
+      }
+
+      .campaign .image {
+        height: 210px;
+        margin-bottom: 9px;
+      }
+
+      .campaign h3 {
+        margin: 0 10px 5px;
+        font-size: 17px;
+        line-height: .96;
+      }
+
+      .campaign p {
+        margin: 0 10px 11px;
+        font-size: 8px;
+        line-height: 1.42;
+      }
+
+      .match-fit {
+        margin: 0 10px 10px;
+        padding-top: 9px;
+      }
+
+      .match-fit span {
+        font-size: 7px;
+      }
+
+      .match-fit strong {
+        font-size: 8px;
+      }
+
+      .influencer-stats {
+        margin: 0 10px 12px;
+      }
+
+      .influencer-stats span {
+        min-height: 40px;
+        padding: 6px 4px;
+        font-size: 7px;
+      }
+
+      .influencer-stats strong {
+        font-size: 12px;
+      }
+
+      .platform-tag {
+        margin: 0 10px 10px;
+        font-size: 8px;
+      }
+
+      .designer-editorial {
+        padding: 88px 24px 92px;
+      }
+
+      .designer-layout,
+      .designer-stories {
+        grid-template-columns: 1fr;
+      }
+
+      .designer-cover,
+      .designer-cover img,
+      .designer-copy {
+        min-height: 460px;
+      }
+
+      .designer-meta {
+        grid-template-columns: 1fr;
+      }
+
+      .modal {
+        align-items: flex-end;
+        padding: 72px 0 0;
+        background: rgba(5, 5, 5, .68);
+      }
+
+      .modal-card {
+        position: relative;
+        width: 100%;
+        height: min(88dvh, calc(100dvh - 72px));
+        max-height: calc(100dvh - 72px);
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(280px, 42dvh) minmax(0, 1fr);
+        border: 0;
+        border-radius: 24px 24px 0 0;
+      }
+
+      .modal-card::before {
+        content: "";
+        position: absolute;
+        z-index: 4;
+        top: 10px;
+        left: 50%;
+        width: 44px;
+        height: 5px;
+        border-radius: 999px;
+        background: rgba(5, 5, 5, .18);
+        transform: translateX(-50%);
+        pointer-events: none;
+      }
+
+      .modal-card img {
+        height: 100%;
+        min-height: 260px;
+        max-height: none;
+      }
+
+      .modal-content {
+        min-height: 0;
+        padding: 34px 30px 104px;
+      }
+
+      .modal-content h3 {
+        font-size: clamp(40px, 13vw, 58px);
+      }
+
+      .modal-actions {
+        margin-top: 28px;
+      }
+
+      .modal-close {
+        position: absolute;
+        z-index: 3;
+        top: 22px;
+        left: 22px;
+        width: 54px;
+        height: 54px;
+        padding: 0;
+        border: 0;
+        background: rgba(255, 255, 255, .92);
+        box-shadow: 0 12px 28px rgba(5, 5, 5, .12);
+        font-size: 0;
+      }
+
+      .modal-close::before {
+        content: "<";
+        color: #050505;
+        font-size: 34px;
+        line-height: 1;
+        transform: translateY(-1px);
+      }
+
+      .footer {
+        min-height: 0;
+        padding: 42px 24px 128px;
+        background: #070707;
+      }
+
+      .footer::before {
+        width: 112%;
+        height: 260px;
+        opacity: .72;
+      }
+
+      .footer-model {
+        width: 130px;
+      }
+
+      .foot-grid,
+      .contact {
+        width: 100%;
+        margin-left: 0;
+      }
+
+      .ticker {
+        height: 28px;
+        gap: 18px;
+        justify-content: flex-start;
+        padding: 0 24px;
+        font-size: 9px;
+      }
+
+      .foot-grid {
+        margin-top: 24px;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px 20px;
+        padding: 18px 0;
+      }
+
+      .foot-grid > div:nth-child(3) {
+        grid-column: 1 / -1;
+      }
+
+      .foot-grid h4,
+      .contact h4 {
+        margin-bottom: 10px;
+        font-size: 8px;
+        font-weight: 700;
+      }
+
+      .foot-grid p,
+      .contact p {
+        font-size: 10px;
+        line-height: 1.65;
+      }
+
+      .contact {
+        margin-top: 0;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        padding-top: 18px;
+      }
+
+      .social-icons {
+        gap: 12px;
+      }
+
+      .social-link,
+      .social-link svg {
+        width: 24px;
+        height: 24px;
+      }
+    }
+  </style>
 </head>
 <body>
   <main class="site">
@@ -12,8 +1824,8 @@
       <a class="brand" href="#home">K-MODU</a>
       <nav class="nav-center">
         <a href="#about">소개</a>
+        <a href="designers.html">디자이너</a>
         <a href="creators.html">크리에이터</a>
-        <a href="campaign.html">캠페인</a>
         <a href="#contact">문의</a>
       </nav>
       <div class="nav-right">
@@ -27,29 +1839,31 @@
       <button class="menu-toggle" type="button" aria-label="메뉴 열기" aria-expanded="false">
         <span></span>
       </button>
-      <div class="mobile-menu" aria-label="Mobile navigation">
+      <div class="mobile-menu" aria-label="모바일 내비게이션">
         <a href="#about">소개</a>
+        <a href="designers.html">디자이너</a>
         <a href="creators.html">크리에이터</a>
-        <a href="campaign.html">캠페인</a>
         <a href="#contact">문의</a>
-        <a href="apply.html">신청</a>
-        <a href="login.html">로그인</a>
+        <div class="mobile-utility">
+          <span>KR / US</span>
+          <a class="mobile-login" href="login.html">로그인</a>
+        </div>
       </div>
     </header>
 
     <section class="hero" id="home">
       <h1 class="hero-title">DESIGNER</h1>
-      <p class="byline">with Global Influencers</p>
+      <p class="byline">글로벌 크리에이터와 함께</p>
 
       <div class="hero-copy right">
-        <h2 class="kicker">DESIGNER BRAND RECRUITING</h2>
-        <p class="body">미국 TikTok 패션 크리에이터와 협업할 한국 디자이너 브랜드를 모집합니다.</p>
+        <h2 class="kicker">디자이너 브랜드 모집</h2>
+        <p class="body">전세계 패션 크리에이터와 협업할 한국 디자이너 브랜드를 모집합니다.</p>
         <a class="hero-mini-cta" href="apply.html">디자이너 등록</a>
       </div>
 
       <div class="hero-copy">
-        <h2 class="kicker">SERVICE</h2>
-        <p class="body">K-MODU는 한국 디자이너 브랜드를 미국 TikTok 패션 크리에이터와 연결하고, 캠페인 브리프를 통해 협업 방향을 정리합니다.</p>
+        <h2 class="kicker">서비스 소개</h2>
+        <p class="body">K-MODU는 한국 디자이너 브랜드를 글로벌 패션 크리에이터와 연결하고, 캠페인 브리프를 통해 협업 방향을 정리합니다.</p>
       </div>
 
       <div class="models" aria-label="K-MODU main campaign model">
@@ -60,22 +1874,22 @@
     <section class="vision" id="campaign">
       <div class="match-node">K-MODU Matching Line</div>
       <div class="strip" aria-hidden="true">
-        <div class="thumb"><img src="assets/mainmodel_2.jpg" alt="" /></div>
+        <div class="thumb"><img src="assets/mainmodel_2.png" alt="" /></div>
         <div class="thumb"><img src="assets/mainmodel_3.png" alt="" /></div>
         <div class="thumb"><img src="assets/mainmodel_4.png" alt="" /></div>
-        <div class="thumb"><img src="assets/hero-model.jpg" alt="" /></div>
-        <div class="thumb"><img src="assets/hero-group.jpg" alt="" /></div>
-        <div class="thumb"><img src="assets/mainmodel_2.jpg" alt="" /></div>
+        <div class="thumb"><img src="assets/hero-model.png" alt="" /></div>
+        <div class="thumb"><img src="assets/hero-group.png" alt="" /></div>
+        <div class="thumb"><img src="assets/mainmodel_2.png" alt="" /></div>
         <div class="thumb"><img src="assets/mainmodel_3.png" alt="" /></div>
         <div class="thumb"><img src="assets/mainmodel_4.png" alt="" /></div>
-        <div class="thumb"><img src="assets/hero-model.jpg" alt="" /></div>
-        <div class="thumb"><img src="assets/hero-group.jpg" alt="" /></div>
-        <div class="thumb"><img src="assets/mainmodel_2.jpg" alt="" /></div>
+        <div class="thumb"><img src="assets/hero-model.png" alt="" /></div>
+        <div class="thumb"><img src="assets/hero-group.png" alt="" /></div>
+        <div class="thumb"><img src="assets/mainmodel_2.png" alt="" /></div>
         <div class="thumb"><img src="assets/mainmodel_3.png" alt="" /></div>
         <div class="thumb"><img src="assets/mainmodel_4.png" alt="" /></div>
       </div>
       <h2><span>K-FASHION,</span><span class="line-soft">ALL CONNECTED</span></h2>
-      <p class="vision-subcopy">한국 디자이너 브랜드가 미국 패션 크리에이터와 만나는 지점. K-MODU는 브랜드 스토리, 상품, 캠페인을 하나의 연결된 시장 진입 흐름으로 만듭니다.</p>
+      <p class="vision-subcopy">한국 디자이너 브랜드가 전세계 패션 크리에이터와 만나는 지점. K-MODU는 브랜드 스토리, 상품, 캠페인을 하나의 연결된 글로벌 확장 흐름으로 만듭니다.</p>
       <div class="center-model">
         <img src="assets/us-influencer-2-transparent.png" alt="US influencer profile" />
       </div>
@@ -83,73 +1897,73 @@
 
     <section class="previous" id="influencers">
       <div class="influencer-head">
-        <h2>미국 TikTok 크리에이터</h2>
+        <h2>GLOBAL FASHION CREATORS</h2>
         <a class="view-more" href="creators.html">더 보기</a>
       </div>
       <div class="campaign-row">
-        <button class="campaign" type="button" data-name="Mia Harper" data-market="뉴욕 / 미니멀 스타일링" data-followers="1.8M" data-views="420K" data-er="7.4%" data-fit="조용한 럭셔리 무드, 캡슐 워드로브 전환, 한국 디자이너 브랜드 발견 콘텐츠." data-img="assets/us-female-01.jpg">
-          <div class="image"><img src="assets/us-female-01.jpg" alt="Mia Harper profile" /></div>
-          <span class="platform-tag">TikTok 크리에이터</span>
+        <button class="campaign" type="button" data-name="Mia Harper" data-market="New York / Minimal Styling" data-followers="1.8M" data-views="420K" data-er="7.4%" data-fit="클린 럭셔리, 캡슐 워드로브, 서울 디자이너 브랜드 발견." data-img="assets/us-female-01.png">
+          <div class="image"><img src="assets/us-female-01.png" alt="Mia Harper profile" /></div>
+          <span class="platform-tag">TikTok</span>
           <h3>MIA HARPER</h3>
-          <p>조용한 럭셔리 무드와 스타일링 전환, 디자이너 브랜드 발견 콘텐츠에 강한 뉴욕 기반 크리에이터.</p>
-          <div class="match-fit"><span>최적 매칭</span><strong>미니멀 럭셔리 / 스트리트 스타일링 / 디자이너 발견</strong></div>
-          <div class="influencer-stats"><span><strong>1.8M</strong>팔로워</span><span><strong>420K</strong>평균 조회</span><span><strong>7.4%</strong>참여율</span></div>
+          <p>New York 기반 패션 크리에이터. 조용한 럭셔리, 스타일링 전환, 디자이너 브랜드 발견에 강점이 있습니다.</p>
+          <div class="match-fit"><span>추천 핏</span><strong>Minimal Luxury / Street Styling / Designer Discovery</strong></div>
+          <div class="influencer-stats"><span><strong>1.8M</strong>팔로워</span><span><strong>420K</strong>평균 조회</span><span><strong>7.4%</strong>ER</span></div>
         </button>
-        <button class="campaign" type="button" data-name="Avery Stone" data-market="로스앤젤레스 / 스트리트 럭셔리" data-followers="960K" data-views="310K" data-er="6.1%" data-fit="스트리트와 에디토리얼을 오가는 스타일링, 런칭 영상, 데님 룩 분석 콘텐츠." data-img="assets/us-female-02.jpg">
-          <div class="image"><img src="assets/us-female-02.jpg" alt="Avery Stone profile" /></div>
-          <span class="platform-tag">TikTok 크리에이터</span>
+        <button class="campaign" type="button" data-name="Avery Stone" data-market="Los Angeles / Street Luxury" data-followers="960K" data-views="310K" data-er="6.1%" data-fit="스트리트에서 에디토리얼까지 이어지는 스타일링, 런칭 영상, 착장 분석." data-img="assets/us-female-02.png">
+          <div class="image"><img src="assets/us-female-02.png" alt="Avery Stone profile" /></div>
+          <span class="platform-tag">TikTok</span>
           <h3>AVERY STONE</h3>
-          <p>세련된 스트리트 럭셔리 오디언스와 숏폼 스타일링 성과가 좋은 LA 크리에이터.</p>
-          <div class="match-fit"><span>최적 매칭</span><strong>스트리트 럭셔리 / 런칭 영상 / 스타일링 분석</strong></div>
-          <div class="influencer-stats"><span><strong>960K</strong>팔로워</span><span><strong>310K</strong>평균 조회</span><span><strong>6.1%</strong>참여율</span></div>
+          <p>LA 기반 크리에이터. 세련된 스트리트 럭셔리 오디언스와 숏폼 스타일링 성과가 좋습니다.</p>
+          <div class="match-fit"><span>추천 핏</span><strong>Street Luxury / Launch Video / Outfit Breakdown</strong></div>
+          <div class="influencer-stats"><span><strong>960K</strong>팔로워</span><span><strong>310K</strong>평균 조회</span><span><strong>6.1%</strong>ER</span></div>
         </button>
-        <button class="campaign" type="button" data-name="Noa Ellis" data-market="시카고 / 에디토리얼 패션" data-followers="740K" data-views="185K" data-er="8.2%" data-fit="에디토리얼 착장, 런웨이 무드 스토리, 신진 브랜드 발견 콘텐츠." data-img="assets/us-influencer-1.jpg">
-          <div class="image"><img src="assets/us-influencer-1.jpg" alt="Noa Ellis profile" /></div>
-          <span class="platform-tag">TikTok 크리에이터</span>
+        <button class="campaign" type="button" data-name="Noa Ellis" data-market="Chicago / Editorial Fashion" data-followers="740K" data-views="185K" data-er="8.2%" data-fit="에디토리얼 착장, 크리에이터 스토리텔링, 높은 시청 유지율의 패션 클립." data-img="assets/us-female-03.png">
+          <div class="image"><img src="assets/us-female-03.png" alt="Noa Ellis profile" /></div>
+          <span class="platform-tag">TikTok</span>
           <h3>NOA ELLIS</h3>
-          <p>신진 브랜드와 런웨이 무드 착장에 대한 오디언스 신뢰도가 높은 에디토리얼 패션 크리에이터.</p>
-          <div class="match-fit"><span>최적 매칭</span><strong>에디토리얼 착장 / 신진 브랜드 / 런웨이 무드</strong></div>
-          <div class="influencer-stats"><span><strong>740K</strong>팔로워</span><span><strong>185K</strong>평균 조회</span><span><strong>8.2%</strong>참여율</span></div>
+          <p>신진 레이블과 런웨이 무드 룩에 대한 오디언스 신뢰가 높은 에디토리얼 패션 크리에이터입니다.</p>
+          <div class="match-fit"><span>추천 핏</span><strong>Editorial Try-on / Emerging Label / Runway Mood</strong></div>
+          <div class="influencer-stats"><span><strong>740K</strong>팔로워</span><span><strong>185K</strong>평균 조회</span><span><strong>8.2%</strong>ER</span></div>
         </button>
-        <button class="campaign" type="button" data-name="Sloane Carter" data-market="오스틴 / 데일리 프리미엄" data-followers="520K" data-views="142K" data-er="5.8%" data-fit="데일리 착장, 쇼핑 순간, 접근성 높은 프리미엄 패션 콘텐츠." data-img="assets/us-influencer-2.jpg">
-          <div class="image"><img src="assets/us-influencer-2.jpg" alt="Sloane Carter profile" /></div>
-          <span class="platform-tag">TikTok 크리에이터</span>
+        <button class="campaign" type="button" data-name="Sloane Carter" data-market="Austin / Everyday Premium" data-followers="520K" data-views="142K" data-er="5.8%" data-fit="접근성 있는 프리미엄 스타일링, 하울 편집, 구매 전환형 상품 스토리." data-img="assets/us-female-04.png">
+          <div class="image"><img src="assets/us-female-04.png" alt="Sloane Carter profile" /></div>
+          <span class="platform-tag">TikTok</span>
           <h3>SLOANE CARTER</h3>
-          <p>패션 중심 브랜드를 데일리 착장과 구매 의도 높은 쇼핑 순간으로 풀어내는 크리에이터.</p>
-          <div class="match-fit"><span>최적 매칭</span><strong>데일리 프리미엄 / 쇼핑 콘텐츠 / 착장 리뷰</strong></div>
-          <div class="influencer-stats"><span><strong>520K</strong>팔로워</span><span><strong>142K</strong>평균 조회</span><span><strong>5.8%</strong>참여율</span></div>
+          <p>패션 중심 브랜드를 데일리 착장과 구매 의도가 높은 쇼핑 순간으로 풀어내는 크리에이터입니다.</p>
+          <div class="match-fit"><span>추천 핏</span><strong>Everyday Premium / Haul Edit / Shopping Moment</strong></div>
+          <div class="influencer-stats"><span><strong>520K</strong>팔로워</span><span><strong>142K</strong>평균 조회</span><span><strong>5.8%</strong>ER</span></div>
         </button>
-        <button class="campaign" type="button" data-name="Riley Monroe" data-market="마이애미 / 리조트 패션" data-followers="1.2M" data-views="275K" data-er="6.9%" data-fit="리조트 스타일링, 시즌 캡슐 룩, 비주얼 중심 패션 콘텐츠." data-img="assets/mainmodel_2.jpg">
-          <div class="image"><img src="assets/mainmodel_2.jpg" alt="Riley Monroe profile" /></div>
-          <span class="platform-tag">TikTok 크리에이터</span>
+        <button class="campaign" type="button" data-name="Riley Monroe" data-market="Miami / Resort Fashion" data-followers="1.2M" data-views="275K" data-er="6.9%" data-fit="리조트웨어, 서머 캡슐, 비주얼 중심 크리에이터 편집." data-img="assets/us-female-05.png">
+          <div class="image"><img src="assets/us-female-05.png" alt="Riley Monroe profile" /></div>
+          <span class="platform-tag">TikTok</span>
           <h3>RILEY MONROE</h3>
-          <p>리조트 스타일링, 고급스러운 베이직, 정돈된 데일리 패션 클립에 강한 마이애미 크리에이터.</p>
-          <div class="match-fit"><span>최적 매칭</span><strong>리조트웨어 / 여름 캡슐 / 비주얼 캠페인</strong></div>
-          <div class="influencer-stats"><span><strong>1.2M</strong>팔로워</span><span><strong>275K</strong>평균 조회</span><span><strong>6.9%</strong>참여율</span></div>
+          <p>Miami 기반 크리에이터. 리조트 스타일링, 세련된 베이식, 정돈된 데일리 패션 클립에 강점이 있습니다.</p>
+          <div class="match-fit"><span>추천 핏</span><strong>Resortwear / Summer Capsule / Visual Campaign</strong></div>
+          <div class="influencer-stats"><span><strong>1.2M</strong>팔로워</span><span><strong>275K</strong>평균 조회</span><span><strong>6.9%</strong>ER</span></div>
         </button>
-        <button class="campaign" type="button" data-name="Jade Kim" data-market="시애틀 / K-패션 에디트" data-followers="680K" data-views="166K" data-er="7.8%" data-fit="K-패션 설명, 스타일링 교육, 트렌드 번역 콘텐츠." data-img="assets/mainmodel_3.png">
-          <div class="image"><img src="assets/mainmodel_3.png" alt="Jade Kim profile" /></div>
-          <span class="platform-tag">TikTok 크리에이터</span>
+        <button class="campaign" type="button" data-name="Jade Kim" data-market="Seattle / K-Fashion Edit" data-followers="680K" data-views="166K" data-er="7.8%" data-fit="K-Fashion 설명형 콘텐츠, 스타일링 교육, 트렌드 해석." data-img="assets/us-female-06.png">
+          <div class="image"><img src="assets/us-female-06.png" alt="Jade Kim profile" /></div>
+          <span class="platform-tag">TikTok</span>
           <h3>JADE KIM</h3>
-          <p>한국 패션 실루엣을 미국 오디언스가 이해하기 쉬운 스타일링 이야기로 풀어내는 크리에이터.</p>
-          <div class="match-fit"><span>최적 매칭</span><strong>K-패션 에디트 / 스타일링 교육 / 트렌드 번역</strong></div>
-          <div class="influencer-stats"><span><strong>680K</strong>팔로워</span><span><strong>166K</strong>평균 조회</span><span><strong>7.8%</strong>참여율</span></div>
+          <p>한국 패션 실루엣을 실용적인 글로벌 스타일링 내러티브로 풀어내는 크리에이터입니다.</p>
+          <div class="match-fit"><span>추천 핏</span><strong>K-Fashion Edit / Styling Education / Trend Translation</strong></div>
+          <div class="influencer-stats"><span><strong>680K</strong>팔로워</span><span><strong>166K</strong>평균 조회</span><span><strong>7.8%</strong>ER</span></div>
         </button>
-        <button class="campaign" type="button" data-name="Carmen Vale" data-market="브루클린 / 아방 미니멀" data-followers="430K" data-views="98K" data-er="9.1%" data-fit="아방 미니멀 스타일링, 니치 디자이너 오디언스, 저장률 높은 콘텐츠." data-img="assets/mainmodel_4.png">
-          <div class="image"><img src="assets/mainmodel_4.png" alt="Carmen Vale profile" /></div>
-          <span class="platform-tag">TikTok 크리에이터</span>
+        <button class="campaign" type="button" data-name="Carmen Vale" data-market="Brooklyn / Avant Minimal" data-followers="430K" data-views="98K" data-er="9.1%" data-fit="아방 미니멀 스타일링, 니치 디자이너 오디언스, 저장 반응이 높은 콘텐츠." data-img="assets/us-female-07.png">
+          <div class="image"><img src="assets/us-female-07.png" alt="Carmen Vale profile" /></div>
+          <span class="platform-tag">TikTok</span>
           <h3>CARMEN VALE</h3>
-          <p>컨셉추얼 실루엣과 신진 브랜드에 반응하는 니치 오디언스를 가진 브루클린 패션 크리에이터.</p>
-          <div class="match-fit"><span>최적 매칭</span><strong>아방 미니멀 / 니치 디자이너 / 저장률 높은 콘텐츠</strong></div>
-          <div class="influencer-stats"><span><strong>430K</strong>팔로워</span><span><strong>98K</strong>평균 조회</span><span><strong>9.1%</strong>참여율</span></div>
+          <p>Brooklyn 기반 패션 크리에이터. 컨셉추얼 실루엣과 신진 레이블에 반응하는 니치 오디언스를 보유합니다.</p>
+          <div class="match-fit"><span>추천 핏</span><strong>Avant Minimal / Niche Designer / High-save Content</strong></div>
+          <div class="influencer-stats"><span><strong>430K</strong>팔로워</span><span><strong>98K</strong>평균 조회</span><span><strong>9.1%</strong>ER</span></div>
         </button>
-        <button class="campaign" type="button" data-name="Elle Brooks" data-market="샌프란시스코 / 스마트 캐주얼" data-followers="810K" data-views="210K" data-er="5.9%" data-fit="워크웨어, 프리미엄 베이직, 워드로브 시스템, 상품 중심 스타일링 콘텐츠." data-img="assets/hero-model.jpg">
-          <div class="image"><img src="assets/hero-model.jpg" alt="Elle Brooks profile" /></div>
-          <span class="platform-tag">TikTok 크리에이터</span>
+        <button class="campaign" type="button" data-name="Elle Brooks" data-market="San Francisco / Smart Casual" data-followers="810K" data-views="210K" data-er="5.9%" data-fit="워크웨어, 프리미엄 베이식, 워드로브 시스템, 상품 중심 스토리텔링." data-img="assets/us-female-08.png">
+          <div class="image"><img src="assets/us-female-08.png" alt="Elle Brooks profile" /></div>
+          <span class="platform-tag">TikTok</span>
           <h3>ELLE BROOKS</h3>
-          <p>캡슐 워드로브와 데일리 착장 시스템 콘텐츠의 저장 반응이 좋은 스마트 캐주얼 크리에이터.</p>
-          <div class="match-fit"><span>최적 매칭</span><strong>워크웨어 / 프리미엄 베이직 / 워드로브 시스템</strong></div>
-          <div class="influencer-stats"><span><strong>810K</strong>팔로워</span><span><strong>210K</strong>평균 조회</span><span><strong>5.9%</strong>참여율</span></div>
+          <p>캡슐 워드로브와 데일리 착장 시스템에서 저장 반응이 좋은 스마트 캐주얼 패션 크리에이터입니다.</p>
+          <div class="match-fit"><span>추천 핏</span><strong>Workwear / Premium Basics / Wardrobe System</strong></div>
+          <div class="influencer-stats"><span><strong>810K</strong>팔로워</span><span><strong>210K</strong>평균 조회</span><span><strong>5.9%</strong>ER</span></div>
         </button>
       </div>
     </section>
@@ -157,7 +1971,7 @@
     <section class="designer-editorial" id="designers">
       <div class="designer-layout">
         <div class="designer-cover">
-          <img src="assets/hero-group.jpg" alt="Korean designer brand editorial look" />
+          <img src="assets/hero-group.png" alt="Korean designer brand editorial look" />
           <div class="designer-cover-caption">
             <span>Featured Designer</span>
             <span>Seoul / New York</span>
@@ -165,32 +1979,32 @@
         </div>
         <div class="designer-copy">
           <div>
-            <p class="designer-kicker">Designer Showcase</p>
+            <p class="designer-kicker">디자이너 쇼케이스</p>
             <h2>BRAND<br />AS<br />EDITORIAL</h2>
-            <p class="body">디자이너가 자신의 상품과 브랜드 철학을 함께 소개하는 공간입니다. 룩북, 대표 상품, 창작자 스토리를 하나의 에디토리얼 페이지처럼 정리해 미국 인플루언서와 바이어에게 전달합니다.</p>
+            <p class="body">디자이너가 자신의 상품과 브랜드 철학을 함께 소개하는 공간입니다. 룩북, 대표 상품, 창작자 스토리를 하나의 에디토리얼 페이지처럼 정리해 글로벌 크리에이터와 바이어에게 전달합니다.</p>
           </div>
           <div class="designer-meta">
             <span><strong>24</strong>Look Assets</span>
             <span><strong>3</strong>Hero Products</span>
             <span><strong>1:1</strong>Campaign Brief</span>
-            <span><strong>12</strong>Creator Matches</span>
+            <span><strong>12</strong>크리에이터 매칭</span>
           </div>
         </div>
       </div>
       <div class="designer-stories">
         <article class="designer-story">
-          <img src="assets/us-influencer-2.jpg" alt="Designer portrait editorial" />
-          <h3>DESIGNER<br />PROFILE</h3>
+          <img src="assets/us-influencer-2.png" alt="Designer portrait editorial" />
+          <h3>디자이너<br />프로필</h3>
           <p>브랜드 철학, 디자이너 스토리, 시즌 무드를 정리합니다.</p>
         </article>
         <article class="designer-story">
           <img src="assets/mainmodel_4.png" alt="Designer product editorial" />
-          <h3>PRODUCT<br />STORY</h3>
+          <h3>상품<br />스토리</h3>
           <p>대표 상품의 소재, 실루엣, 가격대, 스타일링 포인트를 콘텐츠화합니다.</p>
         </article>
         <article class="designer-story">
           <img src="assets/mainmodel_3.png" alt="Campaign brief editorial" />
-          <h3>CAMPAIGN<br />BRIEF</h3>
+          <h3>캠페인<br />브리프</h3>
           <p>크리에이터가 바로 콘텐츠를 만들 수 있도록 촬영 포인트와 협업 방향을 제공합니다.</p>
         </article>
       </div>
@@ -199,7 +2013,7 @@
     <section class="inside" id="about">
       <div class="inside-head">
         <h2 class="inside-title">CORE<br />FLOW</h2>
-        <p class="inside-lead">K-MODU는 브랜드 등록부터 크리에이터 매칭과 캠페인 실행까지, 한국 디자이너 브랜드가 미국 패션 시장에 진입하는 과정을 하나의 흐름으로 정리합니다.</p>
+        <p class="inside-lead">K-MODU는 브랜드 등록부터 크리에이터 매칭과 캠페인 실행까지, 한국 디자이너 브랜드가 글로벌 패션 시장으로 확장되는 과정을 하나의 흐름으로 정리합니다.</p>
       </div>
       <div class="flow-grid">
         <article class="flow-step">
@@ -220,7 +2034,7 @@
           <span>03</span>
           <div>
             <h3>Creator<br />Matching</h3>
-            <p>미국 TikTok 패션 크리에이터와 무드, 타깃, 성과 데이터를 기준으로 매칭합니다.</p>
+            <p>글로벌 패션 크리에이터와 무드, 타깃, 성과 데이터를 기준으로 매칭합니다.</p>
           </div>
         </article>
         <article class="flow-step">
@@ -235,77 +2049,108 @@
 
     <section class="looks">
       <div>
-        <div class="copy-palette" aria-label="카피 언어 비교">
-          <button class="is-active" type="button" data-copy-mode="ko">KR</button>
-          <button type="button" data-copy-mode="en">EN</button>
-        </div>
-        <p class="spec" data-copy="flow-eyebrow" data-ko="K-MODU가 연결하는 방식&lt;small&gt;브랜드 스토리를 크리에이터 캠페인으로&lt;/small&gt;" data-en="WHY K-MODU WORKS&lt;small&gt;Brand story to creator campaign&lt;/small&gt;">K-MODU가 연결하는 방식<small>브랜드 스토리를 크리에이터 캠페인으로</small></p>
-        <h2 data-copy="flow-title" data-ko="브랜드 스토리에서 크리에이터 캠페인까지" data-en="FROM BRAND STORY TO CREATOR CAMPAIGN">브랜드 스토리에서 크리에이터 캠페인까지</h2>
-        <p class="look-text" data-copy="flow-lead" data-ko="K-MODU는 한국 디자이너 브랜드의 룩북, 상품, 브랜드 스토리를 미국 TikTok 패션 크리에이터가 바로 이해할 수 있는 캠페인 브리프로 정리합니다." data-en="K-MODU turns Korean designer brands into campaign-ready stories for U.S. TikTok fashion creators.">K-MODU는 한국 디자이너 브랜드의 룩북, 상품, 브랜드 스토리를 미국 TikTok 패션 크리에이터가 바로 이해할 수 있는 캠페인 브리프로 정리합니다.</p>
+        <p class="spec">K-MODU가 연결하는 방식<small>브랜드 스토리를 크리에이터 캠페인으로</small></p>
+        <h2>브랜드 스토리에서 크리에이터 캠페인까지</h2>
+        <p class="look-text">K-MODU는 한국 디자이너 브랜드의 룩북, 상품, 브랜드 스토리를 글로벌 패션 크리에이터가 바로 이해할 수 있는 캠페인 브리프로 정리합니다.</p>
         <div class="process-list">
           <article class="process-step">
             <span>01</span>
             <div>
-              <h3 data-copy="flow-step-1-title" data-ko="브랜드 자료 등록" data-en="Brand Assets">브랜드 자료 등록</h3>
+              <h3>브랜드 자료 등록</h3>
               <p>룩북, 상품 이미지, 브랜드 철학, 대표 상품 정보를 수집합니다.</p>
             </div>
           </article>
           <article class="process-step">
             <span>02</span>
             <div>
-              <h3 data-copy="flow-step-2-title" data-ko="에디토리얼 브리프 제작" data-en="Editorial Brief">에디토리얼 브리프 제작</h3>
+              <h3>에디토리얼 브리프 제작</h3>
               <p>크리에이터가 이해하기 쉬운 글로벌 캠페인 브리프로 정리합니다.</p>
             </div>
           </article>
           <article class="process-step">
             <span>03</span>
             <div>
-              <h3 data-copy="flow-step-3-title" data-ko="크리에이터 매칭" data-en="Creator Match">크리에이터 매칭</h3>
-              <p>무드, 타깃, 성과 데이터를 기준으로 미국 TikTok 크리에이터를 추천합니다.</p>
+              <h3>크리에이터 매칭</h3>
+              <p>무드, 타깃, 성과 데이터를 기준으로 글로벌 크리에이터를 추천합니다.</p>
             </div>
           </article>
           <article class="process-step">
             <span>04</span>
             <div>
-              <h3 data-copy="flow-step-4-title" data-ko="캠페인 실행" data-en="Campaign Launch">캠페인 실행</h3>
+              <h3>캠페인 실행</h3>
               <p>제품 시딩, 스타일링 콘텐츠, 시장 반응 확인까지 캠페인을 실행합니다.</p>
             </div>
           </article>
         </div>
       </div>
       <div class="gallery">
-        <div class="main-look"><img src="assets/us-female-03.jpg" alt="K-MODU creator campaign visual" /></div>
+        <div class="main-look"><img id="campaignGalleryMain" src="assets/us-female-03.png" alt="K-MODU creator campaign visual" /></div>
         <div class="side-looks">
-          <div class="mini"><img src="assets/mainmodel_4.png" alt="Designer lookbook asset" /></div>
-          <div class="mini"><img src="assets/us-female-02.jpg" alt="Creator matching visual" /></div>
-          <div class="mini"><img src="assets/hero-group.jpg" alt="Editorial campaign brief visual" /></div>
-          <div class="mini"><img src="assets/us-female-04.jpg" alt="Campaign launch visual" /></div>
+          <button class="mini" type="button" data-gallery-src="assets/mainmodel_4.png" data-gallery-alt="Designer lookbook asset" aria-label="디자이너 룩북 이미지 보기"><img src="assets/mainmodel_4.png" alt="Designer lookbook asset" /></button>
+          <button class="mini" type="button" data-gallery-src="assets/us-female-02.png" data-gallery-alt="Creator matching visual" aria-label="크리에이터 매칭 이미지 보기"><img src="assets/us-female-02.png" alt="Creator matching visual" /></button>
+          <button class="mini" type="button" data-gallery-src="assets/hero-group.png" data-gallery-alt="Editorial campaign brief visual" aria-label="에디토리얼 캠페인 이미지 보기"><img src="assets/hero-group.png" alt="Editorial campaign brief visual" /></button>
+          <button class="mini" type="button" data-gallery-src="assets/us-female-04.png" data-gallery-alt="Campaign launch visual" aria-label="캠페인 실행 이미지 보기"><img src="assets/us-female-04.png" alt="Campaign launch visual" /></button>
         </div>
         <div class="gallery-note">Campaign Ready Assets</div>
       </div>
     </section>
 
     <section class="claim">
-      <a class="designer-cta" href="apply.html" aria-label="디자이너 브랜드 등록으로 이동">READY TO CONNECT YOUR BRAND?</a>
-      <p>미국 패션 크리에이터와 함께할 브랜드 캠페인을 시작하세요.</p>
+      <a class="designer-cta" href="apply.html" aria-label="디자이너 브랜드 등록으로 이동">브랜드를 연결할 준비가 되셨나요?</a>
+      <p>글로벌 패션 크리에이터와 함께할 브랜드 캠페인을 시작하세요.</p>
     </section>
 
     <div class="modal" id="influencerModal" aria-hidden="true">
-      <div class="modal-card coming-soon-card" role="dialog" aria-modal="true" aria-labelledby="modalName">
-        <button class="modal-close" type="button" aria-label="뒤로가기">‹</button>
-        <img id="modalImg" src="assets/hero-group.jpg" alt="K-MODU creator preview" />
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalName">
+        <img id="modalImg" src="assets/mainmodel_2.png" alt="" />
         <div class="modal-content">
-          <span class="platform-tag">K-MODU Creator Profile</span>
-          <h3 id="modalName">준비중입니다</h3>
-          <p class="body">크리에이터 상세 프로필을 준비하고 있습니다.</p>
-          <p class="coming-soon-copy">곧 업데이트될 예정입니다.</p>
+          <span class="platform-tag">TikTok Creator</span>
+          <h3 id="modalName">MIA HARPER</h3>
+          <p class="body" id="modalMarket">New York / Minimal Styling</p>
+          <div class="match-score">
+            <div>
+              <span>매칭 점수</span>
+              <small>브랜드 × 크리에이터 핏</small>
+            </div>
+            <strong id="modalScore">92%</strong>
+          </div>
+          <div class="influencer-stats">
+            <span><strong id="modalFollowers">1.8M</strong>팔로워</span>
+            <span><strong id="modalViews">420K</strong>평균 조회</span>
+            <span><strong id="modalEr">7.4%</strong>ER</span>
+          </div>
+          <div class="modal-sections">
+            <div class="modal-section">
+              <h4>추천 핏</h4>
+              <p id="modalFit">Clean luxury, capsule wardrobe, Seoul designer discovery.</p>
+            </div>
+            <div class="modal-section">
+              <h4>콘텐츠 스타일</h4>
+              <p id="modalStyle">스트리트부터 에디토리얼까지 이어지는 스타일링, 런칭 영상, 착장 분석, TikTok 룩북 콘텐츠.</p>
+            </div>
+            <div class="modal-section">
+              <h4>추천 캠페인</h4>
+              <div class="modal-campaigns" id="modalCampaigns">
+                <span>서울 디자이너 발견</span>
+                <span>첫 착장 스타일링</span>
+              </div>
+            </div>
+            <div class="modal-section">
+              <h4>오디언스 반응</h4>
+              <p id="modalAudience">정돈된 스트리트 럭셔리 스타일링에 반응이 높은 글로벌 패션 오디언스입니다.</p>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <a class="modal-request" href="designer-match.html">매칭 요청</a>
+            <button class="modal-close" type="button">닫기</button>
+          </div>
         </div>
       </div>
     </div>
 
     <footer class="footer" id="contact">
       <div class="ticker">
-        <span>FROM SEOUL TO LOS ANGELES</span><span>*</span>
+        <span>서울에서 전세계 크리에이터로</span><span>*</span>
         <span>K-FASHION ALL CONNECTED</span><span>*</span>
       </div>
       <div class="footer-model left"></div>
@@ -356,6 +2201,148 @@
       </div>
     </footer>
   </main>
-  <script src="scripts/home.js"></script>
+  <script>
+  const nav = document.querySelector('.nav');
+  const syncNav = () => {
+    nav.classList.toggle('is-scrolled', window.scrollY > 12);
+  };
+  syncNav();
+  window.addEventListener('scroll', syncNav, { passive: true });
+
+  const updateActiveNav = () => {
+    const hash = window.location.hash || '#home';
+    document.querySelectorAll('.nav-center a, .mobile-menu a').forEach((link) => {
+      const href = link.getAttribute('href');
+      const isActive = href === hash || (hash === '#home' && href === '#home');
+      if (isActive) {
+        link.setAttribute('aria-current', 'page');
+      } else {
+        link.removeAttribute('aria-current');
+      }
+    });
+  };
+  updateActiveNav();
+  window.addEventListener('hashchange', updateActiveNav);
+
+  const campaignGalleryMain = document.querySelector('#campaignGalleryMain');
+  const campaignGalleryButtons = document.querySelectorAll('.side-looks .mini[data-gallery-src]');
+  campaignGalleryButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      if (!campaignGalleryMain) return;
+      campaignGalleryMain.src = button.dataset.gallerySrc;
+      campaignGalleryMain.alt = button.dataset.galleryAlt || '';
+      campaignGalleryButtons.forEach((item) => {
+        const isActive = item === button;
+        item.classList.toggle('is-active', isActive);
+        item.setAttribute('aria-pressed', String(isActive));
+      });
+    });
+  });
+
+  const menuToggle = document.querySelector('.menu-toggle');
+  const closeMobileMenu = () => {
+    nav.classList.remove('menu-open');
+    menuToggle?.setAttribute('aria-expanded', 'false');
+  };
+
+  menuToggle?.addEventListener('click', () => {
+    const isOpen = nav.classList.toggle('menu-open');
+    menuToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  document.querySelectorAll('.mobile-menu a').forEach((link) => {
+    link.addEventListener('click', closeMobileMenu);
+  });
+
+  const modal = document.querySelector('#influencerModal');
+  const influencerDetails = {
+    'Mia Harper': {
+      score: '92%',
+      fit: 'Minimal Luxury / Street Styling / Designer Discovery',
+      style: '조용한 럭셔리 스타일링 전환, 캡슐 워드로브 편집, 디자이너 브랜드 발견 클립, TikTok 룩북 콘텐츠.',
+      campaigns: ['서울 디자이너 발견', '첫 착장 스타일링', '미니멀 럭셔리 드롭'],
+      audience: '미니멀 스타일링, 고급 베이식, 조용한 럭셔리 착장 전환에 반응이 높은 글로벌 패션 오디언스입니다.'
+    },
+    'Avery Stone': {
+      score: '92%',
+      fit: 'Street Luxury / Denim Styling / Emerging Designer Brands',
+      style: '스트리트에서 에디토리얼까지 이어지는 스타일링, 런칭 영상, 착장 분석, TikTok 룩북 콘텐츠.',
+      campaigns: ['서울 디자이너 발견', '첫 착장 스타일링', '스트리트 럭셔리 드롭'],
+      audience: '정돈된 스트리트웨어, 데님 룩, 조용한 럭셔리 스타일링에 반응이 높은 글로벌 패션 오디언스입니다.'
+    },
+    'Noa Ellis': {
+      score: '89%',
+      fit: 'Editorial Try-on / Emerging Label / Runway Mood',
+      style: '에디토리얼 착장, 런웨이 무드의 아웃핏 스토리, 크리에이터 내레이션, 시청 유지율이 높은 스타일링 클립.',
+      campaigns: ['에디토리얼 룩북', '런웨이 무드 편집', '신진 디자이너 런칭'],
+      audience: '신진 레이블, 컨셉추얼 실루엣, 패션 중심 착장 콘텐츠에 대한 신뢰가 높은 오디언스입니다.'
+    },
+    'Sloane Carter': {
+      score: '84%',
+      fit: 'Everyday Premium / Haul Edit / Shopping Moment',
+      style: '데일리 착장 스타일링, 하울 편집, 저장하고 싶은 상품 순간, 접근성 있는 프리미엄 패션 콘텐츠.',
+      campaigns: ['데일리 프리미엄 드롭', '쇼핑 모먼트', '크리에이터 착장'],
+      audience: '입기 쉬운 스타일링, 착장 아이디어, 상품 발견에 구매 의도가 높은 패션 오디언스입니다.'
+    },
+    'Riley Monroe': {
+      score: '88%',
+      fit: 'Resortwear / Summer Capsule / Visual Campaign',
+      style: '리조트 스타일링, 비주얼 중심 편집, 시즌 캡슐 룩, 정돈된 데일리 패션 클립.',
+      campaigns: ['서머 캡슐', '리조트 룩북', '비주얼 캠페인'],
+      audience: '리조트웨어, 고급 베이식, 서머 캡슐, 동경을 자극하는 스타일링에 관심이 높은 오디언스입니다.'
+    },
+    'Jade Kim': {
+      score: '90%',
+      fit: 'K-Fashion Edit / Styling Education / Trend Translation',
+      style: 'K-Fashion 설명형 콘텐츠, 스타일링 교육, 트렌드 해석, 실용적인 실루엣 분석.',
+      campaigns: ['K-Fashion 설명 콘텐츠', '트렌드 해석', '디자이너 브랜드 교육'],
+      audience: '한국 패션 맥락, 스타일링 교육, 트렌드 기반 디자이너 브랜드 발견에 적합한 오디언스입니다.'
+    },
+    'Carmen Vale': {
+      score: '86%',
+      fit: 'Avant Minimal / Niche Designer / High-save Content',
+      style: '아방 미니멀 스타일링, 니치 디자이너 스토리텔링, 저장 반응이 높은 착장 편집, 컨셉추얼 실루엣 콘텐츠.',
+      campaigns: ['아방 미니멀 드롭', '니치 디자이너 소개', '컨셉 스타일링'],
+      audience: '컨셉추얼 디자인과 신진 레이블에 관심이 높은 니치 패션 오디언스입니다.'
+    },
+    'Elle Brooks': {
+      score: '87%',
+      fit: 'Workwear / Premium Basics / Wardrobe System',
+      style: '스마트 캐주얼 워크웨어, 워드로브 시스템, 프리미엄 베이식, 상품 중심 스타일링 설명 콘텐츠.',
+      campaigns: ['워크웨어 편집', '프리미엄 베이식', '캡슐 워드로브'],
+      audience: '실용적인 프리미엄 스타일링, 워드로브 시스템, 상품 중심 착장 기획에 반응이 좋은 오디언스입니다.'
+    }
+  };
+  const closeModal = () => {
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+  };
+  document.querySelectorAll('.campaign[data-name]').forEach((card) => {
+    card.addEventListener('click', () => {
+      const detail = influencerDetails[card.dataset.name] || {};
+      document.querySelector('#modalImg').src = card.dataset.img;
+      document.querySelector('#modalName').textContent = card.dataset.name;
+      document.querySelector('#modalMarket').textContent = card.dataset.market;
+      document.querySelector('#modalScore').textContent = detail.score || '88%';
+      document.querySelector('#modalFollowers').textContent = card.dataset.followers;
+      document.querySelector('#modalViews').textContent = card.dataset.views;
+      document.querySelector('#modalEr').textContent = card.dataset.er;
+      document.querySelector('#modalFit').textContent = detail.fit || card.dataset.fit;
+      document.querySelector('#modalStyle').textContent = detail.style || card.dataset.fit;
+      document.querySelector('#modalAudience').textContent = detail.audience || '크리에이터 중심 스타일링과 상품 발견에 반응이 높은 글로벌 패션 오디언스입니다.';
+      document.querySelector('#modalCampaigns').innerHTML = (detail.campaigns || ['서울 디자이너 발견', '첫 착장 스타일링']).map((item) => `<span>${item}</span>`).join('');
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+    });
+  });
+  document.querySelector('.modal-close').addEventListener('click', closeModal);
+  document.querySelector('.modal-request').addEventListener('click', closeModal);
+  modal.addEventListener('click', (event) => {
+    if (event.target === modal) closeModal();
+  });
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeModal();
+  });
+  </script>
 </body>
 </html>

@@ -5,6 +5,284 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Designer Brand Application | K-MODU</title>
   <link rel="stylesheet" href="platform.css" />
+  <style>
+    /* Toss-Style Wizard Custom CSS */
+    .wizard-container {
+      max-width: 580px;
+      margin: 40px auto 80px;
+      padding: 0 20px;
+      position: relative;
+    }
+
+    /* Progress Bar */
+    .progress-wrapper {
+      width: 100%;
+      height: 4px;
+      background: var(--line);
+      border-radius: 2px;
+      margin-bottom: 48px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 20%;
+      background: var(--ink);
+      border-radius: 2px;
+      transition: width 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Steps */
+    .step-card {
+      display: none;
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.32s ease, transform 0.32s ease;
+    }
+
+    .step-card.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Toss Typography */
+    .toss-title {
+      font-size: clamp(26px, 5vw, 34px);
+      font-weight: 700;
+      line-height: 1.34;
+      letter-spacing: -0.04em;
+      margin: 0 0 12px;
+      white-space: pre-line;
+      color: var(--ink);
+    }
+
+    .toss-subtitle {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 0 0 36px;
+      font-weight: 400;
+    }
+
+    /* Toss Inputs */
+    .toss-field {
+      margin-bottom: 24px;
+    }
+
+    .toss-field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .toss-input {
+      width: 100%;
+      border: none;
+      border-bottom: 2px solid var(--line);
+      background: transparent;
+      color: var(--ink);
+      font-size: 20px;
+      font-weight: 500;
+      padding: 12px 0;
+      outline: none;
+      transition: border-color 0.24s ease;
+    }
+
+    .toss-input::placeholder {
+      color: rgba(5, 5, 5, 0.22);
+    }
+    body.dark-theme .toss-input::placeholder {
+      color: rgba(247, 247, 244, 0.22);
+    }
+
+    .toss-input:focus {
+      border-color: var(--ink);
+    }
+
+    /* Interactive Pill Selection Tags */
+    .toss-tags-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .toss-tag-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 20px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--input-bg);
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.22s ease;
+    }
+
+    .toss-tag-pill:hover {
+      border-color: var(--ink);
+    }
+
+    .toss-tag-pill.selected {
+      background: var(--ink);
+      color: var(--paper);
+      border-color: var(--ink);
+      transform: scale(1.02);
+    }
+
+    /* Toss Minimalist File Upload Card */
+    .toss-upload-box {
+      border: 2px dashed var(--line);
+      border-radius: 16px;
+      padding: 40px 24px;
+      text-align: center;
+      cursor: pointer;
+      background: var(--input-bg);
+      transition: all 0.24s ease;
+      position: relative;
+    }
+
+    .toss-upload-box:hover {
+      border-color: var(--ink);
+      background: rgba(5, 5, 5, 0.02);
+    }
+    body.dark-theme .toss-upload-box:hover {
+      background: rgba(247, 247, 244, 0.02);
+    }
+
+    .toss-upload-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .toss-upload-text {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .toss-upload-subtext {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Navigation Buttons */
+    .toss-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 48px;
+    }
+
+    .toss-btn {
+      flex: 2;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 54px;
+      border: none;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.24s ease;
+      outline: none;
+    }
+
+    .toss-btn.primary {
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    .toss-btn.primary:disabled {
+      background: var(--line);
+      color: var(--muted);
+      cursor: not-allowed;
+    }
+
+    .toss-btn.secondary {
+      flex: 1;
+      background: var(--line);
+      color: var(--ink);
+    }
+
+    .toss-btn.secondary:hover {
+      background: rgba(5, 5, 5, 0.08);
+    }
+    body.dark-theme .toss-btn.secondary:hover {
+      background: rgba(247, 247, 244, 0.08);
+    }
+
+    /* Auto-save Restore Modal */
+    .toss-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .toss-modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .toss-modal-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      width: min(440px, 90vw);
+      padding: 32px;
+      text-align: center;
+      transform: translateY(24px);
+      transition: transform 0.3s ease;
+    }
+
+    .toss-modal-overlay.active .toss-modal-card {
+      transform: translateY(0);
+    }
+
+    .toss-modal-title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin: 0 0 12px;
+      color: var(--ink);
+    }
+
+    .toss-modal-body {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 0 0 28px;
+    }
+
+    .toss-modal-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+  </style>
 </head>
 <body>
   <main class="platform">
@@ -12,11 +290,12 @@
       <a class="brand" href="index.html#home">K-MODU</a>
       <nav class="topnav">
         <a href="index.html#about">About</a>
+        <a href="designers.html">Designers</a>
         <a href="creators.html">Creators</a>
-        <a href="campaign.html">Campaign</a>
         <a href="index.html#contact">Contact</a>
       </nav>
       <div class="top-actions">
+        <button id="themeToggleBtn" aria-label="테마 전환" style="background:none; border:none; color:var(--ink); font-size:11px; font-weight:800; cursor:pointer; letter-spacing:.08em; padding:0; text-transform:uppercase; margin-right:12px; display:inline-flex; align-items:center;">DARK</button>
         <a href="admin.html">Admin</a>
         <a class="pill" href="apply.html">Apply</a>
       </div>
@@ -24,114 +303,414 @@
         <summary aria-label="메뉴"><span></span></summary>
         <div class="platform-menu-panel">
           <a href="index.html#about">About</a>
+          <a href="designers.html">Designers</a>
           <a href="creators.html">Creators</a>
-          <a href="campaign.html">Campaign</a>
-          <a href="index.html#contact">Contact</a>
+        <a href="index.html#contact">Contact</a>
           <a href="apply.html">Apply</a>
           <a href="login.html">Login</a>
         </div>
       </details>
     </header>
 
-    <section class="page-hero">
-      <p class="eyebrow">Designer Brand Recruiting</p>
-      <h1 class="page-title">Apply Your Brand</h1>
-      <p class="page-lead">한국 디자이너 브랜드가 미국 TikTok 패션 크리에이터와 협업할 수 있도록 브랜드 프로필, 상품 정보, 캠페인 방향을 접수합니다.</p>
-    </section>
+    <div class="wizard-container">
+      <!-- Progress Bar -->
+      <div class="progress-wrapper">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
 
-    <form class="section" action="apply-complete.html">
-      <div class="form-block">
-        <h2>A. Brand Info</h2>
-        <div class="form-grid">
-          <div class="field"><label>브랜드명</label><input name="brand" required /></div>
-          <div class="field"><label>디자이너명</label><input name="designer" required /></div>
-          <div class="field"><label>회사명</label><input name="company" /></div>
-          <div class="field"><label>담당자명</label><input name="manager" /></div>
-          <div class="field"><label>연락처</label><input name="phone" /></div>
-          <div class="field"><label>이메일</label><input type="email" name="email" required /></div>
-          <div class="field"><label>인스타그램</label><input name="instagram" placeholder="@brand" /></div>
-          <div class="field"><label>홈페이지</label><input name="website" placeholder="https://" /></div>
-          <div class="field"><label>국가</label><input name="country" value="South Korea" /></div>
-          <div class="field"><label>도시</label><input name="city" placeholder="Seoul" /></div>
+      <form id="wizardForm">
+        <!-- STEP 1: Brand Identity -->
+        <div class="step-card active" data-step="1">
+          <h2 class="toss-title">입점 신청하실 브랜드의<br>기본 정체성을 입력해 주세요.</h2>
+          <p class="toss-subtitle">글로벌 매칭의 기초 정보가 될 브랜드명과 디자이너의 실명 정보를 알려주세요.</p>
+
+          <div class="toss-field">
+            <label for="brandName">브랜드명</label>
+            <input type="text" id="brandName" name="brand" class="toss-input" placeholder="예: Maison Lune Seoul" required autofocus />
+          </div>
+
+          <div class="toss-field">
+            <label for="designerName">디자이너 실명</label>
+            <input type="text" id="designerName" name="designer" class="toss-input" placeholder="예: 한서윤" required />
+          </div>
+        </div>
+
+        <!-- STEP 2: Contact & Intro -->
+        <div class="step-card" data-step="2">
+          <h2 class="toss-title">크리에이터와 소통할<br>연락처와 슬로건을 공유해 주세요.</h2>
+          <p class="toss-subtitle">원활한 소통을 위한 이메일과, 브랜드를 미국 시장에 알릴 매력적인 소개글을 입력해 주세요.</p>
+
+          <div class="toss-field">
+            <label for="email">연락용 이메일</label>
+            <input type="email" id="email" name="email" class="toss-input" placeholder="예: hello@maisonlune.com" required />
+          </div>
+
+          <div class="toss-field">
+            <label for="headline">브랜드 한 줄 소개</label>
+            <input type="text" id="headline" name="headline" class="toss-input" placeholder="예: 서울 기반의 콰이어트 럭셔리 미니멀 여성복" required />
+          </div>
+        </div>
+
+        <!-- STEP 3: Signature Product -->
+        <div class="step-card" data-step="3">
+          <h2 class="toss-title">크리에이터에게 협찬할<br>브랜드 대표 상품은 무엇인가요?</h2>
+          <p class="toss-subtitle">브랜드의 색깔을 가장 잘 보여주는 대표 상품의 정보를 알려주세요.</p>
+
+          <div class="toss-field">
+            <label for="product">대표 상품명</label>
+            <input type="text" id="product" name="product" class="toss-input" placeholder="예: Lune Oversized Linen Blazer" required />
+          </div>
+
+          <div class="toss-field">
+            <label for="category">대표 상품 카테고리</label>
+            <input type="text" id="category" name="category" class="toss-input" placeholder="예: Outer / Dress / Denim" required />
+          </div>
+
+          <div class="toss-field">
+            <label for="productPrice">대표 상품 가격대 ($)</label>
+            <input type="text" id="productPrice" name="productPrice" class="toss-input" placeholder="예: $240" required />
+          </div>
+        </div>
+
+        <!-- STEP 4: Campaign Fit & Mood -->
+        <div class="step-card" data-step="4">
+          <h2 class="toss-title">미국 캠페인의 목표와<br>원하는 크리에이터 무드는 무엇인가요?</h2>
+          <p class="toss-subtitle">가장 집중하고 싶으신 목표와 선호하는 매칭 스타일을 선택해 주세요. (중복 선택 가능)</p>
+
+          <div class="toss-field">
+            <label>캠페인 최종 목표</label>
+            <div class="toss-tags-grid" id="goalsGrid">
+              <span class="toss-tag-pill" data-value="US_TEST">미국 시장 테스트</span>
+              <span class="toss-tag-pill" data-value="BRAND_AWARENESS">브랜드 인지도 확보</span>
+              <span class="toss-tag-pill" data-value="TIKTOK_CONTENTS">TikTok 콘텐츠 확보</span>
+              <span class="toss-tag-pill" data-value="INFLUENCER_SEEDING">인플루언서 협찬</span>
+              <span class="toss-tag-pill" data-value="NEW_LAUNCH">신제품 런칭</span>
+              <span class="toss-tag-pill" data-value="SHOWROOM_EXPOSURE">쇼룸 노출</span>
+            </div>
+          </div>
+
+          <div class="toss-field" style="margin-top: 32px;">
+            <label>희망 크리에이터 타입</label>
+            <div class="toss-tags-grid" id="creatorTypesGrid">
+              <span class="toss-tag-pill" data-value="MINIMAL_LUXURY">Minimal Luxury</span>
+              <span class="toss-tag-pill" data-value="QUIET_LUXURY">Quiet Luxury</span>
+              <span class="toss-tag-pill" data-value="STREET_LUXURY">Street Luxury</span>
+              <span class="toss-tag-pill" data-value="DAILY_STYLING">Daily Styling</span>
+              <span class="toss-tag-pill" data-value="TIKTOK_TRYON">TikTok Try-on</span>
+              <span class="toss-tag-pill" data-value="RUNWAY_MOOD">Runway Mood</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 5: Visual Uploads -->
+        <div class="step-card" data-step="5">
+          <h2 class="toss-title">마지막으로 브랜드의 비주얼을<br>대표하는 파일들을 등록해 주세요.</h2>
+          <p class="toss-subtitle">브랜드 룩북 이미지 또는 대표 상품의 사진을 업로드해 주세요.</p>
+
+          <div class="toss-field">
+            <label>룩북 및 제품 이미지 업로드</label>
+            <div class="toss-upload-box" id="uploadBox">
+              <span class="toss-upload-icon">📁</span>
+              <p class="toss-upload-text">클릭하여 이미지 추가하기</p>
+              <p class="toss-upload-subtext">룩북, 대표 상품 컷 (최대 10MB)</p>
+              <input type="file" id="fileInput" multiple style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;" />
+            </div>
+            <div id="fileList" style="margin-top: 14px; font-size: 12px; color: var(--muted); text-align: left; line-height: 1.6;"></div>
+          </div>
+        </div>
+
+        <!-- Wizard Navigation Actions -->
+        <div class="toss-actions">
+          <button type="button" class="toss-btn secondary" id="prevBtn" style="display: none;">이전</button>
+          <button type="button" class="toss-btn primary" id="nextBtn">다음</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Auto-save Prompt Modal -->
+    <div class="toss-modal-overlay" id="draftModal">
+      <div class="toss-modal-card">
+        <h3 class="toss-modal-title">작성 중이던 정보가 있어요</h3>
+        <p class="toss-modal-body">이전에 입력하시던 임시 저장본이 존재합니다.<br>이어서 작성을 완료하시겠습니까?</p>
+        <div class="toss-modal-actions">
+          <button class="toss-btn primary" id="resumeBtn">이어서 작성하기</button>
+          <button class="toss-btn secondary" id="discardBtn">새로 작성하기</button>
         </div>
       </div>
-
-      <div class="form-block">
-        <h2>B. Brand Story</h2>
-        <div class="form-grid">
-          <div class="field full"><label>브랜드 한 줄 소개</label><input name="headline" placeholder="예: 서울 기반 미니멀 럭셔리 여성복 브랜드" /></div>
-          <div class="field full"><label>브랜드 철학</label><textarea name="philosophy"></textarea></div>
-          <div class="field full"><label>디자이너 스토리</label><textarea name="story"></textarea></div>
-          <div class="field"><label>대표 고객층</label><input name="audience" placeholder="25-34 여성, 프리미엄 데일리웨어" /></div>
-          <div class="field"><label>가격대</label><input name="price" placeholder="$120 - $480" /></div>
-          <div class="field full"><label>시즌 컬렉션 설명</label><textarea name="collection"></textarea></div>
-        </div>
-      </div>
-
-      <div class="form-block">
-        <h2>C. Product Info</h2>
-        <div class="form-grid">
-          <div class="field"><label>대표 상품명</label><input name="product" /></div>
-          <div class="field"><label>상품 카테고리</label><input name="category" placeholder="Outer / Dress / Denim" /></div>
-          <div class="field"><label>가격대</label><input name="productPrice" /></div>
-          <div class="field"><label>소재</label><input name="material" /></div>
-          <div class="field"><label>사이즈</label><input name="sizes" placeholder="S, M, L" /></div>
-          <div class="field"><label>컬러</label><input name="colors" /></div>
-          <div class="field full"><label>주요 스타일링 포인트</label><textarea name="styling"></textarea></div>
-          <div class="field"><label>해외 배송 가능 여부</label><select name="shipping"><option>가능</option><option>검토 필요</option><option>불가</option></select></div>
-          <div class="field"><label>협찬 가능 수량</label><input name="seeding" placeholder="예: 10 pcs" /></div>
-        </div>
-      </div>
-
-      <div class="form-block">
-        <h2>D. Assets Upload</h2>
-        <p class="field-help">현재 MVP에서는 파일 선택 UI만 제공합니다. 실제 제출 파일은 관리자 검토 단계에서 이메일 또는 별도 업로드 링크로 확인합니다.</p>
-        <div class="form-grid">
-          <div class="field"><label>브랜드 룩북 이미지</label><input type="file" multiple /></div>
-          <div class="field"><label>대표 상품 이미지</label><input type="file" multiple /></div>
-          <div class="field"><label>디자이너 프로필 이미지</label><input type="file" /></div>
-          <div class="field"><label>착용컷</label><input type="file" multiple /></div>
-          <div class="field"><label>제품 상세 이미지</label><input type="file" multiple /></div>
-          <div class="field"><label>로고 파일</label><input type="file" /></div>
-        </div>
-      </div>
-
-      <div class="form-block">
-        <h2>E. Campaign Goal</h2>
-        <div class="checks">
-          <label><input type="checkbox" /> 미국 시장 테스트</label>
-          <label><input type="checkbox" /> 브랜드 인지도 확보</label>
-          <label><input type="checkbox" /> TikTok 콘텐츠 확보</label>
-          <label><input type="checkbox" /> 인플루언서 협찬</label>
-          <label><input type="checkbox" /> 신제품 런칭</label>
-          <label><input type="checkbox" /> 바이어/쇼룸 노출</label>
-          <label><input type="checkbox" /> 글로벌 SNS 성장</label>
-        </div>
-      </div>
-
-      <div class="form-block">
-        <h2>F. Creator Type</h2>
-        <div class="checks">
-          <label><input type="checkbox" /> Minimal Luxury</label>
-          <label><input type="checkbox" /> Street Luxury</label>
-          <label><input type="checkbox" /> Daily Styling</label>
-          <label><input type="checkbox" /> Editorial Fashion</label>
-          <label><input type="checkbox" /> Y2K / Gen Z</label>
-          <label><input type="checkbox" /> Quiet Luxury</label>
-          <label><input type="checkbox" /> Runway Mood</label>
-          <label><input type="checkbox" /> TikTok Try-on</label>
-          <label><input type="checkbox" /> Outfit Breakdown</label>
-          <label><input type="checkbox" /> Shopping Haul</label>
-        </div>
-      </div>
-
-      <div class="form-actions">
-        <a class="pill light" href="index.html#home">Cancel</a>
-        <button class="pill" type="submit">Submit Brand</button>
-      </div>
-    </form>
+    </div>
 
     <footer class="footer-mini">K-MODU by MARKBRIDGE</footer>
   </main>
+
+  <script>
+    // --- 1. GLOBAL THEME MANAGER ---
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        document.body.classList.add('dark-theme');
+        if (themeToggleBtn) themeToggleBtn.textContent = 'LIGHT';
+      } else {
+        document.body.classList.remove('dark-theme');
+        if (themeToggleBtn) themeToggleBtn.textContent = 'DARK';
+      }
+    }
+
+    const savedTheme = localStorage.getItem('k_modu_theme') || 'light';
+    applyTheme(savedTheme);
+
+    if (themeToggleBtn) {
+      themeToggleBtn.addEventListener('click', () => {
+        const currentTheme = document.body.classList.contains('dark-theme') ? 'light' : 'dark';
+        localStorage.setItem('k_modu_theme', currentTheme);
+        applyTheme(currentTheme);
+      });
+    }
+
+    // --- 2. TOSS-STYLE STEP-BY-STEP WIZARD PROCESSOR ---
+    let currentStep = 1;
+    const totalSteps = 5;
+
+    const steps = document.querySelectorAll('.step-card');
+    const progressBar = document.getElementById('progressBar');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const form = document.getElementById('wizardForm');
+
+    // Tag Selections Event Listeners
+    document.querySelectorAll('.toss-tag-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        pill.classList.toggle('selected');
+        saveDraft(); // Auto-save draft on tag changes
+      });
+    });
+
+    // File Upload Display
+    const fileInput = document.getElementById('fileInput');
+    const fileList = document.getElementById('fileList');
+    if (fileInput && fileList) {
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+          const names = Array.from(fileInput.files).map(file => `• ${file.name}`).join('<br>');
+          fileList.innerHTML = `<strong style="color:var(--ink);">선택된 파일:</strong><br>${names}`;
+        } else {
+          fileList.innerHTML = '';
+        }
+      });
+    }
+
+    function updateStep() {
+      // Progress Bar Update
+      const percentage = (currentStep / totalSteps) * 100;
+      progressBar.style.width = `${percentage}%`;
+
+      // Render Active Step Card
+      steps.forEach(step => {
+        step.classList.remove('active');
+      });
+      const activeCard = document.querySelector(`.step-card[data-step="${currentStep}"]`);
+      activeCard.classList.add('active');
+
+      // Autofocus first input in active step card
+      const firstInput = activeCard.querySelector('input');
+      if (firstInput) firstInput.focus();
+
+      // Prev Button Visibility
+      if (currentStep === 1) {
+        prevBtn.style.display = 'none';
+      } else {
+        prevBtn.style.display = 'inline-flex';
+      }
+
+      // Next / Submit Button Text Update
+      if (currentStep === totalSteps) {
+        nextBtn.textContent = '신청 완료';
+      } else {
+        nextBtn.textContent = '다음';
+      }
+
+      saveDraft(); // Auto-save current step
+    }
+
+    // Input validation helper for the current step
+    function validateStep() {
+      const activeCard = document.querySelector(`.step-card[data-step="${currentStep}"]`);
+      const inputs = activeCard.querySelectorAll('input[required]');
+      let isValid = true;
+      inputs.forEach(input => {
+        if (!input.value.trim()) {
+          isValid = false;
+          input.reportValidity();
+        }
+      });
+      return isValid;
+    }
+
+    // Next Button Click Event
+    nextBtn.addEventListener('click', () => {
+      if (!validateStep()) return;
+
+      if (currentStep < totalSteps) {
+        currentStep++;
+        updateStep();
+      } else {
+        // Complete step, run submission logic
+        submitForm();
+      }
+    });
+
+    // Prev Button Click Event
+    prevBtn.addEventListener('click', () => {
+      if (currentStep > 1) {
+        currentStep--;
+        updateStep();
+      }
+    });
+
+    // Enter Key Auto-advance
+    form.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        nextBtn.click();
+      }
+    });
+
+    // Auto-save form inputs
+    form.querySelectorAll('.toss-input').forEach(input => {
+      input.addEventListener('input', saveDraft);
+    });
+
+    // --- 3. AUTO-SAVE & DRAFT RECOVERY SYSTEM ---
+    function saveDraft() {
+      // Gather active form data
+      const selectedGoals = Array.from(document.querySelectorAll('#goalsGrid .toss-tag-pill.selected'))
+        .map(el => el.getAttribute('data-value'));
+      const selectedCreatorTypes = Array.from(document.querySelectorAll('#creatorTypesGrid .toss-tag-pill.selected'))
+        .map(el => el.getAttribute('data-value'));
+
+      const draft = {
+        step: currentStep,
+        data: {
+          brand: document.getElementById('brandName').value,
+          designer: document.getElementById('designerName').value,
+          email: document.getElementById('email').value,
+          headline: document.getElementById('headline').value,
+          product: document.getElementById('product').value,
+          category: document.getElementById('category').value,
+          productPrice: document.getElementById('productPrice').value,
+          goals: selectedGoals,
+          creatorTypes: selectedCreatorTypes
+        }
+      };
+
+      try {
+        localStorage.setItem('k_modu_apply_draft', JSON.stringify(draft));
+      } catch (e) {}
+    }
+
+    function checkDraft() {
+      try {
+        const savedDraft = localStorage.getItem('k_modu_apply_draft');
+        if (savedDraft) {
+          const draft = JSON.parse(savedDraft);
+
+          // Verify draft data is actually filled before prompting
+          const d = draft.data;
+          if (d.brand || d.designer || d.email || d.headline || d.product) {
+            const overlay = document.getElementById('draftModal');
+            overlay.classList.add('active');
+
+            // Resume button click handler
+            document.getElementById('resumeBtn').onclick = () => {
+              restoreDraft(draft);
+              overlay.classList.remove('active');
+            };
+
+            // Discard button click handler
+            document.getElementById('discardBtn').onclick = () => {
+              localStorage.removeItem('k_modu_apply_draft');
+              overlay.classList.remove('active');
+              updateStep();
+            };
+            return;
+          }
+        }
+      } catch (e) {}
+      updateStep();
+    }
+
+    function restoreDraft(draft) {
+      const d = draft.data;
+
+      // Populate inputs
+      document.getElementById('brandName').value = d.brand || '';
+      document.getElementById('designerName').value = d.designer || '';
+      document.getElementById('email').value = d.email || '';
+      document.getElementById('headline').value = d.headline || '';
+      document.getElementById('product').value = d.product || '';
+      document.getElementById('category').value = d.category || '';
+      document.getElementById('productPrice').value = d.productPrice || '';
+
+      // Populate tags
+      if (d.goals) {
+        d.goals.forEach(val => {
+          const pill = document.querySelector(`#goalsGrid .toss-tag-pill[data-value="${val}"]`);
+          if (pill) pill.classList.add('selected');
+        });
+      }
+      if (d.creatorTypes) {
+        d.creatorTypes.forEach(val => {
+          const pill = document.querySelector(`#creatorTypesGrid .toss-tag-pill[data-value="${val}"]`);
+          if (pill) pill.classList.add('selected');
+        });
+      }
+
+      // Restore to saved step
+      currentStep = draft.step || 1;
+      updateStep();
+    }
+
+    // --- 4. SUBMISSION & LOCALSTORAGE PERSISTENCE PIPELINE ---
+    function submitForm() {
+      const brandName = document.getElementById('brandName').value;
+      const designerName = document.getElementById('designerName').value;
+      const category = document.getElementById('category').value || document.getElementById('headline').value || 'Minimal Fashion';
+      const country = 'South Korea';
+
+      const today = new Date();
+      const formattedDate = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}`;
+
+      // Assemble new application metadata
+      const newApp = {
+        brand: brandName,
+        designer: designerName,
+        category: category,
+        country: country,
+        status: 'Reviewing',
+        submitted: formattedDate
+      };
+
+      // Retrieve existing list or create empty
+      let apps = [];
+      try {
+        apps = JSON.parse(localStorage.getItem('k_modu_applications')) || [];
+      } catch (err) {
+        apps = [];
+      }
+
+      // Prepend to application database
+      apps.unshift(newApp);
+      localStorage.setItem('k_modu_applications', JSON.stringify(apps));
+
+      // Clear draft since form is successfully submitted
+      localStorage.removeItem('k_modu_apply_draft');
+
+      // Successfully proceed to completion screen
+      window.location.href = 'apply-complete.html';
+    }
+
+    // Run Onload Draft Check
+    checkDraft();
+  </script>
 </body>
 </html>
