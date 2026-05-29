@@ -117,6 +117,7 @@
             <label><input type="checkbox" value="open" data-filter-key="status" /> 모집중</label>
             <label><input type="checkbox" value="new" data-filter-key="status" /> 신규 등록</label>
             <label><input type="checkbox" value="closing" data-filter-key="status" /> 마감임박</label>
+            <label><input type="checkbox" value="seeding" data-filter-key="status" /> K-뷰티 시딩</label>
           </div>
 
           <div class="filter-group">
@@ -261,6 +262,43 @@
 
   <script>
     const grid = document.getElementById('creatorGrid');
+
+    // K-뷰티 무상 시딩 인플루언서(말레이시아) — 기존 .market-card 폼에 주입. 이미지는 임시 플레이스홀더(추후 교체).
+    // [이름, 대표 플랫폼, 대표 팔로워, 카테고리, 타입, 우선순위] — 이메일/전화 등 개인정보는 미포함.
+    const seedingCreators = [
+      ['Nora Lunia', 'Instagram', 193000, 'Instagram Editorial', 'Editorial', 'S'],
+      ['Miza Qistina', 'TikTok', 341400, 'TikTok Styling', 'Daily', 'S'],
+      ['Ziafmihat', 'Instagram', 56200, 'Instagram Editorial', 'Editorial', 'S'],
+      ['Ekmal Suhaimi', 'Instagram', 100000, 'Fashion Creator', 'Minimal', 'A'],
+      ['Bebelan Cik Min', 'Instagram', 21300, 'Instagram Editorial', 'Editorial', 'A'],
+      ['Ash Rafflyn', 'Instagram', 50300, 'Fashion Creator', 'Minimal', 'A-'],
+      ['KitKat Nelfei', 'Instagram', 20000, 'Instagram Editorial', 'Editorial', 'A-'],
+      ['alwaniraihan / Yon', 'Instagram', 47500, 'Instagram Editorial', 'Editorial', 'A-'],
+      ['Syazwan Evans', 'TikTok', 157800, 'TikTok Styling', 'Daily', 'A-'],
+      ['Eizzad Jeffry / Dr.EJ', 'Instagram', 161000, 'Fashion Creator', 'Daily', 'B+'],
+      ['Keknanjudge', 'Instagram', 122000, 'TikTok Styling', 'Daily', 'B+'],
+      ['ItsErfan', 'Instagram', 26400, 'Fashion Creator', 'Daily', 'B+'],
+      ['Hans Hanis', 'Instagram', 20700, 'YouTube Review', 'Daily', 'B+'],
+      ['Irwan Shah', 'Instagram', 22000, 'Fashion Creator', 'Minimal', 'B'],
+      ['Khalaf', 'Instagram', 22400, 'Fashion Creator', 'Minimal', 'B'],
+      ['Jenny Lim', 'TikTok', 41400, 'TikTok Styling', 'Daily', 'B'],
+      ['Yaya Rose', 'Instagram', 14200, 'Instagram Editorial', 'Daily', 'B'],
+      ['Alif Haiqal', 'TikTok', 44100, 'TikTok Styling', 'Daily', 'B-'],
+      ['Alam Antido', 'TikTok', 24000, 'TikTok Styling', 'Daily', 'B-'],
+      ['Syeira ms', 'Instagram', 18300, 'Fashion Creator', 'Daily', 'C+'],
+    ];
+    const seedingImgs = ['assets/us-female-01.png', 'assets/us-female-02.png', 'assets/us-female-03.png', 'assets/us-female-04.png', 'assets/us-female-05.png', 'assets/us-female-06.png', 'assets/us-female-07.png', 'assets/us-female-08.png', 'assets/mainmodel_2.png', 'assets/mainmodel_3.png', 'assets/mainmodel_4.png', 'assets/hero-model.png'];
+    const fmtSeedK = (n) => (n >= 1e6 ? (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M' : Math.round(n / 1e3) + 'K');
+    grid.insertAdjacentHTML('beforeend', seedingCreators.map((c, i) => {
+      const [name, platform, followers, category, type, priority] = c;
+      const img = seedingImgs[i % seedingImgs.length];
+      return `
+      <article class="market-card is-seeding" data-category="${category}" data-status="seeding" data-platform="${platform}" data-type="${type}" data-market="Global" data-fit="" data-followers="${followers}" data-er="" data-search="${name.toLowerCase()} ${category.toLowerCase()} malaysia k-beauty seeding" data-priority="${priority}">
+        <div class="thumb"><img src="${img}" alt="${name}" loading="lazy" /><span class="flag">SEEDING</span><button type="button" aria-label="Save ${name}">♡</button></div>
+        <div class="market-card-body"><div class="badges"><span>${platform}</span><span>SEEDING</span><span>MY</span></div><h3>${name}</h3><p>K-Beauty seeding / Malaysia / ${category}</p><div class="mini-stats"><span><strong>${fmtSeedK(followers)}</strong>Followers</span><span><strong>—</strong>ER</span></div><strong class="reward">PRIORITY ${priority}</strong></div>
+      </article>`;
+    }).join(''));
+
     const cards = Array.from(grid.querySelectorAll('.market-card'));
     const categoryButtons = Array.from(document.querySelectorAll('.category-card'));
     const mobileCategorySelect = document.getElementById('mobileCategorySelect');
