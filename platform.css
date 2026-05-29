@@ -2045,10 +2045,11 @@ body.sheet-open {
 
 .creator-profile-card {
   position: relative;
-  width: min(620px, 100%);
-  max-height: calc(100dvh - 56px);
-  display: flex;
-  flex-direction: column;
+  width: min(980px, 100%);
+  height: min(660px, calc(100dvh - 56px));
+  display: grid;
+  grid-template-columns: minmax(0, 1.02fr) minmax(0, .98fr);
+  grid-template-rows: minmax(0, 1fr);
   overflow: hidden;
   background: #f7f7f4;
   color: #050505;
@@ -2074,8 +2075,6 @@ body.sheet-open {
 }
 
 .creator-sheet-visual {
-  flex: 0 0 auto;
-  height: 360px;
   overflow: hidden;
   background: #eee;
 }
@@ -2416,6 +2415,7 @@ body.dark-theme .mini-stats strong {
     height: min(88dvh, calc(100dvh - 72px));
     max-height: calc(100dvh - 72px);
     display: grid;
+    grid-template-columns: 1fr;
     grid-template-rows: minmax(300px, 43dvh) minmax(0, 1fr);
     border-radius: 24px 24px 0 0;
   }
