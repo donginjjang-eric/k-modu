@@ -2087,6 +2087,24 @@ body.sheet-open {
   cursor: pointer;
 }
 
+/* 데스크톱: 좌측 ‹(뒤로가기) 대신 우측 상단 ✕(창 닫기) */
+@media (min-width: 901px) {
+  .creator-sheet-close {
+    top: 18px;
+    left: auto;
+    right: 18px;
+    width: 46px;
+    height: 46px;
+    font-size: 0;
+  }
+
+  .creator-sheet-close::before {
+    content: "✕";
+    font-size: 18px;
+    line-height: 1;
+  }
+}
+
 .creator-sheet-visual {
   overflow: hidden;
   background: #eee;
