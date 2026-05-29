@@ -241,6 +241,13 @@ select {
   text-transform: uppercase;
 }
 
+/* 히어로 타이틀 크기 통일 — designers 히어로를 creators와 동일 크기로 */
+.designer-hero .page-title {
+  font-size: clamp(34px, 4.2vw, 62px);
+  line-height: .92;
+  letter-spacing: -.058em;
+}
+
 .page-lead {
   max-width: 720px;
   margin: 28px 0 0;
@@ -1392,15 +1399,6 @@ select {
   border-bottom: 1px solid rgba(5, 5, 5, .08);
 }
 
-.market-kicker {
-  margin: 0 0 12px;
-  color: rgba(5, 5, 5, .5);
-  font-size: var(--fs-label);
-  font-weight: 900;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-}
-
 .creator-brief h1 {
   max-width: 930px;
   margin: 0;
@@ -2271,7 +2269,6 @@ body.dark-theme .filter-group {
 }
 
 body.dark-theme .creator-brief p:last-child,
-body.dark-theme .market-kicker,
 body.dark-theme .filter-head button,
 body.dark-theme .filter-group label,
 body.dark-theme .board-head p,
