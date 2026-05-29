@@ -1181,6 +1181,13 @@ body.dark-theme .brand img {
   letter-spacing: .12em;
 }
 
+/* PC에선 푸터 가운데 정렬 */
+@media (min-width: 901px) {
+  .footer-mini {
+    text-align: center;
+  }
+}
+
 .login-shell {
   min-height: calc(100vh - 68px);
   display: grid;
