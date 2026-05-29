@@ -2058,8 +2058,8 @@ body.sheet-open {
 
 .creator-profile-card {
   position: relative;
-  width: min(980px, 100%);
-  height: min(660px, calc(100dvh - 56px));
+  width: min(1120px, 96vw);
+  height: min(800px, calc(100dvh - 40px));
   display: grid;
   grid-template-columns: minmax(0, 1.02fr) minmax(0, .98fr);
   grid-template-rows: minmax(0, 1fr);
