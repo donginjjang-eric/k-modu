@@ -105,6 +105,15 @@
       </div>
     </div>
 
+    <!-- 사진을 풀스크린으로 넘겨보는 갤러리 라이트박스 -->
+    <div class="designer-lightbox" id="designerLightbox" role="dialog" aria-modal="true" aria-label="이미지 갤러리" aria-hidden="true">
+      <div class="dlb-scroller" id="dlbScroller"></div>
+      <button class="dlb-arrow dlb-prev" type="button" aria-label="이전 사진">‹</button>
+      <button class="dlb-arrow dlb-next" type="button" aria-label="다음 사진">›</button>
+      <button class="dlb-close" type="button" aria-label="닫기">✕</button>
+      <div class="dlb-count" aria-live="polite"><b id="dlbCurrent">1</b> / <span id="dlbTotal">1</span></div>
+    </div>
+
     <footer class="footer-mini">K-MODU Designer Profiles</footer>
   </main>
 
@@ -198,6 +207,66 @@
     let proposalGalleryImages = [];
     let proposalGalleryIndex = 0;
     let proposalGalleryTimer = null;
+
+    // 풀스크린 사진 갤러리 라이트박스 (제안 시트 위에 표시)
+    const lightbox = document.querySelector('#designerLightbox');
+    const dlbScroller = document.querySelector('#dlbScroller');
+    const dlbCurrent = document.querySelector('#dlbCurrent');
+    const dlbTotal = document.querySelector('#dlbTotal');
+    let dlbImages = [];
+    let dlbIndex = 0;
+
+    const dlbGoTo = (i, smooth = true) => {
+      if (!dlbImages.length) return;
+      dlbIndex = (i + dlbImages.length) % dlbImages.length;
+      dlbScroller.scrollTo({ left: dlbIndex * dlbScroller.clientWidth, behavior: smooth ? 'smooth' : 'auto' });
+      dlbCurrent.textContent = dlbIndex + 1;
+    };
+
+    const closeLightbox = () => {
+      lightbox.classList.remove('is-open');
+      lightbox.setAttribute('aria-hidden', 'true');
+      if (!proposalSheet.classList.contains('is-open')) {
+        document.body.classList.remove('sheet-open');
+      }
+    };
+
+    const openLightbox = (images, startIndex = 0) => {
+      dlbImages = (images || []).filter(Boolean);
+      if (!dlbImages.length) return;
+      dlbIndex = Math.max(0, Math.min(dlbImages.length - 1, startIndex));
+      dlbTotal.textContent = dlbImages.length;
+      dlbCurrent.textContent = dlbIndex + 1;
+      dlbScroller.innerHTML = dlbImages.map((src, i) => (
+        `<div class="dlb-slide"><img src="${escapeHtml(src)}" alt="이미지 ${i + 1}" /></div>`
+      )).join('');
+      dlbScroller.scrollLeft = 0;
+      lightbox.classList.add('is-open');
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('sheet-open');
+      requestAnimationFrame(() => dlbGoTo(dlbIndex, false));
+    };
+
+    lightbox.querySelector('.dlb-prev').addEventListener('click', () => dlbGoTo(dlbIndex - 1));
+    lightbox.querySelector('.dlb-next').addEventListener('click', () => dlbGoTo(dlbIndex + 1));
+    lightbox.querySelector('.dlb-close').addEventListener('click', closeLightbox);
+    let dlbRaf = null;
+    dlbScroller.addEventListener('scroll', () => {
+      if (dlbRaf) return;
+      dlbRaf = requestAnimationFrame(() => {
+        dlbRaf = null;
+        if (!dlbImages.length) return;
+        const i = Math.round(dlbScroller.scrollLeft / dlbScroller.clientWidth);
+        dlbIndex = Math.max(0, Math.min(dlbImages.length - 1, i));
+        dlbCurrent.textContent = dlbIndex + 1;
+      });
+    }, { passive: true });
+    document.addEventListener('keydown', (e) => {
+      if (!lightbox.classList.contains('is-open')) return;
+      if (e.key === 'Escape') closeLightbox();
+      else if (e.key === 'ArrowLeft') dlbGoTo(dlbIndex - 1);
+      else if (e.key === 'ArrowRight') dlbGoTo(dlbIndex + 1);
+    });
 
     const getCreatorDirection = (tags) => {
       const joined = tags.join(' ').toLowerCase();
@@ -339,13 +408,7 @@
       });
       Array.from(proposalPortfolioThumbs.children).forEach((thumb, index) => {
         thumb.addEventListener('click', () => {
-          stopProposalGallery();
-          setProposalGalleryImage(index);
-          if (!reduceMotion) {
-            proposalGalleryTimer = window.setInterval(() => {
-              setProposalGalleryImage((proposalGalleryIndex + 1) % proposalGalleryImages.length);
-            }, 2400);
-          }
+          openLightbox(proposalGalleryImages.map((it) => it.image), index);
         });
       });
       setProposalGalleryImage(0);
@@ -391,18 +454,11 @@
           <img src="${escapeHtml(image)}" alt="" loading="lazy" />
         </button>
       `).join('');
-      [...proposalProductPreview.children, ...proposalSamplePreview.children].forEach((button) => {
-        button.addEventListener('click', () => {
-          stopProposalGallery();
-          proposalImage.classList.add('is-switching');
-          window.setTimeout(() => {
-            proposalImage.src = button.dataset.assetImage;
-            proposalImage.alt = `${brand} asset preview`;
-            proposalImage.classList.remove('is-switching');
-          }, 120);
-          Array.from(proposalPortfolioDots.children).forEach((dot) => dot.classList.remove('is-active'));
-          Array.from(proposalPortfolioThumbs.children).forEach((thumb) => thumb.classList.remove('is-active'));
-        });
+      Array.from(proposalProductPreview.children).forEach((button, index) => {
+        button.addEventListener('click', () => openLightbox(assets.products, index));
+      });
+      Array.from(proposalSamplePreview.children).forEach((button, index) => {
+        button.addEventListener('click', () => openLightbox(assets.samples, index));
       });
       proposalCreatorDirection.textContent = getCreatorDirection(tags);
       proposalBriefLink.href = `designer-brief.html?brand=${encodedBrand}`;

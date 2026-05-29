@@ -2683,3 +2683,115 @@ body.dark-theme .mini-stats strong {
     word-break: keep-all;
   }
 }
+
+/* 디자이너 제안 시트 — 사진을 풀스크린으로 넘겨보는 갤러리 라이트박스 */
+.designer-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: none;
+  background: rgba(5, 5, 5, .94);
+}
+
+.designer-lightbox.is-open {
+  display: block;
+}
+
+.dlb-scroller {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.dlb-scroller::-webkit-scrollbar { display: none; }
+
+.dlb-slide {
+  flex: 0 0 100%;
+  box-sizing: border-box;
+  scroll-snap-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 72px 18px 86px;
+}
+
+.dlb-slide img {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.dlb-close,
+.dlb-arrow {
+  position: absolute;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .14);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  cursor: pointer;
+  transition: background .2s ease, transform .2s ease;
+}
+
+.dlb-close:hover,
+.dlb-arrow:hover { background: rgba(255, 255, 255, .26); }
+
+.dlb-close {
+  top: 18px;
+  right: 18px;
+  width: 46px;
+  height: 46px;
+  font-size: 20px;
+}
+
+.dlb-close:active { transform: scale(.92); }
+
+.dlb-arrow {
+  top: 50%;
+  width: 48px;
+  height: 48px;
+  font-size: 28px;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
+.dlb-arrow:active { transform: translateY(-50%) scale(.92); }
+.dlb-prev { left: 16px; }
+.dlb-next { right: 16px; }
+
+.dlb-count {
+  position: absolute;
+  bottom: 26px;
+  left: 50%;
+  z-index: 3;
+  transform: translateX(-50%);
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .14);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .04em;
+}
+
+.dlb-count b { font-weight: 800; }
+
+@media (max-width: 900px) {
+  .dlb-arrow { display: none; }
+  .dlb-slide { padding: 64px 12px 80px; }
+}
