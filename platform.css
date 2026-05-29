@@ -232,6 +232,19 @@ select {
   line-height: 1.75;
 }
 
+.brief-target {
+  display: inline-flex;
+  align-items: center;
+  margin: 20px 0 0;
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: #050505;
+  color: var(--paper);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+
 .section {
   padding: 70px clamp(28px, 6vw, 90px);
 }
