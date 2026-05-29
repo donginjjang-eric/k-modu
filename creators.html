@@ -242,11 +242,17 @@
           <img id="creatorSheetImg" src="assets/hero-group.png" alt="" />
         </div>
         <div class="creator-sheet-content">
-          <p>K-MODU CREATOR PROFILE</p>
-          <h2 id="creatorSheetTitle">준비중입니다</h2>
-          <strong id="creatorSheetName">Creator Profile</strong>
-          <span>크리에이터 상세 프로필을 준비하고 있습니다.</span>
-          <small>곧 업데이트될 예정입니다.</small>
+          <p class="creator-sheet-kicker">K-MODU CREATOR PROFILE</p>
+          <h2 id="creatorSheetTitle">Creator</h2>
+          <span id="creatorSheetDir">콘텐츠 방향</span>
+          <div class="creator-sheet-meta" id="creatorSheetMeta" aria-label="Creator metrics"></div>
+          <div class="creator-sheet-collab">
+            <h3>Collaboration Ready</h3>
+            <div class="creator-sheet-tags" id="creatorSheetTags"></div>
+          </div>
+          <div class="creator-sheet-actions">
+            <a class="pill" id="creatorProposeLink" href="designer-brief.html">이 크리에이터에게 제안하기</a>
+          </div>
         </div>
       </div>
     </div>
@@ -270,7 +276,26 @@
     const resetFilters = document.getElementById('resetFilters');
     const creatorSheet = document.getElementById('creatorProfileSheet');
     const creatorSheetImg = document.getElementById('creatorSheetImg');
-    const creatorSheetName = document.getElementById('creatorSheetName');
+    const creatorSheetTitle = document.getElementById('creatorSheetTitle');
+    const creatorSheetDir = document.getElementById('creatorSheetDir');
+    const creatorSheetMeta = document.getElementById('creatorSheetMeta');
+    const creatorSheetTags = document.getElementById('creatorSheetTags');
+    const creatorProposeLink = document.getElementById('creatorProposeLink');
+    const fmtFollowers = (value) => {
+      const n = Number(value);
+      if (!n) return '—';
+      if (n >= 1e6) return (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+      if (n >= 1e3) return Math.round(n / 1e3) + 'K';
+      return String(n);
+    };
+    const deliverablesFor = (platform, type) => {
+      const base = {
+        TikTok: ['Styling Reel', 'GRWM'],
+        Instagram: ['Editorial Try-on', 'Feed Set'],
+        YouTube: ['Review / Haul'],
+      }[platform] || ['Styling Content'];
+      return [...base, 'Product Seeding'];
+    };
     const creatorSheetClose = document.querySelector('.creator-sheet-close');
     let activeCategory = 'all';
 
@@ -379,9 +404,21 @@
       const openCreatorSheet = () => {
         const img = card.querySelector('img');
         const name = card.querySelector('h3')?.textContent || 'Creator Profile';
+        const dir = card.querySelector('.market-card-body p')?.textContent || '';
+        const d = card.dataset;
         creatorSheetImg.src = img?.getAttribute('src') || 'assets/hero-group.png';
         creatorSheetImg.alt = name;
-        creatorSheetName.textContent = name;
+        creatorSheetTitle.textContent = name;
+        creatorSheetDir.textContent = dir;
+        creatorSheetMeta.innerHTML = [
+          ['Platform', d.platform || '—'],
+          ['Followers', fmtFollowers(d.followers)],
+          ['Engagement', d.er ? `${d.er}%` : '—'],
+          ['Fit Score', d.fit ? `${d.fit}%` : '—'],
+        ].map(([label, value]) => `<div><span>${label}</span><strong>${value}</strong></div>`).join('');
+        creatorSheetTags.innerHTML = deliverablesFor(d.platform, d.type)
+          .map((tag) => `<span>${tag}</span>`).join('');
+        creatorProposeLink.href = `designer-brief.html?creator=${encodeURIComponent(name)}`;
         creatorSheet.classList.add('is-open');
         creatorSheet.setAttribute('aria-hidden', 'false');
         document.body.classList.add('sheet-open');
