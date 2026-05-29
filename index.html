@@ -96,7 +96,19 @@
 
     .nav-center {
       display: flex;
-      gap: 54px;
+      gap: 40px;
+    }
+
+    .nav-center a {
+      font-size: var(--fs-xs);
+      letter-spacing: .14em;
+      color: var(--soft);
+      transition: color .2s ease;
+    }
+
+    .nav-center a:hover,
+    .nav-center a[aria-current="page"] {
+      color: var(--ink);
     }
 
     .nav-center a[aria-current="page"],
@@ -114,35 +126,54 @@
     .locale-switch {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      color: rgba(5, 5, 5, .62);
+      gap: 7px;
       font-size: var(--fs-label);
       letter-spacing: .08em;
     }
 
+    .locale-switch a {
+      color: rgba(5, 5, 5, .32);
+      transition: color .2s ease;
+    }
+
+    .locale-switch a:hover {
+      color: #050505;
+    }
+
     .locale-switch .active {
       color: #050505;
-      font-weight: 600;
+      font-weight: 800;
+    }
+
+    .locale-switch span {
+      color: rgba(5, 5, 5, .2);
     }
 
     .login-btn {
       display: inline-flex;
-      height: 30px;
+      height: 36px;
       align-items: center;
       justify-content: center;
-      padding: 0 18px;
+      padding: 0 20px;
       border: 1px solid #050505;
       border-radius: 999px;
       background: #050505;
       color: #f7f7f4;
       font-size: var(--fs-label);
-      letter-spacing: .14em;
+      font-weight: 800;
+      letter-spacing: .1em;
       line-height: 1;
+      text-transform: uppercase;
+      transition: transform .25s ease, box-shadow .25s ease;
     }
 
     .login-btn:hover {
-      background: transparent;
-      color: #050505;
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(5, 5, 5, .22);
+    }
+
+    .login-btn:active {
+      transform: translateY(0);
     }
 
     .menu-toggle {

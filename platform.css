@@ -116,12 +116,24 @@ body.dark-theme .brand img {
 
 .topnav {
   display: flex;
-  gap: 42px;
+  gap: 40px;
+}
+
+.topnav a {
+  font-size: var(--fs-xs);
+  letter-spacing: .14em;
+  color: var(--muted);
+  transition: color .2s ease;
+}
+
+.topnav a:hover,
+.topnav a[aria-current="page"] {
+  color: var(--ink);
 }
 
 .topnav a[aria-current="page"],
 .platform-menu-panel a[aria-current="page"] {
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .top-actions {
@@ -211,21 +223,37 @@ body.dark-theme .brand img {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 34px;
-  padding: 0 18px;
+  min-height: 36px;
+  padding: 0 20px;
   border: 1px solid var(--ink);
   border-radius: 999px;
   background: var(--ink);
   color: var(--paper);
   font-size: var(--fs-label);
   font-weight: 800;
-  letter-spacing: .08em;
+  letter-spacing: .1em;
   text-transform: uppercase;
+  transition: transform .25s ease, box-shadow .25s ease, background-color .25s ease, color .25s ease;
+}
+
+.pill:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(5, 5, 5, .22);
+}
+
+.pill:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(5, 5, 5, .16);
 }
 
 .pill.light {
   background: transparent;
   color: var(--ink);
+}
+
+.pill.light:hover {
+  background: var(--ink);
+  color: var(--paper);
 }
 
 .page-hero {
