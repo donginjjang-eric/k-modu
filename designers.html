@@ -479,6 +479,13 @@
       });
     });
 
+    document.querySelectorAll('.work-pin img').forEach((img) => {
+      img.addEventListener('click', () => {
+        const card = img.closest('.work-pin');
+        if (card) openProposalSheet(card);
+      });
+    });
+
     proposalClose.addEventListener('click', closeProposalSheet);
     proposalSheet.addEventListener('click', (event) => {
       if (event.target === proposalSheet) closeProposalSheet();
