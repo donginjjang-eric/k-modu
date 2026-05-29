@@ -2474,6 +2474,7 @@ body.dark-theme .mini-stats strong {
   }
 
   .category-card strong {
+    align-self: center;
     font-size: 13px;
     letter-spacing: -.01em;
     white-space: nowrap;
