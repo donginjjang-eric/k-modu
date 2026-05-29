@@ -54,6 +54,10 @@ body.dark-theme {
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 html,
 body {
   margin: 0;
@@ -120,8 +124,9 @@ body.dark-theme .brand img {
 }
 
 .topnav a {
-  font-size: var(--fs-xs);
-  letter-spacing: .14em;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  letter-spacing: .08em;
   color: var(--muted);
   transition: color .2s ease;
 }
