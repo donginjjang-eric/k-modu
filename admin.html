@@ -155,18 +155,18 @@
         let actionButtons = '';
         if (app.status === 'Reviewing') {
           actionButtons = `
-            <button onclick="updateStatus(${index}, 'Brief Ready')" class="pill" style="min-height: 24px; font-size: 8px; padding: 0 10px; cursor: pointer;">Approve</button>
-            <button onclick="deleteApp(${index})" class="pill light" style="min-height: 24px; font-size: 8px; padding: 0 10px; cursor: pointer; border-color: red; color: red; margin-left: 4px;">Delete</button>
+            <button onclick="updateStatus(${index}, 'Brief Ready')" class="pill" style="min-height: 24px; font-size: var(--fs-label-sm); padding: 0 10px; cursor: pointer;">Approve</button>
+            <button onclick="deleteApp(${index})" class="pill light" style="min-height: 24px; font-size: var(--fs-label-sm); padding: 0 10px; cursor: pointer; border-color: red; color: red; margin-left: 4px;">Delete</button>
           `;
         } else if (app.status === 'Brief Ready') {
           actionButtons = `
-            <a href="designer-brief.html" class="pill" style="min-height: 24px; font-size: 8px; padding: 6px 10px; line-height: 1; display: inline-flex; align-items: center;">브리프 작성</a>
-            <button onclick="deleteApp(${index})" class="pill light" style="min-height: 24px; font-size: 8px; padding: 0 10px; cursor: pointer; border-color: red; color: red; margin-left: 4px;">Delete</button>
+            <a href="designer-brief.html" class="pill" style="min-height: 24px; font-size: var(--fs-label-sm); padding: 6px 10px; line-height: 1; display: inline-flex; align-items: center;">브리프 작성</a>
+            <button onclick="deleteApp(${index})" class="pill light" style="min-height: 24px; font-size: var(--fs-label-sm); padding: 0 10px; cursor: pointer; border-color: red; color: red; margin-left: 4px;">Delete</button>
           `;
         } else {
           actionButtons = `
-            <a href="brand-detail.html" class="pill light" style="min-height: 24px; font-size: 8px; padding: 6px 10px; line-height: 1; display: inline-flex; align-items: center;">View Detail</a>
-            <button onclick="deleteApp(${index})" class="pill light" style="min-height: 24px; font-size: 8px; padding: 0 10px; cursor: pointer; border-color: red; color: red; margin-left: 4px;">Delete</button>
+            <a href="brand-detail.html" class="pill light" style="min-height: 24px; font-size: var(--fs-label-sm); padding: 6px 10px; line-height: 1; display: inline-flex; align-items: center;">View Detail</a>
+            <button onclick="deleteApp(${index})" class="pill light" style="min-height: 24px; font-size: var(--fs-label-sm); padding: 0 10px; cursor: pointer; border-color: red; color: red; margin-left: 4px;">Delete</button>
           `;
         }
 

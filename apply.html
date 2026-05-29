@@ -59,7 +59,7 @@
     }
 
     .toss-subtitle {
-      font-size: 15px;
+      font-size: var(--fs-body);
       color: var(--muted);
       line-height: 1.6;
       margin: 0 0 36px;
@@ -73,7 +73,7 @@
 
     .toss-field label {
       display: block;
-      font-size: 11px;
+      font-size: var(--fs-label-sm);
       font-weight: 800;
       color: var(--muted);
       letter-spacing: 0.1em;
@@ -87,7 +87,7 @@
       border-bottom: 2px solid var(--line);
       background: transparent;
       color: var(--ink);
-      font-size: 20px;
+      font-size: var(--fs-body-lg);
       font-weight: 500;
       padding: 12px 0;
       outline: none;
@@ -123,7 +123,7 @@
       border-radius: 22px;
       background: var(--input-bg);
       color: var(--ink);
-      font-size: 13px;
+      font-size: var(--fs-xs);
       font-weight: 600;
       cursor: pointer;
       user-select: none;
@@ -168,14 +168,14 @@
     }
 
     .toss-upload-text {
-      font-size: 14px;
+      font-size: var(--fs-sm);
       font-weight: 600;
       color: var(--ink);
       margin-bottom: 4px;
     }
 
     .toss-upload-subtext {
-      font-size: 12px;
+      font-size: var(--fs-label);
       color: var(--muted);
     }
 
@@ -194,7 +194,7 @@
       min-height: 54px;
       border: none;
       border-radius: 14px;
-      font-size: 15px;
+      font-size: var(--fs-body);
       font-weight: 700;
       cursor: pointer;
       transition: all 0.24s ease;
@@ -264,7 +264,7 @@
     }
 
     .toss-modal-title {
-      font-size: 22px;
+      font-size: var(--fs-title-sm);
       font-weight: 700;
       letter-spacing: -0.03em;
       margin: 0 0 12px;
@@ -272,7 +272,7 @@
     }
 
     .toss-modal-body {
-      font-size: 14px;
+      font-size: var(--fs-sm);
       color: var(--muted);
       line-height: 1.6;
       margin: 0 0 28px;
@@ -296,7 +296,7 @@
         <a href="index.html#contact">문의</a>
       </nav>
       <div class="top-actions">
-        <button id="themeToggleBtn" aria-label="테마 전환" style="background:none; border:none; color:var(--ink); font-size:11px; font-weight:800; cursor:pointer; letter-spacing:.08em; padding:0; text-transform:uppercase; margin-right:12px; display:inline-flex; align-items:center;">다크</button>
+        <button id="themeToggleBtn" aria-label="테마 전환" style="background:none; border:none; color:var(--ink); font-size:var(--fs-label-sm); font-weight:800; cursor:pointer; letter-spacing:.08em; padding:0; text-transform:uppercase; margin-right:12px; display:inline-flex; align-items:center;">다크</button>
         <a href="admin.html">관리자</a>
         <a class="pill" href="apply.html">입점 신청</a>
       </div>
@@ -416,7 +416,7 @@
               <p class="toss-upload-subtext">룩북, 대표 상품 컷 (최대 10MB)</p>
               <input type="file" id="fileInput" multiple style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;" />
             </div>
-            <div id="fileList" style="margin-top: 14px; font-size: 12px; color: var(--muted); text-align: left; line-height: 1.6;"></div>
+            <div id="fileList" style="margin-top: 14px; font-size: var(--fs-label); color: var(--muted); text-align: left; line-height: 1.6;"></div>
           </div>
         </div>
 
