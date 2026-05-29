@@ -11,25 +11,25 @@
     <header class="topbar">
       <a class="brand" href="index.html#home"><img src="assets/k-modu-logo.png" alt="K-MODU" /></a>
       <nav class="topnav">
-        <a href="index.html#about">About</a>
-        <a href="designers.html" aria-current="page">Designers</a>
-        <a href="creators.html">Creators</a>
-        <a href="index.html#contact">Contact</a>
+        <a href="index.html#about">소개</a>
+        <a href="designers.html" aria-current="page">디자이너</a>
+        <a href="creators.html">크리에이터</a>
+        <a href="index.html#contact">문의</a>
       </nav>
       <div class="top-actions">
-        <button id="themeToggleBtn" aria-label="테마 전환" style="background:none; border:none; color:var(--ink); font-size:11px; font-weight:800; cursor:pointer; letter-spacing:.08em; padding:0; text-transform:uppercase; margin-right:12px; display:inline-flex; align-items:center;">DARK</button>
-        <a href="index.html#home">Landing</a>
-        <a class="pill" href="apply.html">New Apply</a>
+        <button id="themeToggleBtn" aria-label="테마 전환" style="background:none; border:none; color:var(--ink); font-size:11px; font-weight:800; cursor:pointer; letter-spacing:.08em; padding:0; text-transform:uppercase; margin-right:12px; display:inline-flex; align-items:center;">다크</button>
+        <a href="index.html#home">홈</a>
+        <a class="pill" href="apply.html">새 신청</a>
       </div>
       <details class="platform-menu">
         <summary aria-label="메뉴"><span></span></summary>
         <div class="platform-menu-panel">
-          <a href="index.html#about">About</a>
-          <a href="designers.html" aria-current="page">Designers</a>
-          <a href="creators.html">Creators</a>
-        <a href="index.html#contact">Contact</a>
-          <a href="apply.html">Apply</a>
-          <a href="login.html">Login</a>
+          <a href="index.html#about">소개</a>
+          <a href="designers.html" aria-current="page">디자이너</a>
+          <a href="creators.html">크리에이터</a>
+        <a href="index.html#contact">문의</a>
+          <a href="apply.html">입점 신청</a>
+          <a href="login.html">로그인</a>
         </div>
       </details>
     </header>
@@ -52,7 +52,7 @@
     <section class="section" style="padding-top: 0;">
       <div class="section-head">
         <h2>Applications</h2>
-        <a class="pill" href="designer-brief.html">Create Designer Brief</a>
+        <a class="pill" href="designer-brief.html">브리프 작성</a>
       </div>
       <table class="table">
         <thead>
@@ -82,10 +82,10 @@
     function applyTheme(theme) {
       if (theme === 'dark') {
         document.body.classList.add('dark-theme');
-        if (themeToggleBtn) themeToggleBtn.textContent = 'LIGHT';
+        if (themeToggleBtn) themeToggleBtn.textContent = '라이트';
       } else {
         document.body.classList.remove('dark-theme');
-        if (themeToggleBtn) themeToggleBtn.textContent = 'DARK';
+        if (themeToggleBtn) themeToggleBtn.textContent = '다크';
       }
     }
 
@@ -159,7 +159,7 @@
           `;
         } else if (app.status === 'Brief Ready') {
           actionButtons = `
-            <a href="designer-brief.html" class="pill" style="min-height: 24px; font-size: 8px; padding: 6px 10px; line-height: 1; display: inline-flex; align-items: center;">Create Designer Brief</a>
+            <a href="designer-brief.html" class="pill" style="min-height: 24px; font-size: 8px; padding: 6px 10px; line-height: 1; display: inline-flex; align-items: center;">브리프 작성</a>
             <button onclick="deleteApp(${index})" class="pill light" style="min-height: 24px; font-size: 8px; padding: 0 10px; cursor: pointer; border-color: red; color: red; margin-left: 4px;">Delete</button>
           `;
         } else {
