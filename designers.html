@@ -97,8 +97,7 @@
             </div>
           </div>
           <div class="designer-proposal-actions">
-            <a class="pill light" id="proposalBriefLink" href="designer-brief.html">이 브랜드와 협업하기</a>
-            <a class="pill" id="proposalMatchLink" href="designer-match.html">어울리는 크리에이터 보기</a>
+            <a class="pill" id="proposalBriefLink" href="designer-brief.html">이 브랜드와 협업하기</a>
           </div>
         </div>
         </div>
@@ -201,7 +200,6 @@
     const proposalSamplePreview = document.querySelector('#proposalSamplePreview');
     const proposalCreatorDirection = document.querySelector('#proposalCreatorDirection');
     const proposalBriefLink = document.querySelector('#proposalBriefLink');
-    const proposalMatchLink = document.querySelector('#proposalMatchLink');
     const proposalClose = document.querySelector('.designer-proposal-close');
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let proposalGalleryImages = [];
@@ -462,7 +460,6 @@
       });
       proposalCreatorDirection.textContent = getCreatorDirection(tags);
       proposalBriefLink.href = `designer-brief.html?brand=${encodedBrand}`;
-      proposalMatchLink.href = `designer-match.html?brand=${encodedBrand}`;
       startProposalGallery(profileIndex);
 
       proposalSheet.classList.add('is-open');
