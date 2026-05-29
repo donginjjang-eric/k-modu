@@ -784,6 +784,23 @@ select {
   outline-offset: 2px;
 }
 
+/* 데스크톱: 닫기 버튼을 우측 상단으로 옮기고 ✕ 아이콘으로 */
+@media (min-width: 901px) {
+  .designer-proposal-close {
+    top: 20px;
+    left: auto;
+    right: 20px;
+    font-size: 0;
+    text-indent: 0;
+  }
+
+  .designer-proposal-close::before {
+    content: "✕";
+    font-size: 19px;
+    line-height: 1;
+  }
+}
+
 .designer-proposal-visual {
   position: relative;
   min-height: 560px;
