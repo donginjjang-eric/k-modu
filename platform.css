@@ -109,6 +109,11 @@ select {
   display: block;
 }
 
+/* 다크테마에서 검정 로고가 어두운 배경에 묻히지 않도록 반전(흰 로고) */
+body.dark-theme .brand img {
+  filter: invert(1);
+}
+
 .topnav {
   display: flex;
   gap: 42px;
