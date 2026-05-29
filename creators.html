@@ -93,13 +93,11 @@
     </section>
 
     <section class="market-shell">
-      <aside class="filter-panel" aria-label="Creator filters">
-        <div class="filter-head">
-          <button class="filter-toggle" type="button" aria-expanded="false" aria-controls="filterBody">
-            <strong>필터</strong>
-            <span>열기</span>
-          </button>
-          <button type="button" id="resetFilters">초기화</button>
+      <div class="filter-backdrop" id="filterBackdrop" hidden></div>
+      <aside class="filter-panel" id="filterPanel" aria-label="Creator filters" aria-hidden="true">
+        <div class="filter-drawer-head">
+          <strong>필터</strong>
+          <button class="filter-close" id="filterClose" type="button" aria-label="필터 닫기">✕</button>
         </div>
 
         <div class="filter-body" id="filterBody">
@@ -139,6 +137,11 @@
             <label><input type="checkbox" value="80" data-filter-key="fit" /> 80% 이상</label>
           </div>
         </div>
+
+        <div class="filter-drawer-foot">
+          <button type="button" id="resetFilters">초기화</button>
+          <button type="button" id="filterApply" class="filter-apply">검색</button>
+        </div>
       </aside>
 
       <section class="creator-board" aria-label="Creator results">
@@ -148,6 +151,10 @@
             <h2>Recommended Matching Board</h2>
           </div>
           <div class="board-tools">
+            <button class="filter-open-btn" id="filterOpenBtn" type="button" aria-label="필터 열기">
+              필터
+              <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><line x1="13.4" y1="13.4" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
             <label class="search-field">
               <span>Search</span>
               <input id="creatorSearch" type="search" placeholder="Name, city, style" />
@@ -251,7 +258,10 @@
     const mobileCategorySelect = document.getElementById('mobileCategorySelect');
     const filterInputs = Array.from(document.querySelectorAll('.filter-panel input[type="checkbox"]'));
     const filterPanel = document.querySelector('.filter-panel');
-    const filterToggle = document.querySelector('.filter-toggle');
+    const filterBackdrop = document.getElementById('filterBackdrop');
+    const filterOpenBtn = document.getElementById('filterOpenBtn');
+    const filterClose = document.getElementById('filterClose');
+    const filterApply = document.getElementById('filterApply');
     const searchInput = document.getElementById('creatorSearch');
     const sortSelect = document.getElementById('sortSelect');
     const resultCount = document.getElementById('resultCount');
@@ -318,11 +328,26 @@
       updateBoard();
     });
 
-    filterToggle.addEventListener('click', () => {
-      const isOpen = filterPanel.classList.toggle('is-open');
-      filterToggle.setAttribute('aria-expanded', String(isOpen));
-      filterToggle.querySelector('span').textContent = isOpen ? '닫기' : '열기';
-    });
+    function openFilter() {
+      filterBackdrop.hidden = false;
+      requestAnimationFrame(() => {
+        filterPanel.classList.add('is-open');
+        filterBackdrop.classList.add('is-open');
+      });
+      filterPanel.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('sheet-open');
+    }
+    function closeFilter() {
+      filterPanel.classList.remove('is-open');
+      filterBackdrop.classList.remove('is-open');
+      filterPanel.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('sheet-open');
+      setTimeout(() => { filterBackdrop.hidden = true; }, 320);
+    }
+    filterOpenBtn.addEventListener('click', openFilter);
+    filterClose.addEventListener('click', closeFilter);
+    filterBackdrop.addEventListener('click', closeFilter);
+    filterApply.addEventListener('click', closeFilter);
 
     filterInputs.forEach((input) => input.addEventListener('change', updateBoard));
     searchInput.addEventListener('input', updateBoard);
@@ -378,7 +403,10 @@
       if (event.target === creatorSheet) closeCreatorSheet();
     });
     window.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') closeCreatorSheet();
+      if (event.key === 'Escape') {
+        closeCreatorSheet();
+        closeFilter();
+      }
     });
 
     updateBoard();
