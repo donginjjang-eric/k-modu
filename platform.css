@@ -99,9 +99,14 @@ select {
 }
 
 .brand {
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: -.06em;
+  display: inline-flex;
+  align-items: center;
+}
+
+.brand img {
+  height: 28px;
+  width: auto;
+  display: block;
 }
 
 .topnav {
