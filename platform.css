@@ -2070,6 +2070,10 @@ body.sheet-open {
   box-shadow: 0 28px 72px rgba(0, 0, 0, .24);
 }
 
+.creator-sheet-scroll {
+  display: contents;
+}
+
 .creator-sheet-close {
   position: absolute;
   z-index: 2;
@@ -2553,10 +2557,23 @@ body.dark-theme .mini-stats strong {
     width: 100%;
     height: min(88dvh, calc(100dvh - 72px));
     max-height: calc(100dvh - 72px);
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: minmax(300px, 43dvh) minmax(0, 1fr);
+    display: block;
     border-radius: 24px 24px 0 0;
+  }
+
+  .creator-sheet-scroll {
+    display: block;
+    height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .creator-sheet-close {
+    top: 16px;
+    left: 16px;
+    width: 42px;
+    height: 42px;
+    font-size: 28px;
   }
 
   .creator-profile-card::before {
@@ -2574,13 +2591,13 @@ body.dark-theme .mini-stats strong {
   }
 
   .creator-sheet-visual {
-    height: auto;
+    height: 52dvh;
+    min-height: 300px;
   }
 
   .creator-sheet-content {
-    min-height: 0;
-    overflow-y: auto;
-    padding: 48px 30px 78px;
+    overflow: visible;
+    padding: 40px 30px 60px;
   }
 
   .creator-sheet-content p {
