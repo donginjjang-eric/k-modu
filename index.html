@@ -1816,6 +1816,135 @@
         height: 24px;
       }
     }
+
+    /* 모바일 좌우 스와이프 캠페인 히어로 캐러셀 */
+    .hero-carousel {
+      position: relative;
+      max-width: 1180px;
+      margin: 84px auto 0;
+    }
+
+    .hc-scroller {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      padding: 0 7%;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .hc-scroller::-webkit-scrollbar { display: none; }
+
+    .hc-slide {
+      flex: 0 0 86%;
+      margin: 0;
+      scroll-snap-align: center;
+      aspect-ratio: 4 / 5;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #eee;
+    }
+
+    .hc-slide img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    .hc-arrow {
+      position: absolute;
+      top: 50%;
+      z-index: 2;
+      width: 44px;
+      height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .82);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      color: #111;
+      font-size: 26px;
+      line-height: 1;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, .18);
+      cursor: pointer;
+      transform: translateY(-50%);
+      transition: background .2s ease, transform .2s ease;
+    }
+
+    .hc-arrow:active { transform: translateY(-50%) scale(.92); }
+    .hc-prev { left: 8px; }
+    .hc-next { right: 8px; }
+
+    .hc-status {
+      position: absolute;
+      left: calc(7% + 10px);
+      bottom: 14px;
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 12px 5px 8px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, .45);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .hc-toggle {
+      position: relative;
+      width: 18px;
+      height: 18px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    /* 재생 중: 일시정지(막대 2개) 아이콘 */
+    .hc-toggle::before,
+    .hc-toggle::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      width: 4px;
+      height: 12px;
+      background: #fff;
+      border-radius: 1px;
+    }
+
+    .hc-toggle::before { left: 4px; }
+    .hc-toggle::after { right: 4px; }
+
+    /* 멈춤 상태: 재생(삼각형) 아이콘 */
+    .hc-toggle[aria-pressed="true"]::before {
+      left: 5px;
+      top: 3px;
+      width: 0;
+      height: 0;
+      background: transparent;
+      border-radius: 0;
+      border-left: 11px solid #fff;
+      border-top: 6px solid transparent;
+      border-bottom: 6px solid transparent;
+    }
+
+    .hc-toggle[aria-pressed="true"]::after { display: none; }
+    .hc-count b { font-weight: 800; }
+
+    @media (min-width: 768px) {
+      .hc-scroller { padding-inline: calc(50% - 180px); }
+      .hc-slide { flex-basis: 360px; }
+      .hc-status { left: calc(50% - 170px); }
+    }
   </style>
 </head>
 <body>
@@ -1850,6 +1979,26 @@
         </div>
       </div>
     </header>
+
+    <!-- 모바일 좌우 스와이프 캠페인 히어로 캐러셀 -->
+    <section class="hero-carousel" id="campaignCarousel" aria-label="K-MODU 캠페인" aria-roledescription="carousel">
+      <div class="hc-scroller" id="hcScroller">
+        <figure class="hc-slide"><img src="assets/designer-profile-01.png" alt="K-MODU 디자이너 캠페인 1" loading="eager" /></figure>
+        <figure class="hc-slide"><img src="assets/designer-profile-02.png" alt="K-MODU 디자이너 캠페인 2" loading="lazy" /></figure>
+        <figure class="hc-slide"><img src="assets/designer-profile-03.png" alt="K-MODU 디자이너 캠페인 3" loading="lazy" /></figure>
+        <figure class="hc-slide"><img src="assets/designer-profile-04.png" alt="K-MODU 디자이너 캠페인 4" loading="lazy" /></figure>
+        <figure class="hc-slide"><img src="assets/designer-profile-05.png" alt="K-MODU 디자이너 캠페인 5" loading="lazy" /></figure>
+        <figure class="hc-slide"><img src="assets/designer-profile-06.png" alt="K-MODU 디자이너 캠페인 6" loading="lazy" /></figure>
+        <figure class="hc-slide"><img src="assets/designer-profile-07.png" alt="K-MODU 디자이너 캠페인 7" loading="lazy" /></figure>
+        <figure class="hc-slide"><img src="assets/designer-profile-08.png" alt="K-MODU 디자이너 캠페인 8" loading="lazy" /></figure>
+      </div>
+      <button class="hc-arrow hc-prev" type="button" aria-label="이전 슬라이드">‹</button>
+      <button class="hc-arrow hc-next" type="button" aria-label="다음 슬라이드">›</button>
+      <div class="hc-status">
+        <button class="hc-toggle" type="button" aria-label="자동 재생 멈춤" aria-pressed="false"></button>
+        <span class="hc-count" aria-live="polite"><b id="hcCurrent">1</b> / <span id="hcTotal">8</span></span>
+      </div>
+    </section>
 
     <section class="hero" id="home">
       <h1 class="hero-title">DESIGNER</h1>
@@ -2343,6 +2492,85 @@
   window.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') closeModal();
   });
+  // 캠페인 히어로 캐러셀 — 3초 자동, 스와이프, 화살표, 카운터, 재생/정지
+  (() => {
+    const root = document.querySelector('#campaignCarousel');
+    if (!root) return;
+    const scroller = root.querySelector('#hcScroller');
+    const slides = [...scroller.querySelectorAll('.hc-slide')];
+    const prevBtn = root.querySelector('.hc-prev');
+    const nextBtn = root.querySelector('.hc-next');
+    const toggle = root.querySelector('.hc-toggle');
+    const currentEl = root.querySelector('#hcCurrent');
+    const totalEl = root.querySelector('#hcTotal');
+    if (slides.length < 2) return;
+
+    const total = slides.length;
+    totalEl.textContent = total;
+    let index = 0;
+    let playing = true;
+    let timer = null;
+    const INTERVAL = 3000;
+
+    const goTo = (i, smooth = true) => {
+      index = (i + total) % total;
+      const slide = slides[index];
+      const delta = slide.getBoundingClientRect().left - scroller.getBoundingClientRect().left;
+      const target = scroller.scrollLeft + delta - (scroller.clientWidth - slide.clientWidth) / 2;
+      scroller.scrollTo({ left: target, behavior: smooth ? 'smooth' : 'auto' });
+      currentEl.textContent = index + 1;
+    };
+
+    // 스와이프/스크롤 시 화면 중앙에 가장 가까운 슬라이드를 현재로 반영
+    let raf = null;
+    scroller.addEventListener('scroll', () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = null;
+        const mid = scroller.getBoundingClientRect().left + scroller.clientWidth / 2;
+        let nearest = 0, best = Infinity;
+        slides.forEach((s, i) => {
+          const r = s.getBoundingClientRect();
+          const d = Math.abs(r.left + r.width / 2 - mid);
+          if (d < best) { best = d; nearest = i; }
+        });
+        index = nearest;
+        currentEl.textContent = index + 1;
+      });
+    }, { passive: true });
+
+    const stop = () => { if (timer) { clearInterval(timer); timer = null; } };
+    const start = () => { stop(); timer = setInterval(() => goTo(index + 1), INTERVAL); };
+
+    const setPlaying = (p) => {
+      playing = p;
+      toggle.setAttribute('aria-pressed', p ? 'false' : 'true');
+      toggle.setAttribute('aria-label', p ? '자동 재생 멈춤' : '자동 재생 시작');
+      if (p) start(); else stop();
+    };
+
+    prevBtn.addEventListener('click', () => goTo(index - 1));
+    nextBtn.addEventListener('click', () => goTo(index + 1));
+    toggle.addEventListener('click', () => setPlaying(!playing));
+
+    // 손으로 넘기는 동안 자동재생 잠시 멈췄다가 다시 시작
+    let resumeTimer = null;
+    scroller.addEventListener('pointerdown', () => {
+      if (!playing) return;
+      stop();
+      clearTimeout(resumeTimer);
+      resumeTimer = setTimeout(() => { if (playing) start(); }, 4000);
+    }, { passive: true });
+
+    // 다른 탭으로 가면 멈춤
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stop();
+      else if (playing) start();
+    });
+
+    requestAnimationFrame(() => goTo(0, false));
+    setPlaying(true);
+  })();
   </script>
 </body>
 </html>
