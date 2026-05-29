@@ -13,6 +13,23 @@
       --soft: #6f6f6f;
       --hair: rgba(0, 0, 0, 0.13);
       --font: "Pretendard", "Helvetica Neue", Helvetica, Arial, "Noto Sans KR", sans-serif;
+
+      /* 타입 스케일 — platform.css와 동일 토큰 미러링(index는 독립 페이지) */
+      --fs-display: clamp(58px, 8vw, 112px);
+      --fs-h1: clamp(48px, 7vw, 82px);
+      --fs-h2: clamp(32px, 5vw, 72px);
+      --fs-h3: 30px;
+      --fs-title: 24px;
+      --fs-title-sm: 22px;
+      --fs-lead: clamp(15px, 1.5vw, 19px);
+      --fs-body-lg: 18px;
+      --fs-body: 14px;
+      --fs-sm: 13px;
+      --fs-xs: 12px;
+      --fs-label: 11px;
+      --fs-label-sm: 10px;
+      --fs-micro: 9px;
+      --fs-nano: 8px;
     }
 
     * {
@@ -52,7 +69,7 @@
       grid-template-columns: 1fr auto 1fr;
       align-items: center;
       padding: 0 clamp(32px, 5vw, 72px);
-      font-size: 11px;
+      font-size: var(--fs-label);
       letter-spacing: .02em;
       text-transform: uppercase;
       background: rgba(247, 247, 244, 0);
@@ -94,7 +111,7 @@
       align-items: center;
       gap: 8px;
       color: rgba(5, 5, 5, .62);
-      font-size: 11px;
+      font-size: var(--fs-label);
       letter-spacing: .08em;
     }
 
@@ -113,7 +130,7 @@
       border-radius: 999px;
       background: #050505;
       color: #f7f7f4;
-      font-size: 11px;
+      font-size: var(--fs-label);
       letter-spacing: .14em;
       line-height: 1;
     }
@@ -238,13 +255,13 @@
     }
 
     .hero-copy .kicker {
-      font-size: 24px;
+      font-size: var(--fs-title);
       line-height: .92;
       margin-bottom: 14px;
     }
 
     .hero-copy .body {
-      font-size: 10px;
+      font-size: var(--fs-label-sm);
       line-height: 1.55;
     }
 
@@ -259,7 +276,7 @@
       border-radius: 999px;
       background: #050505;
       color: var(--paper);
-      font-size: 10px;
+      font-size: var(--fs-label-sm);
       font-weight: 500;
       letter-spacing: -.01em;
       transition: background .22s ease, color .22s ease, transform .22s ease;
@@ -283,7 +300,7 @@
     .body {
       margin: 0;
       color: #1d1d1d;
-      font-size: 10px;
+      font-size: var(--fs-label-sm);
       line-height: 1.52;
       letter-spacing: .01em;
     }
@@ -341,7 +358,7 @@
       width: min(440px, 100%);
       margin: 0;
       color: rgba(5, 5, 5, .64);
-      font-size: 12px;
+      font-size: var(--fs-xs);
       line-height: 1.72;
     }
 
@@ -367,14 +384,14 @@
 
     .flow-step span {
       color: rgba(5, 5, 5, .38);
-      font-size: 11px;
+      font-size: var(--fs-label);
       letter-spacing: .18em;
       text-transform: uppercase;
     }
 
     .flow-step h3 {
       margin: 52px 0 18px;
-      font-size: 30px;
+      font-size: var(--fs-h3);
       line-height: .94;
       font-weight: 400;
       letter-spacing: -.06em;
@@ -384,7 +401,7 @@
     .flow-step p {
       margin: 0;
       color: rgba(5, 5, 5, .66);
-      font-size: 11px;
+      font-size: var(--fs-label);
       line-height: 1.62;
     }
 
@@ -420,7 +437,7 @@
       border: 1px solid rgba(0, 0, 0, .1);
       border-radius: 999px;
       color: #111;
-      font-size: 10px;
+      font-size: var(--fs-label-sm);
       letter-spacing: .16em;
       text-transform: uppercase;
       white-space: nowrap;
@@ -504,7 +521,7 @@
       border-radius: 999px;
       background: rgba(247, 247, 244, .78);
       color: rgba(5, 5, 5, .68);
-      font-size: 10px;
+      font-size: var(--fs-label-sm);
       font-weight: 500;
       letter-spacing: .18em;
       line-height: 1;
@@ -516,7 +533,7 @@
       width: min(520px, 84vw);
       margin: 18px auto 0;
       color: rgba(5, 5, 5, .64);
-      font-size: 12px;
+      font-size: var(--fs-xs);
       line-height: 1.65;
       text-align: center;
       letter-spacing: 0;
@@ -575,7 +592,7 @@
 
     .spec {
       margin: 0 0 18px;
-      font-size: 18px;
+      font-size: var(--fs-body-lg);
       line-height: .98;
       font-weight: 400;
       letter-spacing: -.05em;
@@ -585,7 +602,7 @@
     .spec small {
       display: block;
       margin-top: 5px;
-      font-size: 10px;
+      font-size: var(--fs-label-sm);
       letter-spacing: 0;
       text-transform: none;
     }
@@ -594,7 +611,7 @@
       margin: 18px 0 30px;
       max-width: 420px;
       color: rgba(5, 5, 5, .68);
-      font-size: 13px;
+      font-size: var(--fs-sm);
       line-height: 1.72;
     }
 
@@ -633,7 +650,7 @@
     .process-step p {
       margin: 0;
       color: rgba(5, 5, 5, .62);
-      font-size: 11px;
+      font-size: var(--fs-label);
       line-height: 1.55;
     }
 
@@ -700,7 +717,7 @@
       border-radius: 999px;
       background: rgba(247, 247, 244, .86);
       backdrop-filter: blur(10px);
-      font-size: 10px;
+      font-size: var(--fs-label-sm);
       font-weight: 700;
       letter-spacing: .12em;
       text-transform: uppercase;
@@ -732,7 +749,7 @@
       border: 1px solid rgba(247, 247, 244, .42);
       border-radius: 999px;
       color: var(--paper);
-      font-size: 10px;
+      font-size: var(--fs-label-sm);
       letter-spacing: .14em;
       text-transform: uppercase;
       white-space: nowrap;
@@ -787,7 +804,7 @@
 
     .campaign h3 {
       margin: 0 14px 5px;
-      font-size: 22px;
+      font-size: var(--fs-title-sm);
       line-height: .95;
       font-weight: 400;
       letter-spacing: -.06em;
@@ -797,7 +814,7 @@
     .campaign p {
       margin: 0 14px 14px;
       color: rgba(247, 247, 244, .62);
-      font-size: 10px;
+      font-size: var(--fs-label-sm);
       line-height: 1.45;
     }
 
@@ -811,14 +828,14 @@
       display: block;
       margin-bottom: 5px;
       color: rgba(247, 247, 244, .46);
-      font-size: 8px;
+      font-size: var(--fs-nano);
       letter-spacing: .14em;
       text-transform: uppercase;
     }
 
     .match-fit strong {
       color: rgba(247, 247, 244, .86);
-      font-size: 10px;
+      font-size: var(--fs-label-sm);
       line-height: 1.35;
       font-weight: 500;
     }
@@ -838,14 +855,14 @@
       align-content: center;
       background: #101010;
       padding: 8px;
-      font-size: 9px;
+      font-size: var(--fs-micro);
       text-transform: uppercase;
       color: rgba(247, 247, 244, .48);
     }
 
     .influencer-stats strong {
       color: var(--paper);
-      font-size: 13px;
+      font-size: var(--fs-sm);
       font-weight: 500;
       letter-spacing: -.04em;
     }
@@ -856,7 +873,7 @@
       padding: 5px 8px;
       border: 1px solid rgba(247, 247, 244, .24);
       border-radius: 999px;
-      font-size: 9px;
+      font-size: var(--fs-micro);
       letter-spacing: .12em;
       text-transform: uppercase;
       color: rgba(247, 247, 244, .78);
@@ -923,7 +940,7 @@
       padding-top: 16px;
       border-top: 1px solid rgba(255, 255, 255, .48);
       color: #fff;
-      font-size: 10px;
+      font-size: var(--fs-label-sm);
       letter-spacing: .12em;
       text-transform: uppercase;
     }
@@ -938,7 +955,7 @@
 
     .designer-kicker {
       margin: 0 0 18px;
-      font-size: 10px;
+      font-size: var(--fs-label-sm);
       letter-spacing: .18em;
       text-transform: uppercase;
       color: rgba(5, 5, 5, .48);
@@ -956,7 +973,7 @@
     .designer-copy .body {
       width: min(360px, 100%);
       margin-top: 28px;
-      font-size: 12px;
+      font-size: var(--fs-xs);
       line-height: 1.72;
       color: rgba(5, 5, 5, .72);
     }
@@ -977,7 +994,7 @@
       align-content: center;
       padding: 14px;
       background: var(--paper);
-      font-size: 9px;
+      font-size: var(--fs-micro);
       letter-spacing: .11em;
       text-transform: uppercase;
       color: rgba(5, 5, 5, .46);
@@ -985,7 +1002,7 @@
 
     .designer-meta strong {
       color: #050505;
-      font-size: 18px;
+      font-size: var(--fs-body-lg);
       font-weight: 500;
       letter-spacing: -.04em;
     }
@@ -1025,7 +1042,7 @@
     .designer-story p {
       margin: 0;
       max-width: 260px;
-      font-size: 10px;
+      font-size: var(--fs-label-sm);
       line-height: 1.55;
       color: rgba(5, 5, 5, .62);
     }
@@ -1100,7 +1117,7 @@
       display: block;
       margin: 0 0 7px;
       color: rgba(5, 5, 5, .46);
-      font-size: 9px;
+      font-size: var(--fs-micro);
       font-weight: 500;
       letter-spacing: .16em;
       text-transform: uppercase;
@@ -1115,7 +1132,7 @@
 
     .match-score small {
       color: rgba(5, 5, 5, .62);
-      font-size: 11px;
+      font-size: var(--fs-label);
       text-transform: uppercase;
     }
 
@@ -1133,7 +1150,7 @@
     .modal-section p {
       margin: 0;
       color: rgba(5, 5, 5, .72);
-      font-size: 11px;
+      font-size: var(--fs-label);
       line-height: 1.62;
     }
 
@@ -1151,7 +1168,7 @@
       border: 1px solid rgba(5, 5, 5, .14);
       border-radius: 999px;
       color: rgba(5, 5, 5, .72);
-      font-size: 9px;
+      font-size: var(--fs-micro);
       letter-spacing: .08em;
       text-transform: uppercase;
     }
@@ -1172,7 +1189,7 @@
       padding: 0 17px;
       border: 1px solid #050505;
       border-radius: 999px;
-      font-size: 10px;
+      font-size: var(--fs-label-sm);
       letter-spacing: .12em;
       text-transform: uppercase;
       cursor: pointer;
@@ -1208,7 +1225,7 @@
     .claim p {
       margin: 0;
       color: rgba(5, 5, 5, .62);
-      font-size: 12px;
+      font-size: var(--fs-xs);
       line-height: 1.6;
     }
 
@@ -1245,7 +1262,7 @@
       padding: 58px clamp(42px, 6vw, 88px) 44px;
       background: #070707;
       color: #f7f7f4;
-      font-size: 10px;
+      font-size: var(--fs-label-sm);
       text-transform: uppercase;
       overflow: visible;
     }
@@ -1312,7 +1329,7 @@
     .foot-grid h4,
     .contact h4 {
       margin: 0 0 18px;
-      font-size: 9px;
+      font-size: var(--fs-micro);
       font-weight: 400;
     }
 
@@ -1398,7 +1415,7 @@
         grid-column: 2;
         grid-row: 1;
         justify-self: center;
-        font-size: 18px;
+        font-size: var(--fs-body-lg);
       }
 
       .nav-center,
@@ -1456,7 +1473,7 @@
         justify-content: center;
         padding: 18px 0 8px;
         color: rgba(5, 5, 5, .5);
-        font-size: 11px;
+        font-size: var(--fs-label);
         letter-spacing: .16em;
         text-transform: uppercase;
       }
@@ -1507,7 +1524,7 @@
 
       .byline {
         top: 202px;
-        font-size: 10px;
+        font-size: var(--fs-label-sm);
       }
 
       .hero-copy,
@@ -1535,7 +1552,7 @@
       }
 
       .hero-copy .body {
-        font-size: 10px;
+        font-size: var(--fs-label-sm);
         line-height: 1.58;
       }
 
@@ -1585,7 +1602,7 @@
 
       .vision-subcopy {
         width: min(330px, 86vw);
-        font-size: 11px;
+        font-size: var(--fs-label);
       }
 
       .center-model {
@@ -1624,7 +1641,7 @@
 
       .campaign p {
         margin: 0 10px 11px;
-        font-size: 8px;
+        font-size: var(--fs-nano);
         line-height: 1.42;
       }
 
@@ -1634,11 +1651,11 @@
       }
 
       .match-fit span {
-        font-size: 7px;
+        font-size: var(--fs-nano);
       }
 
       .match-fit strong {
-        font-size: 8px;
+        font-size: var(--fs-nano);
       }
 
       .influencer-stats {
@@ -1648,16 +1665,16 @@
       .influencer-stats span {
         min-height: 40px;
         padding: 6px 4px;
-        font-size: 7px;
+        font-size: var(--fs-nano);
       }
 
       .influencer-stats strong {
-        font-size: 12px;
+        font-size: var(--fs-xs);
       }
 
       .platform-tag {
         margin: 0 10px 10px;
-        font-size: 8px;
+        font-size: var(--fs-nano);
       }
 
       .designer-editorial {
@@ -1778,7 +1795,7 @@
         gap: 18px;
         justify-content: flex-start;
         padding: 0 24px;
-        font-size: 9px;
+        font-size: var(--fs-micro);
       }
 
       .foot-grid {
@@ -1795,13 +1812,13 @@
       .foot-grid h4,
       .contact h4 {
         margin-bottom: 10px;
-        font-size: 8px;
+        font-size: var(--fs-nano);
         font-weight: 700;
       }
 
       .foot-grid p,
       .contact p {
-        font-size: 10px;
+        font-size: var(--fs-label-sm);
         line-height: 1.65;
       }
 
@@ -1901,7 +1918,7 @@
       -webkit-backdrop-filter: blur(6px);
       backdrop-filter: blur(6px);
       color: #fff;
-      font-size: 12px;
+      font-size: var(--fs-xs);
       font-weight: 600;
     }
 

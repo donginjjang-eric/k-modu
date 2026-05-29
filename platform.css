@@ -94,7 +94,7 @@ select {
   backdrop-filter: blur(14px);
   text-transform: uppercase;
   letter-spacing: .04em;
-  font-size: 11px;
+  font-size: var(--fs-label);
   transition: background-color .28s ease, border-color .28s ease;
 }
 
@@ -193,7 +193,7 @@ select {
 
 .platform-menu-panel a::after {
   content: "->";
-  font-size: 11px;
+  font-size: var(--fs-label);
   letter-spacing: 0;
 }
 
@@ -207,7 +207,7 @@ select {
   border-radius: 999px;
   background: var(--ink);
   color: var(--paper);
-  font-size: 11px;
+  font-size: var(--fs-label);
   font-weight: 800;
   letter-spacing: .08em;
   text-transform: uppercase;
@@ -226,7 +226,7 @@ select {
 .eyebrow {
   margin: 0 0 18px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--fs-label);
   letter-spacing: .22em;
   text-transform: uppercase;
 }
@@ -245,7 +245,7 @@ select {
   max-width: 720px;
   margin: 28px 0 0;
   color: var(--muted);
-  font-size: clamp(15px, 1.5vw, 19px);
+  font-size: var(--fs-lead);
   line-height: 1.75;
 }
 
@@ -257,7 +257,7 @@ select {
   border-radius: 999px;
   background: #050505;
   color: var(--paper);
-  font-size: 13px;
+  font-size: var(--fs-sm);
   font-weight: 700;
   letter-spacing: .02em;
 }
@@ -327,7 +327,7 @@ select {
 .card h3,
 .form-block h2 {
   margin: 0 0 16px;
-  font-size: 24px;
+  font-size: var(--fs-title);
   line-height: 1;
   letter-spacing: -.055em;
   text-transform: uppercase;
@@ -337,7 +337,7 @@ select {
   margin: 0;
   color: var(--muted);
   line-height: 1.65;
-  font-size: 14px;
+  font-size: var(--fs-body);
 }
 
 .form-block {
@@ -407,7 +407,7 @@ select {
   border: 1px solid var(--line);
   border-radius: 999px;
   background: #fff;
-  font-size: 12px;
+  font-size: var(--fs-xs);
 }
 
 .form-actions {
@@ -424,7 +424,7 @@ select {
   padding: 0 10px;
   border: 1px solid var(--line);
   border-radius: 999px;
-  font-size: 10px;
+  font-size: var(--fs-label-sm);
   font-weight: 800;
   letter-spacing: .1em;
   text-transform: uppercase;
@@ -448,12 +448,12 @@ select {
   padding: 16px 18px;
   border-bottom: 1px solid var(--line);
   text-align: left;
-  font-size: 13px;
+  font-size: var(--fs-sm);
 }
 
 .table th {
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--fs-label-sm);
   letter-spacing: .14em;
   text-transform: uppercase;
 }
@@ -489,14 +489,14 @@ select {
 
 .metric strong {
   display: block;
-  font-size: 22px;
+  font-size: var(--fs-title-sm);
 }
 
 .metric span {
   display: block;
   margin-top: 5px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--fs-label-sm);
   letter-spacing: .12em;
   text-transform: uppercase;
 }
@@ -545,7 +545,7 @@ select {
 }
 
 .score strong {
-  font-size: 30px;
+  font-size: var(--fs-h3);
 }
 
 .designer-board {
@@ -575,7 +575,7 @@ select {
   border-radius: 999px;
   background: rgba(255, 255, 255, .52);
   color: rgba(5, 5, 5, .66);
-  font-size: 11px;
+  font-size: var(--fs-label);
   letter-spacing: .08em;
   text-transform: uppercase;
 }
@@ -623,7 +623,7 @@ select {
 .designer-board .designer-kicker {
   margin: 0 0 10px;
   color: rgba(5, 5, 5, .48);
-  font-size: 10px;
+  font-size: var(--fs-label-sm);
   font-weight: 800;
   letter-spacing: .12em;
   text-transform: uppercase;
@@ -695,7 +695,7 @@ select {
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   color: #050505;
-  font-size: 30px;
+  font-size: var(--fs-h3);
   line-height: 1;
   cursor: pointer;
   box-shadow: 0 6px 18px rgba(0, 0, 0, .14);
@@ -801,7 +801,7 @@ select {
   border: 1px solid rgba(5, 5, 5, .14);
   border-radius: 999px;
   color: rgba(5, 5, 5, .56);
-  font-size: 10px;
+  font-size: var(--fs-label-sm);
   font-weight: 800;
   letter-spacing: .14em;
 }
@@ -819,7 +819,7 @@ select {
   display: block;
   margin-bottom: 20px;
   color: rgba(5, 5, 5, .48);
-  font-size: 13px;
+  font-size: var(--fs-sm);
   letter-spacing: .12em;
   text-transform: uppercase;
 }
@@ -869,7 +869,7 @@ select {
 .designer-profile-stats span {
   display: block;
   color: rgba(5, 5, 5, .46);
-  font-size: 9px;
+  font-size: var(--fs-micro);
   font-weight: 900;
   letter-spacing: .14em;
   text-transform: uppercase;
@@ -879,7 +879,7 @@ select {
   display: block;
   margin-top: 6px;
   color: #050505;
-  font-size: 14px;
+  font-size: var(--fs-body);
   line-height: 1.25;
   letter-spacing: 0;
   text-transform: none;
@@ -895,7 +895,7 @@ select {
 .designer-portfolio-note h3 {
   margin: 0 0 10px;
   color: rgba(5, 5, 5, .48);
-  font-size: 10px;
+  font-size: var(--fs-label-sm);
   font-weight: 900;
   letter-spacing: .14em;
   text-transform: uppercase;
@@ -904,7 +904,7 @@ select {
 .designer-portfolio-note p {
   margin: 0;
   color: rgba(5, 5, 5, .62);
-  font-size: 14px;
+  font-size: var(--fs-body);
   line-height: 1.7;
   word-break: keep-all;
 }
@@ -926,7 +926,7 @@ select {
   display: block;
   margin: 0 0 8px;
   color: #050505;
-  font-size: 30px;
+  font-size: var(--fs-h3);
   line-height: .9;
   font-weight: 500;
   letter-spacing: 0;
@@ -1003,7 +1003,7 @@ select {
 .designer-asset-section h3 {
   margin: 0 0 12px;
   color: rgba(5, 5, 5, .48);
-  font-size: 10px;
+  font-size: var(--fs-label-sm);
   font-weight: 900;
   letter-spacing: .14em;
   text-transform: uppercase;
@@ -1018,7 +1018,7 @@ select {
   border: 1px solid rgba(5, 5, 5, .13);
   border-radius: 999px;
   color: rgba(5, 5, 5, .62);
-  font-size: 9px;
+  font-size: var(--fs-micro);
   font-weight: 800;
   letter-spacing: .08em;
   text-transform: uppercase;
@@ -1036,7 +1036,7 @@ select {
 .designer-proposal-grid h3 {
   margin: 0 0 14px;
   color: rgba(5, 5, 5, .48);
-  font-size: 10px;
+  font-size: var(--fs-label-sm);
   font-weight: 900;
   letter-spacing: .14em;
   text-transform: uppercase;
@@ -1054,7 +1054,7 @@ select {
   min-height: 52px;
   padding: 0 30px;
   gap: 10px;
-  font-size: 12px;
+  font-size: var(--fs-xs);
   letter-spacing: .1em;
   box-shadow: 0 12px 26px rgba(5, 5, 5, .2);
   transition: transform .22s ease, box-shadow .22s ease, background .22s ease;
@@ -1107,7 +1107,7 @@ select {
 
 .work-pin-body h3 {
   margin: 0 0 8px;
-  font-size: 24px;
+  font-size: var(--fs-title);
   line-height: .95;
   letter-spacing: -.06em;
   font-weight: 500;
@@ -1117,7 +1117,7 @@ select {
 .work-pin-body p {
   margin: 0;
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--fs-xs);
   line-height: 1.55;
   word-break: keep-all;
 }
@@ -1134,7 +1134,7 @@ select {
   border: 1px solid var(--line);
   border-radius: 999px;
   color: rgba(5, 5, 5, .62);
-  font-size: 9px;
+  font-size: var(--fs-micro);
   letter-spacing: .06em;
   text-transform: uppercase;
 }
@@ -1148,7 +1148,7 @@ select {
   border-radius: 999px;
   background: #050505;
   color: var(--paper);
-  font-size: 10px;
+  font-size: var(--fs-label-sm);
   font-weight: 800;
   letter-spacing: .08em;
   text-transform: uppercase;
@@ -1158,7 +1158,7 @@ select {
   padding: 28px clamp(28px, 6vw, 90px);
   color: var(--muted);
   border-top: 1px solid var(--line);
-  font-size: 11px;
+  font-size: var(--fs-label);
   text-transform: uppercase;
   letter-spacing: .12em;
 }
@@ -1232,7 +1232,7 @@ select {
   max-width: 380px;
   margin: 18px 0 28px;
   color: var(--muted);
-  font-size: 14px;
+  font-size: var(--fs-body);
   line-height: 1.78;
   word-break: keep-all;
 }
@@ -1252,7 +1252,7 @@ select {
   padding: 0 16px;
   border: 1px solid var(--line);
   background: #fff;
-  font-size: 14px;
+  font-size: var(--fs-body);
   font-weight: 700;
   letter-spacing: -.005em;
   transition: filter .2s ease, transform .2s ease, border-color .2s ease;
@@ -1300,7 +1300,7 @@ select {
   gap: 12px;
   margin: 24px 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--fs-label-sm);
   letter-spacing: .12em;
   text-transform: uppercase;
 }
@@ -1315,7 +1315,7 @@ select {
 .login-footnote {
   margin-top: 18px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--fs-xs);
   line-height: 1.6;
 }
 
@@ -1352,7 +1352,7 @@ select {
 
 .mode-btn {
   padding: 0;
-  font-size: 11px;
+  font-size: var(--fs-label);
   font-weight: 900;
   letter-spacing: .08em;
 }
@@ -1395,7 +1395,7 @@ select {
 .market-kicker {
   margin: 0 0 12px;
   color: rgba(5, 5, 5, .5);
-  font-size: 11px;
+  font-size: var(--fs-label);
   font-weight: 900;
   letter-spacing: .18em;
   text-transform: uppercase;
@@ -1464,7 +1464,7 @@ select {
   border-radius: 999px;
   background: #101010;
   color: #f7f7f4;
-  font-size: 12px;
+  font-size: var(--fs-xs);
   font-weight: 900;
   letter-spacing: -.02em;
 }
@@ -1476,7 +1476,7 @@ select {
 
 .category-card strong {
   align-self: end;
-  font-size: 14px;
+  font-size: var(--fs-body);
   line-height: 1.1;
   letter-spacing: -.025em;
 }
@@ -1485,7 +1485,7 @@ select {
   align-self: start;
   margin-top: 5px;
   color: rgba(5, 5, 5, .48);
-  font-size: 11px;
+  font-size: var(--fs-label);
   line-height: 1.35;
 }
 
@@ -1540,7 +1540,7 @@ select {
 }
 
 .filter-drawer-head strong {
-  font-size: 22px;
+  font-size: var(--fs-title-sm);
   letter-spacing: -.05em;
 }
 
@@ -1585,7 +1585,7 @@ select {
   border: 1px solid rgba(5, 5, 5, .16);
   border-radius: 12px;
   background: rgba(5, 5, 5, .03);
-  font-size: 14px;
+  font-size: var(--fs-body);
   color: #050505;
 }
 
@@ -1601,7 +1601,7 @@ select {
   border: 1px solid rgba(5, 5, 5, .16);
   border-radius: 10px;
   background: #fff;
-  font-size: 13px;
+  font-size: var(--fs-sm);
   color: #050505;
   cursor: pointer;
 }
@@ -1615,7 +1615,7 @@ select {
 
 .filter-group h2 {
   margin: 0 0 3px;
-  font-size: 12px;
+  font-size: var(--fs-xs);
   font-weight: 900;
   letter-spacing: -.02em;
 }
@@ -1625,7 +1625,7 @@ select {
   align-items: center;
   gap: 10px;
   color: rgba(5, 5, 5, .68);
-  font-size: 13px;
+  font-size: var(--fs-sm);
   line-height: 1.2;
   cursor: pointer;
 }
@@ -1653,7 +1653,7 @@ select {
   border-radius: 12px;
   background: transparent;
   color: #050505;
-  font-size: 13px;
+  font-size: var(--fs-sm);
   font-weight: 700;
   cursor: pointer;
 }
@@ -1665,7 +1665,7 @@ select {
   border-radius: 12px;
   background: #050505;
   color: var(--paper);
-  font-size: 14px;
+  font-size: var(--fs-body);
   font-weight: 700;
   letter-spacing: .04em;
   cursor: pointer;
@@ -1692,7 +1692,7 @@ select {
   border-radius: 999px;
   background: #050505;
   color: var(--paper);
-  font-size: 13px;
+  font-size: var(--fs-sm);
   font-weight: 700;
   letter-spacing: .02em;
   cursor: pointer;
@@ -1795,7 +1795,7 @@ select {
   background: transparent;
   color: #fff;
   text-shadow: 0 1px 10px rgba(0, 0, 0, .35);
-  font-size: 30px;
+  font-size: var(--fs-h3);
   line-height: 1;
   cursor: pointer;
 }
@@ -1810,7 +1810,7 @@ select {
   padding: 0 9px;
   background: #050505;
   color: #f7f7f4;
-  font-size: 9px;
+  font-size: var(--fs-micro);
   font-weight: 900;
   letter-spacing: .08em;
   text-transform: uppercase;
@@ -1835,7 +1835,7 @@ select {
   border: 1px solid rgba(5, 5, 5, .18);
   background: #fff;
   color: #050505;
-  font-size: 9px;
+  font-size: var(--fs-micro);
   font-weight: 900;
   line-height: 1;
   text-transform: uppercase;
@@ -1843,7 +1843,7 @@ select {
 
 .market-card h3 {
   margin: 0 0 5px;
-  font-size: 18px;
+  font-size: var(--fs-body-lg);
   line-height: .98;
   letter-spacing: -.055em;
   font-weight: 720;
@@ -1854,7 +1854,7 @@ select {
   min-height: 34px;
   margin: 0 0 10px;
   color: rgba(5, 5, 5, .66);
-  font-size: 12px;
+  font-size: var(--fs-xs);
   line-height: 1.42;
 }
 
@@ -1874,20 +1874,20 @@ select {
   background: #f7f7f4;
   padding: 6px;
   color: rgba(5, 5, 5, .48);
-  font-size: 8px;
+  font-size: var(--fs-nano);
   text-transform: uppercase;
 }
 
 .mini-stats strong {
   color: #050505;
-  font-size: 14px;
+  font-size: var(--fs-body);
   letter-spacing: -.03em;
 }
 
 .reward {
   display: block;
   color: #9b7b37;
-  font-size: 12px;
+  font-size: var(--fs-xs);
   font-weight: 900;
   letter-spacing: -.01em;
 }
@@ -1911,7 +1911,7 @@ select {
   border-radius: 16px;
   background: var(--accent);
   color: var(--accent-ink);
-  font-size: 22px;
+  font-size: var(--fs-title-sm);
   font-weight: 900;
 }
 
@@ -1922,7 +1922,7 @@ select {
   border-radius: 12px;
   background: #111;
   color: #fff;
-  font-size: 18px;
+  font-size: var(--fs-body-lg);
 }
 
 body.sheet-open {
@@ -1992,7 +1992,7 @@ body.sheet-open {
 
   .creator-sheet-close::before {
     content: "✕";
-    font-size: 18px;
+    font-size: var(--fs-body-lg);
     line-height: 1;
   }
 }
@@ -2027,7 +2027,7 @@ body.sheet-open {
   border: 1px solid rgba(5, 5, 5, .18);
   border-radius: 999px;
   color: rgba(5, 5, 5, .58);
-  font-size: 11px;
+  font-size: var(--fs-label);
   letter-spacing: .18em;
 }
 
@@ -2043,7 +2043,7 @@ body.sheet-open {
   display: block;
   margin-bottom: 22px;
   color: rgba(5, 5, 5, .44);
-  font-size: 13px;
+  font-size: var(--fs-sm);
   letter-spacing: .12em;
   text-transform: uppercase;
 }
@@ -2052,7 +2052,7 @@ body.sheet-open {
 .creator-sheet-content small {
   display: block;
   color: rgba(5, 5, 5, .62);
-  font-size: 18px;
+  font-size: var(--fs-body-lg);
   line-height: 1.7;
   word-break: keep-all;
 }
@@ -2081,7 +2081,7 @@ body.sheet-open {
   display: block;
   margin: 0 0 5px;
   color: rgba(5, 5, 5, .42);
-  font-size: 11px;
+  font-size: var(--fs-label);
   font-weight: 800;
   letter-spacing: .12em;
   text-transform: uppercase;
@@ -2098,7 +2098,7 @@ body.sheet-open {
 
 .creator-sheet-collab h3 {
   margin: 4px 0 12px;
-  font-size: 12px;
+  font-size: var(--fs-xs);
   font-weight: 900;
   letter-spacing: -.01em;
   text-transform: uppercase;
@@ -2117,7 +2117,7 @@ body.sheet-open {
   padding: 0 14px;
   border: 1px solid rgba(5, 5, 5, .16);
   border-radius: 999px;
-  font-size: 12px;
+  font-size: var(--fs-xs);
   font-weight: 700;
   letter-spacing: .02em;
 }
@@ -2134,7 +2134,7 @@ body.sheet-open {
   gap: 9px;
   min-height: 56px;
   padding: 0 28px;
-  font-size: 14px;
+  font-size: var(--fs-body);
   letter-spacing: .06em;
   box-shadow: 0 12px 26px rgba(5, 5, 5, .2);
   transition: transform .2s ease, box-shadow .2s ease;
@@ -2165,7 +2165,7 @@ body.sheet-open {
   border-radius: 6px;
   background: #050505;
   color: var(--paper);
-  font-size: 10px;
+  font-size: var(--fs-label-sm);
   font-weight: 800;
   letter-spacing: .08em;
   text-transform: uppercase;
@@ -2187,7 +2187,7 @@ body.sheet-open {
 .creator-sheet-stages h3,
 .creator-sheet-notes h3 {
   margin: 0;
-  font-size: 12px;
+  font-size: var(--fs-xs);
   font-weight: 900;
   letter-spacing: -.01em;
   text-transform: uppercase;
@@ -2229,7 +2229,7 @@ body.sheet-open {
   display: block;
   margin: 0;
   color: #050505;
-  font-size: 14px;
+  font-size: var(--fs-body);
   letter-spacing: -.01em;
   text-transform: none;
 }
@@ -2240,7 +2240,7 @@ body.sheet-open {
   padding: 0;
   border: 0;
   color: rgba(5, 5, 5, .5);
-  font-size: 12px;
+  font-size: var(--fs-xs);
   line-height: 1.5;
 }
 
@@ -2252,7 +2252,7 @@ body.sheet-open {
 .creator-sheet-notes li {
   margin-bottom: 7px;
   color: rgba(5, 5, 5, .6);
-  font-size: 13px;
+  font-size: var(--fs-sm);
   line-height: 1.6;
 }
 
@@ -2323,7 +2323,7 @@ body.dark-theme .mini-stats strong {
 
   .creator-brief p:last-child {
     max-width: 520px;
-    font-size: 13px;
+    font-size: var(--fs-sm);
   }
 
   .category-strip {
@@ -2361,7 +2361,7 @@ body.dark-theme .mini-stats strong {
 
   .category-card strong {
     align-self: center;
-    font-size: 13px;
+    font-size: var(--fs-sm);
     letter-spacing: -.01em;
     white-space: nowrap;
   }
@@ -2413,11 +2413,11 @@ body.dark-theme .mini-stats strong {
 
   .market-card p {
     min-height: 40px;
-    font-size: 10px;
+    font-size: var(--fs-label-sm);
   }
 
   .badges span {
-    font-size: 8px;
+    font-size: var(--fs-nano);
   }
 
   .floating-help {
@@ -2603,7 +2603,7 @@ body.dark-theme .mini-stats strong {
   .table th,
   .table td {
     padding: 14px 16px;
-    font-size: 12px;
+    font-size: var(--fs-xs);
   }
 
   .form-block {
@@ -2615,11 +2615,11 @@ body.dark-theme .mini-stats strong {
   }
 
   .metric strong {
-    font-size: 18px;
+    font-size: var(--fs-body-lg);
   }
 
   .metric span {
-    font-size: 8px;
+    font-size: var(--fs-nano);
     letter-spacing: .08em;
   }
 
@@ -2641,11 +2641,11 @@ body.dark-theme .mini-stats strong {
   }
 
   .work-pin-body h3 {
-    font-size: 18px;
+    font-size: var(--fs-body-lg);
   }
 
   .work-pin-body p {
-    font-size: 10px;
+    font-size: var(--fs-label-sm);
   }
 
   .designer-board [data-reveal] {
@@ -2727,7 +2727,7 @@ body.dark-theme .mini-stats strong {
   }
 
   .designer-profile-meta strong {
-    font-size: 12px;
+    font-size: var(--fs-xs);
   }
 
   .designer-profile-stats {
@@ -2744,7 +2744,7 @@ body.dark-theme .mini-stats strong {
   }
 
   .designer-profile-stats span {
-    font-size: 8px;
+    font-size: var(--fs-nano);
     letter-spacing: .08em;
   }
 
@@ -2800,7 +2800,7 @@ body.dark-theme .mini-stats strong {
   .login-card > p {
     max-width: 310px;
     margin: 18px 0 28px;
-    font-size: 14px;
+    font-size: var(--fs-body);
     line-height: 1.82;
   }
 
@@ -2911,7 +2911,7 @@ body.dark-theme .mini-stats strong {
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
   color: #fff;
-  font-size: 13px;
+  font-size: var(--fs-sm);
   font-weight: 600;
   letter-spacing: .04em;
 }
