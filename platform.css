@@ -771,23 +771,47 @@ select {
   box-shadow: 0 34px 90px rgba(0, 0, 0, .3);
 }
 
+.designer-proposal-scroll {
+  display: contents;
+}
+
 .designer-proposal-close {
   position: absolute;
   z-index: 3;
   top: 22px;
   left: 22px;
-  width: 54px;
-  height: 54px;
+  width: 48px;
+  height: 48px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 0;
+  border: 1px solid rgba(5, 5, 5, .08);
   border-radius: 999px;
-  background: rgba(255, 255, 255, .9);
+  background: rgba(255, 255, 255, .82);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   color: #050505;
-  font-size: 36px;
+  font-size: 30px;
   line-height: 1;
   cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .14);
+  transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
+  text-indent: -.04em;
+}
+
+.designer-proposal-close:hover {
+  background: #050505;
+  color: #fff;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, .26);
+}
+
+.designer-proposal-close:active {
+  transform: scale(.94);
+}
+
+.designer-proposal-close:focus-visible {
+  outline: 2px solid #050505;
+  outline-offset: 2px;
 }
 
 .designer-proposal-visual {
@@ -2510,10 +2534,16 @@ body.dark-theme .mini-stats strong {
     width: 100%;
     height: min(92dvh, calc(100dvh - 54px));
     max-height: calc(100dvh - 72px);
-    grid-template-columns: 1fr;
-    grid-template-rows: minmax(310px, 46dvh) minmax(0, 1fr);
+    display: block;
     border: 0;
     border-radius: 24px 24px 0 0;
+  }
+
+  .designer-proposal-scroll {
+    display: block;
+    height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .designer-proposal-card::before {
@@ -2531,7 +2561,8 @@ body.dark-theme .mini-stats strong {
   }
 
   .designer-proposal-visual {
-    min-height: 0;
+    height: 46dvh;
+    min-height: 310px;
   }
 
   .designer-proposal-dots {
@@ -2548,6 +2579,7 @@ body.dark-theme .mini-stats strong {
 
   .designer-proposal-content {
     padding: 34px 24px 88px;
+    overflow: visible;
   }
 
   .designer-proposal-content h2 {
