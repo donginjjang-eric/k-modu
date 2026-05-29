@@ -1440,47 +1440,40 @@
       .mobile-menu a {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        min-height: 48px;
+        min-height: 58px;
         padding: 0 2px;
         border-bottom: 1px solid rgba(0, 0, 0, .08);
-        font-size: 20px;
+        font-size: 23px;
         line-height: 1;
-        font-weight: 500;
+        font-weight: 600;
         letter-spacing: -.055em;
         text-transform: uppercase;
-      }
-
-      .mobile-menu a::after {
-        content: "->";
-        font-size: 11px;
-        letter-spacing: 0;
       }
 
       .mobile-menu .mobile-utility {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        padding-top: 14px;
+        justify-content: center;
+        padding: 18px 0 8px;
+        color: rgba(5, 5, 5, .5);
         font-size: 11px;
-        letter-spacing: .12em;
+        letter-spacing: .16em;
         text-transform: uppercase;
       }
 
       .mobile-menu .mobile-login {
-        min-height: 34px;
-        padding: 0 18px;
-        border: 1px solid #050505;
-        border-radius: 999px;
+        justify-content: center;
+        min-height: 56px;
+        margin-top: 4px;
+        padding: 0;
+        border: 0;
+        border-radius: 14px;
         background: #050505;
         color: var(--paper);
-        font-size: 11px;
-        letter-spacing: .14em;
-      }
-
-      .mobile-menu .mobile-login::after {
-        content: none;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: .12em;
+        box-shadow: 0 12px 26px rgba(5, 5, 5, .22);
       }
 
       .hero {
@@ -1975,8 +1968,8 @@
         <a href="#contact">문의</a>
         <div class="mobile-utility">
           <span>KR / US</span>
-          <a class="mobile-login" href="login.html">로그인</a>
         </div>
+        <a class="mobile-login" href="login.html">로그인</a>
       </div>
     </header>
 
