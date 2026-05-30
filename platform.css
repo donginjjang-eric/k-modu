@@ -1221,6 +1221,29 @@ body.dark-theme .brand img {
   }
 }
 
+/* 보드 푸터: 라벨 + 반대편 보드로 가는 상호 링크 */
+.footer-mini--board {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 24px;
+  flex-wrap: wrap;
+  text-align: left;
+}
+
+.footer-cross {
+  color: var(--ink);
+  text-transform: none;
+  letter-spacing: .01em;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  transition: opacity .2s ease;
+}
+
+.footer-cross:hover {
+  opacity: .55;
+}
+
 .login-shell {
   min-height: calc(100vh - 68px);
   display: grid;
