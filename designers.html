@@ -70,41 +70,83 @@
         </div>
         <div class="designer-proposal-content">
           <p class="designer-proposal-kicker">DESIGNER PROFILE / PORTFOLIO</p>
-          <h2 id="proposalBrandName">Maison Lune Seoul</h2>
-          <strong id="proposalBriefTitle">Representative looks and portfolio mood</strong>
-          <span id="proposalSummary">선택한 디자이너 브랜드의 대표 룩과 시즌 무드를 확인하세요.</span>
-          <div class="designer-proposal-tags" id="proposalTags"></div>
-          <div class="designer-profile-meta" id="proposalProfileMeta" aria-label="Designer profile details"></div>
-          <div class="designer-portfolio-note">
-            <h3>Portfolio Preview</h3>
-            <p>대표 이미지와 이어지는 룩북 컷을 순차적으로 보여줍니다.</p>
+          <div class="designer-modal-tabs" role="tablist" aria-label="Designer profile menu">
+            <button class="is-active" type="button" role="tab" aria-selected="true" data-proposal-tab="profile">프로필</button>
+            <button type="button" role="tab" aria-selected="false" data-proposal-tab="styling">스타일링 보드</button>
+            <button type="button" role="tab" aria-selected="false" data-proposal-tab="collab">협업 준비</button>
           </div>
-          <div class="designer-portfolio-thumbs" id="proposalPortfolioThumbs" aria-label="Portfolio thumbnails"></div>
-          <div class="designer-asset-section">
-            <h3>Hero Products</h3>
-            <div class="designer-product-preview" id="proposalProductPreview" aria-label="Hero product images"></div>
-          </div>
-          <div class="designer-asset-section">
-            <h3>Available Samples</h3>
-            <div class="designer-sample-preview" id="proposalSamplePreview" aria-label="Available sample images"></div>
-          </div>
-          <div class="designer-proposal-grid">
-            <div>
-              <h3>Collaboration Ready</h3>
-              <div class="designer-proposal-pills">
-                <span>Product Seeding</span>
-                <span>Styling Reel</span>
-                <span>Editorial Try-on</span>
+
+          <section class="designer-modal-panel is-active" data-proposal-panel="profile">
+            <h2 id="proposalBrandName">Maison Lune Seoul</h2>
+            <strong id="proposalBriefTitle">Representative looks and portfolio mood</strong>
+            <span id="proposalSummary">선택한 디자이너 브랜드의 대표 룩과 시즌 무드를 확인하세요.</span>
+            <div class="designer-proposal-tags" id="proposalTags"></div>
+            <div class="designer-profile-meta" id="proposalProfileMeta" aria-label="Designer profile details"></div>
+            <div class="designer-portfolio-note">
+              <h3>Portfolio Preview</h3>
+              <p>대표 이미지와 이어지는 룩북 컷을 순차적으로 보여줍니다.</p>
+            </div>
+            <div class="designer-portfolio-thumbs" id="proposalPortfolioThumbs" aria-label="Portfolio thumbnails"></div>
+            <div class="designer-asset-section">
+              <h3>Hero Products</h3>
+              <div class="designer-product-preview" id="proposalProductPreview" aria-label="Hero product images"></div>
+            </div>
+            <div class="designer-asset-section">
+              <h3>Available Samples</h3>
+              <div class="designer-sample-preview" id="proposalSamplePreview" aria-label="Available sample images"></div>
+            </div>
+          </section>
+
+          <section class="designer-modal-panel" data-proposal-panel="styling" hidden>
+            <div class="styling-board-head">
+              <span>Styling Board</span>
+              <h2>Full Look Builder</h2>
+              <p>브랜드가 보유한 제품과 추천 아이템을 조합해 크리에이터가 바로 촬영 콘셉트를 상상할 수 있는 보드입니다.</p>
+            </div>
+            <div class="styling-board">
+              <img id="stylingBoardImage" src="assets/styling-board-maison-lune-01.png" alt="Maison Lune Seoul full look styling board" hidden />
+              <div class="styling-board-list">
+                <div class="styling-board-section">
+                  <div class="styling-board-section-head">
+                    <h3>보유 제품</h3>
+                    <span>Owned by Designer</span>
+                  </div>
+                  <div class="styling-item-list" id="stylingOwnedItems"></div>
+                </div>
+                <div class="styling-board-section">
+                  <div class="styling-board-section-head">
+                    <h3>추천 아이템</h3>
+                    <span>Matched Styling Pieces</span>
+                  </div>
+                  <div class="styling-item-list" id="stylingRecommendedItems"></div>
+                </div>
+                <div class="styling-shortform-note">
+                  <span>업데이트 예정</span>
+                  <p>Full look 기반 숏폼 영상 제작은 업데이트 예정입니다.</p>
+                </div>
               </div>
             </div>
-            <div>
-              <h3>Creator Direction</h3>
-              <p id="proposalCreatorDirection">Minimal Luxury / Street Styling / Editorial Fashion</p>
+          </section>
+
+          <section class="designer-modal-panel" data-proposal-panel="collab" hidden>
+            <div class="designer-proposal-grid">
+              <div>
+                <h3>Collaboration Ready</h3>
+                <div class="designer-proposal-pills">
+                  <span>Product Seeding</span>
+                  <span>Styling Reel</span>
+                  <span>Editorial Try-on</span>
+                </div>
+              </div>
+              <div>
+                <h3>Creator Direction</h3>
+                <p id="proposalCreatorDirection">Minimal Luxury / Street Styling / Editorial Fashion</p>
+              </div>
             </div>
-          </div>
-          <div class="designer-proposal-actions">
-            <a class="pill" id="proposalBriefLink" href="designer-brief.html">이 브랜드와 협업하기</a>
-          </div>
+            <div class="designer-proposal-actions">
+              <a class="pill" id="proposalBriefLink" href="designer-brief.html">이 브랜드와 협업하기</a>
+            </div>
+          </section>
         </div>
         </div>
       </div>
@@ -210,10 +252,49 @@
     const proposalCreatorDirection = document.querySelector('#proposalCreatorDirection');
     const proposalBriefLink = document.querySelector('#proposalBriefLink');
     const proposalClose = document.querySelector('.designer-proposal-close');
+    const proposalTabs = Array.from(document.querySelectorAll('[data-proposal-tab]'));
+    const proposalPanels = Array.from(document.querySelectorAll('[data-proposal-panel]'));
+    const stylingBoardImage = document.querySelector('#stylingBoardImage');
+    const stylingOwnedItems = document.querySelector('#stylingOwnedItems');
+    const stylingRecommendedItems = document.querySelector('#stylingRecommendedItems');
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let proposalGalleryImages = [];
     let proposalGalleryIndex = 0;
     let proposalGalleryTimer = null;
+
+    const defaultStylingBoard = {
+      fullLookImage: 'assets/styling-board-maison-lune-01.png',
+      ownedItems: [
+        { image: 'assets/designer-profile-real-09.png', category: 'Outer', name: 'Signature Outer Piece', status: '보유' },
+        { image: 'assets/designer-profile-real-10.png', category: 'Bottom', name: 'Tailored Bottom Line', status: '보유' }
+      ],
+      recommendedItems: [
+        { image: 'assets/designer-profile-real-11.png', category: 'Accessory', name: 'Soft Styling Bag', status: '추천' },
+        { image: 'assets/designer-profile-real-12.png', category: 'Footwear', name: 'Minimal Black Shoes', status: '외부 매칭' },
+        { image: 'assets/designer-profile-real-13.png', category: 'Sample', name: 'Texture Detail Sample', status: '시딩 가능' },
+        { image: 'assets/designer-profile-real-02.png', category: 'Inner', name: 'Clean Layering Top', status: '추천' }
+      ],
+      shortformStatus: 'coming-soon'
+    };
+
+    const stylingBoardData = {
+      0: {
+        fullLookImage: 'assets/styling-board-maison-lune-01.png',
+        ownedItems: [
+          { image: 'assets/designer-profile-real-09.png', category: 'Outer', name: 'Structured Black Coat', status: '보유' },
+          { image: 'assets/designer-profile-real-10.png', category: 'Bottom', name: 'Tailored Black Trouser', status: '보유' }
+        ],
+        recommendedItems: [
+          { image: 'assets/designer-profile-real-11.png', category: 'Eyewear', name: 'Slim Black Sunglasses', status: '추천' },
+          { image: 'assets/designer-profile-real-12.png', category: 'Bag', name: 'Soft Leather Tote', status: '시딩 가능' },
+          { image: 'assets/designer-profile-real-13.png', category: 'Shoes', name: 'Minimal Black Shoes', status: '외부 매칭' },
+          { image: 'assets/designer-profile-real-02.png', category: 'Inner', name: 'Clean Inner Top', status: '추천' }
+        ],
+        shortformStatus: 'coming-soon'
+      }
+    };
+    let currentProposalIndex = 0;
+    let currentStylingBoard = defaultStylingBoard;
 
     // 풀스크린 사진 갤러리 라이트박스 (제안 시트 위에 표시)
     const lightbox = document.querySelector('#designerLightbox');
@@ -311,6 +392,48 @@
         heroProducts: 2 + (profileIndex % 4),
         samples: 3 + (profileIndex % 5)
       };
+    };
+
+    const setProposalTab = (tabName) => {
+      const wasStyling = proposalSheet.classList.contains('is-styling');
+      proposalTabs.forEach((tab) => {
+        const isActive = tab.dataset.proposalTab === tabName;
+        tab.classList.toggle('is-active', isActive);
+        tab.setAttribute('aria-selected', String(isActive));
+      });
+      proposalPanels.forEach((panel) => {
+        const isActive = panel.dataset.proposalPanel === tabName;
+        panel.classList.toggle('is-active', isActive);
+        panel.hidden = !isActive;
+      });
+      proposalSheet.classList.toggle('is-styling', tabName === 'styling');
+      if (tabName === 'styling') {
+        stopProposalGallery();
+        proposalImage.classList.remove('is-switching');
+        proposalImage.src = currentStylingBoard.fullLookImage;
+        proposalImage.alt = 'Full look styling board';
+      } else if (wasStyling && proposalSheet.classList.contains('is-open')) {
+        startProposalGallery(currentProposalIndex);
+      }
+    };
+
+    const renderStylingItems = (items) => items.map((item) => `
+      <article class="styling-item-card">
+        <img src="${escapeHtml(item.image)}" alt="" loading="lazy" />
+        <div>
+          <span>${escapeHtml(item.category)}</span>
+          <strong>${escapeHtml(item.name)}</strong>
+        </div>
+        <em>${escapeHtml(item.status)}</em>
+      </article>
+    `).join('');
+
+    const renderStylingBoard = (profileIndex) => {
+      const board = stylingBoardData[profileIndex] || defaultStylingBoard;
+      currentStylingBoard = board;
+      stylingBoardImage.src = board.fullLookImage;
+      stylingOwnedItems.innerHTML = renderStylingItems(board.ownedItems);
+      stylingRecommendedItems.innerHTML = renderStylingItems(board.recommendedItems);
     };
 
     const getProposalGalleryImages = (startIndex) => {
@@ -434,6 +557,7 @@
       const encodedBrand = encodeURIComponent(brand);
       const profileIndex = Number(card.dataset.index || 0);
       const meta = getDesignerMeta(profileIndex, brand, kicker, tags);
+      currentProposalIndex = profileIndex;
 
       proposalBrandName.textContent = brand;
       proposalBriefTitle.textContent = 'Representative looks and portfolio mood';
@@ -469,6 +593,8 @@
       });
       proposalCreatorDirection.textContent = getCreatorDirection(tags);
       proposalBriefLink.href = `designer-brief.html?brand=${encodedBrand}`;
+      renderStylingBoard(profileIndex);
+      setProposalTab('profile');
       startProposalGallery(profileIndex);
 
       proposalSheet.classList.add('is-open');
@@ -482,6 +608,12 @@
       proposalSheet.setAttribute('aria-hidden', 'true');
       document.body.classList.remove('sheet-open');
     };
+
+    proposalTabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        setProposalTab(tab.dataset.proposalTab);
+      });
+    });
 
     document.querySelectorAll('[data-proposal-trigger]').forEach((trigger) => {
       trigger.addEventListener('click', (event) => {
