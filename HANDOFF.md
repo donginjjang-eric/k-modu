@@ -60,3 +60,28 @@
 
 ## 10. 메모리 (다음 세션 자동 로드)
 `C:\Users\user\.claude\projects\C--Users-user-Desktop-Markbridge-K-MODE-NEW1\memory\` 에 핵심 결정 기록됨: `kmodu-collab-model`, `kmodu-seeding-data`, `kmodu-type-scale`.
+
+## 11. 새 세션 빠르게 시작하기 (복붙용)
+새 창에서 이 프로젝트 폴더로 Claude Code를 열고, 아래 한 줄을 그대로 붙여넣으면 됨. (메모리는 자동 로드되지만 HANDOFF를 먼저 읽게 하면 가장 빠름.)
+
+**① 기본 이어가기**
+```
+K-MODU 이어서 작업할게. 먼저 HANDOFF.md 읽고 현재 상태/남은 일 파악한 다음, serve.py로 미리보기(8080) 띄워줘. 준비되면 알려줘.
+```
+
+**② 바로 특정 작업 (예: 시딩 이미지 교체)**
+```
+K-MODU 이어서 할게. HANDOFF.md 읽고, creators.html의 seedingCreators 시딩 인플루언서 플레이스홀더 이미지를 [경로/폴더]의 실제 이미지 20장으로 교체해줘. serve.py로 확인까지.
+```
+
+**③ 폰트/디자인 미세조정**
+```
+K-MODU 이어서. HANDOFF.md 참고해서 platform.css :root의 --fs-* 토큰만 조절해 전체 폰트 [키우기/줄이기]. index.html :root 미러도 같이.
+```
+
+빠르게 하는 팁:
+- 항상 **HANDOFF.md 읽으라고 먼저 지시** → 구조/주의사항을 즉시 파악.
+- 미리보기는 **`serve.py`(no-cache)** 로 띄우라고 명시 → 캐시 문제 없음.
+- 폰트/스타일은 "토큰만 바꿔라", index는 "미러도 같이"라고 콕 집어주면 실수 없음.
+- 큰 작업/QA는 "에이전트팀 꾸려서"라고 하면 병렬로 빠르게 처리.
+- 끝나면 "깃업"이라고 하면 push (원격은 `k-modu.git`).
