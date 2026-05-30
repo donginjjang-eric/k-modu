@@ -84,7 +84,7 @@
     /* Success Typography */
     .success-title {
       font-size: clamp(24px, 5vw, 30px);
-      font-weight: 700;
+      font-weight: var(--fw-bold);
       line-height: 1.36;
       letter-spacing: -0.04em;
       margin: 0 0 12px;
@@ -97,7 +97,7 @@
       color: var(--muted);
       line-height: 1.6;
       margin: 0 0 40px;
-      font-weight: 400;
+      font-weight: var(--fw-regular);
       word-break: keep-all;
     }
 
@@ -114,7 +114,7 @@
 
     .receipt-title {
       font-size: var(--fs-label-sm);
-      font-weight: 800;
+      font-weight: var(--fw-extrabold);
       color: var(--muted);
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -137,12 +137,12 @@
 
     .receipt-label {
       color: var(--muted);
-      font-weight: 500;
+      font-weight: var(--fw-medium);
     }
 
     .receipt-value {
       color: var(--ink);
-      font-weight: 700;
+      font-weight: var(--fw-bold);
     }
 
     .receipt-status-badge {
@@ -154,7 +154,7 @@
       color: var(--paper);
       border-radius: 12px;
       font-size: var(--fs-micro);
-      font-weight: 800;
+      font-weight: var(--fw-extrabold);
       letter-spacing: 0.04em;
     }
 
@@ -174,7 +174,7 @@
       border: none;
       border-radius: 14px;
       font-size: var(--fs-body);
-      font-weight: 700;
+      font-weight: var(--fw-bold);
       cursor: pointer;
       transition: all 0.24s ease;
       outline: none;
@@ -209,7 +209,7 @@
         <a href="index.html#contact">문의</a>
       </nav>
       <div class="top-actions">
-        <button id="themeToggleBtn" aria-label="테마 전환" style="background:none; border:none; color:var(--ink); font-size:var(--fs-label-sm); font-weight:800; cursor:pointer; letter-spacing:.08em; padding:0; text-transform:uppercase; margin-right:12px; display:inline-flex; align-items:center;">다크</button>
+        <button id="themeToggleBtn" aria-label="테마 전환" style="background:none; border:none; color:var(--ink); font-size:var(--fs-label-sm); font-weight:var(--fw-extrabold); cursor:pointer; letter-spacing:.08em; padding:0; text-transform:uppercase; margin-right:12px; display:inline-flex; align-items:center;">다크</button>
         <a href="admin.html">관리자</a>
         <a class="pill" href="apply.html">입점 신청</a>
       </div>

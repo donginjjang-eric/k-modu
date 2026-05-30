@@ -38,6 +38,15 @@
       --fs-label-sm: 11px;
       --fs-micro: 10px;
       --fs-nano: 9px;
+
+      /* 폰트 weight 스케일 — platform.css와 동일 미러 */
+      --fw-regular: 400;
+      --fw-medium: 500;
+      --fw-hero: 520;
+      --fw-semibold: 600;
+      --fw-bold: 700;
+      --fw-extrabold: 800;
+      --fw-black: 900;
     }
 
     * {
@@ -113,7 +122,7 @@
 
     .nav-center a {
       font-size: var(--fs-body);
-      font-weight: 600;
+      font-weight: var(--fw-semibold);
       letter-spacing: .08em;
       color: var(--soft);
       transition: color .2s ease;
@@ -126,7 +135,7 @@
 
     .nav-center a[aria-current="page"],
     .mobile-menu a[aria-current="page"] {
-      font-weight: 800;
+      font-weight: var(--fw-extrabold);
     }
 
     .nav-right {
@@ -155,7 +164,7 @@
 
     .locale-switch .active {
       color: #050505;
-      font-weight: 800;
+      font-weight: var(--fw-extrabold);
     }
 
     .locale-switch span {
@@ -173,7 +182,7 @@
       background: #050505;
       color: #f7f7f4;
       font-size: var(--fs-label);
-      font-weight: 800;
+      font-weight: var(--fw-extrabold);
       letter-spacing: .1em;
       line-height: 1;
       text-transform: uppercase;
@@ -249,7 +258,7 @@
       margin: 0;
       font-size: clamp(76px, 10.5vw, 148px);
       line-height: .82;
-      font-weight: 500;
+      font-weight: var(--fw-medium);
       letter-spacing: -.082em;
       text-transform: uppercase;
       transform: translateX(-50%);
@@ -265,7 +274,7 @@
       margin: 0;
       font-size: clamp(10px, .9vw, 13px);
       line-height: 1;
-      font-weight: 600;
+      font-weight: var(--fw-semibold);
       letter-spacing: .28em;
       text-transform: uppercase;
       transform: translateX(-50%);
@@ -326,7 +335,7 @@
       background: #050505;
       color: var(--paper);
       font-size: var(--fs-label-sm);
-      font-weight: 500;
+      font-weight: var(--fw-medium);
       letter-spacing: -.01em;
       transition: background .22s ease, color .22s ease, transform .22s ease;
     }
@@ -341,7 +350,7 @@
       margin: 0 0 12px;
       font-size: var(--fs-title-sm);
       line-height: 1;
-      font-weight: 500;
+      font-weight: var(--fw-medium);
       letter-spacing: -.05em;
       text-transform: uppercase;
     }
@@ -406,7 +415,7 @@
       margin: 0;
       font-size: clamp(34px, 4.2vw, 62px);
       line-height: .92;
-      font-weight: 520;
+      font-weight: var(--fw-hero);
       letter-spacing: -.058em;
       text-transform: uppercase;
     }
@@ -450,7 +459,7 @@
       margin: 52px 0 18px;
       font-size: var(--fs-h3);
       line-height: .94;
-      font-weight: 400;
+      font-weight: var(--fw-regular);
       letter-spacing: -.06em;
       text-transform: uppercase;
     }
@@ -551,7 +560,7 @@
       margin: 0 auto;
       font-size: clamp(78px, 12.2vw, 168px);
       line-height: .82;
-      font-weight: 500;
+      font-weight: var(--fw-medium);
       letter-spacing: -.095em;
       text-transform: uppercase;
       text-align: center;
@@ -579,7 +588,7 @@
       background: rgba(247, 247, 244, .78);
       color: rgba(5, 5, 5, .68);
       font-size: var(--fs-label-sm);
-      font-weight: 500;
+      font-weight: var(--fw-medium);
       letter-spacing: .18em;
       line-height: 1;
     }
@@ -642,7 +651,7 @@
       margin: 0;
       font-size: 31px;
       line-height: 1;
-      font-weight: 400;
+      font-weight: var(--fw-regular);
       letter-spacing: -.06em;
       text-transform: uppercase;
     }
@@ -651,7 +660,7 @@
       margin: 0 0 18px;
       font-size: var(--fs-body-lg);
       line-height: .98;
-      font-weight: 400;
+      font-weight: var(--fw-regular);
       letter-spacing: -.05em;
       text-transform: uppercase;
     }
@@ -699,7 +708,7 @@
       margin: 0 0 6px;
       font-size: 20px;
       line-height: .92;
-      font-weight: 400;
+      font-weight: var(--fw-regular);
       letter-spacing: -.06em;
       text-transform: uppercase;
     }
@@ -775,7 +784,7 @@
       background: rgba(247, 247, 244, .86);
       backdrop-filter: blur(10px);
       font-size: var(--fs-label-sm);
-      font-weight: 700;
+      font-weight: var(--fw-bold);
       letter-spacing: .12em;
       text-transform: uppercase;
     }
@@ -863,7 +872,7 @@
       margin: 0 14px 5px;
       font-size: var(--fs-title-sm);
       line-height: .95;
-      font-weight: 400;
+      font-weight: var(--fw-regular);
       letter-spacing: -.06em;
       text-transform: uppercase;
     }
@@ -894,7 +903,7 @@
       color: rgba(247, 247, 244, .86);
       font-size: var(--fs-label-sm);
       line-height: 1.35;
-      font-weight: 500;
+      font-weight: var(--fw-medium);
     }
 
     .influencer-stats {
@@ -920,7 +929,7 @@
     .influencer-stats strong {
       color: var(--paper);
       font-size: var(--fs-sm);
-      font-weight: 500;
+      font-weight: var(--fw-medium);
       letter-spacing: -.04em;
     }
 
@@ -1022,7 +1031,7 @@
       margin: 0;
       font-size: clamp(52px, 7vw, 96px);
       line-height: .88;
-      font-weight: 400;
+      font-weight: var(--fw-regular);
       letter-spacing: -.08em;
       text-transform: uppercase;
     }
@@ -1060,7 +1069,7 @@
     .designer-meta strong {
       color: #050505;
       font-size: var(--fs-body-lg);
-      font-weight: 500;
+      font-weight: var(--fw-medium);
       letter-spacing: -.04em;
     }
 
@@ -1091,7 +1100,7 @@
       margin: 0 0 8px;
       font-size: 25px;
       line-height: .95;
-      font-weight: 400;
+      font-weight: var(--fw-regular);
       letter-spacing: -.06em;
       text-transform: uppercase;
     }
@@ -1153,7 +1162,7 @@
       margin: 0 0 12px;
       font-size: 36px;
       line-height: .9;
-      font-weight: 400;
+      font-weight: var(--fw-regular);
       letter-spacing: -.06em;
       text-transform: uppercase;
     }
@@ -1175,7 +1184,7 @@
       margin: 0 0 7px;
       color: rgba(5, 5, 5, .46);
       font-size: var(--fs-micro);
-      font-weight: 500;
+      font-weight: var(--fw-medium);
       letter-spacing: .16em;
       text-transform: uppercase;
     }
@@ -1183,7 +1192,7 @@
     .match-score strong {
       font-size: 44px;
       line-height: .86;
-      font-weight: 500;
+      font-weight: var(--fw-medium);
       letter-spacing: -.06em;
     }
 
@@ -1299,7 +1308,7 @@
       background: #080808;
       color: #fff;
       font-size: 15px;
-      font-weight: 600;
+      font-weight: var(--fw-semibold);
       letter-spacing: -.02em;
       text-decoration: none;
       box-shadow: 0 18px 48px rgba(0,0,0,.18);
@@ -1387,7 +1396,7 @@
     .contact h4 {
       margin: 0 0 18px;
       font-size: var(--fs-micro);
-      font-weight: 400;
+      font-weight: var(--fw-regular);
     }
 
     .foot-grid p,
@@ -1519,7 +1528,7 @@
         border-bottom: 1px solid rgba(0, 0, 0, .08);
         font-size: 19px;
         line-height: 1;
-        font-weight: 600;
+        font-weight: var(--fw-semibold);
         letter-spacing: -.04em;
         text-transform: uppercase;
       }
@@ -1548,7 +1557,7 @@
         background: #050505;
         color: var(--paper);
         font-size: 15px;
-        font-weight: 700;
+        font-weight: var(--fw-bold);
         letter-spacing: .1em;
         box-shadow: 0 14px 30px rgba(5, 5, 5, .26);
         transition: transform .2s ease, box-shadow .2s ease;
@@ -1870,7 +1879,7 @@
       .contact h4 {
         margin-bottom: 10px;
         font-size: var(--fs-nano);
-        font-weight: 700;
+        font-weight: var(--fw-bold);
       }
 
       .foot-grid p,
@@ -1976,7 +1985,7 @@
       backdrop-filter: blur(6px);
       color: #fff;
       font-size: var(--fs-xs);
-      font-weight: 600;
+      font-weight: var(--fw-semibold);
     }
 
     .hc-toggle {
@@ -2018,7 +2027,7 @@
     }
 
     .hc-toggle[aria-pressed="true"]::after { display: none; }
-    .hc-count b { font-weight: 800; }
+    .hc-count b { font-weight: var(--fw-extrabold); }
 
     @media (min-width: 768px) {
       .hc-scroller { padding-inline: calc(50% - 180px); }

@@ -58,7 +58,7 @@
     /* Toss Typography */
     .toss-title {
       font-size: clamp(26px, 5vw, 34px);
-      font-weight: 700;
+      font-weight: var(--fw-bold);
       line-height: 1.34;
       letter-spacing: -0.04em;
       margin: 0 0 12px;
@@ -71,7 +71,7 @@
       color: var(--muted);
       line-height: 1.6;
       margin: 0 0 36px;
-      font-weight: 400;
+      font-weight: var(--fw-regular);
     }
 
     /* Toss Inputs */
@@ -82,7 +82,7 @@
     .toss-field label {
       display: block;
       font-size: var(--fs-label-sm);
-      font-weight: 800;
+      font-weight: var(--fw-extrabold);
       color: var(--muted);
       letter-spacing: 0.1em;
       text-transform: uppercase;
@@ -96,7 +96,7 @@
       background: transparent;
       color: var(--ink);
       font-size: var(--fs-body-lg);
-      font-weight: 500;
+      font-weight: var(--fw-medium);
       padding: 12px 0;
       outline: none;
       transition: border-color 0.24s ease;
@@ -132,7 +132,7 @@
       background: var(--input-bg);
       color: var(--ink);
       font-size: var(--fs-xs);
-      font-weight: 600;
+      font-weight: var(--fw-semibold);
       cursor: pointer;
       user-select: none;
       transition: all 0.22s ease;
@@ -177,7 +177,7 @@
 
     .toss-upload-text {
       font-size: var(--fs-sm);
-      font-weight: 600;
+      font-weight: var(--fw-semibold);
       color: var(--ink);
       margin-bottom: 4px;
     }
@@ -203,7 +203,7 @@
       border: none;
       border-radius: 14px;
       font-size: var(--fs-body);
-      font-weight: 700;
+      font-weight: var(--fw-bold);
       cursor: pointer;
       transition: all 0.24s ease;
       outline: none;
@@ -273,7 +273,7 @@
 
     .toss-modal-title {
       font-size: var(--fs-title-sm);
-      font-weight: 700;
+      font-weight: var(--fw-bold);
       letter-spacing: -0.03em;
       margin: 0 0 12px;
       color: var(--ink);
@@ -304,7 +304,7 @@
         <a href="index.html#contact">문의</a>
       </nav>
       <div class="top-actions">
-        <button id="themeToggleBtn" aria-label="테마 전환" style="background:none; border:none; color:var(--ink); font-size:var(--fs-label-sm); font-weight:800; cursor:pointer; letter-spacing:.08em; padding:0; text-transform:uppercase; margin-right:12px; display:inline-flex; align-items:center;">다크</button>
+        <button id="themeToggleBtn" aria-label="테마 전환" style="background:none; border:none; color:var(--ink); font-size:var(--fs-label-sm); font-weight:var(--fw-extrabold); cursor:pointer; letter-spacing:.08em; padding:0; text-transform:uppercase; margin-right:12px; display:inline-flex; align-items:center;">다크</button>
         <a href="admin.html">관리자</a>
         <a class="pill" href="apply.html">입점 신청</a>
       </div>
