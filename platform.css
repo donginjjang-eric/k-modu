@@ -2391,6 +2391,17 @@ body.dark-theme .mini-stats strong {
 }
 
 @media (max-width: 900px) {
+  :root {
+    --fs-body-lg: 20px;
+    --fs-body: 16px;
+    --fs-sm: 15px;
+    --fs-xs: 14px;
+    --fs-label: 13px;
+    --fs-label-sm: 12.5px;
+    --fs-micro: 12px;
+    --fs-nano: 11.5px;
+  }
+
   .creator-brief {
     grid-template-columns: 1fr;
     gap: 18px;
@@ -2404,7 +2415,8 @@ body.dark-theme .mini-stats strong {
 
   .creator-brief p:last-child {
     max-width: 520px;
-    font-size: var(--fs-sm);
+    font-size: var(--fs-body);
+    line-height: 1.72;
   }
 
   .category-strip {
@@ -2442,7 +2454,7 @@ body.dark-theme .mini-stats strong {
 
   .category-card strong {
     align-self: center;
-    font-size: var(--fs-sm);
+    font-size: var(--fs-body);
     letter-spacing: -.01em;
     white-space: nowrap;
   }
@@ -2490,15 +2502,17 @@ body.dark-theme .mini-stats strong {
 
   .market-card h3 {
     font-size: var(--fs-body-lg);
+    line-height: 1.06;
   }
 
   .market-card p {
-    min-height: 40px;
-    font-size: var(--fs-label-sm);
+    min-height: 46px;
+    font-size: var(--fs-xs);
+    line-height: 1.5;
   }
 
   .badges span {
-    font-size: var(--fs-nano);
+    font-size: var(--fs-label-sm);
   }
 
   .floating-help {
@@ -2723,10 +2737,12 @@ body.dark-theme .mini-stats strong {
 
   .work-pin-body h3 {
     font-size: var(--fs-body-lg);
+    line-height: 1.04;
   }
 
   .work-pin-body p {
-    font-size: var(--fs-label-sm);
+    font-size: var(--fs-xs);
+    line-height: 1.54;
   }
 
   .designer-board [data-reveal] {
@@ -2808,7 +2824,7 @@ body.dark-theme .mini-stats strong {
   }
 
   .designer-profile-meta strong {
-    font-size: var(--fs-xs);
+    font-size: var(--fs-sm);
   }
 
   .designer-profile-stats {
@@ -2825,7 +2841,7 @@ body.dark-theme .mini-stats strong {
   }
 
   .designer-profile-stats span {
-    font-size: var(--fs-nano);
+    font-size: var(--fs-label-sm);
     letter-spacing: .08em;
   }
 
