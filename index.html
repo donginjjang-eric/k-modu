@@ -1368,6 +1368,17 @@
     }
 
     @media (max-width: 760px) {
+      :root {
+        --fs-body-lg: 20px;
+        --fs-body: 16px;
+        --fs-sm: 15px;
+        --fs-xs: 14px;
+        --fs-label: 13px;
+        --fs-label-sm: 12.5px;
+        --fs-micro: 12px;
+        --fs-nano: 11.5px;
+      }
+
       .site {
         width: 100%;
         margin: 0;
@@ -1529,8 +1540,8 @@
       }
 
       .hero-copy .body {
-        font-size: 10px;
-        line-height: 1.58;
+        font-size: var(--fs-sm);
+        line-height: 1.68;
       }
 
       .models {
@@ -1618,8 +1629,8 @@
 
       .campaign p {
         margin: 0 10px 11px;
-        font-size: 8px;
-        line-height: 1.42;
+        font-size: var(--fs-xs);
+        line-height: 1.52;
       }
 
       .match-fit {
@@ -1628,11 +1639,11 @@
       }
 
       .match-fit span {
-        font-size: 7px;
+        font-size: var(--fs-label-sm);
       }
 
       .match-fit strong {
-        font-size: 8px;
+        font-size: var(--fs-label-sm);
       }
 
       .influencer-stats {
@@ -1642,7 +1653,7 @@
       .influencer-stats span {
         min-height: 40px;
         padding: 6px 4px;
-        font-size: 7px;
+        font-size: var(--fs-label-sm);
       }
 
       .influencer-stats strong {
@@ -1651,7 +1662,7 @@
 
       .platform-tag {
         margin: 0 10px 10px;
-        font-size: 8px;
+        font-size: var(--fs-label-sm);
       }
 
       .designer-editorial {
@@ -1772,7 +1783,7 @@
         gap: 18px;
         justify-content: flex-start;
         padding: 0 24px;
-        font-size: 9px;
+        font-size: var(--fs-label-sm);
       }
 
       .foot-grid {

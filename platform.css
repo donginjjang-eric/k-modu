@@ -2046,6 +2046,17 @@ body.dark-theme .mini-stats strong {
 }
 
 @media (max-width: 900px) {
+  :root {
+    --fs-body-lg: 20px;
+    --fs-body: 16px;
+    --fs-sm: 15px;
+    --fs-xs: 14px;
+    --fs-label: 13px;
+    --fs-label-sm: 12.5px;
+    --fs-micro: 12px;
+    --fs-nano: 11.5px;
+  }
+
   .creator-brief {
     grid-template-columns: 1fr;
     gap: 18px;
@@ -2059,7 +2070,8 @@ body.dark-theme .mini-stats strong {
 
   .creator-brief p:last-child {
     max-width: 520px;
-    font-size: 13px;
+    font-size: var(--fs-body);
+    line-height: 1.72;
   }
 
   .category-strip {
@@ -2093,6 +2105,24 @@ body.dark-theme .mini-stats strong {
 
   .category-card {
     display: none;
+  }
+
+  .category-card strong {
+    align-self: center;
+    font-size: var(--fs-body);
+    letter-spacing: -.01em;
+    white-space: nowrap;
+  }
+
+  .category-card:hover,
+  .category-card.is-active {
+    transform: none;
+    background: #050505;
+    border-color: #050505;
+  }
+
+  .category-card.is-active strong {
+    color: #fff;
   }
 
   .market-shell {
@@ -2180,16 +2210,18 @@ body.dark-theme .mini-stats strong {
   }
 
   .market-card h3 {
-    font-size: 16px;
+    font-size: var(--fs-body-lg);
+    line-height: 1.06;
   }
 
   .market-card p {
-    min-height: 40px;
-    font-size: 10px;
+    min-height: 46px;
+    font-size: var(--fs-xs);
+    line-height: 1.5;
   }
 
   .badges span {
-    font-size: 8px;
+    font-size: var(--fs-label-sm);
   }
 
   .floating-help {
@@ -2489,11 +2521,13 @@ body.dark-theme .mini-stats strong {
   }
 
   .work-pin-body h3 {
-    font-size: 18px;
+    font-size: var(--fs-body-lg);
+    line-height: 1.04;
   }
 
   .work-pin-body p {
-    font-size: 10px;
+    font-size: var(--fs-xs);
+    line-height: 1.54;
   }
 
   .designer-board [data-reveal] {
@@ -2567,7 +2601,7 @@ body.dark-theme .mini-stats strong {
   }
 
   .designer-profile-meta strong {
-    font-size: 12px;
+    font-size: var(--fs-sm);
   }
 
   .designer-profile-stats {
@@ -2584,7 +2618,7 @@ body.dark-theme .mini-stats strong {
   }
 
   .designer-profile-stats span {
-    font-size: 8px;
+    font-size: var(--fs-label-sm);
     letter-spacing: .08em;
   }
 
