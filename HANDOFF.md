@@ -8,8 +8,7 @@
 
 ## 2. Git / 배포
 - 브랜치: **`codex-kmodu-designer-profiles`** (master 아님). origin에 **push 완료** (최신 `c6ebcb6`).
-- ⚠️ 원격 저장소 이동됨: 옛 `K-MODE_NEW1.git` → 새 **`https://github.com/donginjjang-eric/k-modu.git`** (현재 리다이렉트로 push됨). 정리하려면:
-  `git remote set-url origin https://github.com/donginjjang-eric/k-modu.git`
+- ✅ 원격 정리 완료: origin이 새 **`https://github.com/donginjjang-eric/k-modu.git`** 로 set-url 됨(fetch/push 정상).
 - 로컬에 untracked 백업 파일 다수(`*.tar.gz`, `server-backup/`, `COMPANY/` 등) — 세션 이전부터 있던 것, 건드리지 않음.
 
 ## 3. 로컬 미리보기 (중요)
@@ -43,13 +42,18 @@
 - **협업 모델 = 단계적 하이브리드**: A(브랜드가 데이터 기반으로 크리에이터에게 먼저 제안) 먼저 구현(완료). B(크리에이터 자발 지원)는 **상태저장·알림 필요 → 백엔드 도입 후**. B 경로 UI는 아직 만들지 말 것.
 
 ## 8. 남은 일 (우선순위)
-1. **시딩 인플루언서 실제 프로필 이미지 20장** 확보 → 플레이스홀더 교체.
-2. 원격 URL을 `k-modu.git`로 업데이트(`git remote set-url`).
-3. (선택) Creators↔Designers 상호 참조 링크.
-4. (선택) favicon / og:image를 로고 기반으로 추가.
-5. (보류) 본문 큰 영문 디스플레이 타이틀(BRAND PIPELINE 등) 한글화 여부 — 현재 디자인 의도로 영문 유지.
-6. (후속/승인 필요) font-weight 변종 정규화, 색상 토큰화.
+> 2026-05-30 세션 업데이트 — ✅는 이번에 처리(로컬 커밋, **푸시는 "깃업" 대기**).
+1. **시딩 인플루언서 실제 프로필 이미지 20장** 확보 → 플레이스홀더 교체. (보류 — 이미지 확보 시)
+2. ✅ 원격 URL `k-modu.git`로 업데이트 완료.
+3. ✅ Creators↔Designers 상호 참조 링크(보드 푸터) 추가. (커밋 `c34152d`)
+4. ✅ favicon(K 모노그램)/og:image 로고 기반 추가 + 전 페이지 메타. (커밋 `c34152d`) ⚠️ `og:image`는 배포 도메인 확정 후 **절대 URL**로 교체 필요.
+5. ✅ 본문 영문 디스플레이 타이틀 — **영문 유지** 확정(변경 없음).
+6. font-weight·색상 토큰화:
+   - ✅ font-weight 토큰화+정규화 완료(`--fw-*`, 560→600·720→700). (커밋 `92bcb4c`)
+   - ✅ index.html 색상 토큰화(다크테마 없음 = no-op). (커밋 `9f077fe`)
+   - ⏸ platform.css 색상 토큰화 **보류** — 선결: 아래 8번(다크테마 버그) 수정 후라야 안전. 무지성 치환 시 다크 모드에서 nav/타이틀이 라이트-온-라이트로 사라짐.
 7. **B 경로**(크리에이터 자발 지원) — 백엔드 도입 시.
+8. 🆕 **다크테마 대비 버그 수정**(platform.css 색상 토큰화의 선결과제): admin/creator-detail 등에서 topbar·일부 카드/표면이 다크로 전환 안 돼 라이트-온-라이트로 텍스트가 사라짐. (핸드오프 #9의 "다크테마 대비 확인 필요"와 동일 이슈)
 
 ## 9. 주의사항(Gotchas)
 - **index.html은 platform.css 미연결** → 토큰/공용 스타일 수정 시 index 인라인도 같이 미러링.
