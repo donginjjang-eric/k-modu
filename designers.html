@@ -305,14 +305,14 @@
     const defaultStylingBoard = {
       fullLookImage: 'assets/styling-board-maison-lune-01.png',
       ownedItems: [
-        { image: 'assets/designer-profile-real-09.png', category: 'Outer', name: 'Signature Outer Piece', status: '보유' },
-        { image: 'assets/designer-profile-real-10.png', category: 'Bottom', name: 'Tailored Bottom Line', status: '보유' }
+        { image: 'assets/designer-profile-real-09.png', category: 'Outer', name: 'Signature Outer Piece', status: '보유', modelLookImage: 'assets/styling-looks/structured-black-coat-model.png' },
+        { image: 'assets/designer-profile-real-10.png', category: 'Bottom', name: 'Tailored Bottom Line', status: '보유', modelLookImage: 'assets/styling-looks/tailored-black-trouser-model.png' }
       ],
       recommendedItems: [
-        { image: 'assets/designer-profile-real-11.png', category: 'Accessory', name: 'Soft Styling Bag', status: '추천' },
-        { image: 'assets/designer-profile-real-12.png', category: 'Footwear', name: 'Minimal Black Shoes', status: '외부 매칭' },
-        { image: 'assets/designer-profile-real-13.png', category: 'Sample', name: 'Texture Detail Sample', status: '시딩 가능' },
-        { image: 'assets/designer-profile-real-02.png', category: 'Inner', name: 'Clean Layering Top', status: '추천' }
+        { image: 'assets/designer-profile-real-11.png', category: 'Accessory', name: 'Soft Styling Bag', status: '추천', modelLookImage: 'assets/styling-looks/soft-leather-tote-model.png' },
+        { image: 'assets/designer-profile-real-12.png', category: 'Footwear', name: 'Minimal Black Shoes', status: '외부 매칭', modelLookImage: 'assets/styling-looks/minimal-black-shoes-model.png' },
+        { image: 'assets/designer-profile-real-13.png', category: 'Sample', name: 'Texture Detail Sample', status: '시딩 가능', modelLookImage: 'assets/styling-looks/minimal-black-shoes-model.png' },
+        { image: 'assets/designer-profile-real-02.png', category: 'Inner', name: 'Clean Layering Top', status: '추천', modelLookImage: 'assets/styling-looks/clean-inner-top-model.png' }
       ],
       shortformStatus: 'coming-soon'
     };
@@ -321,14 +321,14 @@
       0: {
         fullLookImage: 'assets/styling-board-maison-lune-01.png',
         ownedItems: [
-          { image: 'assets/designer-profile-real-09.png', category: 'Outer', name: 'Structured Black Coat', status: '보유' },
-          { image: 'assets/designer-profile-real-10.png', category: 'Bottom', name: 'Tailored Black Trouser', status: '보유' }
+          { image: 'assets/designer-profile-real-09.png', category: 'Outer', name: 'Structured Black Coat', status: '보유', modelLookImage: 'assets/styling-looks/structured-black-coat-model.png' },
+          { image: 'assets/designer-profile-real-10.png', category: 'Bottom', name: 'Tailored Black Trouser', status: '보유', modelLookImage: 'assets/styling-looks/tailored-black-trouser-model.png' }
         ],
         recommendedItems: [
-          { image: 'assets/designer-profile-real-11.png', category: 'Eyewear', name: 'Slim Black Sunglasses', status: '추천' },
-          { image: 'assets/designer-profile-real-12.png', category: 'Bag', name: 'Soft Leather Tote', status: '시딩 가능' },
-          { image: 'assets/designer-profile-real-13.png', category: 'Shoes', name: 'Minimal Black Shoes', status: '외부 매칭' },
-          { image: 'assets/designer-profile-real-02.png', category: 'Inner', name: 'Clean Inner Top', status: '추천' }
+          { image: 'assets/designer-profile-real-11.png', category: 'Eyewear', name: 'Slim Black Sunglasses', status: '추천', modelLookImage: 'assets/styling-looks/slim-black-sunglasses-model.png' },
+          { image: 'assets/designer-profile-real-12.png', category: 'Bag', name: 'Soft Leather Tote', status: '시딩 가능', modelLookImage: 'assets/styling-looks/soft-leather-tote-model.png' },
+          { image: 'assets/designer-profile-real-13.png', category: 'Shoes', name: 'Minimal Black Shoes', status: '외부 매칭', modelLookImage: 'assets/styling-looks/minimal-black-shoes-model.png' },
+          { image: 'assets/designer-profile-real-02.png', category: 'Inner', name: 'Clean Inner Top', status: '추천', modelLookImage: 'assets/styling-looks/clean-inner-top-model.png' }
         ],
         shortformStatus: 'coming-soon'
       }
@@ -452,21 +452,46 @@
         proposalImage.classList.remove('is-switching');
         proposalImage.src = currentStylingBoard.fullLookImage;
         proposalImage.alt = 'Full look styling board';
+        clearStylingItemSelection();
       } else if (wasStyling && proposalSheet.classList.contains('is-open')) {
         startProposalGallery(currentProposalIndex);
       }
     };
 
     const renderStylingItems = (items) => items.map((item) => `
-      <article class="styling-item-card">
+      <button class="styling-item-card" type="button" data-model-look-image="${escapeHtml(item.modelLookImage || '')}" data-fallback-look-image="${escapeHtml(currentStylingBoard.fullLookImage)}" aria-pressed="false">
         <img src="${escapeHtml(item.image)}" alt="" loading="lazy" />
         <div>
           <span>${escapeHtml(item.category)}</span>
           <strong>${escapeHtml(item.name)}</strong>
         </div>
         <em>${escapeHtml(item.status)}</em>
-      </article>
+      </button>
     `).join('');
+
+    const clearStylingItemSelection = () => {
+      [...stylingOwnedItems.children, ...stylingRecommendedItems.children].forEach((button) => {
+        button.classList.remove('is-active');
+        button.setAttribute('aria-pressed', 'false');
+      });
+    };
+
+    const showStylingItemLook = (button) => {
+      const image = button.dataset.modelLookImage || button.dataset.fallbackLookImage || currentStylingBoard.fullLookImage;
+      clearStylingItemSelection();
+      button.classList.add('is-active');
+      button.setAttribute('aria-pressed', 'true');
+      proposalSheet.classList.add('is-styling');
+      proposalImage.classList.remove('is-switching');
+      proposalImage.src = image;
+      proposalImage.alt = `${button.querySelector('strong')?.textContent || 'Selected styling item'} model styling preview`;
+    };
+
+    const bindStylingItemPreviews = () => {
+      [...stylingOwnedItems.children, ...stylingRecommendedItems.children].forEach((button) => {
+        button.addEventListener('click', () => showStylingItemLook(button));
+      });
+    };
 
     const renderStylingBoard = (profileIndex) => {
       const board = stylingBoardData[profileIndex] || defaultStylingBoard;
@@ -474,6 +499,7 @@
       stylingBoardImage.src = board.fullLookImage;
       stylingOwnedItems.innerHTML = renderStylingItems(board.ownedItems);
       stylingRecommendedItems.innerHTML = renderStylingItems(board.recommendedItems);
+      bindStylingItemPreviews();
     };
 
     const getProposalGalleryImages = (startIndex) => {
