@@ -129,7 +129,7 @@
                     <span>AI Virtual Try-On</span>
                     <strong>Fixed model look generation</strong>
                   </div>
-                  <div class="ai-model-options" aria-label="Model template">
+                  <div class="ai-model-options" id="aiModelOptions" aria-label="Model template">
                     <button class="is-active" type="button" data-model-template="fixed-female-minimal" aria-pressed="true">K-Fashion Female</button>
                     <button type="button" data-model-template="fixed-street" aria-pressed="false">Street</button>
                     <button type="button" data-model-template="fixed-male" aria-pressed="false">Male</button>
@@ -318,7 +318,8 @@
     const aiTryonGenerate = document.querySelector('#aiTryonGenerate');
     const aiTryonSelection = document.querySelector('#aiTryonSelection');
     const aiTryonStatus = document.querySelector('#aiTryonStatus');
-    const aiModelOptions = Array.from(document.querySelectorAll('[data-model-template]'));
+    const aiModelOptionsContainer = document.querySelector('#aiModelOptions');
+    let aiModelOptions = Array.from(document.querySelectorAll('[data-model-template]'));
     const tryonStage = document.querySelector('#tryonStage');
     const tryonLayerStage = document.querySelector('#tryonLayerStage');
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -328,7 +329,7 @@
     const activeTryOnItems = {};
     const selectedStylingItems = new Map();
     let selectedModelTemplate = 'fixed-female-minimal';
-    const modelTemplateImages = {
+    let modelTemplateImages = {
       'fixed-female-minimal': 'assets/mainmodel_2.png',
       'fixed-street': 'assets/mainmodel_3.png',
       'fixed-male': 'assets/mainmodel_4.png'
@@ -527,6 +528,47 @@
     const setTryOnButtonState = (button, isActive) => {
       button.classList.toggle('is-active', isActive);
       button.setAttribute('aria-pressed', String(isActive));
+    };
+
+    const bindAiModelOptions = () => {
+      aiModelOptions = Array.from(aiModelOptionsContainer.querySelectorAll('[data-model-template]'));
+      aiModelOptions.forEach((button) => {
+        button.addEventListener('click', () => {
+          selectedModelTemplate = button.dataset.modelTemplate || selectedModelTemplate;
+          aiModelOptions.forEach((option) => {
+            const isActive = option === button;
+            option.classList.toggle('is-active', isActive);
+            option.setAttribute('aria-pressed', String(isActive));
+          });
+          if (proposalSheet.classList.contains('is-styling')) {
+            showModelTemplatePreview();
+            aiTryonStatus.textContent = 'Model template changed. Generate again to create a new look.';
+          }
+        });
+      });
+    };
+
+    const loadAiTryOnConfig = async () => {
+      try {
+        const response = await fetch('/api/tryon-config');
+        if (!response.ok) throw new Error(`Try-on config failed with ${response.status}`);
+        const config = await response.json();
+        const templates = Array.isArray(config.modelTemplates) ? config.modelTemplates.filter((template) => template.id) : [];
+        if (!templates.length) return;
+
+        selectedModelTemplate = config.defaultTemplate || templates[0].id;
+        modelTemplateImages = templates.reduce((acc, template) => {
+          acc[template.id] = template.previewImage || modelTemplateImages[template.id] || modelTemplateImages['fixed-female-minimal'];
+          return acc;
+        }, {});
+        aiModelOptionsContainer.innerHTML = templates.map((template) => {
+          const isActive = template.id === selectedModelTemplate;
+          return `<button class="${isActive ? 'is-active' : ''}" type="button" data-model-template="${escapeHtml(template.id)}" aria-pressed="${isActive ? 'true' : 'false'}">${escapeHtml(template.label || template.id)}</button>`;
+        }).join('');
+        bindAiModelOptions();
+      } catch (error) {
+        bindAiModelOptions();
+      }
     };
 
     const getStylingButtonKey = (button) => `${button.dataset.category || 'Item'}:${button.dataset.itemName || ''}`;
@@ -910,21 +952,7 @@
       });
     });
 
-    aiModelOptions.forEach((button) => {
-      button.addEventListener('click', () => {
-        selectedModelTemplate = button.dataset.modelTemplate || selectedModelTemplate;
-        aiModelOptions.forEach((option) => {
-          const isActive = option === button;
-          option.classList.toggle('is-active', isActive);
-          option.setAttribute('aria-pressed', String(isActive));
-        });
-        if (proposalSheet.classList.contains('is-styling')) {
-          showModelTemplatePreview();
-          aiTryonStatus.textContent = 'Model template changed. Generate again to create a new look.';
-        }
-      });
-    });
-
+    loadAiTryOnConfig();
     aiTryonGenerate.addEventListener('click', generateAiTryOnLook);
 
     document.querySelectorAll('[data-proposal-trigger]').forEach((trigger) => {

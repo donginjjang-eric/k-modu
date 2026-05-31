@@ -1,0 +1,28 @@
+{
+  "defaultTemplate": "fixed-female-minimal",
+  "fallbackProvider": "kmodu-demo-assets",
+  "modelTemplates": [
+    {
+      "id": "fixed-female-minimal",
+      "label": "K-Fashion Female",
+      "previewImage": "assets/mainmodel_2.png",
+      "generatedLookImage": "assets/generated-looks/maison-lune-kfashion-female-full-look.png"
+    },
+    {
+      "id": "fixed-street",
+      "label": "Street",
+      "previewImage": "assets/mainmodel_3.png",
+      "generatedLookImage": "assets/generated-looks/maison-lune-street-full-look.png"
+    },
+    {
+      "id": "fixed-male",
+      "label": "Male",
+      "previewImage": "assets/mainmodel_4.png",
+      "generatedLookImage": "assets/generated-looks/maison-lune-male-full-look.png"
+    }
+  ],
+  "messages": {
+    "fallbackGenerated": "Generated look preview loaded from K-MODU demo assets. Add a Virtual Try-On API key on Railway to replace this with live AI output.",
+    "providerConfigured": "Provider is configured, but this MVP endpoint is still returning the saved fallback preview."
+  }
+}

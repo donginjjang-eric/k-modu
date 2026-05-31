@@ -1,4 +1,4 @@
-import { createReadStream, stat } from "node:fs";
+import { createReadStream, readFileSync, stat } from "node:fs";
 import { createServer } from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -16,6 +16,32 @@ const types = {
   ".svg": "image/svg+xml",
   ".json": "application/json",
   ".pdf": "application/pdf",
+};
+
+const fallbackTryOnConfig = {
+  defaultTemplate: "fixed-female-minimal",
+  fallbackProvider: "kmodu-demo-assets",
+  modelTemplates: [
+    {
+      id: "fixed-female-minimal",
+      label: "K-Fashion Female",
+      previewImage: "assets/mainmodel_2.png",
+      generatedLookImage: "assets/generated-looks/maison-lune-kfashion-female-full-look.png",
+    },
+  ],
+  messages: {
+    fallbackGenerated: "Generated look preview loaded from K-MODU demo assets.",
+    providerConfigured: "Provider is configured, but this MVP endpoint is still returning the saved fallback preview.",
+  },
+};
+
+const loadTryOnConfig = () => {
+  try {
+    const configPath = path.join(root, "data", "tryon-config.json");
+    return JSON.parse(readFileSync(configPath, "utf8"));
+  } catch (error) {
+    return fallbackTryOnConfig;
+  }
 };
 
 const sendJson = (res, statusCode, payload) => {
@@ -45,19 +71,22 @@ const readJsonBody = (req) => new Promise((resolve, reject) => {
   req.on("error", reject);
 });
 
-const generatedLookImages = {
-  "fixed-female-minimal": "assets/generated-looks/maison-lune-kfashion-female-full-look.png",
-  "fixed-street": "assets/generated-looks/maison-lune-street-full-look.png",
-  "fixed-male": "assets/generated-looks/maison-lune-male-full-look.png",
+const getTemplate = (config, templateId) => {
+  const templates = Array.isArray(config.modelTemplates) ? config.modelTemplates : [];
+  return templates.find((template) => template.id === templateId)
+    || templates.find((template) => template.id === config.defaultTemplate)
+    || templates[0]
+    || fallbackTryOnConfig.modelTemplates[0];
 };
 
-const resolveFallbackTryOnImage = ({ items = [], modelTemplate, fullLookImage }) => {
+const resolveFallbackTryOnImage = (config, { items = [], modelTemplate, fullLookImage }) => {
   const selectedItems = Array.isArray(items) ? items : [];
+  const template = getTemplate(config, modelTemplate);
   if (selectedItems.length > 1) {
-    return generatedLookImages[modelTemplate] || generatedLookImages["fixed-female-minimal"];
+    return template.generatedLookImage;
   }
   const firstModelLook = selectedItems.find((item) => item?.modelLookImage)?.modelLookImage;
-  return firstModelLook || generatedLookImages[modelTemplate] || fullLookImage || "assets/styling-board-maison-lune-01.png";
+  return firstModelLook || template.generatedLookImage || fullLookImage || "assets/styling-board-maison-lune-01.png";
 };
 
 createServer(async (req, res) => {
@@ -78,22 +107,38 @@ createServer(async (req, res) => {
         return;
       }
 
-      const generatedImage = resolveFallbackTryOnImage(payload);
+      const config = loadTryOnConfig();
+      const template = getTemplate(config, payload.modelTemplate);
+      const generatedImage = resolveFallbackTryOnImage(config, payload);
       const provider = process.env.VIRTUAL_TRYON_PROVIDER || "fallback";
       sendJson(res, 200, {
         id: `tryon-${Date.now()}`,
         provider,
         mode: "fallback",
-        modelTemplate: payload.modelTemplate || "fixed-female-minimal",
+        modelTemplate: template.id,
         generatedImage,
         items,
         message: provider === "fallback"
-          ? "Generated look preview loaded from K-MODU demo assets. Add a Virtual Try-On API key on Railway to replace this with live AI output."
-          : "Provider is configured, but this MVP endpoint is still returning the saved fallback preview."
+          ? config.messages?.fallbackGenerated || fallbackTryOnConfig.messages.fallbackGenerated
+          : config.messages?.providerConfigured || fallbackTryOnConfig.messages.providerConfigured
       });
     } catch (error) {
       sendJson(res, 400, { error: error.message || "Unable to generate try-on preview." });
     }
+    return;
+  }
+
+  if (urlPath === "/api/tryon-config") {
+    const config = loadTryOnConfig();
+    sendJson(res, 200, {
+      defaultTemplate: config.defaultTemplate || fallbackTryOnConfig.defaultTemplate,
+      provider: process.env.VIRTUAL_TRYON_PROVIDER || "fallback",
+      modelTemplates: (config.modelTemplates || []).map((template) => ({
+        id: template.id,
+        label: template.label,
+        previewImage: template.previewImage,
+      })),
+    });
     return;
   }
 
