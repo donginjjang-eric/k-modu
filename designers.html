@@ -66,6 +66,10 @@
         <div class="designer-proposal-scroll">
         <div class="designer-proposal-visual">
           <img id="proposalImage" src="assets/designer-profile-real-01.png" alt="" />
+          <div class="tryon-stage" id="tryonStage" aria-label="Selected styling items on model" hidden>
+            <img class="tryon-base-model" id="tryonBaseModel" src="assets/tryon/base-model.png" alt="Base model for styling preview" />
+            <div class="tryon-layer-stage" id="tryonLayerStage" aria-hidden="true"></div>
+          </div>
           <div class="designer-proposal-dots" id="proposalPortfolioDots" aria-label="Portfolio image navigation"></div>
         </div>
         <div class="designer-proposal-content">
@@ -297,22 +301,25 @@
     const stylingBoardImage = document.querySelector('#stylingBoardImage');
     const stylingOwnedItems = document.querySelector('#stylingOwnedItems');
     const stylingRecommendedItems = document.querySelector('#stylingRecommendedItems');
+    const tryonStage = document.querySelector('#tryonStage');
+    const tryonLayerStage = document.querySelector('#tryonLayerStage');
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let proposalGalleryImages = [];
     let proposalGalleryIndex = 0;
     let proposalGalleryTimer = null;
+    const activeTryOnItems = {};
 
     const defaultStylingBoard = {
       fullLookImage: 'assets/styling-board-maison-lune-01.png',
       ownedItems: [
-        { image: 'assets/designer-profile-real-09.png', category: 'Outer', name: 'Signature Outer Piece', status: '보유', modelLookImage: 'assets/styling-looks/structured-black-coat-model.png' },
-        { image: 'assets/designer-profile-real-10.png', category: 'Bottom', name: 'Tailored Bottom Line', status: '보유', modelLookImage: 'assets/styling-looks/tailored-black-trouser-model.png' }
+        { image: 'assets/designer-profile-real-09.png', category: 'Outer', name: 'Signature Outer Piece', status: '보유', modelLookImage: 'assets/styling-looks/structured-black-coat-model.png', layerImage: 'assets/tryon/structured-black-coat-layer.png', layer: { x: 0, y: 0, width: 100, zIndex: 30, rotate: 0 } },
+        { image: 'assets/designer-profile-real-10.png', category: 'Bottom', name: 'Tailored Bottom Line', status: '보유', modelLookImage: 'assets/styling-looks/tailored-black-trouser-model.png', layerImage: 'assets/tryon/tailored-black-trouser-layer.png', layer: { x: 0, y: 0, width: 100, zIndex: 20, rotate: 0 } }
       ],
       recommendedItems: [
-        { image: 'assets/designer-profile-real-11.png', category: 'Accessory', name: 'Soft Styling Bag', status: '추천', modelLookImage: 'assets/styling-looks/soft-leather-tote-model.png' },
-        { image: 'assets/designer-profile-real-12.png', category: 'Footwear', name: 'Minimal Black Shoes', status: '외부 매칭', modelLookImage: 'assets/styling-looks/minimal-black-shoes-model.png' },
-        { image: 'assets/designer-profile-real-13.png', category: 'Sample', name: 'Texture Detail Sample', status: '시딩 가능', modelLookImage: 'assets/styling-looks/minimal-black-shoes-model.png' },
-        { image: 'assets/designer-profile-real-02.png', category: 'Inner', name: 'Clean Layering Top', status: '추천', modelLookImage: 'assets/styling-looks/clean-inner-top-model.png' }
+        { image: 'assets/designer-profile-real-11.png', category: 'Accessory', name: 'Soft Styling Bag', status: '추천', modelLookImage: 'assets/styling-looks/soft-leather-tote-model.png', layerImage: 'assets/tryon/soft-leather-tote-layer.png', layer: { x: 0, y: 0, width: 100, zIndex: 45, rotate: 0 } },
+        { image: 'assets/designer-profile-real-12.png', category: 'Footwear', name: 'Minimal Black Shoes', status: '외부 매칭', modelLookImage: 'assets/styling-looks/minimal-black-shoes-model.png', layerImage: 'assets/tryon/minimal-black-shoes-layer.png', layer: { x: 0, y: 0, width: 100, zIndex: 50, rotate: 0 } },
+        { image: 'assets/designer-profile-real-13.png', category: 'Sample', name: 'Texture Detail Sample', status: '시딩 가능', modelLookImage: 'assets/styling-looks/minimal-black-shoes-model.png', layerImage: 'assets/tryon/minimal-black-shoes-layer.png', layer: { x: 0, y: 0, width: 100, zIndex: 50, rotate: 0 } },
+        { image: 'assets/designer-profile-real-02.png', category: 'Inner', name: 'Clean Layering Top', status: '추천', modelLookImage: 'assets/styling-looks/clean-inner-top-model.png', layerImage: 'assets/tryon/clean-inner-top-layer.png', layer: { x: 0, y: 0, width: 100, zIndex: 10, rotate: 0 } }
       ],
       shortformStatus: 'coming-soon'
     };
@@ -321,14 +328,14 @@
       0: {
         fullLookImage: 'assets/styling-board-maison-lune-01.png',
         ownedItems: [
-          { image: 'assets/designer-profile-real-09.png', category: 'Outer', name: 'Structured Black Coat', status: '보유', modelLookImage: 'assets/styling-looks/structured-black-coat-model.png' },
-          { image: 'assets/designer-profile-real-10.png', category: 'Bottom', name: 'Tailored Black Trouser', status: '보유', modelLookImage: 'assets/styling-looks/tailored-black-trouser-model.png' }
+          { image: 'assets/designer-profile-real-09.png', category: 'Outer', name: 'Structured Black Coat', status: '보유', modelLookImage: 'assets/styling-looks/structured-black-coat-model.png', layerImage: 'assets/tryon/structured-black-coat-layer.png', layer: { x: 0, y: 0, width: 100, zIndex: 30, rotate: 0 } },
+          { image: 'assets/designer-profile-real-10.png', category: 'Bottom', name: 'Tailored Black Trouser', status: '보유', modelLookImage: 'assets/styling-looks/tailored-black-trouser-model.png', layerImage: 'assets/tryon/tailored-black-trouser-layer.png', layer: { x: 0, y: 0, width: 100, zIndex: 20, rotate: 0 } }
         ],
         recommendedItems: [
-          { image: 'assets/designer-profile-real-11.png', category: 'Eyewear', name: 'Slim Black Sunglasses', status: '추천', modelLookImage: 'assets/styling-looks/slim-black-sunglasses-model.png' },
-          { image: 'assets/designer-profile-real-12.png', category: 'Bag', name: 'Soft Leather Tote', status: '시딩 가능', modelLookImage: 'assets/styling-looks/soft-leather-tote-model.png' },
-          { image: 'assets/designer-profile-real-13.png', category: 'Shoes', name: 'Minimal Black Shoes', status: '외부 매칭', modelLookImage: 'assets/styling-looks/minimal-black-shoes-model.png' },
-          { image: 'assets/designer-profile-real-02.png', category: 'Inner', name: 'Clean Inner Top', status: '추천', modelLookImage: 'assets/styling-looks/clean-inner-top-model.png' }
+          { image: 'assets/designer-profile-real-11.png', category: 'Eyewear', name: 'Slim Black Sunglasses', status: '추천', modelLookImage: 'assets/styling-looks/slim-black-sunglasses-model.png', layerImage: 'assets/tryon/slim-black-sunglasses-layer.png', layer: { x: 0, y: 0, width: 100, zIndex: 60, rotate: 0 } },
+          { image: 'assets/designer-profile-real-12.png', category: 'Bag', name: 'Soft Leather Tote', status: '시딩 가능', modelLookImage: 'assets/styling-looks/soft-leather-tote-model.png', layerImage: 'assets/tryon/soft-leather-tote-layer.png', layer: { x: 0, y: 0, width: 100, zIndex: 45, rotate: 0 } },
+          { image: 'assets/designer-profile-real-13.png', category: 'Shoes', name: 'Minimal Black Shoes', status: '외부 매칭', modelLookImage: 'assets/styling-looks/minimal-black-shoes-model.png', layerImage: 'assets/tryon/minimal-black-shoes-layer.png', layer: { x: 0, y: 0, width: 100, zIndex: 50, rotate: 0 } },
+          { image: 'assets/designer-profile-real-02.png', category: 'Inner', name: 'Clean Inner Top', status: '추천', modelLookImage: 'assets/styling-looks/clean-inner-top-model.png', layerImage: 'assets/tryon/clean-inner-top-layer.png', layer: { x: 0, y: 0, width: 100, zIndex: 10, rotate: 0 } }
         ],
         shortformStatus: 'coming-soon'
       }
@@ -450,16 +457,21 @@
       if (tabName === 'styling') {
         stopProposalGallery();
         proposalImage.classList.remove('is-switching');
-        proposalImage.src = currentStylingBoard.fullLookImage;
-        proposalImage.alt = 'Full look styling board';
-        clearStylingItemSelection();
-      } else if (wasStyling && proposalSheet.classList.contains('is-open')) {
-        startProposalGallery(currentProposalIndex);
+        proposalImage.hidden = true;
+        tryonStage.hidden = false;
+        resetTryOnStage();
+      } else if (wasStyling) {
+        resetTryOnStage();
+        tryonStage.hidden = true;
+        proposalImage.hidden = false;
+        if (proposalSheet.classList.contains('is-open')) {
+          startProposalGallery(currentProposalIndex);
+        }
       }
     };
 
     const renderStylingItems = (items) => items.map((item) => `
-      <button class="styling-item-card" type="button" data-model-look-image="${escapeHtml(item.modelLookImage || '')}" data-fallback-look-image="${escapeHtml(currentStylingBoard.fullLookImage)}" aria-pressed="false">
+      <button class="styling-item-card" type="button" data-category="${escapeHtml(item.category)}" data-layer-image="${escapeHtml(item.layerImage || '')}" data-layer-x="${escapeHtml(item.layer?.x ?? 0)}" data-layer-y="${escapeHtml(item.layer?.y ?? 0)}" data-layer-width="${escapeHtml(item.layer?.width ?? 100)}" data-layer-z="${escapeHtml(item.layer?.zIndex ?? 20)}" data-layer-rotate="${escapeHtml(item.layer?.rotate ?? 0)}" data-model-look-image="${escapeHtml(item.modelLookImage || '')}" data-fallback-look-image="${escapeHtml(currentStylingBoard.fullLookImage)}" aria-pressed="false">
         <img src="${escapeHtml(item.image)}" alt="" loading="lazy" />
         <div>
           <span>${escapeHtml(item.category)}</span>
@@ -476,15 +488,70 @@
       });
     };
 
-    const showStylingItemLook = (button) => {
-      const image = button.dataset.modelLookImage || button.dataset.fallbackLookImage || currentStylingBoard.fullLookImage;
+    const resetTryOnStage = () => {
+      Object.keys(activeTryOnItems).forEach((category) => {
+        delete activeTryOnItems[category];
+      });
+      tryonLayerStage.innerHTML = '';
       clearStylingItemSelection();
-      button.classList.add('is-active');
-      button.setAttribute('aria-pressed', 'true');
-      proposalSheet.classList.add('is-styling');
+    };
+
+    const setTryOnButtonState = (button, isActive) => {
+      button.classList.toggle('is-active', isActive);
+      button.setAttribute('aria-pressed', String(isActive));
+    };
+
+    const addTryOnLayer = (button) => {
+      const category = button.dataset.category || 'Item';
+      const layerImage = button.dataset.layerImage;
+      if (!layerImage) {
+        showStylingItemFallback(button);
+        return;
+      }
+
+      const existing = activeTryOnItems[category];
+      if (existing?.button === button) {
+        existing.node.remove();
+        delete activeTryOnItems[category];
+        setTryOnButtonState(button, false);
+        return;
+      }
+
+      if (existing) {
+        existing.node.remove();
+        setTryOnButtonState(existing.button, false);
+      }
+
+      const layer = document.createElement('img');
+      layer.className = 'tryon-layer';
+      layer.src = layerImage;
+      layer.alt = '';
+      layer.style.setProperty('--tryon-x', `${Number(button.dataset.layerX || 0)}%`);
+      layer.style.setProperty('--tryon-y', `${Number(button.dataset.layerY || 0)}%`);
+      layer.style.setProperty('--tryon-width', `${Number(button.dataset.layerWidth || 100)}%`);
+      layer.style.setProperty('--tryon-rotate', `${Number(button.dataset.layerRotate || 0)}deg`);
+      layer.style.zIndex = String(Number(button.dataset.layerZ || 20));
+      tryonLayerStage.append(layer);
+      activeTryOnItems[category] = { button, node: layer };
+      setTryOnButtonState(button, true);
+    };
+
+    const showStylingItemFallback = (button) => {
+      const image = button.dataset.modelLookImage || button.dataset.fallbackLookImage || currentStylingBoard.fullLookImage;
+      tryonStage.hidden = true;
+      proposalImage.hidden = false;
       proposalImage.classList.remove('is-switching');
       proposalImage.src = image;
       proposalImage.alt = `${button.querySelector('strong')?.textContent || 'Selected styling item'} model styling preview`;
+      clearStylingItemSelection();
+      setTryOnButtonState(button, true);
+    };
+
+    const showStylingItemLook = (button) => {
+      proposalSheet.classList.add('is-styling');
+      proposalImage.hidden = true;
+      tryonStage.hidden = false;
+      addTryOnLayer(button);
     };
 
     const bindStylingItemPreviews = () => {
@@ -715,6 +782,9 @@
 
     const closeProposalSheet = () => {
       stopProposalGallery();
+      resetTryOnStage();
+      tryonStage.hidden = true;
+      proposalImage.hidden = false;
       proposalSheet.classList.remove('is-open');
       proposalSheet.setAttribute('aria-hidden', 'true');
       document.body.classList.remove('sheet-open');

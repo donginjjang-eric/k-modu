@@ -819,9 +819,56 @@ body.dark-theme .brand img {
   background: #e9e2d4;
 }
 
+.designer-proposal-visual > #proposalImage[hidden],
+.tryon-stage[hidden] {
+  display: none !important;
+}
+
 .designer-proposal-sheet.is-styling .designer-proposal-visual img {
   object-fit: contain;
   object-position: center;
+}
+
+.tryon-stage {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  background: radial-gradient(circle at 52% 18%, rgba(255, 255, 255, .62), transparent 34%), #e9e2d4;
+}
+
+.tryon-base-model,
+.tryon-layer-stage,
+.tryon-layer {
+  position: absolute;
+  inset: 0;
+}
+
+.tryon-base-model {
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  pointer-events: none;
+}
+
+.tryon-layer-stage {
+  z-index: 10;
+  pointer-events: none;
+}
+
+.tryon-layer {
+  left: var(--tryon-x, 0);
+  top: var(--tryon-y, 0);
+  width: var(--tryon-width, 100%);
+  height: auto;
+  max-width: none;
+  object-fit: contain;
+  object-position: center;
+  transform: rotate(var(--tryon-rotate, 0deg));
+  transform-origin: center center;
+  pointer-events: none;
 }
 
 .designer-proposal-visual img.is-switching {
