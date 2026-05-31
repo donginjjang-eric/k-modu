@@ -169,8 +169,32 @@
 
   <script>
     const designerProfiles = [
-      ['tall', 'assets/designer-profile-real-01.png', 'Maison Lune Seoul', 'Minimal Luxury / Seoul', '구조적인 블랙 실루엣과 조용한 럭셔리 무드를 전개하는 디자이너 브랜드. 대표 룩은 데일리 스타일링과 에디토리얼 컷 모두에 적합합니다.', ['Outer', 'Quiet Luxury', 'Lookbook']],
-      ['', 'assets/campaign-kdesigner-02.png', 'Noir Atelier', 'Tailored Black / NY LA', '블랙 코트와 테일러링을 중심으로 한 프리미엄 아우터 브랜드. 첫 착장 공개, 소재 디테일, 아웃핏 전환 콘텐츠에 강합니다.', ['Coat', 'Launch', 'Detail']],
+      ['tall kfashion-card kfashion-detail',
+        'D_sample/5_c64162be-6457-4179-8420-ed5f793f13a0.webp',
+        'Plaid Floral Mini Skirt',
+        'K-Fashion Product Edit / Seoul',
+        'A product-detail style card built around the plaid layered waistline, brown balloon mini silhouette, and close-up texture. This is closer to a K-fashion shop editorial than a runway card.',
+        ['Skirt', 'Plaid', 'Product Detail'],
+        {
+          price: 'KRW 134,000',
+          colors: 'Brown / Black',
+          status: 'In stock',
+          cta: 'Style Proposal',
+          gallery: ['D_sample/2_b642d035-d5b9-4fdd-914b-e8ee879cdf90.webp', 'D_sample/3_ffd1953d-b14c-4f6b-ad8b-4ad214b7af5c.webp', 'D_sample/6_f5a429dd-6426-4800-93cc-19d571606b58.webp', 'D_sample/9_86ac0361-2aca-41c4-8e87-90da5456e60a.webp']
+        }],
+      ['tall kfashion-card kfashion-fit',
+        'D_sample/9_86ac0361-2aca-41c4-8e87-90da5456e60a.webp',
+        'Seoul Layered Mini Fit',
+        'Street Layering / K-Fashion',
+        'A fit-check card focused on the black mini skirt, socks, and sneaker silhouette. It gives the board a street/product mix so the test set does not feel like one fashion-show direction only.',
+        ['Mini Fit', 'Street', 'Fit Check'],
+        {
+          price: 'KRW 118,000',
+          colors: 'Black / Check',
+          status: 'Sample ready',
+          cta: 'Fit Proposal',
+          gallery: ['D_sample/6_f5a429dd-6426-4800-93cc-19d571606b58.webp', 'D_sample/5_c64162be-6457-4179-8420-ed5f793f13a0.webp', 'D_sample/3_ffd1953d-b14c-4f6b-ad8b-4ad214b7af5c.webp']
+        }],
       ['wide', 'assets/campaign-kdesigner-wide-07.png', 'Haneul Studio', 'Editorial Story / Seoul', '시즌 세계관과 그룹 에디토리얼을 강하게 보여주는 브랜드. 룩북 내러티브, 브랜드 필름, 캠페인 티저 협업에 어울립니다.', ['Editorial', 'Story', 'Brand Film']],
       ['tall', 'assets/campaign-kdesigner-03.png', 'Serein Label', 'Daily Premium / Global', '일상복으로 해석 가능한 프리미엄 디자이너 상품을 제안합니다. Try-on, outfit breakdown, shopping moment 콘텐츠에 적합합니다.', ['Daily', 'Try-on', 'Mid Price']],
       ['', 'assets/campaign-kdesigner-04.png', 'Denu Row', 'Street Luxury / Denim', '스트리트 감도와 프리미엄 데님 실루엣을 결합한 브랜드. 숏폼 스타일링, 착장 비교, 디테일 클로즈업에 강점이 있습니다.', ['Street', 'Denim', 'TikTok']],
@@ -221,19 +245,35 @@
     }[char]));
 
     board.innerHTML = designerProfiles.map((item, index) => {
-      const [variant, image, name, kicker, description, tags] = item;
+      const [variant, image, name, kicker, description, tags, shopInfo] = item;
       const classes = ['work-pin', variant].filter(Boolean).join(' ');
+      const isKFashion = classes.includes('kfashion-card');
       const tagHtml = tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join('');
       const encodedTags = escapeHtml(tags.join('|'));
+      const gallery = shopInfo?.gallery || [];
+      const galleryHtml = isKFashion && gallery.length ? `
+          <div class="kfashion-thumb-rail" aria-label="${escapeHtml(name)} detail thumbnails">
+            ${gallery.map((thumb, thumbIndex) => `<img src="${escapeHtml(thumb)}" alt="${escapeHtml(name)} detail ${thumbIndex + 1}" loading="lazy" />`).join('')}
+          </div>` : '';
+      const shopHtml = isKFashion && shopInfo ? `
+          <div class="kfashion-shop-panel">
+            <span class="kfashion-label">K-FASHION DROP</span>
+            <strong>${escapeHtml(shopInfo.price)}</strong>
+            <small>${escapeHtml(shopInfo.colors)} - ${escapeHtml(shopInfo.status)}</small>
+          </div>` : '';
       return `
         <article class="${classes}" data-reveal data-index="${index}" data-brand="${escapeHtml(name)}" data-kicker="${escapeHtml(kicker)}" data-description="${escapeHtml(description)}" data-tags="${encodedTags}" data-image="${escapeHtml(image)}" style="--reveal-delay: ${(index % 8) * 46}ms">
-          <img src="${escapeHtml(image)}" alt="${escapeHtml(name)} designer profile look" loading="lazy" />
+          <div class="kfashion-visual-wrap">
+            <img class="kfashion-main-image" src="${escapeHtml(image)}" alt="${escapeHtml(name)} designer profile look" loading="lazy" />
+            ${galleryHtml}
+          </div>
+          ${shopHtml}
           <div class="work-pin-body">
             <p class="designer-kicker">${escapeHtml(kicker)}</p>
             <h3>${escapeHtml(name)}</h3>
             <p>${escapeHtml(description)}</p>
             <div class="work-meta">${tagHtml}</div>
-            <a class="work-cta" href="designer-brief.html" data-proposal-trigger>협업 제안</a>
+            <a class="work-cta" href="designer-brief.html" data-proposal-trigger>${shopInfo ? escapeHtml(shopInfo.cta) : 'Collab Proposal'}</a>
           </div>
         </article>`;
     }).join('');
@@ -437,6 +477,15 @@
     };
 
     const getProposalGalleryImages = (startIndex) => {
+      const profile = designerProfiles[startIndex];
+      const profileGallery = profile?.[6]?.gallery || [];
+      if (profileGallery.length) {
+        return [profile[1], ...profileGallery].map((image, index) => ({
+          image,
+          name: `${profile[2]} detail ${index + 1}`
+        }));
+      }
+
       if (startIndex === 0) {
         return [
         'assets/designer-profile-real-01.png',
