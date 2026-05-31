@@ -133,6 +133,16 @@ export async function getProductForDesigner(designerId: string, productId: strin
   );
 }
 
+export async function getOwnedProductsForGeneration(designerId: string, productIds: string[]): Promise<Product[]> {
+  if (!hasDatabase()) {
+    return toDemoProducts().filter((product) => product.designer_id === designerId && productIds.includes(product.id));
+  }
+  return query<Product>(
+    "SELECT * FROM products WHERE designer_id = $1 AND id = ANY($2::text[]) AND status <> 'hidden'",
+    [designerId, productIds],
+  );
+}
+
 export async function createProductForDesigner(input: {
   designerId: string;
   name: string;
@@ -223,11 +233,108 @@ export async function getModelTemplates(): Promise<ModelTemplate[]> {
   }
 }
 
+export async function getModelTemplate(id: string): Promise<ModelTemplate | null> {
+  if (!hasDatabase()) return toDemoModelTemplates().find((template) => template.id === id) ?? toDemoModelTemplates()[0] ?? null;
+  return one<ModelTemplate>("SELECT * FROM model_templates WHERE id = $1", [id]);
+}
+
 export async function getGeneratedLooksForDesigner(designerId: string): Promise<GeneratedLook[]> {
   if (!hasDatabase()) return [];
   return query<GeneratedLook>(
     "SELECT * FROM generated_looks WHERE designer_id = $1 ORDER BY created_at DESC",
     [designerId],
+  );
+}
+
+export async function getGeneratedLookByCacheKey(cacheKey: string): Promise<GeneratedLook | null> {
+  if (!hasDatabase()) return null;
+  return one<GeneratedLook>(
+    "SELECT * FROM generated_looks WHERE cache_key = $1 AND status <> 'hidden' ORDER BY created_at DESC LIMIT 1",
+    [cacheKey],
+  );
+}
+
+export async function getGeneratedLookForDesigner(designerId: string, id: string): Promise<GeneratedLook | null> {
+  if (!hasDatabase()) return null;
+  return one<GeneratedLook>(
+    "SELECT * FROM generated_looks WHERE designer_id = $1 AND id = $2",
+    [designerId, id],
+  );
+}
+
+export async function createGeneratedLook(input: {
+  designerId: string;
+  modelTemplateId: string;
+  selectedProductIds: string[];
+  cacheKey: string;
+  prompt: string;
+  imageUrl: string;
+  cacheHit?: boolean;
+}) {
+  if (!hasDatabase()) throw new Error("DATABASE_URL is required for generated looks.");
+  return one<GeneratedLook>(
+    `INSERT INTO generated_looks (
+       designer_id, model_template_id, selected_product_ids, cache_key, prompt, image_url, provider, cache_hit, status
+     )
+     VALUES ($1, $2, $3::jsonb, $4, $5, $6, 'openai', $7, 'generated')
+     RETURNING *`,
+    [
+      input.designerId,
+      input.modelTemplateId,
+      JSON.stringify(input.selectedProductIds),
+      input.cacheKey,
+      input.prompt,
+      input.imageUrl,
+      Boolean(input.cacheHit),
+    ],
+  );
+}
+
+export async function hideGeneratedLookForDesigner(designerId: string, id: string) {
+  if (!hasDatabase()) throw new Error("DATABASE_URL is required for generated look updates.");
+  return one<GeneratedLook>(
+    "UPDATE generated_looks SET status = 'hidden', updated_at = now() WHERE designer_id = $1 AND id = $2 RETURNING *",
+    [designerId, id],
+  );
+}
+
+export async function countDailyLiveGenerations(designerId: string) {
+  if (!hasDatabase()) return 0;
+  const row = await one<{ count: string }>(
+    `SELECT COUNT(*)::text AS count
+     FROM generation_logs
+     WHERE designer_id = $1
+       AND cache_hit = false
+       AND status = 'generated'
+       AND created_at >= date_trunc('day', now())`,
+    [designerId],
+  );
+  return Number(row?.count || 0);
+}
+
+export async function createGenerationLog(input: {
+  userId: string;
+  designerId: string;
+  provider: string;
+  cacheKey?: string | null;
+  cacheHit: boolean;
+  status: string;
+  errorMessage?: string | null;
+}) {
+  if (!hasDatabase()) return null;
+  return one<{ id: string }>(
+    `INSERT INTO generation_logs (user_id, designer_id, provider, cache_key, cache_hit, status, error_message)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
+     RETURNING id`,
+    [
+      input.userId,
+      input.designerId,
+      input.provider,
+      input.cacheKey || null,
+      input.cacheHit,
+      input.status,
+      input.errorMessage || null,
+    ],
   );
 }
 

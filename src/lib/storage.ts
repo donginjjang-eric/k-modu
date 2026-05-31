@@ -1,8 +1,10 @@
 import { createHash, randomUUID } from "node:crypto";
-import { createReadStream, existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { createReadStream, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-const dataRoot = process.env.DATA_DIR || (process.env.RAILWAY_ENVIRONMENT ? "/data" : path.join(/*turbopackIgnore: true*/ process.cwd(), ".runtime"));
+const projectRoot = process.cwd();
+const assetsRoot = path.join(projectRoot, "assets");
+const dataRoot = process.env.DATA_DIR || (process.env.RAILWAY_ENVIRONMENT ? "/data" : path.join(projectRoot, ".runtime"));
 
 const roots = {
   productUploads: path.join(dataRoot, "uploads", "products"),
@@ -55,6 +57,47 @@ export function saveStorageImage(kind: StorageKind, bytes: Buffer, mimeType: str
   if (kind === "productUploads") return { url: `/uploads/products/${fileName}`, imageHash: getImageHash(bytes) };
   if (kind === "generatedLooks") return { url: `/generated-looks/${fileName}`, imageHash: getImageHash(bytes) };
   return { url: `/model-templates/${fileName}`, imageHash: getImageHash(bytes) };
+}
+
+export function saveGeneratedPng(fileName: string, base64Image: string) {
+  ensureStorage();
+  const safeFileName = path.basename(fileName).replace(/[^a-z0-9._-]/gi, "-");
+  const filePath = path.join(roots.generatedLooks, safeFileName);
+  const bytes = Buffer.from(base64Image, "base64");
+  writeFileSync(filePath, bytes);
+  return {
+    url: `/generated-looks/${safeFileName}`,
+    imageHash: getImageHash(bytes),
+  };
+}
+
+export function readPublicImageAsDataUrl(imagePath: string) {
+  if (/^https?:\/\//i.test(imagePath) || imagePath.startsWith("data:")) return imagePath;
+
+  const normalized = imagePath.replace(/^\/+/, "");
+  let filePath = "";
+  if (normalized.startsWith("assets/")) {
+    filePath = path.join(assetsRoot, normalized.slice("assets/".length));
+  }
+  if (normalized.startsWith("uploads/products/")) {
+    filePath = path.join(roots.productUploads, path.basename(normalized));
+  }
+  if (normalized.startsWith("generated-looks/")) {
+    filePath = path.join(roots.generatedLooks, path.basename(normalized));
+  }
+  if (normalized.startsWith("model-templates/")) {
+    filePath = path.join(roots.modelTemplates, path.basename(normalized));
+  }
+
+  const allowedRoots = [assetsRoot, roots.productUploads, roots.generatedLooks, roots.modelTemplates];
+  const isAllowed = allowedRoots.some((root) => filePath.startsWith(root));
+  if (!isAllowed || !existsSync(filePath)) {
+    throw new Error(`Image not found: ${imagePath}`);
+  }
+
+  const ext = path.extname(filePath).toLowerCase();
+  const mimeType = contentTypes[ext] || "image/png";
+  return `data:${mimeType};base64,${readFileSync(filePath).toString("base64")}`;
 }
 
 export function resolveStoredFile(kind: StorageKind, fileName: string) {
