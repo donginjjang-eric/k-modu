@@ -45,11 +45,19 @@ const readJsonBody = (req) => new Promise((resolve, reject) => {
   req.on("error", reject);
 });
 
-const resolveFallbackTryOnImage = ({ items = [], fullLookImage }) => {
+const generatedLookImages = {
+  "fixed-female-minimal": "assets/generated-looks/maison-lune-fixed-female-full-look.png",
+  "fixed-street": "assets/generated-looks/maison-lune-street-full-look.png",
+  "fixed-male": "assets/generated-looks/maison-lune-male-full-look.png",
+};
+
+const resolveFallbackTryOnImage = ({ items = [], modelTemplate, fullLookImage }) => {
   const selectedItems = Array.isArray(items) ? items : [];
-  if (selectedItems.length > 1 && fullLookImage) return fullLookImage;
+  if (selectedItems.length > 1) {
+    return generatedLookImages[modelTemplate] || generatedLookImages["fixed-female-minimal"];
+  }
   const firstModelLook = selectedItems.find((item) => item?.modelLookImage)?.modelLookImage;
-  return firstModelLook || fullLookImage || "assets/styling-board-maison-lune-01.png";
+  return firstModelLook || generatedLookImages[modelTemplate] || fullLookImage || "assets/styling-board-maison-lune-01.png";
 };
 
 createServer(async (req, res) => {
@@ -80,7 +88,7 @@ createServer(async (req, res) => {
         generatedImage,
         items,
         message: provider === "fallback"
-          ? "MVP fallback preview generated. Add a Virtual Try-On API key on Railway to replace this with live AI output."
+          ? "Generated look preview loaded from K-MODU demo assets. Add a Virtual Try-On API key on Railway to replace this with live AI output."
           : "Provider is configured, but this MVP endpoint is still returning the saved fallback preview."
       });
     } catch (error) {
