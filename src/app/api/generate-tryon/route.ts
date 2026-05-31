@@ -1,16 +1,26 @@
-import { requireApprovedDesigner } from "@/lib/auth";
+import { getCurrentUser } from "@/lib/auth";
 import {
   countDailyLiveGenerations,
   createGeneratedLook,
   createGenerationLog,
   getGeneratedLookByCacheKey,
+  getDesignerForUser,
   getModelTemplate,
   getOwnedProductsForGeneration,
 } from "@/lib/db";
 import { buildLookCacheKey, buildLookbookPrompt, generateOpenAiLookbook } from "@/lib/ai-lookbook";
 
 export async function POST(request: Request) {
-  const { user, designer } = await requireApprovedDesigner();
+  const user = await getCurrentUser();
+  if (!user || user.role !== "designer") {
+    return Response.json({ ok: false, error: "Login as a designer before generating AI looks." }, { status: 401 });
+  }
+
+  const designer = await getDesignerForUser(user.id);
+  if (!designer || designer.approval_status !== "approved") {
+    return Response.json({ ok: false, error: "Designer account approval is required." }, { status: 403 });
+  }
+
   const body = await request.json().catch(() => ({}));
   const productIds = Array.isArray(body.productIds) ? body.productIds.map(String) : [];
   const modelTemplateId = String(body.modelTemplateId || body.modelTemplate || "");

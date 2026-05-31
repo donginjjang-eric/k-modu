@@ -347,14 +347,14 @@
     const defaultStylingBoard = {
       fullLookImage: 'assets/styling-board-maison-lune-01.png',
       ownedItems: [
-        { image: 'assets/designer-profile-real-09.png', category: 'Outer', name: 'Signature Outer Piece', status: '보유', modelLookImage: 'assets/styling-looks/structured-black-coat-model.png' },
-        { image: 'assets/designer-profile-real-10.png', category: 'Bottom', name: 'Tailored Bottom Line', status: '보유', modelLookImage: 'assets/styling-looks/tailored-black-trouser-model.png' }
+        { productId: 'structured-black-coat', image: 'assets/designer-profile-real-09.png', category: 'Outer', name: 'Signature Outer Piece', status: '보유', modelLookImage: 'assets/styling-looks/structured-black-coat-model.png' },
+        { productId: 'tailored-black-trouser', image: 'assets/designer-profile-real-10.png', category: 'Bottom', name: 'Tailored Bottom Line', status: '보유', modelLookImage: 'assets/styling-looks/tailored-black-trouser-model.png' }
       ],
       recommendedItems: [
-        { image: 'assets/designer-profile-real-11.png', category: 'Accessory', name: 'Soft Styling Bag', status: '추천', modelLookImage: 'assets/styling-looks/soft-leather-tote-model.png' },
-        { image: 'assets/designer-profile-real-12.png', category: 'Footwear', name: 'Minimal Black Shoes', status: '외부 매칭', modelLookImage: 'assets/styling-looks/minimal-black-shoes-model.png' },
-        { image: 'assets/designer-profile-real-13.png', category: 'Sample', name: 'Texture Detail Sample', status: '시딩 가능', modelLookImage: 'assets/styling-looks/minimal-black-shoes-model.png' },
-        { image: 'assets/designer-profile-real-02.png', category: 'Inner', name: 'Clean Layering Top', status: '추천', modelLookImage: 'assets/styling-looks/clean-inner-top-model.png' }
+        { productId: 'soft-leather-tote', image: 'assets/designer-profile-real-11.png', category: 'Accessory', name: 'Soft Styling Bag', status: '추천', modelLookImage: 'assets/styling-looks/soft-leather-tote-model.png' },
+        { productId: 'minimal-black-shoes', image: 'assets/designer-profile-real-12.png', category: 'Footwear', name: 'Minimal Black Shoes', status: '외부 매칭', modelLookImage: 'assets/styling-looks/minimal-black-shoes-model.png' },
+        { productId: 'minimal-black-shoes', image: 'assets/designer-profile-real-13.png', category: 'Sample', name: 'Texture Detail Sample', status: '시딩 가능', modelLookImage: 'assets/styling-looks/minimal-black-shoes-model.png' },
+        { productId: 'clean-inner-top', image: 'assets/designer-profile-real-02.png', category: 'Inner', name: 'Clean Layering Top', status: '추천', modelLookImage: 'assets/styling-looks/clean-inner-top-model.png' }
       ],
       shortformStatus: 'coming-soon'
     };
@@ -363,14 +363,14 @@
       0: {
         fullLookImage: 'assets/styling-board-maison-lune-01.png',
         ownedItems: [
-          { image: 'assets/designer-profile-real-09.png', category: 'Outer', name: 'Structured Black Coat', status: '보유', modelLookImage: 'assets/styling-looks/structured-black-coat-model.png' },
-          { image: 'assets/designer-profile-real-10.png', category: 'Bottom', name: 'Tailored Black Trouser', status: '보유', modelLookImage: 'assets/styling-looks/tailored-black-trouser-model.png' }
+          { productId: 'structured-black-coat', image: 'assets/designer-profile-real-09.png', category: 'Outer', name: 'Structured Black Coat', status: '보유', modelLookImage: 'assets/styling-looks/structured-black-coat-model.png' },
+          { productId: 'tailored-black-trouser', image: 'assets/designer-profile-real-10.png', category: 'Bottom', name: 'Tailored Black Trouser', status: '보유', modelLookImage: 'assets/styling-looks/tailored-black-trouser-model.png' }
         ],
         recommendedItems: [
-          { image: 'assets/designer-profile-real-11.png', category: 'Eyewear', name: 'Slim Black Sunglasses', status: '추천', modelLookImage: 'assets/styling-looks/slim-black-sunglasses-model.png' },
-          { image: 'assets/designer-profile-real-12.png', category: 'Bag', name: 'Soft Leather Tote', status: '시딩 가능', modelLookImage: 'assets/styling-looks/soft-leather-tote-model.png' },
-          { image: 'assets/designer-profile-real-13.png', category: 'Shoes', name: 'Minimal Black Shoes', status: '외부 매칭', modelLookImage: 'assets/styling-looks/minimal-black-shoes-model.png' },
-          { image: 'assets/designer-profile-real-02.png', category: 'Inner', name: 'Clean Inner Top', status: '추천', modelLookImage: 'assets/styling-looks/clean-inner-top-model.png' }
+          { productId: 'slim-black-sunglasses', image: 'assets/designer-profile-real-11.png', category: 'Eyewear', name: 'Slim Black Sunglasses', status: '추천', modelLookImage: 'assets/styling-looks/slim-black-sunglasses-model.png' },
+          { productId: 'soft-leather-tote', image: 'assets/designer-profile-real-12.png', category: 'Bag', name: 'Soft Leather Tote', status: '시딩 가능', modelLookImage: 'assets/styling-looks/soft-leather-tote-model.png' },
+          { productId: 'minimal-black-shoes', image: 'assets/designer-profile-real-13.png', category: 'Shoes', name: 'Minimal Black Shoes', status: '외부 매칭', modelLookImage: 'assets/styling-looks/minimal-black-shoes-model.png' },
+          { productId: 'clean-inner-top', image: 'assets/designer-profile-real-02.png', category: 'Inner', name: 'Clean Inner Top', status: '추천', modelLookImage: 'assets/styling-looks/clean-inner-top-model.png' }
         ],
         shortformStatus: 'coming-soon'
       }
@@ -507,7 +507,7 @@
     };
 
     const renderStylingItems = (items) => items.map((item) => `
-      <button class="styling-item-card" type="button" data-category="${escapeHtml(item.category)}" data-item-name="${escapeHtml(item.name)}" data-item-image="${escapeHtml(item.image)}" data-layer-image="${escapeHtml(item.layerImage || '')}" data-layer-x="${escapeHtml(item.layer?.x ?? 0)}" data-layer-y="${escapeHtml(item.layer?.y ?? 0)}" data-layer-width="${escapeHtml(item.layer?.width ?? 100)}" data-layer-z="${escapeHtml(item.layer?.zIndex ?? 20)}" data-layer-rotate="${escapeHtml(item.layer?.rotate ?? 0)}" data-model-look-image="${escapeHtml(item.modelLookImage || '')}" data-fallback-look-image="${escapeHtml(currentStylingBoard.fullLookImage)}" aria-pressed="false">
+      <button class="styling-item-card" type="button" data-product-id="${escapeHtml(item.productId || '')}" data-category="${escapeHtml(item.category)}" data-item-name="${escapeHtml(item.name)}" data-item-image="${escapeHtml(item.image)}" data-layer-image="${escapeHtml(item.layerImage || '')}" data-layer-x="${escapeHtml(item.layer?.x ?? 0)}" data-layer-y="${escapeHtml(item.layer?.y ?? 0)}" data-layer-width="${escapeHtml(item.layer?.width ?? 100)}" data-layer-z="${escapeHtml(item.layer?.zIndex ?? 20)}" data-layer-rotate="${escapeHtml(item.layer?.rotate ?? 0)}" data-model-look-image="${escapeHtml(item.modelLookImage || '')}" data-fallback-look-image="${escapeHtml(currentStylingBoard.fullLookImage)}" aria-pressed="false">
         <img src="${escapeHtml(item.image)}" alt="" loading="lazy" />
         <div>
           <span>${escapeHtml(item.category)}</span>
@@ -536,7 +536,7 @@
       clearStylingItemSelection();
       aiTryonResultMeta.hidden = true;
       aiTryonResultMeta.innerHTML = '';
-      aiTryonStatus.textContent = 'Select items and generate a full look.';
+      aiTryonStatus.textContent = 'Select at least 2 products and generate a full look.';
       updateAiTryOnControls();
     };
 
@@ -602,12 +602,12 @@
 
     const updateAiTryOnControls = () => {
       const items = getSelectedStylingItems();
-      aiTryonGenerate.disabled = !items.length || aiTryonGenerate.dataset.loading === 'true';
+      aiTryonGenerate.disabled = items.length < 2 || aiTryonGenerate.dataset.loading === 'true';
       aiSelectedStack.innerHTML = items.length
         ? items.map((item) => `<span>${escapeHtml(item.category)} · ${escapeHtml(item.name)}</span>`).join('')
         : '<span class="is-empty">No items selected</span>';
       aiTryonSelection.textContent = items.length
-        ? `${items.length} item${items.length > 1 ? 's' : ''} selected. Ready to generate a full look.`
+        ? `${items.length} item${items.length > 1 ? 's' : ''} selected. ${items.length >= 2 ? 'Ready to generate a full look.' : 'Select one more product to generate.'}`
         : 'Tap clothes, pants, bags, or shoes on the right to build the look.';
     };
 
@@ -620,6 +620,7 @@
         setTryOnButtonState(button, false);
       } else {
         selectedStylingItems.set(key, {
+          productId: button.dataset.productId || '',
           category: button.dataset.category || 'Item',
           name: button.dataset.itemName || button.querySelector('strong')?.textContent || 'Selected item',
           image: button.dataset.itemImage || '',
@@ -633,14 +634,19 @@
 
     const setAiTryOnLoading = (isLoading) => {
       aiTryonGenerate.dataset.loading = String(isLoading);
-      aiTryonGenerate.disabled = isLoading || !selectedStylingItems.size;
+      aiTryonGenerate.disabled = isLoading || selectedStylingItems.size < 2;
       aiTryonGenerate.textContent = isLoading ? 'Generating...' : 'Generate AI Look';
       tryonLoadingOverlay.hidden = !isLoading;
     };
 
     const generateAiTryOnLook = async () => {
       const items = getSelectedStylingItems();
-      if (!items.length) return;
+      const productIds = [...new Set(items.map((item) => item.productId).filter(Boolean))];
+      if (productIds.length < 2) {
+        aiTryonStatus.textContent = 'Select at least 2 valid products before generating.';
+        updateAiTryOnControls();
+        return;
+      }
 
       setAiTryOnLoading(true);
       aiTryonResultMeta.hidden = false;
@@ -651,38 +657,46 @@
         const response = await fetch('/api/generate-tryon', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            brand: proposalBrandName.textContent.trim(),
-            modelTemplate: selectedModelTemplate,
-            baseModelImage: modelTemplateImages[selectedModelTemplate] || modelTemplateImages['fixed-female-minimal'],
-            fullLookImage: currentStylingBoard.fullLookImage,
-            items
+          body: JSON.stringify({
+            modelTemplateId: selectedModelTemplate,
+            productIds,
+            stylingPrompt: `${proposalBrandName.textContent.trim()} brand lookbook full look preview. Minimal K-fashion editorial styling.`,
+            forceRegenerate: false
           })
         });
 
+        const contentType = response.headers.get('content-type') || '';
+        if (response.redirected || !contentType.includes('application/json')) {
+          throw new Error('Login as an approved designer before generating AI looks.');
+        }
+
         if (!response.ok) {
+          if (response.redirected || response.status === 401 || response.status === 403) {
+            throw new Error('Login as an approved designer before generating AI looks.');
+          }
           throw new Error(`Try-on request failed with ${response.status}`);
         }
 
         const result = await response.json();
+        if (!result.ok) throw new Error(result.error || 'AI look generation failed.');
         proposalSheet.classList.add('is-styling');
         tryonStage.hidden = true;
         proposalImage.hidden = false;
         proposalImage.classList.remove('is-switching');
-        proposalImage.src = result.generatedImage || currentStylingBoard.fullLookImage;
-        proposalImage.alt = `${proposalBrandName.textContent.trim()} AI virtual try-on result`;
-        const resultLabel = result.mode === 'live'
-          ? (result.cacheHit ? 'Cached look' : 'New AI look')
-          : 'Fallback look';
+        proposalImage.src = result.imageUrl || currentStylingBoard.fullLookImage;
+        proposalImage.alt = `${proposalBrandName.textContent.trim()} AI lookbook generation result`;
+        const resultLabel = result.cacheHit ? 'Cached Look' : 'New AI Look';
         aiTryonResultMeta.hidden = false;
-        aiTryonResultMeta.innerHTML = `<span>${escapeHtml(resultLabel)}</span><strong>${escapeHtml(result.generatedImage || currentStylingBoard.fullLookImage)}</strong>`;
-        aiTryonStatus.textContent = result.message || 'AI look generated.';
+        aiTryonResultMeta.innerHTML = `<span>${escapeHtml(resultLabel)}</span><strong>${escapeHtml(result.imageUrl || currentStylingBoard.fullLookImage)}</strong>`;
+        aiTryonStatus.textContent = result.cacheHit
+          ? 'Cached AI look loaded.'
+          : 'New AI lookbook image generated.';
       } catch (error) {
         proposalImage.src = currentStylingBoard.fullLookImage;
         proposalImage.alt = 'Fallback full look styling board';
         aiTryonResultMeta.hidden = false;
         aiTryonResultMeta.innerHTML = '<span>Fallback</span><strong>Saved styling board shown</strong>';
-        aiTryonStatus.textContent = 'Generation failed. Showing the saved full look fallback.';
+        aiTryonStatus.textContent = error instanceof Error ? error.message : 'Generation failed. Showing the saved full look fallback.';
       } finally {
         setAiTryOnLoading(false);
       }
