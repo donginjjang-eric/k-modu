@@ -328,6 +328,11 @@
     const activeTryOnItems = {};
     const selectedStylingItems = new Map();
     let selectedModelTemplate = 'fixed-female-minimal';
+    const modelTemplateImages = {
+      'fixed-female-minimal': 'assets/mainmodel_2.png',
+      'fixed-street': 'assets/mainmodel_3.png',
+      'fixed-male': 'assets/mainmodel_4.png'
+    };
 
     const defaultStylingBoard = {
       fullLookImage: 'assets/styling-board-maison-lune-01.png',
@@ -479,9 +484,8 @@
         proposalImage.classList.remove('is-switching');
         tryonStage.hidden = true;
         proposalImage.hidden = false;
-        proposalImage.src = currentStylingBoard.fullLookImage;
-        proposalImage.alt = 'Full look styling board';
         resetTryOnStage();
+        showModelTemplatePreview();
       } else if (wasStyling) {
         resetTryOnStage();
         tryonStage.hidden = true;
@@ -529,6 +533,14 @@
 
     const getSelectedStylingItems = () => Array.from(selectedStylingItems.values());
 
+    const showModelTemplatePreview = () => {
+      tryonStage.hidden = true;
+      proposalImage.hidden = false;
+      proposalImage.classList.remove('is-switching');
+      proposalImage.src = modelTemplateImages[selectedModelTemplate] || modelTemplateImages['fixed-female-minimal'];
+      proposalImage.alt = 'Selected fixed model template for AI try-on';
+    };
+
     const updateAiTryOnControls = () => {
       const items = getSelectedStylingItems();
       aiTryonGenerate.disabled = !items.length || aiTryonGenerate.dataset.loading === 'true';
@@ -574,10 +586,10 @@
         const response = await fetch('/api/generate-tryon', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+        body: JSON.stringify({
             brand: proposalBrandName.textContent.trim(),
             modelTemplate: selectedModelTemplate,
-            baseModelImage: 'assets/mainmodel_2.png',
+            baseModelImage: modelTemplateImages[selectedModelTemplate] || modelTemplateImages['fixed-female-minimal'],
             fullLookImage: currentStylingBoard.fullLookImage,
             items
           })
@@ -651,10 +663,7 @@
     };
 
     const showStylingItemLook = (button) => {
-      tryonStage.hidden = true;
-      proposalImage.hidden = false;
-      proposalImage.src = currentStylingBoard.fullLookImage;
-      proposalImage.alt = 'Full look styling board';
+      showModelTemplatePreview();
       toggleStylingItemSelection(button);
     };
 
@@ -909,6 +918,10 @@
           option.classList.toggle('is-active', isActive);
           option.setAttribute('aria-pressed', String(isActive));
         });
+        if (proposalSheet.classList.contains('is-styling')) {
+          showModelTemplatePreview();
+          aiTryonStatus.textContent = 'Model template changed. Generate again to create a new look.';
+        }
       });
     });
 
