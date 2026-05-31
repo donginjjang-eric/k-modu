@@ -1181,6 +1181,100 @@ body.dark-theme .brand img {
   white-space: nowrap;
 }
 
+.ai-tryon-panel {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid rgba(5, 5, 5, .16);
+  background: #f6f4ef;
+}
+
+.ai-tryon-head {
+  display: grid;
+  gap: 5px;
+}
+
+.ai-tryon-head span {
+  color: rgba(5, 5, 5, .48);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-black);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.ai-tryon-head strong {
+  color: #050505;
+  font-size: var(--fs-body-lg);
+  line-height: 1.25;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0;
+}
+
+.ai-model-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ai-model-options button,
+.ai-tryon-generate {
+  min-width: 0;
+  min-height: 38px;
+  border: 1px solid rgba(5, 5, 5, .18);
+  background: rgba(255, 255, 255, .76);
+  color: #050505;
+  font: inherit;
+  font-size: var(--fs-small);
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+  transition: border-color .18s ease, background .18s ease, color .18s ease, transform .18s ease;
+}
+
+.ai-model-options button:hover,
+.ai-model-options button.is-active,
+.ai-tryon-generate:hover:not(:disabled) {
+  border-color: #050505;
+  background: #050505;
+  color: #fff;
+}
+
+.ai-model-options button:active,
+.ai-tryon-generate:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.ai-model-options button:focus-visible,
+.ai-tryon-generate:focus-visible {
+  outline: 2px solid #050505;
+  outline-offset: 2px;
+}
+
+.ai-tryon-panel p {
+  margin: 0;
+  color: rgba(5, 5, 5, .64);
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  word-break: keep-all;
+}
+
+.ai-tryon-generate {
+  min-height: 44px;
+  border-color: #050505;
+  background: #050505;
+  color: #fff;
+}
+
+.ai-tryon-generate:disabled {
+  border-color: rgba(5, 5, 5, .1);
+  background: rgba(5, 5, 5, .12);
+  color: rgba(5, 5, 5, .42);
+  cursor: not-allowed;
+}
+
+.ai-tryon-status {
+  min-height: 22px;
+}
+
 .styling-shortform-note {
   display: grid;
   gap: 12px;

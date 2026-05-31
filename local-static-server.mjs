@@ -12,13 +12,82 @@ const types = {
   ".png": "image/png",
   ".jpg": "image/jpeg",
   ".jpeg": "image/jpeg",
+  ".webp": "image/webp",
   ".svg": "image/svg+xml",
   ".json": "application/json",
+  ".pdf": "application/pdf",
 };
 
-createServer((req, res) => {
+const sendJson = (res, statusCode, payload) => {
+  res.writeHead(statusCode, {
+    "Content-Type": "application/json; charset=utf-8",
+    "Cache-Control": "no-store",
+  });
+  res.end(JSON.stringify(payload));
+};
+
+const readJsonBody = (req) => new Promise((resolve, reject) => {
+  let body = "";
+  req.on("data", (chunk) => {
+    body += chunk;
+    if (body.length > 1_000_000) {
+      reject(new Error("Request body too large"));
+      req.destroy();
+    }
+  });
+  req.on("end", () => {
+    try {
+      resolve(body ? JSON.parse(body) : {});
+    } catch (error) {
+      reject(new Error("Invalid JSON body"));
+    }
+  });
+  req.on("error", reject);
+});
+
+const resolveFallbackTryOnImage = ({ items = [], fullLookImage }) => {
+  const selectedItems = Array.isArray(items) ? items : [];
+  if (selectedItems.length > 1 && fullLookImage) return fullLookImage;
+  const firstModelLook = selectedItems.find((item) => item?.modelLookImage)?.modelLookImage;
+  return firstModelLook || fullLookImage || "assets/styling-board-maison-lune-01.png";
+};
+
+createServer(async (req, res) => {
   let urlPath = decodeURIComponent((req.url || "/").split("?")[0]);
   if (urlPath === "/") urlPath = "/index.html";
+
+  if (urlPath === "/api/generate-tryon") {
+    if (req.method !== "POST") {
+      sendJson(res, 405, { error: "Method not allowed" });
+      return;
+    }
+
+    try {
+      const payload = await readJsonBody(req);
+      const items = Array.isArray(payload.items) ? payload.items : [];
+      if (!items.length) {
+        sendJson(res, 400, { error: "At least one styling item is required." });
+        return;
+      }
+
+      const generatedImage = resolveFallbackTryOnImage(payload);
+      const provider = process.env.VIRTUAL_TRYON_PROVIDER || "fallback";
+      sendJson(res, 200, {
+        id: `tryon-${Date.now()}`,
+        provider,
+        mode: "fallback",
+        modelTemplate: payload.modelTemplate || "fixed-female-minimal",
+        generatedImage,
+        items,
+        message: provider === "fallback"
+          ? "MVP fallback preview generated. Add a Virtual Try-On API key on Railway to replace this with live AI output."
+          : "Provider is configured, but this MVP endpoint is still returning the saved fallback preview."
+      });
+    } catch (error) {
+      sendJson(res, 400, { error: error.message || "Unable to generate try-on preview." });
+    }
+    return;
+  }
 
   const filePath = path.join(root, urlPath);
   if (!filePath.startsWith(root)) {

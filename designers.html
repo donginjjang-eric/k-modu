@@ -124,6 +124,20 @@
                   </div>
                   <div class="styling-item-list" id="stylingRecommendedItems"></div>
                 </div>
+                <div class="ai-tryon-panel" aria-label="AI virtual try-on generator">
+                  <div class="ai-tryon-head">
+                    <span>AI Virtual Try-On</span>
+                    <strong>Fixed model look generation</strong>
+                  </div>
+                  <div class="ai-model-options" aria-label="Model template">
+                    <button class="is-active" type="button" data-model-template="fixed-female-minimal" aria-pressed="true">Fixed Female</button>
+                    <button type="button" data-model-template="fixed-street" aria-pressed="false">Street</button>
+                    <button type="button" data-model-template="fixed-male" aria-pressed="false">Male</button>
+                  </div>
+                  <p id="aiTryonSelection">Select products to generate a model try-on look.</p>
+                  <button class="ai-tryon-generate" id="aiTryonGenerate" type="button" disabled>Generate AI Look</button>
+                  <p class="ai-tryon-status" id="aiTryonStatus" role="status" aria-live="polite">Ready for MVP API connection.</p>
+                </div>
                 <div class="styling-shortform-note">
                   <span>업데이트 예정</span>
                   <p>Full look 기반 숏폼 영상 제작은 업데이트 예정입니다.</p>
@@ -301,6 +315,10 @@
     const stylingBoardImage = document.querySelector('#stylingBoardImage');
     const stylingOwnedItems = document.querySelector('#stylingOwnedItems');
     const stylingRecommendedItems = document.querySelector('#stylingRecommendedItems');
+    const aiTryonGenerate = document.querySelector('#aiTryonGenerate');
+    const aiTryonSelection = document.querySelector('#aiTryonSelection');
+    const aiTryonStatus = document.querySelector('#aiTryonStatus');
+    const aiModelOptions = Array.from(document.querySelectorAll('[data-model-template]'));
     const tryonStage = document.querySelector('#tryonStage');
     const tryonLayerStage = document.querySelector('#tryonLayerStage');
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -308,6 +326,8 @@
     let proposalGalleryIndex = 0;
     let proposalGalleryTimer = null;
     const activeTryOnItems = {};
+    const selectedStylingItems = new Map();
+    let selectedModelTemplate = 'fixed-female-minimal';
 
     const defaultStylingBoard = {
       fullLookImage: 'assets/styling-board-maison-lune-01.png',
@@ -473,7 +493,7 @@
     };
 
     const renderStylingItems = (items) => items.map((item) => `
-      <button class="styling-item-card" type="button" data-category="${escapeHtml(item.category)}" data-layer-image="${escapeHtml(item.layerImage || '')}" data-layer-x="${escapeHtml(item.layer?.x ?? 0)}" data-layer-y="${escapeHtml(item.layer?.y ?? 0)}" data-layer-width="${escapeHtml(item.layer?.width ?? 100)}" data-layer-z="${escapeHtml(item.layer?.zIndex ?? 20)}" data-layer-rotate="${escapeHtml(item.layer?.rotate ?? 0)}" data-model-look-image="${escapeHtml(item.modelLookImage || '')}" data-fallback-look-image="${escapeHtml(currentStylingBoard.fullLookImage)}" aria-pressed="false">
+      <button class="styling-item-card" type="button" data-category="${escapeHtml(item.category)}" data-item-name="${escapeHtml(item.name)}" data-item-image="${escapeHtml(item.image)}" data-layer-image="${escapeHtml(item.layerImage || '')}" data-layer-x="${escapeHtml(item.layer?.x ?? 0)}" data-layer-y="${escapeHtml(item.layer?.y ?? 0)}" data-layer-width="${escapeHtml(item.layer?.width ?? 100)}" data-layer-z="${escapeHtml(item.layer?.zIndex ?? 20)}" data-layer-rotate="${escapeHtml(item.layer?.rotate ?? 0)}" data-model-look-image="${escapeHtml(item.modelLookImage || '')}" data-fallback-look-image="${escapeHtml(currentStylingBoard.fullLookImage)}" aria-pressed="false">
         <img src="${escapeHtml(item.image)}" alt="" loading="lazy" />
         <div>
           <span>${escapeHtml(item.category)}</span>
@@ -495,12 +515,93 @@
         delete activeTryOnItems[category];
       });
       tryonLayerStage.innerHTML = '';
+      selectedStylingItems.clear();
       clearStylingItemSelection();
+      updateAiTryOnControls();
     };
 
     const setTryOnButtonState = (button, isActive) => {
       button.classList.toggle('is-active', isActive);
       button.setAttribute('aria-pressed', String(isActive));
+    };
+
+    const getStylingButtonKey = (button) => `${button.dataset.category || 'Item'}:${button.dataset.itemName || ''}`;
+
+    const getSelectedStylingItems = () => Array.from(selectedStylingItems.values());
+
+    const updateAiTryOnControls = () => {
+      const items = getSelectedStylingItems();
+      aiTryonGenerate.disabled = !items.length || aiTryonGenerate.dataset.loading === 'true';
+      aiTryonSelection.textContent = items.length
+        ? `${items.length} selected: ${items.map((item) => item.name).join(', ')}`
+        : 'Select products to generate a model try-on look.';
+    };
+
+    const toggleStylingItemSelection = (button) => {
+      const key = getStylingButtonKey(button);
+      const existing = selectedStylingItems.get(key);
+
+      if (existing) {
+        selectedStylingItems.delete(key);
+        setTryOnButtonState(button, false);
+      } else {
+        selectedStylingItems.set(key, {
+          category: button.dataset.category || 'Item',
+          name: button.dataset.itemName || button.querySelector('strong')?.textContent || 'Selected item',
+          image: button.dataset.itemImage || '',
+          modelLookImage: button.dataset.modelLookImage || ''
+        });
+        setTryOnButtonState(button, true);
+      }
+
+      updateAiTryOnControls();
+    };
+
+    const setAiTryOnLoading = (isLoading) => {
+      aiTryonGenerate.dataset.loading = String(isLoading);
+      aiTryonGenerate.disabled = isLoading || !selectedStylingItems.size;
+      aiTryonGenerate.textContent = isLoading ? 'Generating...' : 'Generate AI Look';
+    };
+
+    const generateAiTryOnLook = async () => {
+      const items = getSelectedStylingItems();
+      if (!items.length) return;
+
+      setAiTryOnLoading(true);
+      aiTryonStatus.textContent = 'Generating model try-on preview...';
+
+      try {
+        const response = await fetch('/api/generate-tryon', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            brand: proposalBrandName.textContent.trim(),
+            modelTemplate: selectedModelTemplate,
+            baseModelImage: 'assets/mainmodel_2.png',
+            fullLookImage: currentStylingBoard.fullLookImage,
+            items
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`Try-on request failed with ${response.status}`);
+        }
+
+        const result = await response.json();
+        proposalSheet.classList.add('is-styling');
+        tryonStage.hidden = true;
+        proposalImage.hidden = false;
+        proposalImage.classList.remove('is-switching');
+        proposalImage.src = result.generatedImage || currentStylingBoard.fullLookImage;
+        proposalImage.alt = `${proposalBrandName.textContent.trim()} AI virtual try-on result`;
+        aiTryonStatus.textContent = result.message || 'AI look generated.';
+      } catch (error) {
+        proposalImage.src = currentStylingBoard.fullLookImage;
+        proposalImage.alt = 'Fallback full look styling board';
+        aiTryonStatus.textContent = 'Generation failed. Showing the saved full look fallback.';
+      } finally {
+        setAiTryOnLoading(false);
+      }
     };
 
     const addTryOnLayer = (button) => {
@@ -550,10 +651,11 @@
     };
 
     const showStylingItemLook = (button) => {
-      proposalSheet.classList.add('is-styling');
-      proposalImage.hidden = true;
-      tryonStage.hidden = false;
-      addTryOnLayer(button);
+      tryonStage.hidden = true;
+      proposalImage.hidden = false;
+      proposalImage.src = currentStylingBoard.fullLookImage;
+      proposalImage.alt = 'Full look styling board';
+      toggleStylingItemSelection(button);
     };
 
     const bindStylingItemPreviews = () => {
@@ -568,6 +670,7 @@
       stylingBoardImage.src = board.fullLookImage;
       stylingOwnedItems.innerHTML = renderStylingItems(board.ownedItems);
       stylingRecommendedItems.innerHTML = renderStylingItems(board.recommendedItems);
+      resetTryOnStage();
       bindStylingItemPreviews();
     };
 
@@ -797,6 +900,19 @@
         setProposalTab(tab.dataset.proposalTab);
       });
     });
+
+    aiModelOptions.forEach((button) => {
+      button.addEventListener('click', () => {
+        selectedModelTemplate = button.dataset.modelTemplate || selectedModelTemplate;
+        aiModelOptions.forEach((option) => {
+          const isActive = option === button;
+          option.classList.toggle('is-active', isActive);
+          option.setAttribute('aria-pressed', String(isActive));
+        });
+      });
+    });
+
+    aiTryonGenerate.addEventListener('click', generateAiTryOnLook);
 
     document.querySelectorAll('[data-proposal-trigger]').forEach((trigger) => {
       trigger.addEventListener('click', (event) => {
