@@ -4,9 +4,23 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node local-static-server.mjs"
+    "dev": "next dev -H 0.0.0.0 -p 8010",
+    "build": "next build",
+    "start": "next start -H 0.0.0.0 -p ${PORT:-8010}",
+    "legacy:start": "node local-static-server.mjs"
   },
   "engines": {
     "node": ">=20"
+  },
+  "dependencies": {
+    "next": "^16.0.5",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "typescript": "^5.7.2"
   }
 }
