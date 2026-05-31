@@ -1,6 +1,9 @@
 import { designer } from "@/lib/phase1-data";
+import { requireApprovedDesigner } from "@/lib/auth";
 
-export default function DesignerGeneratedLooksPage() {
+export default async function DesignerGeneratedLooksPage() {
+  await requireApprovedDesigner();
+
   return (
     <main className="page">
       <p className="kicker">Generated Looks</p>

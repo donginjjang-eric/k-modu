@@ -7,14 +7,16 @@ import pg from "pg";
 const { Pool } = pg;
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-if (!process.env.DATABASE_URL) {
-  console.error("DATABASE_URL is required.");
+const databaseUrl = process.env.MIGRATION_DATABASE_URL || process.env.DATABASE_PUBLIC_URL || process.env.DATABASE_URL;
+
+if (!databaseUrl) {
+  console.error("MIGRATION_DATABASE_URL, DATABASE_PUBLIC_URL, or DATABASE_URL is required.");
   process.exit(1);
 }
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_URL.includes("railway") ? { rejectUnauthorized: false } : undefined,
+  connectionString: databaseUrl,
+  ssl: databaseUrl.includes("railway") ? { rejectUnauthorized: false } : undefined,
 });
 
 function hashPassword(password, salt = randomBytes(16).toString("base64url")) {

@@ -1,7 +1,10 @@
-import { getPublicDesigners } from "@/lib/db";
+import AdminDesignerActions from "@/components/AdminDesignerActions";
+import { requireUser } from "@/lib/auth";
+import { getAllDesigners } from "@/lib/db";
 
 export default async function AdminDesignersPage() {
-  const designers = await getPublicDesigners();
+  await requireUser("admin");
+  const designers = await getAllDesigners();
 
   return (
     <main className="page">
@@ -12,6 +15,7 @@ export default async function AdminDesignersPage() {
           <p className="kicker">{designer.approval_status}</p>
           <h2>{designer.brand_name}</h2>
           <p className="notice">Phase 3에서 승인/비활성화 액션을 연결합니다.</p>
+          <AdminDesignerActions designerId={designer.id} />
         </article>
       ))}
     </main>

@@ -1,10 +1,13 @@
 import Link from "next/link";
+import { requireApprovedDesigner } from "@/lib/auth";
 
-export default function DesignerDashboardPage() {
+export default async function DesignerDashboardPage() {
+  const { designer } = await requireApprovedDesigner();
+
   return (
     <main className="page">
       <p className="kicker">Designer Dashboard</p>
-      <h1 style={{ marginTop: 0, fontSize: 48 }}>디자이너 대시보드</h1>
+      <h1 style={{ marginTop: 0, fontSize: 48 }}>{designer.brand_name}</h1>
       <section className="dashboard-grid">
         <Link className="dash-card" href="/dashboard/designer/products">
           <p className="kicker">Products</p>

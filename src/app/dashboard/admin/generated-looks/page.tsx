@@ -1,6 +1,9 @@
 import { designer } from "@/lib/phase1-data";
+import { requireUser } from "@/lib/auth";
 
-export default function AdminGeneratedLooksPage() {
+export default async function AdminGeneratedLooksPage() {
+  await requireUser("admin");
+
   return (
     <main className="page">
       <p className="kicker">Admin Generated Looks</p>

@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { requireUser } from "@/lib/auth";
 
-export default function AdminDashboardPage() {
+export default async function AdminDashboardPage() {
+  await requireUser("admin");
+
   return (
     <main className="page">
       <p className="kicker">Admin Dashboard</p>

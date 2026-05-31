@@ -1,8 +1,9 @@
-import { getProductsForDesigner, getPublicDesigners } from "@/lib/db";
+import { requireApprovedDesigner } from "@/lib/auth";
+import { getProductsForDesigner } from "@/lib/db";
 
 export default async function DesignerProductsPage() {
-  const [designer] = await getPublicDesigners();
-  const products = designer ? await getProductsForDesigner(designer.id) : [];
+  const { designer } = await requireApprovedDesigner();
+  const products = await getProductsForDesigner(designer.id);
 
   return (
     <main className="page">

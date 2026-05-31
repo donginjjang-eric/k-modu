@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 import type { QueryResultRow } from "pg";
 import { designer as phaseDesigner, modelTemplates as phaseTemplates, products as phaseProducts } from "./phase1-data";
-import type { Designer, GeneratedLook, ModelTemplate, Product } from "./types";
+import type { Designer, GeneratedLook, ModelTemplate, Product, User } from "./types";
 
 let pool: Pool | null = null;
 
@@ -15,9 +15,10 @@ export function getDb() {
   }
 
   if (!pool) {
+    const useSsl = !process.env.DATABASE_URL.includes(".railway.internal");
     pool = new Pool({
       connectionString: process.env.DATABASE_URL,
-      ssl: process.env.DATABASE_URL.includes("railway") ? { rejectUnauthorized: false } : undefined,
+      ssl: useSsl && process.env.DATABASE_URL.includes("railway") ? { rejectUnauthorized: false } : undefined,
     });
   }
 
@@ -85,25 +86,50 @@ export function toDemoModelTemplates(): ModelTemplate[] {
 
 export async function getPublicDesigners(): Promise<Designer[]> {
   if (!hasDatabase()) return [toDemoDesigner()];
-  return query<Designer>("SELECT * FROM designers WHERE approval_status = 'approved' ORDER BY created_at DESC");
+  try {
+    return await query<Designer>("SELECT * FROM designers WHERE approval_status = 'approved' ORDER BY created_at DESC");
+  } catch {
+    return [toDemoDesigner()];
+  }
+}
+
+export async function getAllDesigners(): Promise<Designer[]> {
+  if (!hasDatabase()) return [toDemoDesigner()];
+  try {
+    return await query<Designer>("SELECT * FROM designers ORDER BY created_at DESC");
+  } catch {
+    return [toDemoDesigner()];
+  }
 }
 
 export async function getDesigner(id: string): Promise<Designer | null> {
   if (!hasDatabase()) return id === phaseDesigner.id ? toDemoDesigner() : null;
-  return one<Designer>("SELECT * FROM designers WHERE id = $1", [id]);
+  try {
+    return await one<Designer>("SELECT * FROM designers WHERE id = $1", [id]);
+  } catch {
+    return id === phaseDesigner.id ? toDemoDesigner() : null;
+  }
 }
 
 export async function getProductsForDesigner(designerId: string): Promise<Product[]> {
   if (!hasDatabase()) return designerId === phaseDesigner.id ? toDemoProducts() : [];
-  return query<Product>(
-    "SELECT * FROM products WHERE designer_id = $1 AND status <> 'hidden' ORDER BY created_at DESC",
-    [designerId],
-  );
+  try {
+    return await query<Product>(
+      "SELECT * FROM products WHERE designer_id = $1 AND status <> 'hidden' ORDER BY created_at DESC",
+      [designerId],
+    );
+  } catch {
+    return designerId === phaseDesigner.id ? toDemoProducts() : [];
+  }
 }
 
 export async function getModelTemplates(): Promise<ModelTemplate[]> {
   if (!hasDatabase()) return toDemoModelTemplates();
-  return query<ModelTemplate>("SELECT * FROM model_templates ORDER BY created_at ASC");
+  try {
+    return await query<ModelTemplate>("SELECT * FROM model_templates ORDER BY created_at ASC");
+  } catch {
+    return toDemoModelTemplates();
+  }
 }
 
 export async function getGeneratedLooksForDesigner(designerId: string): Promise<GeneratedLook[]> {
@@ -111,5 +137,53 @@ export async function getGeneratedLooksForDesigner(designerId: string): Promise<
   return query<GeneratedLook>(
     "SELECT * FROM generated_looks WHERE designer_id = $1 ORDER BY created_at DESC",
     [designerId],
+  );
+}
+
+export async function getUserByEmail(email: string): Promise<(User & { password_hash: string }) | null> {
+  const demoUser = () => {
+    const now = new Date("2026-05-30T00:00:00Z").toISOString();
+    const demoUsers: Array<User & { password_hash: string }> = [
+      {
+        id: "demo-admin-user",
+        email: "admin@k-modu.test",
+        role: "admin",
+        password_hash: "demo-admin-password",
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: "demo-designer-user",
+        email: "designer@k-modu.test",
+        role: "designer",
+        password_hash: "kmodu-demo-password",
+        created_at: now,
+        updated_at: now,
+      },
+    ];
+    return demoUsers.find((user) => user.email === email.toLowerCase()) ?? null;
+  }
+  if (!hasDatabase()) return demoUser();
+  try {
+    return await one<User & { password_hash: string }>("SELECT * FROM users WHERE email = $1", [email.toLowerCase()]);
+  } catch {
+    return demoUser();
+  }
+}
+
+export async function getDesignerForUser(userId: string): Promise<Designer | null> {
+  if (!hasDatabase()) return userId === "demo-designer-user" ? toDemoDesigner() : null;
+  try {
+    return await one<Designer>("SELECT * FROM designers WHERE user_id = $1", [userId]);
+  } catch {
+    return userId === "demo-designer-user" ? toDemoDesigner() : null;
+  }
+}
+
+export async function updateDesignerApprovalStatus(id: string, status: "approved" | "disabled") {
+  if (!hasDatabase()) return toDemoDesigner();
+  return one<Designer>(
+    "UPDATE designers SET approval_status = $2, updated_at = now() WHERE id = $1 RETURNING *",
+    [id, status],
   );
 }
