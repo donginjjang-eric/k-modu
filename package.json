@@ -7,18 +7,21 @@
     "dev": "next dev -H 0.0.0.0 -p 8010",
     "build": "next build",
     "start": "next start -H 0.0.0.0 -p ${PORT:-8010}",
-    "legacy:start": "node local-static-server.mjs"
+    "legacy:start": "node local-static-server.mjs",
+    "db:setup": "node scripts/db-setup.mjs"
   },
   "engines": {
     "node": ">=20"
   },
   "dependencies": {
     "next": "^16.0.5",
+    "pg": "^8.21.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
+    "@types/pg": "^8.20.0",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
     "typescript": "^5.7.2"

@@ -1,32 +1,38 @@
 import Link from "next/link";
-import { designer, products } from "@/lib/phase1-data";
+import { getProductsForDesigner, getPublicDesigners } from "@/lib/db";
 
-export default function DesignersPage() {
+export default async function DesignersPage() {
+  const designers = await getPublicDesigners();
+  const primaryDesigner = designers[0];
+  const products = primaryDesigner ? await getProductsForDesigner(primaryDesigner.id) : [];
+
   return (
     <main className="page">
       <div className="section-head">
         <div>
           <p className="kicker">Designer Board</p>
-          <h1 style={{ margin: 0, fontSize: 54 }}>{designer.brandName}</h1>
+          <h1 style={{ margin: 0, fontSize: 54 }}>{primaryDesigner?.brand_name || "K-MODU Designers"}</h1>
         </div>
-        <Link className="pill" href={`/designers/${designer.id}`}>Full Look Preview</Link>
+        {primaryDesigner ? <Link className="pill" href={`/designers/${primaryDesigner.id}`}>Full Look Preview</Link> : null}
       </div>
       <section className="designer-grid">
-        <article className="designer-card">
-          <img src={designer.heroImage} alt={`${designer.brandName} preview`} />
-          <div className="designer-card-body">
-            <p className="kicker">{designer.country}</p>
-            <h2>{designer.brandName}</h2>
-            <p className="notice">{designer.description}</p>
-          </div>
-        </article>
+        {designers.map((designer) => (
+          <article className="designer-card" key={designer.id}>
+            <img src="/assets/generated-looks/maison-lune-kfashion-female-full-look.png" alt={`${designer.brand_name} preview`} />
+            <div className="designer-card-body">
+              <p className="kicker">{designer.country}</p>
+              <h2>{designer.brand_name}</h2>
+              <p className="notice">{designer.description}</p>
+            </div>
+          </article>
+        ))}
         {products.slice(0, 4).map((product) => (
           <article className="designer-card" key={product.id}>
-            <img src={product.image} alt={product.name} />
+            <img src={product.image_url} alt={product.name} />
             <div className="designer-card-body">
               <p className="kicker">{product.category}</p>
               <h2>{product.name}</h2>
-              <p className="notice">{product.status}</p>
+              <p className="notice">{product.description || product.status}</p>
             </div>
           </article>
         ))}
