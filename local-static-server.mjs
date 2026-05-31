@@ -46,7 +46,7 @@ const readJsonBody = (req) => new Promise((resolve, reject) => {
 });
 
 const generatedLookImages = {
-  "fixed-female-minimal": "assets/generated-looks/maison-lune-fixed-female-full-look.png",
+  "fixed-female-minimal": "assets/generated-looks/maison-lune-kfashion-female-full-look.png",
   "fixed-street": "assets/generated-looks/maison-lune-street-full-look.png",
   "fixed-male": "assets/generated-looks/maison-lune-male-full-look.png",
 };
