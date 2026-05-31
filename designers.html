@@ -66,6 +66,10 @@
         <div class="designer-proposal-scroll">
         <div class="designer-proposal-visual">
           <img id="proposalImage" src="assets/designer-profile-real-01.png" alt="" />
+          <div class="tryon-loading-overlay" id="tryonLoadingOverlay" hidden>
+            <strong>Generating AI look</strong>
+            <span>Usually takes 20-40 seconds</span>
+          </div>
           <div class="tryon-stage" id="tryonStage" aria-label="Selected styling items on model" hidden>
             <img class="tryon-base-model" id="tryonBaseModel" src="assets/mainmodel_2-cutout.png" alt="Base model for styling preview" />
             <div class="tryon-layer-stage" id="tryonLayerStage" aria-hidden="true"></div>
@@ -134,7 +138,9 @@
                     <button type="button" data-model-template="fixed-street" aria-pressed="false">Street</button>
                     <button type="button" data-model-template="fixed-male" aria-pressed="false">Male</button>
                   </div>
+                  <div class="ai-selected-stack" id="aiSelectedStack" aria-label="Selected styling items"></div>
                   <p id="aiTryonSelection">Select products to generate a model try-on look.</p>
+                  <div class="ai-tryon-result-meta" id="aiTryonResultMeta" hidden></div>
                   <button class="ai-tryon-generate" id="aiTryonGenerate" type="button" disabled>Generate AI Look</button>
                   <p class="ai-tryon-status" id="aiTryonStatus" role="status" aria-live="polite">Ready for MVP API connection.</p>
                 </div>
@@ -318,6 +324,9 @@
     const aiTryonGenerate = document.querySelector('#aiTryonGenerate');
     const aiTryonSelection = document.querySelector('#aiTryonSelection');
     const aiTryonStatus = document.querySelector('#aiTryonStatus');
+    const aiSelectedStack = document.querySelector('#aiSelectedStack');
+    const aiTryonResultMeta = document.querySelector('#aiTryonResultMeta');
+    const tryonLoadingOverlay = document.querySelector('#tryonLoadingOverlay');
     const aiModelOptionsContainer = document.querySelector('#aiModelOptions');
     let aiModelOptions = Array.from(document.querySelectorAll('[data-model-template]'));
     const tryonStage = document.querySelector('#tryonStage');
@@ -505,6 +514,7 @@
           <strong>${escapeHtml(item.name)}</strong>
         </div>
         <em>${escapeHtml(item.status)}</em>
+        <b aria-hidden="true">Select</b>
       </button>
     `).join('');
 
@@ -512,6 +522,8 @@
       [...stylingOwnedItems.children, ...stylingRecommendedItems.children].forEach((button) => {
         button.classList.remove('is-active');
         button.setAttribute('aria-pressed', 'false');
+        const indicator = button.querySelector('b');
+        if (indicator) indicator.textContent = 'Select';
       });
     };
 
@@ -522,12 +534,17 @@
       tryonLayerStage.innerHTML = '';
       selectedStylingItems.clear();
       clearStylingItemSelection();
+      aiTryonResultMeta.hidden = true;
+      aiTryonResultMeta.innerHTML = '';
+      aiTryonStatus.textContent = 'Select items and generate a full look.';
       updateAiTryOnControls();
     };
 
     const setTryOnButtonState = (button, isActive) => {
       button.classList.toggle('is-active', isActive);
       button.setAttribute('aria-pressed', String(isActive));
+      const indicator = button.querySelector('b');
+      if (indicator) indicator.textContent = isActive ? 'Selected' : 'Select';
     };
 
     const bindAiModelOptions = () => {
@@ -586,9 +603,12 @@
     const updateAiTryOnControls = () => {
       const items = getSelectedStylingItems();
       aiTryonGenerate.disabled = !items.length || aiTryonGenerate.dataset.loading === 'true';
+      aiSelectedStack.innerHTML = items.length
+        ? items.map((item) => `<span>${escapeHtml(item.category)} · ${escapeHtml(item.name)}</span>`).join('')
+        : '<span class="is-empty">No items selected</span>';
       aiTryonSelection.textContent = items.length
-        ? `${items.length} selected: ${items.map((item) => item.name).join(', ')}`
-        : 'Select products to generate a model try-on look.';
+        ? `${items.length} item${items.length > 1 ? 's' : ''} selected. Ready to generate a full look.`
+        : 'Tap clothes, pants, bags, or shoes on the right to build the look.';
     };
 
     const toggleStylingItemSelection = (button) => {
@@ -615,6 +635,7 @@
       aiTryonGenerate.dataset.loading = String(isLoading);
       aiTryonGenerate.disabled = isLoading || !selectedStylingItems.size;
       aiTryonGenerate.textContent = isLoading ? 'Generating...' : 'Generate AI Look';
+      tryonLoadingOverlay.hidden = !isLoading;
     };
 
     const generateAiTryOnLook = async () => {
@@ -622,7 +643,9 @@
       if (!items.length) return;
 
       setAiTryOnLoading(true);
-      aiTryonStatus.textContent = 'Generating model try-on preview...';
+      aiTryonResultMeta.hidden = false;
+      aiTryonResultMeta.innerHTML = '<span class="is-loading">Generating</span><strong>AI is styling the selected products.</strong>';
+      aiTryonStatus.textContent = 'Generating model try-on preview. This usually takes 20-40 seconds.';
 
       try {
         const response = await fetch('/api/generate-tryon', {
@@ -648,10 +671,17 @@
         proposalImage.classList.remove('is-switching');
         proposalImage.src = result.generatedImage || currentStylingBoard.fullLookImage;
         proposalImage.alt = `${proposalBrandName.textContent.trim()} AI virtual try-on result`;
+        const resultLabel = result.mode === 'live'
+          ? (result.cacheHit ? 'Cached look' : 'New AI look')
+          : 'Fallback look';
+        aiTryonResultMeta.hidden = false;
+        aiTryonResultMeta.innerHTML = `<span>${escapeHtml(resultLabel)}</span><strong>${escapeHtml(result.generatedImage || currentStylingBoard.fullLookImage)}</strong>`;
         aiTryonStatus.textContent = result.message || 'AI look generated.';
       } catch (error) {
         proposalImage.src = currentStylingBoard.fullLookImage;
         proposalImage.alt = 'Fallback full look styling board';
+        aiTryonResultMeta.hidden = false;
+        aiTryonResultMeta.innerHTML = '<span>Fallback</span><strong>Saved styling board shown</strong>';
         aiTryonStatus.textContent = 'Generation failed. Showing the saved full look fallback.';
       } finally {
         setAiTryOnLoading(false);
