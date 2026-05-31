@@ -71,6 +71,26 @@ const readJsonBody = (req) => new Promise((resolve, reject) => {
   req.on("error", reject);
 });
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const normalizeAssetPath = (assetPath = "") => assetPath.replace(/^\/+/, "");
+
+const toImageInput = (assetPath) => {
+  if (!assetPath) return "";
+  if (/^https?:\/\//i.test(assetPath) || assetPath.startsWith("data:")) return assetPath;
+
+  const normalizedPath = normalizeAssetPath(assetPath);
+  const filePath = path.join(root, normalizedPath);
+  if (!filePath.startsWith(root)) {
+    throw new Error("Invalid image path.");
+  }
+
+  const ext = path.extname(filePath).toLowerCase();
+  const mimeType = types[ext] || "application/octet-stream";
+  const base64 = readFileSync(filePath).toString("base64");
+  return `data:${mimeType};base64,${base64}`;
+};
+
 const getTemplate = (config, templateId) => {
   const templates = Array.isArray(config.modelTemplates) ? config.modelTemplates : [];
   return templates.find((template) => template.id === templateId)
@@ -87,6 +107,85 @@ const resolveFallbackTryOnImage = (config, { items = [], modelTemplate, fullLook
   }
   const firstModelLook = selectedItems.find((item) => item?.modelLookImage)?.modelLookImage;
   return firstModelLook || template.generatedLookImage || fullLookImage || "assets/styling-board-maison-lune-01.png";
+};
+
+const waitForFashnPrediction = async (predictionId, apiKey) => {
+  const timeoutMs = Number(process.env.FASHN_POLL_TIMEOUT_MS || 90_000);
+  const pollIntervalMs = Number(process.env.FASHN_POLL_INTERVAL_MS || 2_500);
+  const startedAt = Date.now();
+
+  while (Date.now() - startedAt < timeoutMs) {
+    const statusResponse = await fetch(`https://api.fashn.ai/v1/status/${predictionId}`, {
+      headers: { Authorization: `Bearer ${apiKey}` },
+    });
+
+    if (!statusResponse.ok) {
+      throw new Error(`FASHN status failed with ${statusResponse.status}`);
+    }
+
+    const statusResult = await statusResponse.json();
+    if (statusResult.status === "completed") {
+      const output = Array.isArray(statusResult.output) ? statusResult.output[0] : statusResult.output;
+      if (!output) throw new Error("FASHN completed without an output image.");
+      return output;
+    }
+
+    if (["failed", "canceled"].includes(statusResult.status)) {
+      throw new Error(statusResult.error || `FASHN prediction ${statusResult.status}`);
+    }
+
+    await sleep(pollIntervalMs);
+  }
+
+  throw new Error("FASHN prediction timed out.");
+};
+
+const generateFashnTryOn = async ({ payload, template }) => {
+  const apiKey = process.env.FASHN_API_KEY;
+  if (!apiKey) {
+    throw new Error("FASHN_API_KEY is not configured.");
+  }
+
+  const items = Array.isArray(payload.items) ? payload.items : [];
+  const garment = items.find((item) => item?.image) || items[0];
+  if (!garment?.image) {
+    throw new Error("A product image is required for FASHN try-on.");
+  }
+
+  const modelImage = toImageInput(payload.baseModelImage || template.previewImage);
+  const garmentImage = toImageInput(garment.image);
+  const runResponse = await fetch("https://api.fashn.ai/v1/run", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model_name: "tryon-max",
+      inputs: {
+        model_image: modelImage,
+        garment_image: garmentImage,
+        category: "auto",
+        mode: "balanced",
+      },
+    }),
+  });
+
+  if (!runResponse.ok) {
+    const errorText = await runResponse.text();
+    throw new Error(`FASHN run failed with ${runResponse.status}: ${errorText.slice(0, 220)}`);
+  }
+
+  const runResult = await runResponse.json();
+  const predictionId = runResult.id || runResult.prediction_id;
+  if (!predictionId) {
+    throw new Error("FASHN run did not return a prediction id.");
+  }
+
+  return {
+    id: predictionId,
+    generatedImage: await waitForFashnPrediction(predictionId, apiKey),
+  };
 };
 
 createServer(async (req, res) => {
@@ -109,18 +208,43 @@ createServer(async (req, res) => {
 
       const config = loadTryOnConfig();
       const template = getTemplate(config, payload.modelTemplate);
-      const generatedImage = resolveFallbackTryOnImage(config, payload);
       const provider = process.env.VIRTUAL_TRYON_PROVIDER || "fallback";
-      sendJson(res, 200, {
+      const fallbackImage = resolveFallbackTryOnImage(config, payload);
+      let generation = {
         id: `tryon-${Date.now()}`,
-        provider,
+        generatedImage: fallbackImage,
         mode: "fallback",
-        modelTemplate: template.id,
-        generatedImage,
-        items,
         message: provider === "fallback"
           ? config.messages?.fallbackGenerated || fallbackTryOnConfig.messages.fallbackGenerated
-          : config.messages?.providerConfigured || fallbackTryOnConfig.messages.providerConfigured
+          : config.messages?.providerConfigured || fallbackTryOnConfig.messages.providerConfigured,
+      };
+
+      if (provider === "fashn") {
+        try {
+          const fashnResult = await generateFashnTryOn({ payload, template });
+          generation = {
+            id: fashnResult.id,
+            generatedImage: fashnResult.generatedImage,
+            mode: "live",
+            message: "Live FASHN virtual try-on generated.",
+          };
+        } catch (error) {
+          generation = {
+            ...generation,
+            mode: "fallback",
+            message: `FASHN generation failed, showing demo fallback. ${error.message}`,
+          };
+        }
+      }
+
+      sendJson(res, 200, {
+        id: generation.id,
+        provider,
+        mode: generation.mode,
+        modelTemplate: template.id,
+        generatedImage: generation.generatedImage,
+        items,
+        message: generation.message
       });
     } catch (error) {
       sendJson(res, 400, { error: error.message || "Unable to generate try-on preview." });
