@@ -1259,8 +1259,11 @@ body.dark-theme .brand img {
   aspect-ratio: 4 / 3;
 }
 
-.designer-portfolio-thumbs button.is-active {
+.designer-portfolio-thumbs button.is-active,
+.designer-product-preview button.is-active,
+.designer-sample-preview button.is-active {
   border-color: #050505;
+  box-shadow: inset 0 0 0 1px #050505;
 }
 
 .designer-portfolio-thumbs img,
