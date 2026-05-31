@@ -1,4 +1,4 @@
-import { createReadStream, readFileSync, stat } from "node:fs";
+import { createReadStream, mkdirSync, readFileSync, stat, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -89,6 +89,15 @@ const toImageInput = (assetPath) => {
   const mimeType = types[ext] || "application/octet-stream";
   const base64 = readFileSync(filePath).toString("base64");
   return `data:${mimeType};base64,${base64}`;
+};
+
+const saveGeneratedImage = (base64Image, prefix = "openai-look") => {
+  const directory = path.join(root, "assets", "generated-looks");
+  mkdirSync(directory, { recursive: true });
+  const fileName = `${prefix}-${Date.now()}.png`;
+  const relativePath = path.join("assets", "generated-looks", fileName).replaceAll("\\", "/");
+  writeFileSync(path.join(root, relativePath), Buffer.from(base64Image, "base64"));
+  return relativePath;
 };
 
 const getTemplate = (config, templateId) => {
@@ -188,6 +197,103 @@ const generateFashnTryOn = async ({ payload, template }) => {
   };
 };
 
+const buildOpenAiLookbookPrompt = ({ payload, template }) => {
+  const items = Array.isArray(payload.items) ? payload.items : [];
+  const itemLines = items.map((item, index) => (
+    `${index + 1}. ${item.name || "Unnamed product"} (${item.category || "item"})`
+  )).join("\n");
+  const brand = payload.brand || "K-MODU designer brand";
+  const brandMood = payload.brandMood || "Seoul K-fashion, premium but approachable, warm editorial lookbook";
+  const stylingPrompt = payload.stylingPrompt || "Create a realistic full-body brand lookbook image that makes the selected designer products look worn by the fixed model.";
+
+  return [
+    "Create one photorealistic fashion lookbook image for K-MODU.",
+    "This is not a precision virtual fitting task. Prioritize a believable brand Full Look campaign image.",
+    `Brand: ${brand}`,
+    `Model template: ${template.label || template.id}`,
+    `Brand mood: ${brandMood}`,
+    "Selected products:",
+    itemLines || "- Selected designer products",
+    `Styling direction: ${stylingPrompt}`,
+    "Use the first input image as the fixed model reference and the remaining input images as product/style references.",
+    "Preserve the overall identity of the model template, but adapt hair, pose, and styling naturally for a fashion editorial.",
+    "Show one adult fashion model wearing a cohesive look inspired by the selected products.",
+    "Vertical 4:5 composition, full body or 7/8 body centered, clean studio/editorial background, realistic fabric, realistic hands and face.",
+    "No text, no logo, no watermark, no collage, no extra people, no product flat-lay."
+  ].join("\n");
+};
+
+const generateOpenAiLookbook = async ({ payload, template }) => {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error("OPENAI_API_KEY is not configured.");
+  }
+
+  const items = Array.isArray(payload.items) ? payload.items : [];
+  const inputImages = [
+    payload.baseModelImage || template.previewImage,
+    ...items.map((item) => item.image).filter(Boolean),
+  ].slice(0, 16);
+
+  if (!inputImages.length) {
+    throw new Error("At least one model or product image is required for OpenAI image generation.");
+  }
+
+  const prompt = buildOpenAiLookbookPrompt({ payload, template });
+  const imagePayload = {
+    model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-2",
+    prompt,
+    images: inputImages.map((image) => ({ image_url: toImageInput(image) })),
+    size: process.env.OPENAI_IMAGE_SIZE || "1024x1536",
+  };
+
+  const response = await fetch("https://api.openai.com/v1/images/edits", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(imagePayload),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`OpenAI image generation failed with ${response.status}: ${errorText.slice(0, 220)}`);
+  }
+
+  const result = await response.json();
+  const output = result.data?.[0];
+  const base64Image = output?.b64_json;
+  const urlImage = output?.url;
+  if (base64Image) {
+    return {
+      id: result.id || `openai-${Date.now()}`,
+      generatedImage: saveGeneratedImage(base64Image),
+      promptMetadata: {
+        model: imagePayload.model,
+        size: imagePayload.size,
+        prompt,
+        inputImages,
+      },
+    };
+  }
+
+  if (urlImage) {
+    return {
+      id: result.id || `openai-${Date.now()}`,
+      generatedImage: urlImage,
+      promptMetadata: {
+        model: imagePayload.model,
+        size: imagePayload.size,
+        prompt,
+        inputImages,
+      },
+    };
+  }
+
+  throw new Error("OpenAI image generation completed without an image output.");
+};
+
 createServer(async (req, res) => {
   let urlPath = decodeURIComponent((req.url || "/").split("?")[0]);
   if (urlPath === "/") urlPath = "/index.html";
@@ -237,12 +343,32 @@ createServer(async (req, res) => {
         }
       }
 
+      if (provider === "openai") {
+        try {
+          const openAiResult = await generateOpenAiLookbook({ payload, template });
+          generation = {
+            id: openAiResult.id,
+            generatedImage: openAiResult.generatedImage,
+            mode: "live",
+            message: "Live OpenAI lookbook image generated.",
+            promptMetadata: openAiResult.promptMetadata,
+          };
+        } catch (error) {
+          generation = {
+            ...generation,
+            mode: "fallback",
+            message: `OpenAI lookbook generation failed, showing demo fallback. ${error.message}`,
+          };
+        }
+      }
+
       sendJson(res, 200, {
         id: generation.id,
         provider,
         mode: generation.mode,
         modelTemplate: template.id,
         generatedImage: generation.generatedImage,
+        promptMetadata: generation.promptMetadata || null,
         items,
         message: generation.message
       });
