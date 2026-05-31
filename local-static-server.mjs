@@ -1,10 +1,13 @@
-import { createReadStream, mkdirSync, readFileSync, stat, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { createReadStream, existsSync, mkdirSync, readFileSync, stat, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const port = Number(process.env.PORT || 8010);
+const generatedLooksDir = process.env.GENERATED_LOOKS_DIR || (process.env.RAILWAY_ENVIRONMENT ? "/data/generated-looks" : path.join(root, ".runtime", "generated-looks"));
+const generatedLooksPublicPath = "/generated-looks";
 const types = {
   ".html": "text/html; charset=utf-8",
   ".css": "text/css; charset=utf-8",
@@ -52,6 +55,10 @@ const sendJson = (res, statusCode, payload) => {
   res.end(JSON.stringify(payload));
 };
 
+const ensureGeneratedLooksDir = () => {
+  mkdirSync(generatedLooksDir, { recursive: true });
+};
+
 const readJsonBody = (req) => new Promise((resolve, reject) => {
   let body = "";
   req.on("data", (chunk) => {
@@ -91,13 +98,40 @@ const toImageInput = (assetPath) => {
   return `data:${mimeType};base64,${base64}`;
 };
 
-const saveGeneratedImage = (base64Image, prefix = "openai-look") => {
-  const directory = path.join(root, "assets", "generated-looks");
-  mkdirSync(directory, { recursive: true });
-  const fileName = `${prefix}-${Date.now()}.png`;
-  const relativePath = path.join("assets", "generated-looks", fileName).replaceAll("\\", "/");
-  writeFileSync(path.join(root, relativePath), Buffer.from(base64Image, "base64"));
-  return relativePath;
+const getPublicGeneratedLookPath = (fileName) => `${generatedLooksPublicPath}/${fileName}`;
+
+const buildGenerationCacheKey = ({ payload, template, provider }) => {
+  const items = Array.isArray(payload.items) ? payload.items : [];
+  const cacheInput = {
+    provider,
+    brand: payload.brand || "",
+    modelTemplate: template.id,
+    brandMood: payload.brandMood || "",
+    stylingPrompt: payload.stylingPrompt || "",
+    items: items.map((item) => ({
+      name: item.name || "",
+      category: item.category || "",
+      image: item.image || "",
+    })).sort((a, b) => `${a.category}:${a.name}:${a.image}`.localeCompare(`${b.category}:${b.name}:${b.image}`)),
+  };
+  return createHash("sha256").update(JSON.stringify(cacheInput)).digest("hex").slice(0, 24);
+};
+
+const getCachedGeneratedLook = (cacheKey) => {
+  const fileName = `openai-look-${cacheKey}.png`;
+  const filePath = path.join(generatedLooksDir, fileName);
+  if (!existsSync(filePath)) return null;
+  return {
+    fileName,
+    generatedImage: getPublicGeneratedLookPath(fileName),
+  };
+};
+
+const saveGeneratedImage = (base64Image, fileName) => {
+  ensureGeneratedLooksDir();
+  const safeFileName = fileName || `openai-look-${Date.now()}.png`;
+  writeFileSync(path.join(generatedLooksDir, safeFileName), Buffer.from(base64Image, "base64"));
+  return getPublicGeneratedLookPath(safeFileName);
 };
 
 const getTemplate = (config, templateId) => {
@@ -240,6 +274,23 @@ const generateOpenAiLookbook = async ({ payload, template }) => {
   }
 
   const prompt = buildOpenAiLookbookPrompt({ payload, template });
+  const cacheKey = buildGenerationCacheKey({ payload, template, provider: "openai" });
+  const cachedLook = getCachedGeneratedLook(cacheKey);
+  if (cachedLook) {
+    return {
+      id: `cache-${cacheKey}`,
+      generatedImage: cachedLook.generatedImage,
+      cacheHit: true,
+      promptMetadata: {
+        model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-2",
+        size: process.env.OPENAI_IMAGE_SIZE || "1024x1536",
+        prompt,
+        inputImages,
+        cacheKey,
+      },
+    };
+  }
+
   const imagePayload = {
     model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-2",
     prompt,
@@ -268,12 +319,14 @@ const generateOpenAiLookbook = async ({ payload, template }) => {
   if (base64Image) {
     return {
       id: result.id || `openai-${Date.now()}`,
-      generatedImage: saveGeneratedImage(base64Image),
+      generatedImage: saveGeneratedImage(base64Image, `openai-look-${cacheKey}.png`),
+      cacheHit: false,
       promptMetadata: {
         model: imagePayload.model,
         size: imagePayload.size,
         prompt,
         inputImages,
+        cacheKey,
       },
     };
   }
@@ -282,11 +335,13 @@ const generateOpenAiLookbook = async ({ payload, template }) => {
     return {
       id: result.id || `openai-${Date.now()}`,
       generatedImage: urlImage,
+      cacheHit: false,
       promptMetadata: {
         model: imagePayload.model,
         size: imagePayload.size,
         prompt,
         inputImages,
+        cacheKey,
       },
     };
   }
@@ -297,6 +352,31 @@ const generateOpenAiLookbook = async ({ payload, template }) => {
 createServer(async (req, res) => {
   let urlPath = decodeURIComponent((req.url || "/").split("?")[0]);
   if (urlPath === "/") urlPath = "/index.html";
+
+  if (urlPath.startsWith(`${generatedLooksPublicPath}/`)) {
+    const fileName = path.basename(urlPath);
+    const filePath = path.join(generatedLooksDir, fileName);
+    if (!filePath.startsWith(generatedLooksDir)) {
+      res.writeHead(403);
+      res.end("Forbidden");
+      return;
+    }
+
+    stat(filePath, (error, stats) => {
+      if (error || !stats.isFile()) {
+        res.writeHead(404);
+        res.end("Not found");
+        return;
+      }
+
+      res.writeHead(200, {
+        "Content-Type": types[path.extname(filePath).toLowerCase()] || "application/octet-stream",
+        "Cache-Control": "public, max-age=31536000, immutable",
+      });
+      createReadStream(filePath).pipe(res);
+    });
+    return;
+  }
 
   if (urlPath === "/api/generate-tryon") {
     if (req.method !== "POST") {
@@ -350,7 +430,8 @@ createServer(async (req, res) => {
             id: openAiResult.id,
             generatedImage: openAiResult.generatedImage,
             mode: "live",
-            message: "Live OpenAI lookbook image generated.",
+            cacheHit: Boolean(openAiResult.cacheHit),
+            message: openAiResult.cacheHit ? "Cached OpenAI lookbook image reused." : "Live OpenAI lookbook image generated.",
             promptMetadata: openAiResult.promptMetadata,
           };
         } catch (error) {
@@ -368,6 +449,7 @@ createServer(async (req, res) => {
         mode: generation.mode,
         modelTemplate: template.id,
         generatedImage: generation.generatedImage,
+        cacheHit: Boolean(generation.cacheHit),
         promptMetadata: generation.promptMetadata || null,
         items,
         message: generation.message
