@@ -123,6 +123,97 @@ export async function getProductsForDesigner(designerId: string): Promise<Produc
   }
 }
 
+export async function getProductForDesigner(designerId: string, productId: string): Promise<Product | null> {
+  if (!hasDatabase()) {
+    return toDemoProducts().find((product) => product.designer_id === designerId && product.id === productId) ?? null;
+  }
+  return one<Product>(
+    "SELECT * FROM products WHERE designer_id = $1 AND id = $2 AND status <> 'hidden'",
+    [designerId, productId],
+  );
+}
+
+export async function createProductForDesigner(input: {
+  designerId: string;
+  name: string;
+  category: string;
+  price?: string | null;
+  color?: string | null;
+  description?: string | null;
+  imageUrl: string;
+  tryonImageUrl?: string | null;
+  imageHash?: string | null;
+  mood?: string | null;
+  status?: Product["status"];
+}) {
+  if (!hasDatabase()) throw new Error("DATABASE_URL is required for product creation.");
+  return one<Product>(
+    `INSERT INTO products (
+       designer_id, name, category, price, color, description, image_url, tryon_image_url, image_hash, mood, status
+     )
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+     RETURNING *`,
+    [
+      input.designerId,
+      input.name,
+      input.category,
+      input.price || null,
+      input.color || null,
+      input.description || null,
+      input.imageUrl,
+      input.tryonImageUrl || null,
+      input.imageHash || null,
+      input.mood || null,
+      input.status || "active",
+    ],
+  );
+}
+
+export async function updateProductForDesigner(designerId: string, productId: string, input: Partial<{
+  name: string;
+  category: string;
+  price: string | null;
+  color: string | null;
+  description: string | null;
+  imageUrl: string;
+  tryonImageUrl: string | null;
+  imageHash: string | null;
+  mood: string | null;
+  status: Product["status"];
+}>) {
+  if (!hasDatabase()) throw new Error("DATABASE_URL is required for product updates.");
+  return one<Product>(
+    `UPDATE products
+     SET name = COALESCE($3, name),
+         category = COALESCE($4, category),
+         price = COALESCE($5, price),
+         color = COALESCE($6, color),
+         description = COALESCE($7, description),
+         image_url = COALESCE($8, image_url),
+         tryon_image_url = COALESCE($9, tryon_image_url),
+         image_hash = COALESCE($10, image_hash),
+         mood = COALESCE($11, mood),
+         status = COALESCE($12, status),
+         updated_at = now()
+     WHERE designer_id = $1 AND id = $2
+     RETURNING *`,
+    [
+      designerId,
+      productId,
+      input.name ?? null,
+      input.category ?? null,
+      input.price ?? null,
+      input.color ?? null,
+      input.description ?? null,
+      input.imageUrl ?? null,
+      input.tryonImageUrl ?? null,
+      input.imageHash ?? null,
+      input.mood ?? null,
+      input.status ?? null,
+    ],
+  );
+}
+
 export async function getModelTemplates(): Promise<ModelTemplate[]> {
   if (!hasDatabase()) return toDemoModelTemplates();
   try {

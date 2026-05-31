@@ -73,3 +73,19 @@ export function streamStoredFile(filePath: string) {
     },
   });
 }
+
+export async function readImageFormFile(request: Request, fieldName = "image") {
+  const form = await request.formData();
+  const file = form.get(fieldName);
+  if (!(file instanceof File)) {
+    throw new Error(`${fieldName} is required.`);
+  }
+
+  const bytes = Buffer.from(await file.arrayBuffer());
+  validateImageUpload({ mimeType: file.type, byteLength: bytes.length });
+  return {
+    file,
+    bytes,
+    mimeType: file.type,
+  };
+}
