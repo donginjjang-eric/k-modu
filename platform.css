@@ -3252,7 +3252,7 @@ body.dark-theme .mini-stats strong {
 
   .creator-sheet-content {
     overflow: visible;
-    padding: 40px 30px 60px;
+    padding: 36px 30px 60px;
   }
 
   .creator-sheet-content p {
@@ -3260,12 +3260,57 @@ body.dark-theme .mini-stats strong {
     justify-content: flex-start;
   }
 
-  .creator-sheet-content h2 {
-    font-size: clamp(52px, 14vw, 72px);
+  .creator-sheet-badges {
+    gap: 6px;
+    margin-bottom: 16px;
   }
 
-  .creator-sheet-content span {
-    font-size: 21px;
+  .creator-sheet-badges span {
+    min-height: 34px;
+    padding: 0 12px;
+    font-size: 15px;
+    letter-spacing: .06em;
+  }
+
+  .creator-sheet-content h2 {
+    margin-bottom: 18px;
+    font-size: clamp(40px, 11vw, 56px);
+    line-height: .94;
+  }
+
+  .creator-sheet-content > span {
+    font-size: 18px;
+    line-height: 1.55;
+  }
+
+  .creator-sheet-meta {
+    gap: 16px;
+    margin-top: 24px;
+    padding-top: 24px;
+  }
+
+  .creator-sheet-meta span {
+    font-size: 13px;
+    letter-spacing: .14em;
+  }
+
+  .creator-sheet-meta strong {
+    font-size: 18px;
+  }
+
+  .creator-sheet-collab h3 {
+    margin-top: 0;
+    font-size: 14px;
+  }
+
+  .creator-sheet-tags {
+    gap: 7px;
+  }
+
+  .creator-sheet-tags span {
+    min-height: 30px;
+    padding: 0 13px;
+    font-size: 14px;
   }
 
   body.dark-theme .filter-panel {
