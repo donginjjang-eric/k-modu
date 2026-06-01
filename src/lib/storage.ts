@@ -2,7 +2,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { createReadStream, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-const projectRoot = process.cwd();
+const projectRoot = /* turbopackIgnore: true */ process.cwd();
 const assetsRoot = path.join(projectRoot, "assets");
 const dataRoot = process.env.DATA_DIR || (process.env.RAILWAY_ENVIRONMENT ? "/data" : path.join(projectRoot, ".runtime"));
 
@@ -51,7 +51,7 @@ export function saveStorageImage(kind: StorageKind, bytes: Buffer, mimeType: str
   ensureStorage();
   const ext = validateImageUpload({ mimeType, byteLength: bytes.length });
   const fileName = `${randomUUID()}${ext}`;
-  const filePath = path.join(roots[kind], fileName);
+  const filePath = path.join(/* turbopackIgnore: true */ roots[kind], fileName);
   writeFileSync(filePath, bytes);
 
   if (kind === "productUploads") return { url: `/uploads/products/${fileName}`, imageHash: getImageHash(bytes) };
@@ -62,7 +62,7 @@ export function saveStorageImage(kind: StorageKind, bytes: Buffer, mimeType: str
 export function saveGeneratedPng(fileName: string, base64Image: string) {
   ensureStorage();
   const safeFileName = path.basename(fileName).replace(/[^a-z0-9._-]/gi, "-");
-  const filePath = path.join(roots.generatedLooks, safeFileName);
+  const filePath = path.join(/* turbopackIgnore: true */ roots.generatedLooks, safeFileName);
   const bytes = Buffer.from(base64Image, "base64");
   writeFileSync(filePath, bytes);
   return {
@@ -80,13 +80,13 @@ export function readPublicImageAsDataUrl(imagePath: string) {
     filePath = path.join(assetsRoot, normalized.slice("assets/".length));
   }
   if (normalized.startsWith("uploads/products/")) {
-    filePath = path.join(roots.productUploads, path.basename(normalized));
+    filePath = path.join(/* turbopackIgnore: true */ roots.productUploads, path.basename(normalized));
   }
   if (normalized.startsWith("generated-looks/")) {
-    filePath = path.join(roots.generatedLooks, path.basename(normalized));
+    filePath = path.join(/* turbopackIgnore: true */ roots.generatedLooks, path.basename(normalized));
   }
   if (normalized.startsWith("model-templates/")) {
-    filePath = path.join(roots.modelTemplates, path.basename(normalized));
+    filePath = path.join(/* turbopackIgnore: true */ roots.modelTemplates, path.basename(normalized));
   }
 
   const allowedRoots = [assetsRoot, roots.productUploads, roots.generatedLooks, roots.modelTemplates];
@@ -102,7 +102,7 @@ export function readPublicImageAsDataUrl(imagePath: string) {
 
 export function resolveStoredFile(kind: StorageKind, fileName: string) {
   const safeFileName = path.basename(fileName);
-  const filePath = path.join(roots[kind], safeFileName);
+  const filePath = path.join(/* turbopackIgnore: true */ roots[kind], safeFileName);
   if (!filePath.startsWith(roots[kind]) || !existsSync(filePath)) return null;
   return filePath;
 }

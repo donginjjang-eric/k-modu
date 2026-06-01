@@ -8,8 +8,8 @@ export default function LoginPage() {
           <p className="kicker">Partner Login</p>
           <h1>로그인</h1>
           <p className="lead">
-            이메일/비밀번호 기반 파트너 로그인입니다. 승인된 디자이너만 디자이너 대시보드에 접근할 수 있고,
-            관리자는 승인/비활성화 작업을 처리합니다.
+            승인된 디자이너와 관리자만 사용할 수 있는 파트너 로그인입니다. 디자이너는 상품과
+            생성 이미지를 관리하고, 관리자는 브랜드 승인과 운영 상태를 확인합니다.
           </p>
         </div>
         <LoginForm />

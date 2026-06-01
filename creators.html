@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
@@ -18,29 +18,29 @@
 <body>
   <main class="platform creator-market">
     <header class="topbar creator-topbar">
-      <a class="brand" href="index.html#home"><img src="assets/k-modu-logo.png" alt="K-MODU" /></a>
+      <a class="brand" href="/#home"><img src="assets/k-modu-logo.png" alt="K-MODU" /></a>
       <nav class="topnav">
-        <a href="index.html#about">소개</a>
-        <a href="designers.html">디자이너</a>
-        <a href="creators.html" aria-current="page">크리에이터</a>
-        <a href="index.html#contact">문의</a>
+        <a href="/#about">소개</a>
+        <a href="/designers">디자이너</a>
+        <a href="/creators" aria-current="page">크리에이터</a>
+        <a href="/#contact">문의</a>
       </nav>
       <div class="top-actions">
         <button class="icon-btn" type="button" aria-label="Search creators">
           <span></span>
         </button>
-        <a href="designer-brief.html">브리프 작성</a>
-        <a class="pill" href="login.html">로그인</a>
+        <a href="/designer-brief">브리프 작성</a>
+        <a class="pill" href="/login">로그인</a>
       </div>
       <details class="platform-menu">
         <summary aria-label="Menu"><span></span></summary>
         <div class="platform-menu-panel">
-          <a href="index.html#about">소개</a>
-          <a href="designers.html">디자이너</a>
-          <a href="creators.html">크리에이터</a>
-          <a href="index.html#contact">문의</a>
-          <a href="apply.html">입점 신청</a>
-          <a href="login.html">로그인</a>
+          <a href="/#about">소개</a>
+          <a href="/designers">디자이너</a>
+          <a href="/creators">크리에이터</a>
+          <a href="/#contact">문의</a>
+          <a href="/apply">입점 신청</a>
+          <a href="/login">로그인</a>
         </div>
       </details>
     </header>
@@ -242,7 +242,7 @@
       </section>
     </section>
 
-    <a class="floating-help" href="designer-brief.html">?</a>
+    <a class="floating-help" href="/designer-brief">?</a>
     <a class="scroll-top" href="#top" aria-label="Back to top">↑</a>
     <div class="creator-profile-sheet" id="creatorProfileSheet" aria-hidden="true">
       <div class="creator-profile-card" role="dialog" aria-modal="true" aria-labelledby="creatorSheetTitle">
@@ -278,7 +278,7 @@
             </ul>
           </div>
           <div class="creator-sheet-actions">
-            <a class="pill creator-propose" id="creatorProposeLink" href="designer-brief.html">이 크리에이터에게 제안하기</a>
+            <a class="pill creator-propose" id="creatorProposeLink" href="/designer-brief">이 크리에이터에게 제안하기</a>
           </div>
         </div>
         </div>
@@ -286,7 +286,7 @@
     </div>
     <footer class="footer-mini footer-mini--board">
       <span>K-MODU Creator Matching Board</span>
-      <a class="footer-cross" href="designers.html">디자이너 브랜드 보드 보기 →</a>
+      <a class="footer-cross" href="/designers">디자이너 브랜드 보드 보기 →</a>
     </footer>
   </main>
 
@@ -493,7 +493,7 @@
         ].map(([label, value]) => `<div><span>${label}</span><strong>${value}</strong></div>`).join('');
         creatorSheetTags.innerHTML = deliverablesFor(d.platform, d.type)
           .map((tag) => `<span>${tag}</span>`).join('');
-        creatorProposeLink.href = `designer-brief.html?creator=${encodeURIComponent(name)}`;
+        creatorProposeLink.href = `/designer-brief?creator=${encodeURIComponent(name)}`;
         creatorSheet.classList.add('is-open');
         creatorSheet.setAttribute('aria-hidden', 'false');
         document.body.classList.add('sheet-open');

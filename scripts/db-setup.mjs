@@ -60,7 +60,7 @@ async function seedDemoData() {
        'maison-lune-seoul',
        'demo-designer-user',
        'Maison Lune Seoul',
-       '서울 기반 디자이너 브랜드를 위한 AI 착장 미리보기 MVP 샘플입니다.',
+       '서울 기반 디자이너 브랜드를 위한 AI 룩북 미리보기 MVP 샘플입니다.',
        'Seoul K-fashion, minimal black tailoring, warm editorial lookbook',
        'South Korea',
        'approved'

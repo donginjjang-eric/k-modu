@@ -23,15 +23,29 @@ const legacyFiles = new Set([
   "platform.css",
 ]);
 
+const cleanLegacyRoutes: Record<string, string> = {
+  "admin": "admin.html",
+  "apply": "apply.html",
+  "apply-complete": "apply-complete.html",
+  "brand-detail": "brand-detail.html",
+  "creator-detail": "creator-detail.html",
+  "creators": "creators.html",
+  "designer-brief": "designer-brief.html",
+  "designer-match": "designer-match.html",
+  "legacy-designers": "designers.html",
+  "legacy-login": "login.html",
+};
+
 export async function GET(_: Request, { params }: { params: Promise<{ legacyPath: string[] }> }) {
   const { legacyPath } = await params;
-  const legacyName = legacyPath.join("/");
+  const requestedPath = legacyPath.join("/");
+  const legacyName = cleanLegacyRoutes[requestedPath] || requestedPath;
 
   if (!legacyFiles.has(legacyName)) {
     return new Response("Not found", { status: 404 });
   }
 
-  const filePath = path.join(process.cwd(), legacyName);
+  const filePath = path.join(/* turbopackIgnore: true */ process.cwd(), legacyName);
   if (!existsSync(filePath)) {
     return new Response("Not found", { status: 404 });
   }

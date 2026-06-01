@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
@@ -18,26 +18,26 @@
 <body>
   <main class="platform">
     <header class="topbar">
-      <a class="brand" href="index.html#home"><img src="assets/k-modu-logo.png" alt="K-MODU" /></a>
+      <a class="brand" href="/#home"><img src="assets/k-modu-logo.png" alt="K-MODU" /></a>
       <nav class="topnav">
-        <a href="index.html#about">소개</a>
-        <a href="designers.html" aria-current="page">디자이너</a>
-        <a href="creators.html">크리에이터</a>
-        <a href="index.html#contact">문의</a>
+        <a href="/#about">소개</a>
+        <a href="/designers" aria-current="page">디자이너</a>
+        <a href="/creators">크리에이터</a>
+        <a href="/#contact">문의</a>
       </nav>
       <div class="top-actions">
-        <a href="designer-brief.html">브리프 수정</a>
-        <a class="pill" href="apply.html">새 브랜드</a>
+        <a href="/designer-brief">브리프 수정</a>
+        <a class="pill" href="/apply">새 브랜드</a>
       </div>
       <details class="platform-menu">
         <summary aria-label="메뉴"><span></span></summary>
         <div class="platform-menu-panel">
-          <a href="index.html#about">소개</a>
-          <a href="designers.html" aria-current="page">디자이너</a>
-          <a href="creators.html">크리에이터</a>
-        <a href="index.html#contact">문의</a>
-          <a href="apply.html">입점 신청</a>
-          <a href="login.html">로그인</a>
+          <a href="/#about">소개</a>
+          <a href="/designers" aria-current="page">디자이너</a>
+          <a href="/creators">크리에이터</a>
+        <a href="/#contact">문의</a>
+          <a href="/apply">입점 신청</a>
+          <a href="/login">로그인</a>
         </div>
       </details>
     </header>
@@ -67,7 +67,7 @@
             <div class="score"><span>Match Score</span><strong>92%</strong></div>
             <p>960K Followers / 310K Avg Views / 6.1% ER</p>
             <p><strong>Why Match?</strong><br />Strong fit for polished street-luxury styling, denim looks, and outfit breakdown content.</p>
-            <div class="form-actions"><a class="pill light" href="creator-detail.html">View Profile</a><a class="pill" href="designer-brief.html">Add To Campaign</a></div>
+            <div class="form-actions"><a class="pill light" href="/creator-detail">View Profile</a><a class="pill" href="/designer-brief">Add To Campaign</a></div>
           </div>
         </article>
         <article class="creator-card">
@@ -79,7 +79,7 @@
             <div class="score"><span>Match Score</span><strong>89%</strong></div>
             <p>740K Followers / 185K Avg Views / 8.2% ER</p>
             <p><strong>Why Match?</strong><br />Strong audience trust around emerging labels, runway-inspired looks, and Seoul designer discovery.</p>
-            <div class="form-actions"><a class="pill light" href="creator-detail.html">View Profile</a><a class="pill" href="designer-brief.html">Add To Campaign</a></div>
+            <div class="form-actions"><a class="pill light" href="/creator-detail">View Profile</a><a class="pill" href="/designer-brief">Add To Campaign</a></div>
           </div>
         </article>
         <article class="creator-card">
@@ -91,7 +91,7 @@
             <div class="score"><span>Match Score</span><strong>88%</strong></div>
             <p>1.8M Followers / 420K Avg Views / 7.4% ER</p>
             <p><strong>Why Match?</strong><br />Best for quiet luxury, capsule wardrobe transitions, and Korean designer discovery clips.</p>
-            <div class="form-actions"><a class="pill light" href="creator-detail.html">View Profile</a><a class="pill" href="designer-brief.html">Add To Campaign</a></div>
+            <div class="form-actions"><a class="pill light" href="/creator-detail">View Profile</a><a class="pill" href="/designer-brief">Add To Campaign</a></div>
           </div>
         </article>
         <article class="creator-card">
@@ -103,7 +103,7 @@
             <div class="score"><span>Match Score</span><strong>84%</strong></div>
             <p>520K Followers / 142K Avg Views / 5.8% ER</p>
             <p><strong>Why Match?</strong><br />Good fit for product seeding, high-intent shopping moments, and try-on format campaigns.</p>
-            <div class="form-actions"><a class="pill light" href="creator-detail.html">View Profile</a><a class="pill" href="designer-brief.html">Add To Campaign</a></div>
+            <div class="form-actions"><a class="pill light" href="/creator-detail">View Profile</a><a class="pill" href="/designer-brief">Add To Campaign</a></div>
           </div>
         </article>
       </div>
@@ -141,7 +141,7 @@
     }
 
     creatorCards.forEach((card) => {
-      const profileLink = card.querySelector('a[href="creator-detail.html"]');
+      const profileLink = card.querySelector('a[href="/creator-detail"]');
       const openCreatorSheet = () => {
         const img = card.querySelector('img');
         const name = card.querySelector('h3')?.textContent || 'Creator Profile';

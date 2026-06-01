@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "K-MODU",
-  description: "K-MODU AI lookbook service rebuild",
+  title: "K-MODU by MARKBRIDGE",
+  description: "K-MODU는 한국 디자이너 브랜드와 글로벌 패션 크리에이터를 연결합니다.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
