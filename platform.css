@@ -963,6 +963,7 @@ body.dark-theme .brand img {
   pointer-events: none;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
+  display: none;
 }
 
 .designer-proposal-sheet.is-styling .designer-proposal-count {
@@ -3383,6 +3384,12 @@ body.dark-theme .mini-stats strong {
   }
 
   .designer-proposal-dots {
+    bottom: 14px;
+  }
+
+  .designer-proposal-count {
+    display: inline-flex;
+    left: 18px;
     bottom: 14px;
   }
 

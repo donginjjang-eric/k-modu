@@ -1086,7 +1086,7 @@
     window.addEventListener('touchcancel', endProposalDrag);
 
     const startProposalSwipe = (clientX, clientY) => {
-      if (proposalSheet.classList.contains('is-styling') || proposalGalleryImages.length < 2) return;
+      if (!isMobileProposalSheet() || proposalSheet.classList.contains('is-styling') || proposalGalleryImages.length < 2) return;
       isProposalSwiping = true;
       proposalSwipeStartX = clientX;
       proposalSwipeStartY = clientY;
