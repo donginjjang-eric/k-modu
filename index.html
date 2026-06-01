@@ -822,8 +822,7 @@
     }
 
     .view-more::after {
-      content: "->";
-      margin-left: 12px;
+      content: none;
     }
 
     .campaign-row {
@@ -1584,7 +1583,7 @@
       }
 
       .hero {
-        min-height: 1080px;
+        min-height: 850px;
         padding-left: 20px;
         padding-right: 20px;
       }
@@ -1620,7 +1619,7 @@
       }
 
       .hero-copy:not(.right) {
-        top: 872px;
+        display: none;
       }
 
       .hero-copy .kicker {
@@ -1697,17 +1696,46 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 12px;
         padding: 0 18px;
+        align-items: stretch;
       }
 
       .influencer-head {
-        align-items: flex-start;
-        flex-direction: column;
+        align-items: flex-end;
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 18px;
         padding: 0 24px;
       }
 
+      .influencer-head h2 {
+        max-width: 250px;
+      }
+
+      .view-more {
+        height: auto;
+        padding: 0 0 3px;
+        border: 0;
+        border-bottom: 1px solid rgba(247, 247, 244, .5);
+        border-radius: 0;
+        font-size: 13px;
+        letter-spacing: .08em;
+      }
+
+      .campaign {
+        display: flex;
+        min-height: 100%;
+        flex-direction: column;
+      }
+
       .campaign .image {
-        height: 210px;
+        width: 100%;
+        height: 230px;
         margin-bottom: 9px;
+      }
+
+      .campaign .image img {
+        object-fit: cover;
+        object-position: center top;
       }
 
       .campaign h3 {
