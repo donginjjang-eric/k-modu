@@ -302,6 +302,7 @@
     }).join('');
 
     const proposalSheet = document.querySelector('#designerProposalSheet');
+    const proposalVisual = document.querySelector('.designer-proposal-visual');
     const proposalImage = document.querySelector('#proposalImage');
     const proposalPortfolioDots = document.querySelector('#proposalPortfolioDots');
     const proposalPortfolioCount = document.querySelector('#proposalPortfolioCount');
@@ -340,6 +341,7 @@
     let proposalSwipeStartX = 0;
     let proposalSwipeStartY = 0;
     let isProposalSwiping = false;
+    let proposalSwipeLocked = false;
     const activeTryOnItems = {};
     const selectedStylingItems = new Map();
     let selectedModelTemplate = 'fixed-female-minimal';
@@ -1085,8 +1087,19 @@
     const startProposalSwipe = (clientX, clientY) => {
       if (!isMobileProposalSheet() || proposalSheet.classList.contains('is-styling') || proposalGalleryImages.length < 2) return;
       isProposalSwiping = true;
+      proposalSwipeLocked = false;
       proposalSwipeStartX = clientX;
       proposalSwipeStartY = clientY;
+    };
+
+    const moveProposalSwipe = (clientX, clientY, event) => {
+      if (!isProposalSwiping) return;
+      const deltaX = clientX - proposalSwipeStartX;
+      const deltaY = clientY - proposalSwipeStartY;
+      if (Math.abs(deltaX) > 10 && Math.abs(deltaX) > Math.abs(deltaY) * 1.1) {
+        proposalSwipeLocked = true;
+        event?.preventDefault();
+      }
     };
 
     const finishProposalSwipe = (clientX, clientY) => {
@@ -1094,7 +1107,7 @@
       isProposalSwiping = false;
       const deltaX = clientX - proposalSwipeStartX;
       const deltaY = clientY - proposalSwipeStartY;
-      if (Math.abs(deltaX) < 48 || Math.abs(deltaX) < Math.abs(deltaY) * 1.2) return;
+      if (Math.abs(deltaX) < 34 || Math.abs(deltaX) < Math.abs(deltaY) * 1.05) return;
       if (deltaX < 0) {
         showNextProposalGalleryImage();
       } else {
@@ -1102,32 +1115,36 @@
       }
     };
 
-    proposalImage.addEventListener('pointerdown', (event) => {
+    proposalVisual.addEventListener('pointerdown', (event) => {
       startProposalSwipe(event.clientX, event.clientY);
+      proposalVisual.setPointerCapture?.(event.pointerId);
     });
-    proposalImage.addEventListener('pointerup', (event) => {
+    proposalVisual.addEventListener('pointermove', (event) => {
+      moveProposalSwipe(event.clientX, event.clientY, event);
+    });
+    proposalVisual.addEventListener('pointerup', (event) => {
       finishProposalSwipe(event.clientX, event.clientY);
     });
-    proposalImage.addEventListener('pointercancel', () => {
+    proposalVisual.addEventListener('pointercancel', () => {
       isProposalSwiping = false;
+      proposalSwipeLocked = false;
     });
-    proposalImage.addEventListener('touchstart', (event) => {
+    proposalVisual.addEventListener('touchstart', (event) => {
+      if (window.PointerEvent) return;
       startProposalSwipe(event.touches[0].clientX, event.touches[0].clientY);
     }, { passive: true });
-    proposalImage.addEventListener('touchmove', (event) => {
-      if (!isProposalSwiping) return;
-      const deltaX = event.touches[0].clientX - proposalSwipeStartX;
-      const deltaY = event.touches[0].clientY - proposalSwipeStartY;
-      if (Math.abs(deltaX) > 12 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2) {
-        event.preventDefault();
-      }
+    proposalVisual.addEventListener('touchmove', (event) => {
+      if (window.PointerEvent || !isProposalSwiping) return;
+      moveProposalSwipe(event.touches[0].clientX, event.touches[0].clientY, event);
     }, { passive: false });
-    proposalImage.addEventListener('touchend', (event) => {
+    proposalVisual.addEventListener('touchend', (event) => {
+      if (window.PointerEvent) return;
       const touch = event.changedTouches[0];
       finishProposalSwipe(touch.clientX, touch.clientY);
     });
-    proposalImage.addEventListener('touchcancel', () => {
+    proposalVisual.addEventListener('touchcancel', () => {
       isProposalSwiping = false;
+      proposalSwipeLocked = false;
     });
 
     proposalTabs.forEach((tab) => {

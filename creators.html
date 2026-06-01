@@ -246,10 +246,13 @@
     <a class="scroll-top" href="#top" aria-label="Back to top">↑</a>
     <div class="creator-profile-sheet" id="creatorProfileSheet" aria-hidden="true">
       <div class="creator-profile-card" role="dialog" aria-modal="true" aria-labelledby="creatorSheetTitle">
+        <button class="creator-sheet-handle" type="button" aria-label="Drag down to close"></button>
         <button class="creator-sheet-close" type="button" aria-label="닫기">‹</button>
         <div class="creator-sheet-scroll">
         <div class="creator-sheet-visual">
           <img id="creatorSheetImg" src="assets/hero-group.png" alt="" />
+          <div class="creator-sheet-dots" id="creatorSheetDots" aria-label="Creator image navigation"></div>
+          <div class="creator-sheet-count" id="creatorSheetCount" aria-live="polite">1 / 1</div>
         </div>
         <div class="creator-sheet-content">
           <div class="creator-sheet-badges" id="creatorSheetBadges"></div>
@@ -343,7 +346,12 @@
     const resultCount = document.getElementById('resultCount');
     const resetFilters = document.getElementById('resetFilters');
     const creatorSheet = document.getElementById('creatorProfileSheet');
+    const creatorSheetCard = document.querySelector('.creator-profile-card');
+    const creatorSheetVisual = document.querySelector('.creator-sheet-visual');
+    const creatorSheetHandle = document.querySelector('.creator-sheet-handle');
     const creatorSheetImg = document.getElementById('creatorSheetImg');
+    const creatorSheetDots = document.getElementById('creatorSheetDots');
+    const creatorSheetCount = document.getElementById('creatorSheetCount');
     const creatorSheetBadges = document.getElementById('creatorSheetBadges');
     const creatorSheetTitle = document.getElementById('creatorSheetTitle');
     const creatorSheetDir = document.getElementById('creatorSheetDir');
@@ -368,6 +376,16 @@
     };
     const creatorSheetClose = document.querySelector('.creator-sheet-close');
     let activeCategory = 'all';
+    let creatorGalleryImages = [];
+    let creatorGalleryIndex = 0;
+    let creatorDragStartY = 0;
+    let creatorDragY = 0;
+    let isCreatorDragging = false;
+    let creatorSwipeStartX = 0;
+    let creatorSwipeStartY = 0;
+    let isCreatorSwiping = false;
+    let creatorSwipeLocked = false;
+    const isMobileCreatorSheet = () => window.matchMedia('(max-width: 900px)').matches;
 
     function selectedValues(key) {
       return filterInputs
@@ -464,6 +482,126 @@
       creatorSheet.classList.remove('is-open');
       creatorSheet.setAttribute('aria-hidden', 'true');
       document.body.classList.remove('sheet-open');
+      creatorSheetCard.classList.remove('is-dragging');
+      creatorSheetCard.style.removeProperty('--creator-sheet-drag-y');
+      isCreatorDragging = false;
+      isCreatorSwiping = false;
+      creatorSwipeLocked = false;
+    }
+
+    function getCreatorGallery(card) {
+      const visibleCards = cards.filter((item) => !item.hidden);
+      const sourceCards = visibleCards.length ? visibleCards : cards;
+      const startIndex = Math.max(sourceCards.indexOf(card), 0);
+      const orderedCards = sourceCards.slice(startIndex).concat(sourceCards.slice(0, startIndex));
+      return orderedCards.slice(0, 5).map((item) => {
+        const image = item.querySelector('img');
+        const name = item.querySelector('h3')?.textContent || 'Creator';
+        return {
+          src: image?.getAttribute('src') || 'assets/hero-group.png',
+          alt: name,
+        };
+      });
+    }
+
+    function setCreatorGalleryImage(index) {
+      if (!creatorGalleryImages.length) return;
+      creatorGalleryIndex = (index + creatorGalleryImages.length) % creatorGalleryImages.length;
+      const current = creatorGalleryImages[creatorGalleryIndex];
+      creatorSheetImg.classList.add('is-switching');
+      window.setTimeout(() => {
+        creatorSheetImg.src = current.src;
+        creatorSheetImg.alt = current.alt;
+        creatorSheetImg.classList.remove('is-switching');
+      }, 90);
+      creatorSheetCount.textContent = `${creatorGalleryIndex + 1} / ${creatorGalleryImages.length}`;
+      Array.from(creatorSheetDots.children).forEach((dot, dotIndex) => {
+        dot.classList.toggle('is-active', dotIndex === creatorGalleryIndex);
+      });
+    }
+
+    function setCreatorGallery(card) {
+      creatorGalleryImages = getCreatorGallery(card);
+      creatorGalleryIndex = 0;
+      creatorSheetDots.innerHTML = creatorGalleryImages.map((_, index) => (
+        `<button type="button" aria-label="Show creator image ${index + 1}" class="${index === 0 ? 'is-active' : ''}"></button>`
+      )).join('');
+      Array.from(creatorSheetDots.children).forEach((dot, index) => {
+        dot.addEventListener('click', () => setCreatorGalleryImage(index));
+      });
+      setCreatorGalleryImage(0);
+    }
+
+    function showNextCreatorGalleryImage() {
+      setCreatorGalleryImage(creatorGalleryIndex + 1);
+    }
+
+    function showPreviousCreatorGalleryImage() {
+      setCreatorGalleryImage(creatorGalleryIndex - 1);
+    }
+
+    function isCreatorHandleZone(clientY) {
+      if (!isMobileCreatorSheet() || !creatorSheet.classList.contains('is-open')) return false;
+      const rect = creatorSheetCard.getBoundingClientRect();
+      return clientY >= rect.top && clientY <= rect.top + 56;
+    }
+
+    function startCreatorDrag(clientY) {
+      if (!isMobileCreatorSheet() || !creatorSheet.classList.contains('is-open')) return;
+      isCreatorDragging = true;
+      creatorDragStartY = clientY;
+      creatorDragY = 0;
+      creatorSheetCard.classList.add('is-dragging');
+      creatorSheetCard.style.setProperty('--creator-sheet-drag-y', '0px');
+    }
+
+    function moveCreatorDrag(clientY) {
+      if (!isCreatorDragging) return;
+      creatorDragY = Math.max(0, clientY - creatorDragStartY);
+      creatorSheetCard.style.setProperty('--creator-sheet-drag-y', `${creatorDragY}px`);
+    }
+
+    function endCreatorDrag() {
+      if (!isCreatorDragging) return;
+      isCreatorDragging = false;
+      creatorSheetCard.classList.remove('is-dragging');
+      if (creatorDragY > 110) {
+        closeCreatorSheet();
+        return;
+      }
+      creatorDragY = 0;
+      creatorSheetCard.style.setProperty('--creator-sheet-drag-y', '0px');
+    }
+
+    function startCreatorSwipe(clientX, clientY) {
+      if (!isMobileCreatorSheet() || creatorGalleryImages.length < 2 || isCreatorDragging) return;
+      isCreatorSwiping = true;
+      creatorSwipeLocked = false;
+      creatorSwipeStartX = clientX;
+      creatorSwipeStartY = clientY;
+    }
+
+    function moveCreatorSwipe(clientX, clientY, event) {
+      if (!isCreatorSwiping) return;
+      const deltaX = clientX - creatorSwipeStartX;
+      const deltaY = clientY - creatorSwipeStartY;
+      if (Math.abs(deltaX) > 10 && Math.abs(deltaX) > Math.abs(deltaY) * 1.1) {
+        creatorSwipeLocked = true;
+        event?.preventDefault();
+      }
+    }
+
+    function finishCreatorSwipe(clientX, clientY) {
+      if (!isCreatorSwiping) return;
+      isCreatorSwiping = false;
+      const deltaX = clientX - creatorSwipeStartX;
+      const deltaY = clientY - creatorSwipeStartY;
+      if (Math.abs(deltaX) < 34 || Math.abs(deltaX) < Math.abs(deltaY) * 1.05) return;
+      if (deltaX < 0) {
+        showNextCreatorGalleryImage();
+      } else {
+        showPreviousCreatorGalleryImage();
+      }
     }
 
     cards.forEach((card) => {
@@ -472,12 +610,10 @@
       card.setAttribute('aria-label', `${card.querySelector('h3')?.textContent || 'Creator'} 프로필 보기`);
 
       const openCreatorSheet = () => {
-        const img = card.querySelector('img');
         const name = card.querySelector('h3')?.textContent || 'Creator Profile';
         const dir = card.querySelector('.market-card-body p')?.textContent || '';
         const d = card.dataset;
-        creatorSheetImg.src = img?.getAttribute('src') || 'assets/hero-group.png';
-        creatorSheetImg.alt = name;
+        setCreatorGallery(card);
         creatorSheetBadges.innerHTML = [
           d.platform,
           card.classList.contains('is-seeding') ? 'K-BEAUTY SEEDING' : 'VERIFIED',
@@ -515,6 +651,72 @@
     creatorSheetClose.addEventListener('click', closeCreatorSheet);
     creatorSheet.addEventListener('click', (event) => {
       if (event.target === creatorSheet) closeCreatorSheet();
+    });
+    creatorSheetHandle.addEventListener('pointerdown', (event) => {
+      startCreatorDrag(event.clientY);
+      creatorSheetHandle.setPointerCapture?.(event.pointerId);
+      event.preventDefault();
+    });
+    creatorSheetHandle.addEventListener('pointermove', (event) => {
+      moveCreatorDrag(event.clientY);
+      event.preventDefault();
+    });
+    creatorSheetHandle.addEventListener('pointerup', endCreatorDrag);
+    creatorSheetHandle.addEventListener('pointercancel', endCreatorDrag);
+    creatorSheetCard.addEventListener('pointerdown', (event) => {
+      if (!isCreatorHandleZone(event.clientY)) return;
+      startCreatorDrag(event.clientY);
+      creatorSheetCard.setPointerCapture?.(event.pointerId);
+    });
+    window.addEventListener('pointermove', (event) => {
+      if (!isCreatorDragging) return;
+      moveCreatorDrag(event.clientY);
+      event.preventDefault();
+    });
+    window.addEventListener('pointerup', endCreatorDrag);
+    window.addEventListener('pointercancel', endCreatorDrag);
+    creatorSheetHandle.addEventListener('touchstart', (event) => {
+      if (window.PointerEvent) return;
+      startCreatorDrag(event.touches[0].clientY);
+      event.preventDefault();
+    }, { passive: false });
+    creatorSheetHandle.addEventListener('touchmove', (event) => {
+      if (window.PointerEvent) return;
+      moveCreatorDrag(event.touches[0].clientY);
+      event.preventDefault();
+    }, { passive: false });
+    creatorSheetHandle.addEventListener('touchend', endCreatorDrag);
+    creatorSheetHandle.addEventListener('touchcancel', endCreatorDrag);
+    creatorSheetVisual.addEventListener('pointerdown', (event) => {
+      startCreatorSwipe(event.clientX, event.clientY);
+      creatorSheetVisual.setPointerCapture?.(event.pointerId);
+    });
+    creatorSheetVisual.addEventListener('pointermove', (event) => {
+      moveCreatorSwipe(event.clientX, event.clientY, event);
+    });
+    creatorSheetVisual.addEventListener('pointerup', (event) => {
+      finishCreatorSwipe(event.clientX, event.clientY);
+    });
+    creatorSheetVisual.addEventListener('pointercancel', () => {
+      isCreatorSwiping = false;
+      creatorSwipeLocked = false;
+    });
+    creatorSheetVisual.addEventListener('touchstart', (event) => {
+      if (window.PointerEvent) return;
+      startCreatorSwipe(event.touches[0].clientX, event.touches[0].clientY);
+    }, { passive: true });
+    creatorSheetVisual.addEventListener('touchmove', (event) => {
+      if (window.PointerEvent || !isCreatorSwiping) return;
+      moveCreatorSwipe(event.touches[0].clientX, event.touches[0].clientY, event);
+    }, { passive: false });
+    creatorSheetVisual.addEventListener('touchend', (event) => {
+      if (window.PointerEvent) return;
+      const touch = event.changedTouches[0];
+      finishCreatorSwipe(touch.clientX, touch.clientY);
+    });
+    creatorSheetVisual.addEventListener('touchcancel', () => {
+      isCreatorSwiping = false;
+      creatorSwipeLocked = false;
     });
     window.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
