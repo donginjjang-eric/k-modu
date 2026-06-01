@@ -742,6 +742,10 @@ body.dark-theme .brand img {
   display: contents;
 }
 
+.designer-proposal-handle {
+  display: none;
+}
+
 .designer-proposal-close {
   position: absolute;
   z-index: 3;
@@ -3281,11 +3285,19 @@ body.dark-theme .mini-stats strong {
     display: block;
     border: 0;
     border-radius: 24px 24px 0 0;
+    transform: translateY(var(--sheet-drag-y, 0));
+    transition: transform .24s cubic-bezier(.2, .8, .2, 1);
+  }
+
+  .designer-proposal-card.is-dragging {
+    transition: none;
   }
 
   .designer-proposal-scroll {
     display: block;
     height: 100%;
+    padding-top: 34px;
+    box-sizing: border-box;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
@@ -3302,6 +3314,39 @@ body.dark-theme .mini-stats strong {
     background: rgba(5, 5, 5, .18);
     transform: translateX(-50%);
     pointer-events: none;
+    display: none;
+  }
+
+  .designer-proposal-handle {
+    position: absolute;
+    z-index: 6;
+    top: 0;
+    left: 50%;
+    width: 112px;
+    height: 34px;
+    display: block;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: grab;
+    touch-action: none;
+    transform: translateX(-50%);
+  }
+
+  .designer-proposal-handle::before {
+    content: "";
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    width: 48px;
+    height: 5px;
+    border-radius: 999px;
+    background: rgba(5, 5, 5, .28);
+    transform: translateX(-50%);
+  }
+
+  .designer-proposal-card.is-dragging .designer-proposal-handle {
+    cursor: grabbing;
   }
 
   .designer-proposal-visual {

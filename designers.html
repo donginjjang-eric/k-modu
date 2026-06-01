@@ -62,6 +62,7 @@
 
     <div class="designer-proposal-sheet" id="designerProposalSheet" aria-hidden="true">
       <div class="designer-proposal-card" role="dialog" aria-modal="true" aria-labelledby="proposalBrandName">
+        <button class="designer-proposal-handle" type="button" aria-label="Drag down to close"></button>
         <button class="designer-proposal-close" type="button" aria-label="닫기">‹</button>
         <div class="designer-proposal-scroll">
         <div class="designer-proposal-visual">
@@ -315,7 +316,9 @@
     const proposalSamplePreview = document.querySelector('#proposalSamplePreview');
     const proposalCreatorDirection = document.querySelector('#proposalCreatorDirection');
     const proposalBriefLink = document.querySelector('#proposalBriefLink');
+    const proposalHandle = document.querySelector('.designer-proposal-handle');
     const proposalClose = document.querySelector('.designer-proposal-close');
+    const proposalCard = document.querySelector('.designer-proposal-card');
     const proposalTabs = Array.from(document.querySelectorAll('[data-proposal-tab]'));
     const proposalPanels = Array.from(document.querySelectorAll('[data-proposal-panel]'));
     const stylingBoardImage = document.querySelector('#stylingBoardImage');
@@ -985,10 +988,93 @@
       resetTryOnStage();
       tryonStage.hidden = true;
       proposalImage.hidden = false;
+      proposalCard.style.removeProperty('--sheet-drag-y');
+      proposalCard.classList.remove('is-dragging');
       proposalSheet.classList.remove('is-open');
       proposalSheet.setAttribute('aria-hidden', 'true');
       document.body.classList.remove('sheet-open');
     };
+
+    let proposalDragStartY = 0;
+    let proposalDragY = 0;
+    let isProposalDragging = false;
+    const isMobileProposalSheet = () => window.matchMedia('(max-width: 900px)').matches;
+
+    const startProposalDrag = (clientY) => {
+      if (!proposalSheet.classList.contains('is-open') || !isMobileProposalSheet()) return;
+      isProposalDragging = true;
+      proposalDragStartY = clientY;
+      proposalDragY = 0;
+      proposalCard.classList.add('is-dragging');
+    };
+
+    const moveProposalDrag = (clientY) => {
+      if (!isProposalDragging) return;
+      proposalDragY = Math.max(0, clientY - proposalDragStartY);
+      proposalCard.style.setProperty('--sheet-drag-y', `${proposalDragY}px`);
+    };
+
+    const isProposalHandleZone = (clientY) => {
+      if (!isMobileProposalSheet()) return false;
+      const cardTop = proposalCard.getBoundingClientRect().top;
+      const offsetY = clientY - cardTop;
+      return offsetY >= 0 && offsetY <= 48;
+    };
+
+    const endProposalDrag = () => {
+      if (!isProposalDragging) return;
+      isProposalDragging = false;
+      proposalCard.classList.remove('is-dragging');
+      if (proposalDragY > 92) {
+        closeProposalSheet();
+      } else {
+        proposalCard.style.removeProperty('--sheet-drag-y');
+      }
+      proposalDragY = 0;
+    };
+
+    proposalHandle.addEventListener('pointerdown', (event) => {
+      startProposalDrag(event.clientY);
+      proposalHandle.setPointerCapture(event.pointerId);
+      event.preventDefault();
+    });
+
+    proposalHandle.addEventListener('pointermove', (event) => {
+      moveProposalDrag(event.clientY);
+    });
+
+    proposalHandle.addEventListener('pointerup', endProposalDrag);
+    proposalHandle.addEventListener('pointercancel', endProposalDrag);
+    proposalCard.addEventListener('pointerdown', (event) => {
+      if (!isProposalHandleZone(event.clientY)) return;
+      startProposalDrag(event.clientY);
+    });
+    window.addEventListener('pointermove', (event) => {
+      moveProposalDrag(event.clientY);
+    });
+    window.addEventListener('pointerup', endProposalDrag);
+    window.addEventListener('pointercancel', endProposalDrag);
+    proposalHandle.addEventListener('touchstart', (event) => {
+      startProposalDrag(event.touches[0].clientY);
+      event.preventDefault();
+    }, { passive: false });
+    proposalHandle.addEventListener('touchmove', (event) => {
+      moveProposalDrag(event.touches[0].clientY);
+      event.preventDefault();
+    }, { passive: false });
+    proposalHandle.addEventListener('touchend', endProposalDrag);
+    proposalHandle.addEventListener('touchcancel', endProposalDrag);
+    proposalCard.addEventListener('touchstart', (event) => {
+      if (!isProposalHandleZone(event.touches[0].clientY)) return;
+      startProposalDrag(event.touches[0].clientY);
+    }, { passive: true });
+    window.addEventListener('touchmove', (event) => {
+      if (!isProposalDragging) return;
+      moveProposalDrag(event.touches[0].clientY);
+      event.preventDefault();
+    }, { passive: false });
+    window.addEventListener('touchend', endProposalDrag);
+    window.addEventListener('touchcancel', endProposalDrag);
 
     proposalTabs.forEach((tab) => {
       tab.addEventListener('click', () => {
