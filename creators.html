@@ -179,9 +179,9 @@
         </div>
 
         <div class="creator-grid" id="creatorGrid">
-          <article class="market-card" data-category="Fashion Creator TikTok Styling Global K-Fashion" data-status="open new" data-platform="TikTok" data-type="Minimal" data-market="US" data-fit="94" data-followers="1800000" data-er="7.4" data-search="mia harper new york minimal luxury k-fashion">
-            <div class="thumb"><img src="assets/us-female-01.png" alt="Mia Harper" /><span class="flag">TOP MATCH</span><button type="button" aria-label="Save Mia Harper">♡</button></div>
-            <div class="market-card-body"><div class="badges"><span>TikTok</span><span>OPEN</span><span>US</span></div><h3>Mia Harper</h3><p>Minimal luxury / New York / K-fashion discovery</p><div class="mini-stats"><span><strong>1.8M</strong>Followers</span><span><strong>7.4%</strong>ER</span></div><strong class="reward">94% FIT</strong></div>
+          <article class="market-card" data-category="Fashion Creator Instagram Editorial TikTok Styling Global K-Fashion" data-status="open new" data-platform="Instagram" data-type="Daily" data-market="MY" data-fit="94" data-followers="12000" data-er="" data-search="syazwan evans syazwxnevans malaysia instagram tiktok k-fashion styling">
+            <div class="thumb"><img src="assets/inful/syazwxnevans.jpg" alt="Syazwan Evans" /><span class="flag">TOP MATCH</span><button type="button" aria-label="Save Syazwan Evans">♡</button></div>
+            <div class="market-card-body"><div class="badges"><span>Instagram</span><span>OPEN</span><span>MY</span></div><h3>Syazwan Evans</h3><p>Malaysia / K-fashion styling / @syazwxnevans</p><div class="mini-stats"><span><strong>12K</strong>Followers</span><span><strong>—</strong>ER</span></div><strong class="reward">94% FIT</strong></div>
           </article>
 
           <article class="market-card" data-category="Fashion Creator TikTok Styling" data-status="open" data-platform="TikTok" data-type="Street" data-market="US" data-fit="91" data-followers="960000" data-er="6.1" data-search="avery stone los angeles street luxury denim">
@@ -664,6 +664,7 @@
     creatorSheetHandle.addEventListener('pointerup', endCreatorDrag);
     creatorSheetHandle.addEventListener('pointercancel', endCreatorDrag);
     creatorSheetCard.addEventListener('pointerdown', (event) => {
+      if (event.target.closest('button, a')) return;
       if (!isCreatorHandleZone(event.clientY)) return;
       startCreatorDrag(event.clientY);
       creatorSheetCard.setPointerCapture?.(event.pointerId);

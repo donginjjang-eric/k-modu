@@ -1054,6 +1054,7 @@
     proposalHandle.addEventListener('pointerup', endProposalDrag);
     proposalHandle.addEventListener('pointercancel', endProposalDrag);
     proposalCard.addEventListener('pointerdown', (event) => {
+      if (event.target.closest('button, a')) return;
       if (!isProposalHandleZone(event.clientY)) return;
       startProposalDrag(event.clientY);
     });
