@@ -202,7 +202,6 @@
         'A product-detail style card built around the plaid layered waistline, brown balloon mini silhouette, and close-up texture. This is closer to a K-fashion shop editorial than a runway card.',
         ['Skirt', 'Plaid', 'Product Detail'],
         {
-          price: 'KRW 134,000',
           colors: 'Brown / Black',
           status: 'In stock',
           cta: 'Style Proposal',
@@ -215,7 +214,6 @@
         'A fit-check card focused on the black mini skirt, socks, and sneaker silhouette. It gives the board a street/product mix so the test set does not feel like one fashion-show direction only.',
         ['Mini Fit', 'Street', 'Fit Check'],
         {
-          price: 'KRW 118,000',
           colors: 'Black / Check',
           status: 'Sample ready',
           cta: 'Fit Proposal',
@@ -284,7 +282,6 @@
       const shopHtml = isKFashion && shopInfo ? `
           <div class="kfashion-shop-panel">
             <span class="kfashion-label">K-FASHION DROP</span>
-            <strong>${escapeHtml(shopInfo.price)}</strong>
             <small>${escapeHtml(shopInfo.colors)} - ${escapeHtml(shopInfo.status)}</small>
           </div>` : '';
       return `

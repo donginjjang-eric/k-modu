@@ -3738,12 +3738,12 @@ body.dark-theme .mini-stats strong {
 
 .kfashion-shop-panel {
   margin: 12px 14px 0;
-  padding: 13px 14px;
+  padding: 12px 14px;
   border: 1px solid rgba(17, 17, 17, .1);
   border-radius: 16px;
   background: #faf7f3;
   display: grid;
-  gap: 5px;
+  gap: 4px;
 }
 
 .kfashion-label {
@@ -3753,16 +3753,10 @@ body.dark-theme .mini-stats strong {
   letter-spacing: .16em;
 }
 
-.kfashion-shop-panel strong {
-  color: #111;
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: -.02em;
-}
-
 .kfashion-shop-panel small {
   color: rgba(17, 17, 17, .56);
   font-size: 12px;
+  font-weight: 700;
 }
 
 .work-pin.kfashion-card .work-pin-body {
