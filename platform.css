@@ -816,6 +816,8 @@ body.dark-theme .brand img {
   object-fit: cover;
   object-position: center top;
   opacity: 1;
+  user-select: none;
+  -webkit-user-drag: none;
   transition: opacity .28s ease;
 }
 
@@ -938,6 +940,32 @@ body.dark-theme .brand img {
 }
 
 .designer-proposal-sheet.is-styling .designer-proposal-dots {
+  display: none;
+}
+
+.designer-proposal-count {
+  position: absolute;
+  left: 18px;
+  bottom: 18px;
+  z-index: 3;
+  min-width: 50px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(5, 5, 5, .56);
+  color: #fff;
+  font-size: 12px;
+  font-weight: var(--fw-black);
+  letter-spacing: .02em;
+  line-height: 1;
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.designer-proposal-sheet.is-styling .designer-proposal-count {
   display: none;
 }
 

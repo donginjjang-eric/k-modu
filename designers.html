@@ -76,6 +76,7 @@
             <div class="tryon-layer-stage" id="tryonLayerStage" aria-hidden="true"></div>
           </div>
           <div class="designer-proposal-dots" id="proposalPortfolioDots" aria-label="Portfolio image navigation"></div>
+          <div class="designer-proposal-count" id="proposalPortfolioCount" aria-live="polite">1 / 1</div>
         </div>
         <div class="designer-proposal-content">
           <p class="designer-proposal-kicker">DESIGNER PROFILE / PORTFOLIO</p>
@@ -306,6 +307,7 @@
     const proposalSheet = document.querySelector('#designerProposalSheet');
     const proposalImage = document.querySelector('#proposalImage');
     const proposalPortfolioDots = document.querySelector('#proposalPortfolioDots');
+    const proposalPortfolioCount = document.querySelector('#proposalPortfolioCount');
     const proposalBrandName = document.querySelector('#proposalBrandName');
     const proposalBriefTitle = document.querySelector('#proposalBriefTitle');
     const proposalSummary = document.querySelector('#proposalSummary');
@@ -338,6 +340,9 @@
     let proposalGalleryImages = [];
     let proposalGalleryIndex = 0;
     let proposalGalleryTimer = null;
+    let proposalSwipeStartX = 0;
+    let proposalSwipeStartY = 0;
+    let isProposalSwiping = false;
     const activeTryOnItems = {};
     const selectedStylingItems = new Map();
     let selectedModelTemplate = 'fixed-female-minimal';
@@ -851,11 +856,24 @@
         dot.classList.toggle('is-active', isActive);
         dot.setAttribute('aria-pressed', String(isActive));
       });
+      proposalPortfolioCount.textContent = `${proposalGalleryIndex + 1} / ${proposalGalleryImages.length}`;
       Array.from(proposalPortfolioThumbs.children).forEach((thumb, thumbIndex) => {
         const isActive = thumbIndex === proposalGalleryIndex;
         thumb.classList.toggle('is-active', isActive);
         thumb.setAttribute('aria-pressed', String(isActive));
       });
+    };
+
+    const showNextProposalGalleryImage = () => {
+      if (proposalGalleryImages.length < 2) return;
+      clearAssetPreviewSelection();
+      setProposalGalleryImage((proposalGalleryIndex + 1) % proposalGalleryImages.length);
+    };
+
+    const showPreviousProposalGalleryImage = () => {
+      if (proposalGalleryImages.length < 2) return;
+      clearAssetPreviewSelection();
+      setProposalGalleryImage((proposalGalleryIndex - 1 + proposalGalleryImages.length) % proposalGalleryImages.length);
     };
 
     const clearAssetPreviewSelection = () => {
@@ -871,6 +889,7 @@
       proposalImage.classList.remove('is-switching');
       proposalImage.src = image;
       proposalImage.alt = label;
+      proposalPortfolioCount.textContent = '- / -';
       Array.from(proposalPortfolioDots.children).forEach((dot) => {
         dot.classList.remove('is-active');
         dot.setAttribute('aria-pressed', 'false');
@@ -898,11 +917,6 @@
           stopProposalGallery();
           clearAssetPreviewSelection();
           setProposalGalleryImage(index);
-          if (!reduceMotion) {
-            proposalGalleryTimer = window.setInterval(() => {
-              setProposalGalleryImage((proposalGalleryIndex + 1) % proposalGalleryImages.length);
-            }, 2400);
-          }
         });
       });
       Array.from(proposalPortfolioThumbs.children).forEach((thumb, index) => {
@@ -913,11 +927,6 @@
         });
       });
       setProposalGalleryImage(0);
-      if (!reduceMotion) {
-        proposalGalleryTimer = window.setInterval(() => {
-          setProposalGalleryImage((proposalGalleryIndex + 1) % proposalGalleryImages.length);
-        }, 2400);
-      }
     };
 
     const openProposalSheet = (card) => {
@@ -1075,6 +1084,54 @@
     }, { passive: false });
     window.addEventListener('touchend', endProposalDrag);
     window.addEventListener('touchcancel', endProposalDrag);
+
+    const startProposalSwipe = (clientX, clientY) => {
+      if (proposalSheet.classList.contains('is-styling') || proposalGalleryImages.length < 2) return;
+      isProposalSwiping = true;
+      proposalSwipeStartX = clientX;
+      proposalSwipeStartY = clientY;
+    };
+
+    const finishProposalSwipe = (clientX, clientY) => {
+      if (!isProposalSwiping) return;
+      isProposalSwiping = false;
+      const deltaX = clientX - proposalSwipeStartX;
+      const deltaY = clientY - proposalSwipeStartY;
+      if (Math.abs(deltaX) < 48 || Math.abs(deltaX) < Math.abs(deltaY) * 1.2) return;
+      if (deltaX < 0) {
+        showNextProposalGalleryImage();
+      } else {
+        showPreviousProposalGalleryImage();
+      }
+    };
+
+    proposalImage.addEventListener('pointerdown', (event) => {
+      startProposalSwipe(event.clientX, event.clientY);
+    });
+    proposalImage.addEventListener('pointerup', (event) => {
+      finishProposalSwipe(event.clientX, event.clientY);
+    });
+    proposalImage.addEventListener('pointercancel', () => {
+      isProposalSwiping = false;
+    });
+    proposalImage.addEventListener('touchstart', (event) => {
+      startProposalSwipe(event.touches[0].clientX, event.touches[0].clientY);
+    }, { passive: true });
+    proposalImage.addEventListener('touchmove', (event) => {
+      if (!isProposalSwiping) return;
+      const deltaX = event.touches[0].clientX - proposalSwipeStartX;
+      const deltaY = event.touches[0].clientY - proposalSwipeStartY;
+      if (Math.abs(deltaX) > 12 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2) {
+        event.preventDefault();
+      }
+    }, { passive: false });
+    proposalImage.addEventListener('touchend', (event) => {
+      const touch = event.changedTouches[0];
+      finishProposalSwipe(touch.clientX, touch.clientY);
+    });
+    proposalImage.addEventListener('touchcancel', () => {
+      isProposalSwiping = false;
+    });
 
     proposalTabs.forEach((tab) => {
       tab.addEventListener('click', () => {
