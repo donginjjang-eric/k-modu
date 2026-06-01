@@ -1,6 +1,7 @@
 .git
 .claude
 node_modules
+.next
 server-backup
 기타폴더
 *.tar.gz
