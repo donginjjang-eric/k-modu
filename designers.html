@@ -27,7 +27,7 @@
       </nav>
       <div class="top-actions">
         <a href="/designer-brief">브리프 작성</a>
-        <a class="pill" href="/login">로그인</a>
+        <a class="pill" href="/login.html">로그인</a>
       </div>
       <details class="platform-menu">
         <summary aria-label="메뉴"><span></span></summary>
@@ -37,7 +37,7 @@
           <a href="/creators">크리에이터</a>
           <a href="/#contact">문의</a>
           <a href="/apply">입점 신청</a>
-          <a href="/login">로그인</a>
+          <a href="/login.html">로그인</a>
         </div>
       </details>
     </header>
@@ -68,11 +68,17 @@
           <img id="proposalImage" src="assets/designer-profile-real-01.png" alt="" />
           <div class="tryon-loading-overlay" id="tryonLoadingOverlay" hidden>
             <strong>Generating AI look</strong>
-            <span>Usually takes 20-40 seconds</span>
+            <span>Styling your selected products…</span>
           </div>
-          <div class="tryon-stage" id="tryonStage" aria-label="Selected styling items on model" hidden>
-            <img class="tryon-base-model" id="tryonBaseModel" src="assets/mainmodel_2-cutout.png" alt="Base model for styling preview" />
-            <div class="tryon-layer-stage" id="tryonLayerStage" aria-hidden="true"></div>
+          <div class="styling-collage" id="stylingCollage" aria-label="Selected styling collage" hidden>
+            <div class="styling-stage" id="stylingStage">
+              <img id="collageModel" src="assets/designer-samples/20age_model_1.png" alt="Styling model preview" />
+              <div class="styling-collage-caption" id="stylingCollageCaption" hidden></div>
+              <button class="stage-generate" id="stageGenerate" type="button" disabled>
+                <span class="stage-generate-spark" aria-hidden="true">✨</span> Generate AI Look
+              </button>
+            </div>
+            <div class="styling-collage-flatlay" id="stylingCollageFlatlay" aria-label="Selected products flat lay" hidden></div>
           </div>
           <div class="designer-proposal-dots" id="proposalPortfolioDots" aria-label="Portfolio image navigation"></div>
         </div>
@@ -142,7 +148,7 @@
                   <p id="aiTryonSelection">Select products to generate a model try-on look.</p>
                   <div class="ai-tryon-result-meta" id="aiTryonResultMeta" hidden></div>
                   <button class="ai-tryon-generate" id="aiTryonGenerate" type="button" disabled>Generate AI Look</button>
-                  <p class="ai-tryon-status" id="aiTryonStatus" role="status" aria-live="polite">Ready for MVP API connection.</p>
+                  <p class="ai-tryon-status" id="aiTryonStatus" role="status" aria-live="polite">Select at least 2 products and generate a full look.</p>
                 </div>
                 <div class="styling-shortform-note">
                   <span>업데이트 예정</span>
@@ -193,6 +199,22 @@
 
   <script>
     const designerProfiles = [
+      ['tall',
+        'assets/designer-samples/card_1_potfolio/1.png',
+        'Maison Lune Seoul',
+        'Designer Brand / Seoul',
+        '서울 기반 디자이너 브랜드입니다. 보유 제품으로 풀룩을 구성하고 AI 착장을 미리 볼 수 있습니다.',
+        ['Designer', 'K-Fashion', 'Full Look'],
+        { cta: 'Collab Proposal', gallery: [
+          'assets/designer-samples/card_1_potfolio/2.png',
+          'assets/designer-samples/card_1_potfolio/3.png',
+          'assets/designer-samples/card_1_potfolio/4.png',
+          'assets/designer-samples/card_1_potfolio/5.png',
+          'assets/designer-samples/card_1_potfolio/6.png',
+          'assets/designer-samples/card_1_potfolio/7.png',
+          'assets/designer-samples/card_1_potfolio/8.png'
+        ] },
+        'maison-lune-seoul'],
       ['tall kfashion-card kfashion-detail',
         'assets/designer-samples/5_c64162be-6457-4179-8420-ed5f793f13a0.webp',
         'Plaid Floral Mini Skirt',
@@ -269,7 +291,7 @@
     }[char]));
 
     board.innerHTML = designerProfiles.map((item, index) => {
-      const [variant, image, name, kicker, description, tags, shopInfo] = item;
+      const [variant, image, name, kicker, description, tags, shopInfo, designerId] = item;
       const classes = ['work-pin', variant].filter(Boolean).join(' ');
       const isKFashion = classes.includes('kfashion-card');
       const tagHtml = tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join('');
@@ -286,7 +308,7 @@
             <small>${escapeHtml(shopInfo.colors)} - ${escapeHtml(shopInfo.status)}</small>
           </div>` : '';
       return `
-        <article class="${classes}" data-reveal data-index="${index}" data-brand="${escapeHtml(name)}" data-kicker="${escapeHtml(kicker)}" data-description="${escapeHtml(description)}" data-tags="${encodedTags}" data-image="${escapeHtml(image)}" style="--reveal-delay: ${(index % 8) * 46}ms">
+        <article class="${classes}" data-reveal data-index="${index}" data-brand="${escapeHtml(name)}" data-kicker="${escapeHtml(kicker)}" data-description="${escapeHtml(description)}" data-tags="${encodedTags}" data-image="${escapeHtml(image)}" ${designerId ? `data-designer-id="${escapeHtml(designerId)}"` : ''} style="--reveal-delay: ${(index % 8) * 46}ms">
           <div class="kfashion-visual-wrap">
             <img class="kfashion-main-image" src="${escapeHtml(image)}" alt="${escapeHtml(name)} designer profile look" loading="lazy" />
             ${galleryHtml}
@@ -327,15 +349,18 @@
     const aiSelectedStack = document.querySelector('#aiSelectedStack');
     const aiTryonResultMeta = document.querySelector('#aiTryonResultMeta');
     const tryonLoadingOverlay = document.querySelector('#tryonLoadingOverlay');
+    const stylingCollage = document.querySelector('#stylingCollage');
+    const stylingStage = document.querySelector('#stylingStage');
+    const stylingCollageFlatlay = document.querySelector('#stylingCollageFlatlay');
+    const collageModel = document.querySelector('#collageModel');
+    const stylingCollageCaption = document.querySelector('#stylingCollageCaption');
+    const stageGenerate = document.querySelector('#stageGenerate');
     const aiModelOptionsContainer = document.querySelector('#aiModelOptions');
     let aiModelOptions = Array.from(document.querySelectorAll('[data-model-template]'));
-    const tryonStage = document.querySelector('#tryonStage');
-    const tryonLayerStage = document.querySelector('#tryonLayerStage');
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let proposalGalleryImages = [];
     let proposalGalleryIndex = 0;
     let proposalGalleryTimer = null;
-    const activeTryOnItems = {};
     const selectedStylingItems = new Map();
     let selectedModelTemplate = 'fixed-female-minimal';
     let modelTemplateImages = {
@@ -343,12 +368,45 @@
       'fixed-street': 'assets/mainmodel_3.png',
       'fixed-male': 'assets/mainmodel_4.png'
     };
+    let generatedLookImages = {
+      'fixed-female-minimal': 'assets/generated-looks/maison-lune-kfashion-female-full-look.png',
+      'fixed-street': 'assets/generated-looks/maison-lune-street-full-look.png',
+      'fixed-male': 'assets/generated-looks/maison-lune-male-full-look.png'
+    };
+    // Fixed 9:16 TikTok base models (user-provided). Falls back if the asset is missing.
+    let baseStageImages = {
+      'fixed-female-minimal': 'assets/designer-samples/20age_model_1.png',
+      'fixed-street': 'assets/designer-samples/20age_model_1.png',
+      'fixed-male': 'assets/designer-samples/20age_model_1.png'
+    };
+    const FALLBACK_BASE = 'assets/designer-samples/20age_model_1.png';
+    // Pre-generated AI looks shown on "Generate AI Look" in demo mode (random for realism).
+    const demoLookPool = [
+      'assets/designer-samples/card_1_potfolio/1card_ai_endimage/1.png',
+      'assets/designer-samples/card_1_potfolio/1card_ai_endimage/2.png',
+      'assets/designer-samples/card_1_potfolio/1card_ai_endimage/3.png',
+      'assets/designer-samples/card_1_potfolio/1card_ai_endimage/4.png',
+      'assets/designer-samples/card_1_potfolio/1card_ai_endimage/5.png',
+      'assets/designer-samples/card_1_potfolio/1card_ai_endimage/6.png',
+      'assets/designer-samples/card_1_potfolio/1card_ai_endimage/7.png',
+      'assets/designer-samples/card_1_potfolio/1card_ai_endimage/8.png'
+    ];
+    let lastDemoLookIndex = -1;
+    const pickDemoLook = () => {
+      let i = Math.floor(Math.random() * demoLookPool.length);
+      if (demoLookPool.length > 1 && i === lastDemoLookIndex) i = (i + 1) % demoLookPool.length;
+      lastDemoLookIndex = i;
+      return demoLookPool[i];
+    };
+    let lookGenerated = false;
 
     const defaultStylingBoard = {
       fullLookImage: 'assets/styling-board-maison-lune-01.png',
       ownedItems: [
-        { productId: 'structured-black-coat', image: 'assets/designer-profile-real-09.png', category: 'Outer', name: 'Signature Outer Piece', status: '보유', modelLookImage: 'assets/styling-looks/structured-black-coat-model.png' },
-        { productId: 'tailored-black-trouser', image: 'assets/designer-profile-real-10.png', category: 'Bottom', name: 'Tailored Bottom Line', status: '보유', modelLookImage: 'assets/styling-looks/tailored-black-trouser-model.png' }
+        { productId: 'top-ivory-lace-bow', image: 'assets/designer-samples/product-top-ivory-lace-bow.png', category: 'Top', name: 'Ivory Lace Bow Top', status: '보유' },
+        { productId: 'skirt-brown-polka-bubble', image: 'assets/designer-samples/product-skirt-brown-polka-bubble.png', category: 'Bottom', name: 'Brown Polka Bubble Skirt', status: '보유' },
+        { productId: 'bag-black-glossy-shoulder', image: 'assets/designer-samples/product-bag-black-glossy-shoulder.png', category: 'Bag', name: 'Black Glossy Shoulder Bag', status: '보유' },
+        { productId: 'shoes-black-cork-wedge-sandals', image: 'assets/designer-samples/product-shoes-black-cork-wedge-sandals.png', category: 'Shoes', name: 'Cork Wedge Sandals', status: '보유' }
       ],
       recommendedItems: [
         { productId: 'soft-leather-tote', image: 'assets/designer-profile-real-11.png', category: 'Accessory', name: 'Soft Styling Bag', status: '추천', modelLookImage: 'assets/styling-looks/soft-leather-tote-model.png' },
@@ -363,8 +421,10 @@
       0: {
         fullLookImage: 'assets/styling-board-maison-lune-01.png',
         ownedItems: [
-          { productId: 'structured-black-coat', image: 'assets/designer-profile-real-09.png', category: 'Outer', name: 'Structured Black Coat', status: '보유', modelLookImage: 'assets/styling-looks/structured-black-coat-model.png' },
-          { productId: 'tailored-black-trouser', image: 'assets/designer-profile-real-10.png', category: 'Bottom', name: 'Tailored Black Trouser', status: '보유', modelLookImage: 'assets/styling-looks/tailored-black-trouser-model.png' }
+          { productId: 'top-ivory-lace-bow', image: 'assets/designer-samples/product-top-ivory-lace-bow.png', category: 'Top', name: 'Ivory Lace Bow Top', status: '보유' },
+          { productId: 'skirt-brown-polka-bubble', image: 'assets/designer-samples/product-skirt-brown-polka-bubble.png', category: 'Bottom', name: 'Brown Polka Bubble Skirt', status: '보유' },
+          { productId: 'bag-black-glossy-shoulder', image: 'assets/designer-samples/product-bag-black-glossy-shoulder.png', category: 'Bag', name: 'Black Glossy Shoulder Bag', status: '보유' },
+          { productId: 'shoes-black-cork-wedge-sandals', image: 'assets/designer-samples/product-shoes-black-cork-wedge-sandals.png', category: 'Shoes', name: 'Cork Wedge Sandals', status: '보유' }
         ],
         recommendedItems: [
           { productId: 'slim-black-sunglasses', image: 'assets/designer-profile-real-11.png', category: 'Eyewear', name: 'Slim Black Sunglasses', status: '추천', modelLookImage: 'assets/styling-looks/slim-black-sunglasses-model.png' },
@@ -492,13 +552,13 @@
       if (tabName === 'styling') {
         stopProposalGallery();
         proposalImage.classList.remove('is-switching');
-        tryonStage.hidden = true;
-        proposalImage.hidden = false;
+        proposalImage.hidden = true;
+        stylingCollage.hidden = false;
         resetTryOnStage();
         showModelTemplatePreview();
       } else if (wasStyling) {
         resetTryOnStage();
-        tryonStage.hidden = true;
+        stylingCollage.hidden = true;
         proposalImage.hidden = false;
         if (proposalSheet.classList.contains('is-open')) {
           startProposalGallery(currentProposalIndex);
@@ -507,7 +567,7 @@
     };
 
     const renderStylingItems = (items) => items.map((item) => `
-      <button class="styling-item-card" type="button" data-product-id="${escapeHtml(item.productId || '')}" data-category="${escapeHtml(item.category)}" data-item-name="${escapeHtml(item.name)}" data-item-image="${escapeHtml(item.image)}" data-layer-image="${escapeHtml(item.layerImage || '')}" data-layer-x="${escapeHtml(item.layer?.x ?? 0)}" data-layer-y="${escapeHtml(item.layer?.y ?? 0)}" data-layer-width="${escapeHtml(item.layer?.width ?? 100)}" data-layer-z="${escapeHtml(item.layer?.zIndex ?? 20)}" data-layer-rotate="${escapeHtml(item.layer?.rotate ?? 0)}" data-model-look-image="${escapeHtml(item.modelLookImage || '')}" data-fallback-look-image="${escapeHtml(currentStylingBoard.fullLookImage)}" aria-pressed="false">
+      <button class="styling-item-card" type="button" data-product-id="${escapeHtml(item.productId || '')}" data-category="${escapeHtml(item.category)}" data-item-name="${escapeHtml(item.name)}" data-item-image="${escapeHtml(item.image)}" data-model-look-image="${escapeHtml(item.modelLookImage || '')}" aria-pressed="false">
         <img src="${escapeHtml(item.image)}" alt="" loading="lazy" />
         <div>
           <span>${escapeHtml(item.category)}</span>
@@ -528,12 +588,14 @@
     };
 
     const resetTryOnStage = () => {
-      Object.keys(activeTryOnItems).forEach((category) => {
-        delete activeTryOnItems[category];
-      });
-      tryonLayerStage.innerHTML = '';
       selectedStylingItems.clear();
       clearStylingItemSelection();
+      lookGenerated = false;
+      stylingCollageFlatlay.innerHTML = '';
+      stylingCollageFlatlay.hidden = true;
+      stylingCollage.classList.remove('is-generated');
+      stylingCollageCaption.hidden = true;
+      stylingCollageCaption.innerHTML = '';
       aiTryonResultMeta.hidden = true;
       aiTryonResultMeta.innerHTML = '';
       aiTryonStatus.textContent = 'Select at least 2 products and generate a full look.';
@@ -578,6 +640,14 @@
           acc[template.id] = template.previewImage || modelTemplateImages[template.id] || modelTemplateImages['fixed-female-minimal'];
           return acc;
         }, {});
+        generatedLookImages = templates.reduce((acc, template) => {
+          acc[template.id] = template.generatedLookImage || generatedLookImages[template.id] || generatedLookImages['fixed-female-minimal'];
+          return acc;
+        }, {});
+        baseStageImages = templates.reduce((acc, template) => {
+          acc[template.id] = template.baseStageImage || baseStageImages[template.id] || baseStageImages['fixed-female-minimal'];
+          return acc;
+        }, {});
         aiModelOptionsContainer.innerHTML = templates.map((template) => {
           const isActive = template.id === selectedModelTemplate;
           return `<button class="${isActive ? 'is-active' : ''}" type="button" data-model-template="${escapeHtml(template.id)}" aria-pressed="${isActive ? 'true' : 'false'}">${escapeHtml(template.label || template.id)}</button>`;
@@ -592,17 +662,32 @@
 
     const getSelectedStylingItems = () => Array.from(selectedStylingItems.values());
 
+    const setCollageModelImage = (src, alt) => {
+      collageModel.onerror = () => {
+        collageModel.onerror = null;
+        collageModel.src = FALLBACK_BASE;
+      };
+      collageModel.src = src;
+      collageModel.alt = alt;
+    };
+
     const showModelTemplatePreview = () => {
-      tryonStage.hidden = true;
-      proposalImage.hidden = false;
-      proposalImage.classList.remove('is-switching');
-      proposalImage.src = modelTemplateImages[selectedModelTemplate] || modelTemplateImages['fixed-female-minimal'];
-      proposalImage.alt = 'Selected fixed model template for AI try-on';
+      proposalImage.hidden = true;
+      stylingCollage.hidden = false;
+      collageModel.classList.remove('is-switching');
+      // Always the fixed 9:16 base model. A real AI result is shown only transiently
+      // by applyGeneratedLook; any selection/template change reverts to the fixed model.
+      setCollageModelImage(
+        baseStageImages[selectedModelTemplate] || baseStageImages['fixed-female-minimal'] || FALLBACK_BASE,
+        'Fixed 9:16 model'
+      );
     };
 
     const updateAiTryOnControls = () => {
       const items = getSelectedStylingItems();
-      aiTryonGenerate.disabled = items.length < 2 || aiTryonGenerate.dataset.loading === 'true';
+      const disabled = items.length < 2 || aiTryonGenerate.dataset.loading === 'true';
+      aiTryonGenerate.disabled = disabled;
+      stageGenerate.disabled = disabled;
       aiSelectedStack.innerHTML = items.length
         ? items.map((item) => `<span>${escapeHtml(item.category)} · ${escapeHtml(item.name)}</span>`).join('')
         : '<span class="is-empty">No items selected</span>';
@@ -616,140 +701,120 @@
       const existing = selectedStylingItems.get(key);
 
       if (existing) {
+        if (existing.flatNode) existing.flatNode.remove();
         selectedStylingItems.delete(key);
         setTryOnButtonState(button, false);
       } else {
+        const image = button.dataset.itemImage || '';
+        const category = button.dataset.category || 'Item';
+        const card = document.createElement('div');
+        card.className = 'styling-flat-card';
+        card.innerHTML = `<button class="flat-remove" type="button" aria-label="Remove ${escapeHtml(category)}">×</button><img src="${escapeHtml(image)}" alt="" loading="lazy" /><span>${escapeHtml(category)}</span>`;
+        card.querySelector('.flat-remove').addEventListener('click', (event) => {
+          event.stopPropagation();
+          toggleStylingItemSelection(button);
+        });
+        stylingCollageFlatlay.hidden = false;
+        stylingCollageFlatlay.append(card);
         selectedStylingItems.set(key, {
           productId: button.dataset.productId || '',
-          category: button.dataset.category || 'Item',
+          category,
           name: button.dataset.itemName || button.querySelector('strong')?.textContent || 'Selected item',
-          image: button.dataset.itemImage || '',
-          modelLookImage: button.dataset.modelLookImage || ''
+          image,
+          modelLookImage: button.dataset.modelLookImage || '',
+          flatNode: card
         });
         setTryOnButtonState(button, true);
       }
 
+      // Hide the side column entirely when nothing is selected (no empty box on entry).
+      if (selectedStylingItems.size === 0) {
+        stylingCollageFlatlay.hidden = true;
+      }
+
+      // Selection changed: any previously generated look no longer matches.
+      if (lookGenerated) {
+        lookGenerated = false;
+        stylingCollage.classList.remove('is-generated');
+        stylingCollageCaption.hidden = true;
+        stylingCollageCaption.innerHTML = '';
+        aiTryonResultMeta.hidden = true;
+        aiTryonResultMeta.innerHTML = '';
+      }
+      showModelTemplatePreview();
       updateAiTryOnControls();
     };
 
     const setAiTryOnLoading = (isLoading) => {
       aiTryonGenerate.dataset.loading = String(isLoading);
       aiTryonGenerate.disabled = isLoading || selectedStylingItems.size < 2;
+      stageGenerate.disabled = isLoading || selectedStylingItems.size < 2;
+      stageGenerate.classList.toggle('is-loading', isLoading);
       aiTryonGenerate.textContent = isLoading ? 'Generating...' : 'Generate AI Look';
       tryonLoadingOverlay.hidden = !isLoading;
     };
 
+    const buildLookCaption = (items) => {
+      const outfit = items.map((item) => item.name).join(' + ');
+      const details = items.map((item) => item.category).join(' · ');
+      return `
+        <div class="styling-collage-caption-row"><b>Colors</b><span>Black, Neutral</span></div>
+        <div class="styling-collage-caption-row"><b>Outfit</b><span>${escapeHtml(outfit)}</span></div>
+        <div class="styling-collage-caption-row"><b>Details</b><span>${escapeHtml(details)}</span></div>
+      `;
+    };
+
+    const applyGeneratedLook = (imageUrl, items, { label, status }) => {
+      lookGenerated = true;
+      proposalSheet.classList.add('is-styling');
+      stylingCollage.hidden = false;
+      proposalImage.hidden = true;
+      collageModel.classList.remove('is-switching');
+      collageModel.onerror = () => {
+        collageModel.onerror = null;
+        collageModel.src = baseStageImages[selectedModelTemplate] || FALLBACK_BASE;
+      };
+      collageModel.src = imageUrl;
+      collageModel.alt = `${proposalBrandName.textContent.trim()} full look result`;
+      stylingCollageCaption.innerHTML = buildLookCaption(items);
+      stylingCollageCaption.hidden = false;
+      stylingCollage.classList.add('is-generated');
+      aiTryonResultMeta.hidden = false;
+      aiTryonResultMeta.innerHTML = `<span>${escapeHtml(label)}</span><strong>Model styled with your selected products.</strong>`;
+      aiTryonStatus.textContent = status;
+    };
+
     const generateAiTryOnLook = async () => {
       const items = getSelectedStylingItems();
-      const productIds = [...new Set(items.map((item) => item.productId).filter(Boolean))];
-      if (productIds.length < 2) {
-        aiTryonStatus.textContent = 'Select at least 2 valid products before generating.';
+      if (items.length < 2) {
+        aiTryonStatus.textContent = 'Select at least 2 products before generating.';
         updateAiTryOnControls();
         return;
       }
 
       setAiTryOnLoading(true);
       aiTryonResultMeta.hidden = false;
-      aiTryonResultMeta.innerHTML = '<span class="is-loading">Generating</span><strong>AI is styling the selected products.</strong>';
-      aiTryonStatus.textContent = 'Generating model try-on preview. This usually takes 20-40 seconds.';
+      aiTryonResultMeta.innerHTML = '<span class="is-loading">Generating</span><strong>AI is dressing the model in the selected products.</strong>';
+      aiTryonStatus.textContent = 'Generating AI try-on…';
 
-      try {
-        const response = await fetch('/api/generate-tryon', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            modelTemplateId: selectedModelTemplate,
-            productIds,
-            stylingPrompt: `${proposalBrandName.textContent.trim()} brand lookbook full look preview. Minimal K-fashion editorial styling.`,
-            forceRegenerate: false
-          })
-        });
+      // Demo mode: no live API call. Preload + decode the chosen look DURING the
+      // ~5s wait so it appears instantly at the 5s mark (no extra load lag).
+      const chosenLook = pickDemoLook();
+      const preloader = new Image();
+      preloader.src = chosenLook;
+      await Promise.all([
+        new Promise((resolve) => setTimeout(resolve, 5000)),
+        (preloader.decode ? preloader.decode().catch(() => {}) : Promise.resolve())
+      ]);
 
-        const contentType = response.headers.get('content-type') || '';
-        if (response.redirected || !contentType.includes('application/json')) {
-          throw new Error('Login as an approved designer before generating AI looks.');
-        }
-
-        if (!response.ok) {
-          if (response.redirected || response.status === 401 || response.status === 403) {
-            throw new Error('Login as an approved designer before generating AI looks.');
-          }
-          throw new Error(`Try-on request failed with ${response.status}`);
-        }
-
-        const result = await response.json();
-        if (!result.ok) throw new Error(result.error || 'AI look generation failed.');
-        proposalSheet.classList.add('is-styling');
-        tryonStage.hidden = true;
-        proposalImage.hidden = false;
-        proposalImage.classList.remove('is-switching');
-        proposalImage.src = result.imageUrl || currentStylingBoard.fullLookImage;
-        proposalImage.alt = `${proposalBrandName.textContent.trim()} AI lookbook generation result`;
-        const resultLabel = result.cacheHit ? 'Cached Look' : 'New AI Look';
-        aiTryonResultMeta.hidden = false;
-        aiTryonResultMeta.innerHTML = `<span>${escapeHtml(resultLabel)}</span><strong>${escapeHtml(result.imageUrl || currentStylingBoard.fullLookImage)}</strong>`;
-        aiTryonStatus.textContent = result.cacheHit
-          ? 'Cached AI look loaded.'
-          : 'New AI lookbook image generated.';
-      } catch (error) {
-        proposalImage.src = currentStylingBoard.fullLookImage;
-        proposalImage.alt = 'Fallback full look styling board';
-        aiTryonResultMeta.hidden = false;
-        aiTryonResultMeta.innerHTML = '<span>Fallback</span><strong>Saved styling board shown</strong>';
-        aiTryonStatus.textContent = error instanceof Error ? error.message : 'Generation failed. Showing the saved full look fallback.';
-      } finally {
-        setAiTryOnLoading(false);
-      }
-    };
-
-    const addTryOnLayer = (button) => {
-      const category = button.dataset.category || 'Item';
-      const layerImage = button.dataset.layerImage;
-      if (!layerImage) {
-        showStylingItemFallback(button);
-        return;
-      }
-
-      const existing = activeTryOnItems[category];
-      if (existing?.button === button) {
-        existing.node.remove();
-        delete activeTryOnItems[category];
-        setTryOnButtonState(button, false);
-        return;
-      }
-
-      if (existing) {
-        existing.node.remove();
-        setTryOnButtonState(existing.button, false);
-      }
-
-      const layer = document.createElement('img');
-      layer.className = 'tryon-layer';
-      layer.src = layerImage;
-      layer.alt = '';
-      layer.style.setProperty('--tryon-x', `${Number(button.dataset.layerX || 0)}%`);
-      layer.style.setProperty('--tryon-y', `${Number(button.dataset.layerY || 0)}%`);
-      layer.style.setProperty('--tryon-width', `${Number(button.dataset.layerWidth || 100)}%`);
-      layer.style.setProperty('--tryon-rotate', `${Number(button.dataset.layerRotate || 0)}deg`);
-      layer.style.zIndex = String(Number(button.dataset.layerZ || 20));
-      tryonLayerStage.append(layer);
-      activeTryOnItems[category] = { button, node: layer };
-      setTryOnButtonState(button, true);
-    };
-
-    const showStylingItemFallback = (button) => {
-      const image = button.dataset.modelLookImage || button.dataset.fallbackLookImage || currentStylingBoard.fullLookImage;
-      tryonStage.hidden = true;
-      proposalImage.hidden = false;
-      proposalImage.classList.remove('is-switching');
-      proposalImage.src = image;
-      proposalImage.alt = `${button.querySelector('strong')?.textContent || 'Selected styling item'} model styling preview`;
-      clearStylingItemSelection();
-      setTryOnButtonState(button, true);
+      applyGeneratedLook(chosenLook, items, {
+        label: 'AI Look',
+        status: 'AI look generated.'
+      });
+      setAiTryOnLoading(false);
     };
 
     const showStylingItemLook = (button) => {
-      showModelTemplatePreview();
       toggleStylingItemSelection(button);
     };
 
@@ -767,6 +832,40 @@
       stylingRecommendedItems.innerHTML = renderStylingItems(board.recommendedItems);
       resetTryOnStage();
       bindStylingItemPreviews();
+    };
+
+    // Render the styling board from real DB products (public API).
+    const renderStylingBoardFromApi = (data) => {
+      const ownedItems = (data.products || []).map((product) => ({
+        productId: product.id,
+        image: product.image,
+        category: product.category,
+        name: product.name,
+        status: product.status || '보유'
+      }));
+      currentStylingBoard = {
+        fullLookImage: defaultStylingBoard.fullLookImage,
+        ownedItems,
+        recommendedItems: [],
+        shortformStatus: 'coming-soon'
+      };
+      stylingOwnedItems.innerHTML = renderStylingItems(ownedItems);
+      stylingRecommendedItems.innerHTML = '';
+      resetTryOnStage();
+      bindStylingItemPreviews();
+    };
+
+    // Fetch a designer's real products; falls back to the already-rendered board on failure.
+    const loadStylingBoardForDesigner = (designerId) => {
+      fetch(`/api/public/styling-board?designerId=${encodeURIComponent(designerId)}`)
+        .then((response) => (response.ok ? response.json() : Promise.reject(new Error(`status ${response.status}`))))
+        .then((data) => {
+          if (!data || data.ok === false || !Array.isArray(data.products) || !data.products.length) {
+            throw new Error('no products');
+          }
+          renderStylingBoardFromApi(data);
+        })
+        .catch(() => { /* keep the hardcoded fallback board already rendered */ });
     };
 
     const getProposalGalleryImages = (startIndex) => {
@@ -972,6 +1071,8 @@
       proposalCreatorDirection.textContent = getCreatorDirection(tags);
       proposalBriefLink.href = `/designer-brief?brand=${encodedBrand}`;
       renderStylingBoard(profileIndex);
+      // For cards linked to a real DB designer, replace the board with live products.
+      if (card.dataset.designerId) loadStylingBoardForDesigner(card.dataset.designerId);
       setProposalTab('profile');
       startProposalGallery(profileIndex);
 
@@ -983,7 +1084,7 @@
     const closeProposalSheet = () => {
       stopProposalGallery();
       resetTryOnStage();
-      tryonStage.hidden = true;
+      stylingCollage.hidden = true;
       proposalImage.hidden = false;
       proposalSheet.classList.remove('is-open');
       proposalSheet.setAttribute('aria-hidden', 'true');
@@ -998,6 +1099,7 @@
 
     loadAiTryOnConfig();
     aiTryonGenerate.addEventListener('click', generateAiTryOnLook);
+    stageGenerate.addEventListener('click', generateAiTryOnLook);
 
     document.querySelectorAll('[data-proposal-trigger]').forEach((trigger) => {
       trigger.addEventListener('click', (event) => {

@@ -820,55 +820,241 @@ body.dark-theme .brand img {
 }
 
 .designer-proposal-visual > #proposalImage[hidden],
-.tryon-stage[hidden] {
+.styling-collage[hidden] {
   display: none !important;
 }
 
-.designer-proposal-sheet.is-styling .designer-proposal-visual img {
+.designer-proposal-sheet.is-styling .designer-proposal-visual > #proposalImage {
   object-fit: contain;
   object-position: center;
 }
 
-.tryon-stage {
+/* Styling collage: fixed 9:16 TikTok stage + side product column */
+.styling-collage {
   position: absolute;
   inset: 0;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 14px;
   overflow: hidden;
-  background: radial-gradient(circle at 52% 18%, rgba(255, 255, 255, .62), transparent 34%), #e9e2d4;
+  background: radial-gradient(circle at 62% 16%, rgba(255, 255, 255, .58), transparent 42%), #e9e2d4;
 }
 
-.tryon-base-model,
-.tryon-layer-stage,
-.tryon-layer {
+/* Vertical 3:4 stage — optimized for the pre-generated AI look images (1086x1448) */
+.styling-stage {
+  position: relative;
+  flex: 0 0 auto;
+  height: 100%;
+  max-height: 100%;
+  aspect-ratio: 3 / 4;
+  max-width: 78%;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #d8d2c6;
+  box-shadow: 0 18px 50px rgba(20, 16, 12, .28);
+}
+
+.styling-stage > #collageModel {
   position: absolute;
   inset: 0;
-}
-
-.tryon-base-model {
-  z-index: 5;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  object-position: center bottom;
-  pointer-events: none;
+  object-fit: cover;
+  object-position: center top;
+  transition: opacity .28s ease;
 }
 
-.tryon-layer-stage {
-  z-index: 10;
-  pointer-events: none;
+/* Floating "Generate" CTA on the stage */
+.stage-generate {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 12px 22px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(10, 10, 10, .82);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  font: 600 13px/1 inherit;
+  letter-spacing: .02em;
+  white-space: nowrap;
+  cursor: pointer;
+  z-index: 20;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .35);
+  transition: transform .18s ease, background .18s ease, opacity .18s ease;
 }
 
-.tryon-layer {
-  left: var(--tryon-x, 0);
-  top: var(--tryon-y, 0);
-  width: var(--tryon-width, 100%);
-  height: auto;
-  max-width: none;
+.stage-generate:hover:not(:disabled) {
+  transform: translateX(-50%) translateY(-2px) scale(1.03);
+  background: #000;
+}
+
+.stage-generate:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.stage-generate-spark {
+  font-size: 14px;
+  animation: stageSpark 1.8s ease-in-out infinite;
+}
+
+.stage-generate.is-loading {
+  animation: stagePulse 1s ease-in-out infinite;
+}
+
+@keyframes stageSpark {
+  0%, 100% { opacity: 1; transform: scale(1) rotate(0); }
+  50% { opacity: .6; transform: scale(1.18) rotate(12deg); }
+}
+
+@keyframes stagePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .55; }
+}
+
+/* After generation the caption fills the bottom — lift the button above it */
+.styling-collage.is-generated .stage-generate {
+  bottom: 104px;
+}
+
+.styling-collage-flatlay {
+  order: -1; /* place the product column to the LEFT of the model stage */
+  flex: 0 0 auto;
+  width: clamp(70px, 14%, 104px);
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 2px;
+  overflow-y: auto;
+  align-content: flex-start;
+}
+
+.styling-collage-flatlay[hidden] {
+  display: none !important;
+}
+
+.styling-flat-card {
+  position: relative;
+  flex: 0 0 auto;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 6px 16px rgba(20, 16, 12, .12);
+  animation: flatCardIn .32s ease both;
+}
+
+.styling-flat-card img {
+  display: block;
+  width: 100%;
+  height: 104px;
   object-fit: contain;
   object-position: center;
-  transform: rotate(var(--tryon-rotate, 0deg));
-  transform-origin: center center;
-  pointer-events: none;
+  padding: 6px;
+  background: #fff;
+}
+
+.styling-flat-card span {
+  position: absolute;
+  left: 6px;
+  bottom: 6px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(5, 5, 5, .72);
+  color: #fff;
+  font-size: 9px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.flat-remove {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  z-index: 2;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(5, 5, 5, .68);
+  color: #fff;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transform: scale(.85);
+  transition: opacity .15s ease, transform .15s ease, background .15s ease;
+}
+
+.styling-flat-card:hover .flat-remove,
+.flat-remove:focus-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.flat-remove:hover {
+  background: #050505;
+}
+
+/* Touch / coarse pointers can't hover — always show the remove control */
+@media (hover: none) {
+  .flat-remove {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes flatCardIn {
+  from { opacity: 0; transform: translateY(10px) scale(.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.styling-collage-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px 16px;
+  background: linear-gradient(to top, rgba(244, 240, 233, .97), rgba(244, 240, 233, .85) 68%, transparent);
+  color: #1c1712;
+}
+
+.styling-collage-caption[hidden] {
+  display: none !important;
+}
+
+.styling-collage-caption-row {
+  display: flex;
+  gap: 8px;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.styling-collage-caption-row b {
+  flex: 0 0 52px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: #6b5d4b;
+}
+
+.styling-collage-caption-row span {
+  flex: 1;
+  font-weight: 500;
 }
 
 .designer-proposal-visual img.is-switching {
@@ -1189,9 +1375,10 @@ body.dark-theme .brand img {
   width: 64px;
   height: 72px;
   display: block;
-  object-fit: cover;
-  object-position: center top;
-  background: #e5e0d7;
+  object-fit: contain;
+  object-position: center;
+  padding: 4px;
+  background: #f3f0ea;
 }
 
 .styling-item-card span {
@@ -3305,8 +3492,47 @@ body.dark-theme .mini-stats strong {
   }
 
   .designer-proposal-visual {
-    height: 46dvh;
-    min-height: 310px;
+    height: 64dvh;
+    min-height: 420px;
+  }
+
+  .styling-collage {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .styling-stage {
+    max-width: 72%;
+  }
+
+  .styling-collage-flatlay {
+    width: clamp(64px, 20%, 92px);
+  }
+
+  .styling-flat-card img {
+    height: 76px;
+  }
+
+  .stage-generate {
+    padding: 10px 16px;
+    font-size: 12px;
+    bottom: 14px;
+  }
+
+  .styling-collage.is-generated .stage-generate {
+    bottom: 92px;
+  }
+
+  .styling-collage-caption {
+    padding: 10px 13px 12px;
+  }
+
+  .styling-collage-caption-row {
+    font-size: 10px;
+  }
+
+  .styling-collage-caption-row b {
+    flex-basis: 46px;
   }
 
   .designer-proposal-dots {

@@ -5,3 +5,9 @@ node_modules
 server-backup
 기타폴더
 *.tar.gz
+
+# Unused/oversized assets excluded from deploy upload (kept locally) to stay under the upload size limit
+assets/styling-looks/
+assets/legacy-root/
+assets/docs/
+assets/**/ChatGPT*

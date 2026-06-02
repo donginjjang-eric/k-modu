@@ -460,6 +460,28 @@ createServer(async (req, res) => {
     return;
   }
 
+  if (urlPath === "/api/public/styling-board") {
+    // Local mirror of the Next public endpoint (no DB locally) — returns the
+    // same demo designer + cutout products so legacy:start testing works.
+    const designerId = (req.url || "").split("?")[1]?.match(/designerId=([^&]+)/)?.[1];
+    const wanted = designerId ? decodeURIComponent(designerId) : "";
+    if (wanted && wanted !== "maison-lune-seoul") {
+      sendJson(res, 404, { ok: false, error: "Designer not found." });
+      return;
+    }
+    sendJson(res, 200, {
+      ok: true,
+      designer: { id: "maison-lune-seoul", brandName: "Maison Lune Seoul", mood: "Seoul K-fashion, minimal black tailoring" },
+      products: [
+        { id: "top-ivory-lace-bow", name: "Ivory Lace Bow Top", category: "Top", image: "/assets/designer-samples/product-top-ivory-lace-bow.png", status: "보유" },
+        { id: "skirt-brown-polka-bubble", name: "Brown Polka Bubble Skirt", category: "Bottom", image: "/assets/designer-samples/product-skirt-brown-polka-bubble.png", status: "보유" },
+        { id: "bag-black-glossy-shoulder", name: "Black Glossy Shoulder Bag", category: "Bag", image: "/assets/designer-samples/product-bag-black-glossy-shoulder.png", status: "보유" },
+        { id: "shoes-black-cork-wedge-sandals", name: "Cork Wedge Sandals", category: "Shoes", image: "/assets/designer-samples/product-shoes-black-cork-wedge-sandals.png", status: "보유" },
+      ],
+    });
+    return;
+  }
+
   if (urlPath === "/api/tryon-config") {
     const config = loadTryOnConfig();
     sendJson(res, 200, {
@@ -469,6 +491,7 @@ createServer(async (req, res) => {
         id: template.id,
         label: template.label,
         previewImage: template.previewImage,
+        generatedLookImage: template.generatedLookImage,
       })),
     });
     return;

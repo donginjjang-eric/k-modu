@@ -69,13 +69,17 @@ async function seedDemoData() {
   }
 
   const products = [
-    ["structured-black-coat", "Structured Black Coat", "Outer", "/assets/designer-profile-real-09.png", "minimal black outer"],
-    ["tailored-black-trouser", "Tailored Black Trouser", "Bottom", "/assets/designer-profile-real-10.png", "tailored black bottom"],
-    ["slim-black-sunglasses", "Slim Black Sunglasses", "Eyewear", "/assets/designer-profile-real-11.png", "sharp black eyewear"],
-    ["soft-leather-tote", "Soft Leather Tote", "Bag", "/assets/designer-profile-real-12.png", "soft leather tote"],
-    ["minimal-black-shoes", "Minimal Black Shoes", "Shoes", "/assets/designer-profile-real-13.png", "minimal black shoes"],
-    ["clean-inner-top", "Clean Inner Top", "Inner", "/assets/designer-profile-real-02.png", "clean black inner"],
+    ["top-ivory-lace-bow", "Ivory Lace Bow Top", "Top", "/assets/designer-samples/product-top-ivory-lace-bow.png", "ivory lace bow top"],
+    ["skirt-brown-polka-bubble", "Brown Polka Bubble Skirt", "Bottom", "/assets/designer-samples/product-skirt-brown-polka-bubble.png", "brown bubble skirt"],
+    ["bag-black-glossy-shoulder", "Black Glossy Shoulder Bag", "Bag", "/assets/designer-samples/product-bag-black-glossy-shoulder.png", "black glossy bag"],
+    ["shoes-black-cork-wedge-sandals", "Cork Wedge Sandals", "Shoes", "/assets/designer-samples/product-shoes-black-cork-wedge-sandals.png", "cork wedge sandals"],
   ];
+
+  // Remove any stale demo products (e.g. the previous editorial set) before upserting.
+  await query(
+    `DELETE FROM products WHERE designer_id = 'maison-lune-seoul' AND id <> ALL($1::text[])`,
+    [products.map((product) => product[0])],
+  );
 
   for (const product of products) {
     await query(
