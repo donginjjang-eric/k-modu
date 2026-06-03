@@ -9,6 +9,8 @@ const contentTypes: Record<string, string> = {
   ".jpeg": "image/jpeg",
   ".webp": "image/webp",
   ".svg": "image/svg+xml",
+  ".js": "text/javascript; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
   ".pdf": "application/pdf",
   ".mp4": "video/mp4",
   ".webm": "video/webm",
