@@ -348,7 +348,9 @@
 
     board.innerHTML = designerProfiles.map((item, index) => {
       const [variant, image, name, kicker, description, tags, shopInfo, designerId] = item;
-      const classes = ['work-pin', variant].filter(Boolean).join(' ');
+      // 핀터레스트 지그재그: 카드를 3:2 가로 / 3:4 세로 비율로 번갈아 고정. (kfashion 썸네일 레일 타입 제거)
+      const ratioClass = index % 2 === 0 ? 'pin-34' : 'pin-32';
+      const classes = ['work-pin', ratioClass].join(' ');
       const isKFashion = classes.includes('kfashion-card');
       const tagHtml = tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join('');
       const encodedTags = escapeHtml(tags.join('|'));

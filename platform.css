@@ -683,6 +683,16 @@ body.dark-theme .brand img {
   aspect-ratio: 4 / 3.15;
 }
 
+/* 핀터레스트 지그재그: 카드 이미지를 2가지 고정 비율로 번갈아 (3:2 가로 ↔ 3:4 세로) */
+.designer-board .work-pin.pin-32 img {
+  aspect-ratio: 3 / 2;
+  object-position: center;
+}
+.designer-board .work-pin.pin-34 img {
+  aspect-ratio: 3 / 4;
+  object-position: center top;
+}
+
 .designer-board .designer-kicker {
   margin: 0 0 10px;
   color: rgba(5, 5, 5, .48);
@@ -4255,11 +4265,8 @@ body.dark-theme .mini-stats strong {
 }
 
 .kfashion-visual-wrap {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 74px;
-  gap: 8px;
-  align-items: stretch;
-  padding: 10px 10px 0;
+  display: block;
+  padding: 0;
 }
 
 .work-pin.kfashion-card .kfashion-main-image {
@@ -4360,7 +4367,7 @@ body.dark-theme .mini-stats strong {
 @media (max-width: 760px) {
   .kfashion-visual-wrap {
     display: block;
-    padding: 8px 8px 0;
+    padding: 0;
   }
 
   .work-pin.kfashion-card .kfashion-main-image {
