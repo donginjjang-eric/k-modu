@@ -187,6 +187,22 @@
                   <div class="generated-shortforms" id="generatedShortforms" hidden>
                     <span class="generated-shortforms-head">생성된 숏폼</span>
                     <div class="generated-shortforms-row" id="generatedShortformsRow" aria-label="생성된 숏폼 목록"></div>
+
+                    <div class="sf-publish" id="sfPublish">
+                      <div class="sf-publish-head">
+                        <span class="sf-pub-eyebrow">Publish</span>
+                        <strong>내 채널에 등록</strong>
+                      </div>
+                      <div class="sf-pub-step">
+                        <span class="sf-pub-label"><b>1</b> 국가 선택</span>
+                        <div class="sf-flagrow" id="sfFlagRow"></div>
+                      </div>
+                      <div class="sf-pub-step" id="sfPlatStep" hidden>
+                        <span class="sf-pub-label"><b>2</b> 플랫폼 선택</span>
+                        <div class="sf-plats" id="sfPlats"></div>
+                      </div>
+                      <div class="sf-pub-action" id="sfPubAction" hidden></div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -615,6 +631,71 @@
       if (generatedShortforms.length > 12) generatedShortforms.length = 12;
       renderGeneratedShortforms();
     };
+
+    // ----- 숏폼 → 내 채널 등록 (시뮬레이션): ①국가 ②플랫폼 ③연결/업로드 -----
+    const PUB_COUNTRIES = [['kr','한국'],['us','미국'],['jp','일본'],['cn','중국'],['vn','베트남'],['th','태국'],['id','인도네시아'],['tw','대만']];
+    const PUB_PLATFORMS = [
+      { id: 'tiktok', name: 'TikTok', icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14.2 3c.35 2.3 1.86 3.86 4.05 4.06v2.6c-1.3 0-2.56-.35-3.7-1v6.06a5.46 5.46 0 1 1-5.46-5.46c.3 0 .58.03.86.08v2.66a2.84 2.84 0 1 0 2 2.72V3z"/></svg>' },
+      { id: 'instagram', name: 'Instagram', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="3.8"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none"/></svg>' },
+      { id: 'youtube', name: 'YouTube', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6.5" width="18" height="11" rx="3.5"/><path d="M11 9.8l3.8 2.2L11 14.2z" fill="currentColor" stroke="none"/></svg>' },
+    ];
+    let pubCountry = null, pubPlatform = null, pubConnected = false;
+    const sfFlagRow = document.querySelector('#sfFlagRow');
+    const sfPlatStep = document.querySelector('#sfPlatStep');
+    const sfPlats = document.querySelector('#sfPlats');
+    const sfPubAction = document.querySelector('#sfPubAction');
+    const pubHandle = () => slugifyHandle((proposalBrandName.textContent || 'k-modu').trim()) || 'k-modu';
+    const platName = () => (PUB_PLATFORMS.find((p) => p.id === pubPlatform) || {}).name || '';
+
+    const renderPubAction = () => {
+      if (!sfPubAction) return;
+      if (!pubPlatform) { sfPubAction.hidden = true; sfPubAction.innerHTML = ''; return; }
+      sfPubAction.hidden = false;
+      if (!pubConnected) {
+        sfPubAction.innerHTML = `<button class="sf-connect-btn" type="button">${platName()} 계정 연결</button><p class="sf-pub-note">계정을 연결하면 바로 업로드할 수 있어요. (시연)</p>`;
+        sfPubAction.querySelector('button').addEventListener('click', pubConnect);
+      } else {
+        sfPubAction.innerHTML = `<button class="sf-connect-btn is-connected" type="button" disabled>연결됨 · @${pubHandle()} ✓</button><button class="sf-upload-btn" type="button">${platName()}에 업로드</button>`;
+        sfPubAction.querySelectorAll('button')[1].addEventListener('click', pubUpload);
+      }
+    };
+    function pubConnect() {
+      const btn = sfPubAction.querySelector('.sf-connect-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="sf-spin"></span> 연결 중…';
+      window.setTimeout(() => { pubConnected = true; renderPubAction(); }, 1300);
+    }
+    function pubUpload() {
+      const country = PUB_COUNTRIES.find((c) => c[0] === pubCountry);
+      sfPubAction.innerHTML = '<button class="sf-upload-btn" type="button" disabled><span class="sf-spin"></span> 업로드 중…</button><div class="sf-progress"><span></span></div>';
+      const bar = sfPubAction.querySelector('.sf-progress span');
+      requestAnimationFrame(() => { if (bar) bar.style.width = '100%'; });
+      window.setTimeout(() => {
+        sfPubAction.innerHTML = `<div class="sf-done">✓ ${platName()} 업로드 완료${country ? ' · ' + country[1] : ''}</div><button class="sf-pub-reset" type="button">다른 채널에 등록</button>`;
+        sfPubAction.querySelector('.sf-pub-reset').addEventListener('click', () => { pubPlatform = null; pubConnected = false; renderPubPlats(); renderPubAction(); });
+      }, 1900);
+    }
+    const renderPubFlags = () => {
+      if (!sfFlagRow) return;
+      sfFlagRow.innerHTML = PUB_COUNTRIES.map(([code, name]) =>
+        `<button class="sf-flag${pubCountry === code ? ' sel' : ''}" type="button" data-code="${code}" title="${name}" aria-label="${name}"><img src="assets/flags/${code}.svg" alt="${name}" /></button>`
+      ).join('');
+      sfFlagRow.querySelectorAll('.sf-flag').forEach((b) => b.addEventListener('click', () => {
+        pubCountry = b.dataset.code; renderPubFlags();
+        if (sfPlatStep) sfPlatStep.hidden = false;
+      }));
+    };
+    const renderPubPlats = () => {
+      if (!sfPlats) return;
+      sfPlats.innerHTML = PUB_PLATFORMS.map((p) =>
+        `<button class="sf-plat${pubPlatform === p.id ? ' sel' : ''}" type="button" data-id="${p.id}">${p.icon}<span>${p.name}</span></button>`
+      ).join('');
+      sfPlats.querySelectorAll('.sf-plat').forEach((b) => b.addEventListener('click', () => {
+        pubPlatform = b.dataset.id; pubConnected = false; renderPubPlats(); renderPubAction();
+      }));
+    };
+    renderPubFlags();
+    renderPubPlats();
     const replayGeneratedShortform = async (entry) => {
       if (!entry || shortformLoading) return;
       shortformPlayer.hidden = false;
