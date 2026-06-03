@@ -13,12 +13,6 @@
       "label": "Street",
       "previewImage": "assets/mainmodel_3.png",
       "generatedLookImage": "assets/generated-looks/maison-lune-street-full-look.png"
-    },
-    {
-      "id": "fixed-male",
-      "label": "Male",
-      "previewImage": "assets/mainmodel_4.png",
-      "generatedLookImage": "assets/generated-looks/maison-lune-male-full-look.png"
     }
   ],
   "messages": {

@@ -143,7 +143,6 @@
                   <div class="ai-model-options" id="aiModelOptions" aria-label="모델 템플릿">
                     <button class="is-active" type="button" data-model-template="fixed-female-minimal" aria-pressed="true">K-패션 여성</button>
                     <button type="button" data-model-template="fixed-street" aria-pressed="false">스트리트</button>
-                    <button type="button" data-model-template="fixed-male" aria-pressed="false">남성</button>
                   </div>
                   <div class="ai-selected-stack" id="aiSelectedStack" aria-label="선택한 스타일링 아이템"></div>
                   <p id="aiTryonSelection">제품을 선택해 모델 착장 룩을 생성하세요.</p>
@@ -658,19 +657,16 @@
     let selectedModelTemplate = 'fixed-female-minimal';
     let modelTemplateImages = {
       'fixed-female-minimal': 'assets/mainmodel_2.png',
-      'fixed-street': 'assets/mainmodel_3.png',
-      'fixed-male': 'assets/mainmodel_4.png'
+      'fixed-street': 'assets/mainmodel_3.png'
     };
     let generatedLookImages = {
       'fixed-female-minimal': 'assets/generated-looks/maison-lune-kfashion-female-full-look.png',
-      'fixed-street': 'assets/generated-looks/maison-lune-street-full-look.png',
-      'fixed-male': 'assets/generated-looks/maison-lune-male-full-look.png'
+      'fixed-street': 'assets/generated-looks/maison-lune-street-full-look.png'
     };
     // Fixed 9:16 TikTok base models (user-provided). Falls back if the asset is missing.
     let baseStageImages = {
       'fixed-female-minimal': 'assets/designer-samples/20age_model_1.png',
-      'fixed-street': 'assets/designer-samples/20age_model_1.png',
-      'fixed-male': 'assets/designer-samples/20age_model_1.png'
+      'fixed-street': 'assets/designer-samples/20age_model_1.png'
     };
     const FALLBACK_BASE = 'assets/designer-samples/20age_model_1.png';
     // Pre-generated AI looks shown on "Generate AI Look" in demo mode (random for realism).

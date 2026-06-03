@@ -11,7 +11,6 @@ export const designer = {
 export const modelTemplates = [
   { id: "fixed-female-minimal", label: "K-Fashion Female", image: "/assets/mainmodel_2.png" },
   { id: "fixed-street", label: "Street", image: "/assets/mainmodel_3.png" },
-  { id: "fixed-male", label: "Male", image: "/assets/mainmodel_4.png" },
 ];
 
 export const products = [

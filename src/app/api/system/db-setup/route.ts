@@ -51,7 +51,6 @@ async function seedDemoData() {
   const templates = [
     ["fixed-female-minimal", "K-Fashion Female", "k_fashion_female", "/assets/mainmodel_2.png"],
     ["fixed-street", "Street", "street", "/assets/mainmodel_3.png"],
-    ["fixed-male", "Male", "male", "/assets/mainmodel_4.png"],
   ];
 
   for (const template of templates) {
