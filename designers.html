@@ -282,7 +282,7 @@
       ['', 'assets/campaign-kdesigner-04.png', 'Denu Row', 'Street Luxury / Denim', '스트리트 감도와 프리미엄 데님 실루엣을 결합한 브랜드. 숏폼 스타일링, 착장 비교, 디테일 클로즈업에 강점이 있습니다.', ['Street', 'Denim', 'TikTok']],
       ['wide', 'assets/campaign-kdesigner-wide-06.png', 'Aube Knit Lab', 'Accessory Seeding / Creator Fit', '니트, 가방, 재킷 디테일을 중심으로 한 상품형 브랜드. 크리에이터 착장 안에 자연스럽게 들어가는 시딩 콘텐츠에 적합합니다.', ['Accessory', 'Seeding', 'Fit Check']],
       ['wide', 'assets/campaign-kdesigner-wide-04.png', 'Saison Archive', 'Season Mood / Brief Ready', '브랜드 철학, 대표 상품, 시즌 무드를 하나의 무드 보드로 정리하는 브랜드. 크리에이터 브리프 전환이 빠른 포트폴리오를 보유합니다.', ['Mood', 'Brief Ready', 'Look Assets']],
-      ['tall', 'assets/DISIGNER/D_2/KakaoTalk_20260603_155917553.png', 'Maille Atelier Seoul', 'Soft Knit Runway / Seoul', '오버사이즈 베이지 니트와 라이트블루 와이드 팬츠로 차분한 럭셔리 무드를 전개하는 서울 런웨이 브랜드. 레이어드 니트 착장, 디테일 클로즈업, 룩북 영상 콘텐츠에 강점이 있습니다.', ['Knit', 'Quiet Luxury', 'Runway'], { cta: 'Collab Proposal', gallery: [
+      ['pin-34', 'assets/DISIGNER/D_2/KakaoTalk_20260603_155917553.png', 'Maille Atelier Seoul', 'Soft Knit Runway / Seoul', '오버사이즈 베이지 니트와 라이트블루 와이드 팬츠로 차분한 럭셔리 무드를 전개하는 서울 런웨이 브랜드. 레이어드 니트 착장, 디테일 클로즈업, 룩북 영상 콘텐츠에 강점이 있습니다.', ['Knit', 'Quiet Luxury', 'Runway'], { cta: 'Collab Proposal', gallery: [
         'assets/DISIGNER/D_2/KakaoTalk_20260603_155917553_01.png',
         'assets/DISIGNER/D_2/KakaoTalk_20260603_155917553_02.png',
         'assets/DISIGNER/D_2/KakaoTalk_20260603_155917553_03.png',
@@ -293,7 +293,7 @@
         'assets/DISIGNER/D_2/KakaoTalk_20260603_155917553_08.png',
         'assets/DISIGNER/D_2/KakaoTalk_20260603_155917553_09.png'
       ] }],
-      ['tall', 'assets/DISIGNER/D_3/1.png', 'Bermuda Line Studio', 'Tailored Bermuda / Street', '차콜 티셔츠와 테일러드 버뮤다 팬츠 셋업으로 미니멀한 도시 스트리트 무드를 전개하는 브랜드. 데일리 셋업 착장, 핏 체크, 룩북 컷 콘텐츠에 적합합니다.', ['Tailored', 'Bermuda', 'Minimal'], { cta: 'Collab Proposal', gallery: [
+      ['pin-34', 'assets/DISIGNER/D_3/1.png', 'Bermuda Line Studio', 'Tailored Bermuda / Street', '차콜 티셔츠와 테일러드 버뮤다 팬츠 셋업으로 미니멀한 도시 스트리트 무드를 전개하는 브랜드. 데일리 셋업 착장, 핏 체크, 룩북 컷 콘텐츠에 적합합니다.', ['Tailored', 'Bermuda', 'Minimal'], { cta: 'Collab Proposal', gallery: [
         'assets/DISIGNER/D_3/2.png',
         'assets/DISIGNER/D_3/3.png',
         'assets/DISIGNER/D_3/4.png',
@@ -348,8 +348,9 @@
 
     board.innerHTML = designerProfiles.map((item, index) => {
       const [variant, image, name, kicker, description, tags, shopInfo, designerId] = item;
-      // 핀터레스트 지그재그: 카드를 3:2 가로 / 3:4 세로 비율로 번갈아 고정. (kfashion 썸네일 레일 타입 제거)
-      const ratioClass = index % 2 === 0 ? 'pin-34' : 'pin-32';
+      // 핀터레스트 지그재그: 기본은 3:4 세로 / 3:2 가로 번갈아. variant에 'pin-34'/'pin-32'가 있으면 그 카드만 고정(세로 풀룩 사진 보호용).
+      const forcedRatio = typeof variant === 'string' && variant.match(/pin-3[24]/);
+      const ratioClass = forcedRatio ? forcedRatio[0] : (index % 2 === 0 ? 'pin-34' : 'pin-32');
       const classes = ['work-pin', ratioClass].join(' ');
       const isKFashion = classes.includes('kfashion-card');
       const tagHtml = tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join('');
