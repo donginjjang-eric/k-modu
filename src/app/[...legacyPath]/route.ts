@@ -17,6 +17,7 @@ const legacyFiles = new Set([
   "creators.html",
   "designer-brief.html",
   "designer-match.html",
+  "designer-studio.html",
   "designers.html",
   "index.html",
   "login.html",
@@ -32,6 +33,7 @@ const cleanLegacyRoutes: Record<string, string> = {
   "creators": "creators.html",
   "designer-brief": "designer-brief.html",
   "designer-match": "designer-match.html",
+  "designer-studio": "designer-studio.html",
   "designers": "designers.html",
   "legacy-login": "login.html",
 };
