@@ -1551,6 +1551,59 @@ body.dark-theme .brand img {
   min-height: 22px;
 }
 
+/* Generated looks history strip */
+.generated-looks {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(5, 5, 5, .1);
+}
+
+.generated-looks[hidden] {
+  display: none;
+}
+
+.generated-looks-head {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  color: rgba(5, 5, 5, .55);
+  text-transform: uppercase;
+}
+
+.generated-looks-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.generated-look-thumb {
+  flex: 0 0 auto;
+  width: 54px;
+  height: 72px;
+  padding: 0;
+  border: 1px solid rgba(5, 5, 5, .12);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #efece6;
+  cursor: pointer;
+  transition: transform .15s ease, border-color .15s ease;
+}
+
+.generated-look-thumb:hover {
+  transform: translateY(-2px);
+  border-color: #050505;
+}
+
+.generated-look-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .ai-tryon-result-meta {
   display: grid;
   gap: 6px;
@@ -1605,6 +1658,218 @@ body.dark-theme .brand img {
   font-size: var(--fs-body);
   line-height: 1.62;
   word-break: keep-all;
+}
+
+/* ===== Full Look 숏폼 영상 (데모) ===== */
+.styling-shortform {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid rgba(5, 5, 5, .1);
+  border-radius: 14px;
+  background: rgba(5, 5, 5, .025);
+}
+
+.styling-shortform-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.styling-shortform-head span {
+  font-size: var(--fs-micro);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(5, 5, 5, .5);
+}
+
+.styling-shortform-head strong {
+  font-size: 15px;
+  font-weight: var(--fw-black);
+}
+
+.shortform-generate {
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #050505;
+  color: #fff;
+  font-weight: var(--fw-black);
+  font-size: 14px;
+  letter-spacing: .01em;
+  transition: opacity .2s ease, transform .08s ease;
+}
+
+.shortform-generate:hover:not(:disabled) { opacity: .88; }
+.shortform-generate:active:not(:disabled) { transform: translateY(1px); }
+.shortform-generate:disabled { opacity: .38; cursor: not-allowed; }
+
+.shortform-status {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(5, 5, 5, .62);
+  line-height: 1.5;
+  word-break: keep-all;
+}
+
+.shortform-player {
+  display: flex;
+  justify-content: center;
+  padding-top: 2px;
+}
+
+.shortform-reel {
+  position: relative;
+  width: 210px;
+  max-width: 100%;
+  aspect-ratio: 9 / 16;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .28);
+}
+
+.shortform-reel-media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.05);
+  transform-origin: 50% 38%;
+}
+
+.shortform-reel.is-playing .shortform-reel-media {
+  animation: sf-kenburns 8s ease-in-out infinite alternate;
+}
+
+.shortform-reel-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, .25);
+  z-index: 3;
+}
+
+.shortform-reel-progress span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: #fff;
+}
+
+.shortform-reel.is-playing .shortform-reel-progress span {
+  animation: sf-progress 8s linear infinite;
+}
+
+.shortform-reel-ui {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.shortform-reel-ui::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, .6), rgba(0, 0, 0, 0) 46%);
+}
+
+.shortform-reel-side {
+  position: absolute;
+  right: 8px;
+  bottom: 78px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  z-index: 2;
+}
+
+.shortform-reel-side .sf-icon {
+  font-size: 18px;
+  line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .65));
+}
+
+.shortform-reel-bottom {
+  position: absolute;
+  left: 11px;
+  right: 40px;
+  bottom: 11px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  color: #fff;
+}
+
+.shortform-reel-handle {
+  font-size: 13px;
+  font-weight: var(--fw-black);
+}
+
+.shortform-reel-caption {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.32;
+  opacity: .95;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.shortform-reel-music {
+  font-size: 10px;
+  opacity: .82;
+}
+
+.shortform-reel.is-loading::before {
+  content: '숏폼 생성 중…';
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 12px;
+  letter-spacing: .04em;
+  background: repeating-linear-gradient(90deg, #161616, #262626 12px, #161616 24px);
+  background-size: 200% 100%;
+  animation: sf-shimmer 1.2s linear infinite;
+}
+
+@keyframes sf-kenburns {
+  from { transform: scale(1.05) translateY(0); }
+  to { transform: scale(1.28) translateY(-4%); }
+}
+
+@keyframes sf-progress {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes sf-shimmer {
+  from { background-position: 0 0; }
+  to { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shortform-reel.is-playing .shortform-reel-media,
+  .shortform-reel.is-loading::before {
+    animation: none;
+  }
+  .shortform-reel.is-playing .shortform-reel-progress span {
+    animation: none;
+    width: 100%;
+  }
 }
 
 .designer-profile-meta {
