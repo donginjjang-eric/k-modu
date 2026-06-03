@@ -24,6 +24,7 @@
     "@types/pg": "^8.20.0",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
+    "sharp": "^0.34.5",
     "typescript": "^5.7.2"
   }
 }

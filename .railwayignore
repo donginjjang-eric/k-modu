@@ -6,8 +6,6 @@ server-backup
 기타폴더
 *.tar.gz
 
-# Unused/oversized assets excluded from deploy upload (kept locally) to stay under the upload size limit
-assets/styling-looks/
-assets/legacy-root/
-assets/docs/
-assets/**/ChatGPT*
+# 이미지 최적화(204MB→46MB)로 업로드 용량 여유가 생겨 에셋 제외를 해제함.
+# styling-looks/ 는 designers.html 에서 실제 사용되므로 반드시 배포에 포함되어야 함
+# (이전에 제외되어 프로덕션에서 404 였음).
