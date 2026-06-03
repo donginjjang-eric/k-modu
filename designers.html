@@ -163,8 +163,13 @@
                   <p class="shortform-status" id="shortformStatus" role="status" aria-live="polite">먼저 AI 룩을 생성하면 숏폼 영상을 만들 수 있어요.</p>
                   <div class="shortform-player" id="shortformPlayer" hidden>
                     <div class="shortform-reel" id="shortformReel" aria-label="생성된 숏폼 영상 미리보기">
-                      <img class="shortform-reel-media" id="shortformReelMedia" src="" alt="숏폼 영상 미리보기" />
+                      <div class="shortform-reel-stage">
+                        <img class="shortform-reel-media is-active" id="shortformReelMedia" data-sf-layer="a" src="" alt="숏폼 영상 미리보기" />
+                        <img class="shortform-reel-media" id="shortformReelMediaB" data-sf-layer="b" src="" alt="" aria-hidden="true" />
+                      </div>
+                      <video class="shortform-reel-video" id="shortformReelVideo" muted loop playsinline preload="none"></video>
                       <div class="shortform-reel-progress"><span></span></div>
+                      <p class="shortform-reel-scene" id="shortformReelScene" aria-hidden="true"></p>
                       <div class="shortform-reel-ui">
                         <div class="shortform-reel-side">
                           <span class="sf-icon">♥</span>
@@ -178,6 +183,10 @@
                         </div>
                       </div>
                     </div>
+                  </div>
+                  <div class="generated-shortforms" id="generatedShortforms" hidden>
+                    <span class="generated-shortforms-head">생성된 숏폼</span>
+                    <div class="generated-shortforms-row" id="generatedShortformsRow" aria-label="생성된 숏폼 목록"></div>
                   </div>
                 </div>
               </div>
@@ -388,18 +397,189 @@
     const shortformPlayer = document.querySelector('#shortformPlayer');
     const shortformReel = document.querySelector('#shortformReel');
     const shortformReelMedia = document.querySelector('#shortformReelMedia');
+    const shortformReelMediaB = document.querySelector('#shortformReelMediaB');
+    const shortformReelVideo = document.querySelector('#shortformReelVideo');
+    const shortformReelScene = document.querySelector('#shortformReelScene');
     const shortformReelHandle = document.querySelector('#shortformReelHandle');
     const shortformReelCaption = document.querySelector('#shortformReelCaption');
+    const generatedShortformsEl = document.querySelector('#generatedShortforms');
+    const generatedShortformsRow = document.querySelector('#generatedShortformsRow');
     let shortformLoading = false;
+
+    // ----- 멀티컷 숏폼 시퀀서 (데모: 여러 룩 이미지를 컷 전환으로 편집 영상처럼 재생) -----
+    const SF_SCENE_MS = 2400;
+    const sfProgressSpan = shortformReel ? shortformReel.querySelector('.shortform-reel-progress span') : null;
+    const sfLayers = { a: shortformReelMedia, b: shortformReelMediaB };
+    // 실제 숏폼 영상 풀 (생성할 때마다 랜덤). 없거나 로드 실패 시 멀티컷 이미지로 폴백.
+    const SHORTFORM_VIDEO_POOL = [
+      'assets/video_sample/model1_sample_video.mp4',
+      'assets/video_sample/model2_sample_video.mp4'
+    ];
+    let lastShortformVideoIndex = -1;
+    const pickShortformVideo = () => {
+      if (!SHORTFORM_VIDEO_POOL.length) return '';
+      let i = Math.floor(Math.random() * SHORTFORM_VIDEO_POOL.length);
+      if (SHORTFORM_VIDEO_POOL.length > 1 && i === lastShortformVideoIndex) {
+        i = (i + 1) % SHORTFORM_VIDEO_POOL.length;
+      }
+      lastShortformVideoIndex = i;
+      return SHORTFORM_VIDEO_POOL[i];
+    };
+    const onVideoProgress = () => {
+      if (!shortformReelVideo || !sfProgressSpan) return;
+      const d = shortformReelVideo.duration;
+      if (d && isFinite(d)) sfProgressSpan.style.width = ((shortformReelVideo.currentTime / d) * 100) + '%';
+    };
+    const loadShortformVideo = (src) => new Promise((resolve) => {
+      if (!shortformReelVideo || !src) { resolve(false); return; }
+      let settled = false;
+      const finish = (ok) => {
+        if (settled) return;
+        settled = true;
+        shortformReelVideo.removeEventListener('loadeddata', onOk);
+        shortformReelVideo.removeEventListener('error', onErr);
+        resolve(ok);
+      };
+      const onOk = () => finish(true);
+      const onErr = () => finish(false);
+      shortformReelVideo.addEventListener('loadeddata', onOk, { once: true });
+      shortformReelVideo.addEventListener('error', onErr, { once: true });
+      window.setTimeout(() => finish(false), 12000); // 로드 지연 시 멀티컷 폴백
+      shortformReelVideo.src = src;
+      shortformReelVideo.load();
+    });
+    const stopShortformVideo = () => {
+      if (!shortformReelVideo) return;
+      shortformReelVideo.removeEventListener('timeupdate', onVideoProgress);
+      try { shortformReelVideo.pause(); } catch (e) {}
+      shortformReelVideo.removeAttribute('src');
+      shortformReelVideo.load();
+      if (sfProgressSpan) sfProgressSpan.style.width = '';
+    };
+    let sfScenes = [];
+    let sfIndex = 0;
+    let sfTimer = null;
+    let sfActive = 'a';
+    const sfPickDistinct = (arr, n) => {
+      const pool = arr.slice();
+      const out = [];
+      while (out.length < n && pool.length) {
+        out.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
+      }
+      return out;
+    };
+    const sfPreload = (srcs) => Promise.all(srcs.map((src) => new Promise((resolve) => {
+      const img = new Image();
+      img.onload = img.onerror = () => resolve();
+      img.src = src;
+    })));
+    const renderShortformScene = (i) => {
+      const scene = sfScenes[i];
+      if (!scene) return;
+      const incomingKey = sfActive === 'a' ? 'b' : 'a';
+      const incoming = sfLayers[incomingKey];
+      const outgoing = sfLayers[sfActive];
+      if (!incoming) return;
+      incoming.src = scene.src;
+      incoming.className = 'shortform-reel-media';
+      void incoming.offsetWidth; // restart Ken Burns motion
+      incoming.classList.add('is-active', scene.motion);
+      if (outgoing) outgoing.classList.remove('is-active');
+      sfActive = incomingKey;
+      if (shortformReelScene) {
+        shortformReelScene.textContent = scene.label;
+        shortformReelScene.classList.remove('is-in');
+        void shortformReelScene.offsetWidth;
+        shortformReelScene.classList.add('is-in');
+      }
+    };
+    const startShortformSequencer = (scenes) => {
+      stopShortformSequencer();
+      sfScenes = scenes;
+      sfIndex = 0;
+      if (sfProgressSpan) sfProgressSpan.style.animationDuration = (scenes.length * SF_SCENE_MS) + 'ms';
+      renderShortformScene(0);
+      sfTimer = window.setInterval(() => {
+        sfIndex = (sfIndex + 1) % sfScenes.length;
+        renderShortformScene(sfIndex);
+      }, SF_SCENE_MS);
+    };
+    function stopShortformSequencer() {
+      if (sfTimer) { window.clearInterval(sfTimer); sfTimer = null; }
+      stopShortformVideo();
+      if (shortformReel) shortformReel.classList.remove('is-video');
+      sfScenes = [];
+      sfIndex = 0;
+      sfActive = 'a';
+      if (sfLayers.a) { sfLayers.a.className = 'shortform-reel-media is-active'; sfLayers.a.removeAttribute('src'); }
+      if (sfLayers.b) { sfLayers.b.className = 'shortform-reel-media'; sfLayers.b.removeAttribute('src'); }
+      if (shortformReelScene) { shortformReelScene.textContent = ''; shortformReelScene.classList.remove('is-in'); }
+    }
+    // 실제 영상을 릴스에 재생 (생성 직후 & 히스토리 재생 공용)
+    const playVideoInReel = (handleText, captionText) => {
+      shortformReel.classList.add('is-video', 'is-playing');
+      if (shortformReelScene) { shortformReelScene.textContent = ''; shortformReelScene.classList.remove('is-in'); }
+      shortformReelHandle.textContent = handleText;
+      shortformReelCaption.textContent = captionText;
+      shortformReelVideo.addEventListener('timeupdate', onVideoProgress);
+      try { shortformReelVideo.currentTime = 0; } catch (e) {}
+      shortformReelVideo.play().catch(() => {});
+    };
+    // ----- 생성된 숏폼 히스토리 (세션 내, 클릭 시 다시 재생) -----
+    const generatedShortforms = []; // { src, handle, caption }
+    const renderGeneratedShortforms = () => {
+      if (!generatedShortformsEl || !generatedShortformsRow) return;
+      if (!generatedShortforms.length) {
+        generatedShortformsEl.hidden = true;
+        generatedShortformsRow.innerHTML = '';
+        return;
+      }
+      generatedShortformsEl.hidden = false;
+      generatedShortformsRow.innerHTML = generatedShortforms.map((item, i) =>
+        `<button class="generated-shortform-thumb" type="button" aria-label="생성된 숏폼 ${i + 1} 다시 재생">`
+        + `<video src="${escapeHtml(item.src)}" muted playsinline preload="metadata"></video>`
+        + `<span class="sf-thumb-play">▶</span></button>`
+      ).join('');
+      Array.from(generatedShortformsRow.children).forEach((btn, i) => {
+        btn.addEventListener('click', () => replayGeneratedShortform(generatedShortforms[i]));
+      });
+    };
+    const addGeneratedShortform = (entry) => {
+      if (!entry || !entry.src) return;
+      const dup = generatedShortforms.findIndex((e) => e.src === entry.src && e.caption === entry.caption);
+      if (dup !== -1) generatedShortforms.splice(dup, 1);
+      generatedShortforms.unshift(entry);
+      if (generatedShortforms.length > 12) generatedShortforms.length = 12;
+      renderGeneratedShortforms();
+    };
+    const replayGeneratedShortform = async (entry) => {
+      if (!entry || shortformLoading) return;
+      shortformPlayer.hidden = false;
+      stopShortformSequencer();
+      shortformReel.classList.remove('is-playing');
+      shortformReel.classList.add('is-loading');
+      shortformStatus.textContent = '숏폼 영상 불러오는 중…';
+      const ok = await loadShortformVideo(entry.src);
+      shortformReel.classList.remove('is-loading');
+      if (ok) {
+        playVideoInReel(entry.handle, entry.caption);
+        shortformStatus.textContent = '저장된 숏폼 영상을 재생합니다.';
+      } else {
+        shortformReel.classList.add('is-playing');
+        shortformReelHandle.textContent = entry.handle;
+        shortformReelCaption.textContent = entry.caption;
+        shortformStatus.textContent = '영상을 불러오지 못했어요.';
+      }
+    };
     const updateShortformControls = () => {
       if (!shortformGenerate) return;
       shortformGenerate.disabled = !lookGenerated || shortformLoading;
     };
     const resetShortform = () => {
       shortformLoading = false;
+      stopShortformSequencer();
       if (shortformPlayer) shortformPlayer.hidden = true;
       if (shortformReel) shortformReel.classList.remove('is-playing', 'is-loading');
-      if (shortformReelMedia) shortformReelMedia.removeAttribute('src');
       if (shortformGenerate) shortformGenerate.textContent = '✨ Generate Short-form Video';
       if (shortformStatus) shortformStatus.textContent = '먼저 AI 룩을 생성하면 숏폼 영상을 만들 수 있어요.';
       updateShortformControls();
@@ -905,27 +1085,56 @@
       const items = getSelectedStylingItems();
       const brand = (proposalBrandName.textContent || 'K-MODU').trim();
 
+      const handle = '@' + (slugifyHandle(brand) || 'k-modu');
+
       shortformLoading = true;
       updateShortformControls();
       shortformGenerate.textContent = '영상 생성 중...';
       shortformStatus.textContent = '숏폼 영상 생성 중 · 약 5초';
       shortformPlayer.hidden = false;
+      stopShortformSequencer();
       shortformReel.classList.remove('is-playing');
       shortformReel.classList.add('is-loading');
 
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      // 컷 구성: 풀룩(훅) → 다른 AI 룩 2컷(스타일링/디테일) → 풀룩(마무리)
+      const altLooks = sfPickDistinct(demoLookPool.filter((src) => !lookImage.includes(src)), 2);
+      const scenes = [
+        { src: lookImage,             motion: 'sf-kb-in',   label: 'Full Look ✨' },
+        { src: altLooks[0] || lookImage, motion: 'sf-kb-up',   label: items[0] ? items[0].name : 'Daily Luxury' },
+        { src: altLooks[1] || lookImage, motion: 'sf-kb-left', label: items[1] ? items[1].name : (items[0] ? items[0].name : 'Styling Detail') },
+        { src: lookImage,             motion: 'sf-kb-out',  label: 'Shop the Look' }
+      ];
 
-      shortformReelMedia.src = lookImage;
-      shortformReelHandle.textContent = '@' + (slugifyHandle(brand) || 'k-modu');
+      // 생성 느낌의 ~5초 대기 동안: 실제 영상 로드 시도 + 폴백용 멀티컷 이미지 디코드를 병행
+      const videoSrc = pickShortformVideo();
+      const [, videoOk] = await Promise.all([
+        new Promise((resolve) => setTimeout(resolve, 5000)),
+        loadShortformVideo(videoSrc),
+        sfPreload(scenes.map((scene) => scene.src))
+      ]);
+
       const outfit = items.map((item) => item.name).join(' · ');
-      shortformReelCaption.textContent = outfit ? `${brand} full look — ${outfit}` : `${brand} full look reel`;
+      const captionText = outfit ? `${brand} full look — ${outfit}` : `${brand} full look reel`;
+      shortformReelHandle.textContent = handle;
+      shortformReelCaption.textContent = captionText;
       shortformReel.classList.remove('is-loading');
-      shortformReel.classList.add('is-playing');
+
+      if (videoOk) {
+        // 실제 숏폼 영상 재생 (진행바는 영상 재생 위치에 동기화) + 히스토리에 추가
+        playVideoInReel(handle, captionText);
+        addGeneratedShortform({ src: videoSrc, handle, caption: captionText });
+        shortformStatus.textContent = '실제 숏폼 영상이 재생됩니다. 아래에서 다시 볼 수 있어요.';
+      } else {
+        // 폴백: 멀티컷 이미지 시퀀스
+        shortformReel.classList.remove('is-video');
+        shortformReel.classList.add('is-playing');
+        startShortformSequencer(scenes);
+        shortformStatus.textContent = '숏폼 영상 미리보기가 생성되었습니다. (데모 · 멀티컷)';
+      }
 
       shortformLoading = false;
       shortformGenerate.textContent = '✨ Generate Short-form Video';
       updateShortformControls();
-      shortformStatus.textContent = '숏폼 영상 미리보기가 생성되었습니다. (데모)';
     };
 
     const showStylingItemLook = (button) => {

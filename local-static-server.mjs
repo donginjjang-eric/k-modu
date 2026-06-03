@@ -19,6 +19,9 @@ const types = {
   ".svg": "image/svg+xml",
   ".json": "application/json",
   ".pdf": "application/pdf",
+  ".mp4": "video/mp4",
+  ".webm": "video/webm",
+  ".mov": "video/quicktime",
 };
 
 const fallbackTryOnConfig = {

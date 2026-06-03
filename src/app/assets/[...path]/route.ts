@@ -10,6 +10,9 @@ const contentTypes: Record<string, string> = {
   ".webp": "image/webp",
   ".svg": "image/svg+xml",
   ".pdf": "application/pdf",
+  ".mp4": "video/mp4",
+  ".webm": "video/webm",
+  ".mov": "video/quicktime",
 };
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
