@@ -232,11 +232,32 @@
     .pp-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
     .pp-tags span{font-size:11px;font-weight:700;border:1px solid var(--line2);border-radius:999px;padding:4px 10px;}
     .pp-cta{display:inline-flex;background:var(--ink);color:#fff;font-weight:800;font-size:12px;padding:9px 14px;border-radius:999px;}
+    /* 상단 로고 (메인과 동일 이미지) */
+    .topbar .brand { align-items: center; text-decoration: none; }
+    .brand-logo { height: 26px; width: auto; display: block; }
+    /* 사이드 서브메뉴 (예정·비활성) */
+    .side-sub { padding-left: 30px !important; font-size: 13px !important; }
+    .side a.is-soon { opacity: .4; cursor: default; }
+    .side a.is-soon:hover { background: none; }
+    .side-sub .ic { font-size: 13px; color: var(--muted); }
+    /* 내 브랜드: 업로드 + 미리보기 정렬 */
+    .brand-grid { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 28px; align-items: start; }
+    .brand-upload { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; border: 1px solid var(--line2); border-radius: 12px; padding: 10px; background: #fff; cursor: pointer; }
+    .brand-upload img { width: 62px; height: 80px; flex: 0 0 62px; border-radius: 9px; object-fit: cover; background: #e6e0d4; }
+    .brand-up-cta { display: flex; flex-direction: column; gap: 3px; }
+    .brand-up-cta b { font-size: 14px; font-weight: 800; }
+    .brand-up-cta small { font-size: 12px; color: var(--muted); }
+    .brand-prev-title { font-size: 18px; font-weight: 900; margin: 4px 0 14px; letter-spacing: -.01em; }
+    .brand-preview .pp-card { max-width: none; width: 100%; }
+    @media (max-width: 900px) {
+      .brand-grid { grid-template-columns: 1fr; }
+      .brand-preview .pp-card { max-width: 340px; }
+    }
   </style>
 </head>
 <body>
   <header class="topbar">
-    <div class="brand"><b>K-MODU</b><span>디자이너 스튜디오</span></div>
+    <a class="brand" href="/"><img class="brand-logo" src="assets/k-modu-logo.png" alt="K-MODU" /><span>디자이너 스튜디오</span></a>
     <div class="me">Maison Lune Seoul<span class="ava">M</span></div>
   </header>
 
@@ -245,6 +266,8 @@
       <nav>
         <a data-nav="home" class="is-active"><span class="ic">🏠</span> 홈</a>
         <a data-nav="products"><span class="ic">👕</span> 상품</a>
+        <a class="side-sub is-soon"><span class="ic">└</span> 상세페이지 제작<span class="tag">예정</span></a>
+        <a class="side-sub is-soon"><span class="ic">└</span> 룩북 제작<span class="tag">예정</span></a>
         <a data-nav="ai"><span class="ic">✨</span> AI 룩</a>
         <a data-nav="short"><span class="ic">🎬</span> 숏폼</a>
         <a data-nav="orders"><span class="ic">📥</span> 받은 의뢰<span class="tag">예정</span></a>
@@ -409,23 +432,32 @@
       <!-- BRAND -->
       <section class="view" data-view="brand">
         <h1 class="title">🏷 내 브랜드</h1>
-        <p class="sub">공개 페이지에 보이는 브랜드 정보예요.</p>
-        <div class="grid2" style="align-items:start;">
+        <p class="sub">공개 페이지에 보이는 브랜드 정보예요. 입력하면 오른쪽 미리보기에 바로 반영돼요.</p>
+        <div class="brand-grid">
           <div class="card">
-            <div class="field"><label>브랜드명</label><input value="Maison Lune Seoul" /></div>
-            <div class="field"><label>한 줄 소개</label><input value="서울 기반 미니멀 디자이너 브랜드" /></div>
-            <div class="field"><label>무드</label><input value="미니멀 · 블랙 · 에디토리얼" /></div>
-            <button class="btn" style="margin-top:18px;">저장하기</button>
+            <div class="field">
+              <label>대표 이미지</label>
+              <button class="brand-upload" id="brandUpload" type="button">
+                <img id="brandUpImg" src="assets/designer-samples/card_1_potfolio/1.png" alt="대표 이미지" />
+                <span class="brand-up-cta"><b>📷 이미지 변경</b><small>공개 카드 표지로 쓰여요 · 자동 정리</small></span>
+                <input type="file" id="brandUpInput" accept="image/jpeg,image/png,image/webp" hidden />
+              </button>
+            </div>
+            <div class="field"><label>브랜드명</label><input id="bfName" value="Maison Lune Seoul" /></div>
+            <div class="field"><label>한 줄 소개</label><input id="bfDesc" value="서울 기반 미니멀 디자이너 브랜드" /></div>
+            <div class="field"><label>무드 <span style="color:var(--muted);font-weight:500;">(쉼표로 구분)</span></label><input id="bfMood" value="미니멀, 블랙, 에디토리얼" /></div>
+            <button class="btn" style="margin-top:6px;">저장하기</button>
           </div>
-          <div>
-            <div class="sec-head" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;"><h2 style="font-size:18px;font-weight:900;margin:0;">공개 프로필 미리보기</h2></div>
+          <div class="brand-preview">
+            <span class="sf-pub-eyebrow">Preview</span>
+            <h2 class="brand-prev-title">공개 프로필 미리보기</h2>
             <div class="pp-card">
-              <div class="pp-img" style="background-image:url('assets/DISIGNER/D_2/KakaoTalk_20260603_155917553.png')"></div>
+              <div class="pp-img" id="ppImg" style="background-image:url('assets/designer-samples/card_1_potfolio/1.png')"></div>
               <div class="pp-body">
                 <div class="pp-kicker">Designer Brand / Seoul</div>
-                <h3>Maison Lune Seoul</h3>
-                <p>서울 기반 미니멀 디자이너 브랜드</p>
-                <div class="pp-tags"><span>미니멀</span><span>블랙</span><span>에디토리얼</span></div>
+                <h3 id="ppName">Maison Lune Seoul</h3>
+                <p id="ppDesc">서울 기반 미니멀 디자이너 브랜드</p>
+                <div class="pp-tags" id="ppTags"><span>미니멀</span><span>블랙</span><span>에디토리얼</span></div>
                 <span class="pp-cta">Collab Proposal</span>
               </div>
             </div>
@@ -509,6 +541,34 @@
       renderFlags(); renderPlats();
       const gen = document.getElementById('ssfGen'), status = document.getElementById('ssfStatus');
       if (gen) gen.onclick = () => { gen.disabled = true; status.textContent = '숏폼 생성 중… 약 5초'; setTimeout(() => { gen.disabled = false; status.textContent = '숏폼이 생성됐어요 ✓ 오른쪽에서 내 채널에 등록하세요.'; }, 1800); };
+    })();
+
+    // 내 브랜드: 대표 이미지 업로드(로컬 미리보기) + 입력 실시간 반영
+    (function () {
+      const up = document.getElementById('brandUpload');
+      if (!up) return;
+      const upInput = document.getElementById('brandUpInput');
+      const upImg = document.getElementById('brandUpImg');
+      const ppImg = document.getElementById('ppImg');
+      const ppName = document.getElementById('ppName');
+      const ppDesc = document.getElementById('ppDesc');
+      const ppTags = document.getElementById('ppTags');
+      const bfName = document.getElementById('bfName');
+      const bfDesc = document.getElementById('bfDesc');
+      const bfMood = document.getElementById('bfMood');
+      up.addEventListener('click', () => upInput.click());
+      upInput.addEventListener('change', () => {
+        const f = upInput.files && upInput.files[0];
+        if (!f) return;
+        const r = new FileReader();
+        r.onload = () => { upImg.src = r.result; ppImg.style.backgroundImage = "url('" + r.result + "')"; };
+        r.readAsDataURL(f);
+      });
+      if (bfName) bfName.addEventListener('input', () => { ppName.textContent = bfName.value || '브랜드명'; });
+      if (bfDesc) bfDesc.addEventListener('input', () => { ppDesc.textContent = bfDesc.value || '한 줄 소개'; });
+      if (bfMood) bfMood.addEventListener('input', () => {
+        ppTags.innerHTML = bfMood.value.split(',').map((t) => t.trim()).filter(Boolean).map((t) => '<span>' + t + '</span>').join('');
+      });
     })();
   </script>
 </body>
