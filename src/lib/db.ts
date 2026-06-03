@@ -59,6 +59,7 @@ export function toDemoProducts(): Product[] {
     name: product.name,
     category: product.category,
     price: null,
+    supply_price: null,
     color: null,
     description: product.status,
     image_url: product.image,
@@ -148,6 +149,7 @@ export async function createProductForDesigner(input: {
   name: string;
   category: string;
   price?: string | null;
+  supplyPrice?: string | null;
   color?: string | null;
   description?: string | null;
   imageUrl: string;
@@ -159,15 +161,16 @@ export async function createProductForDesigner(input: {
   if (!hasDatabase()) throw new Error("DATABASE_URL is required for product creation.");
   return one<Product>(
     `INSERT INTO products (
-       designer_id, name, category, price, color, description, image_url, tryon_image_url, image_hash, mood, status
+       designer_id, name, category, price, supply_price, color, description, image_url, tryon_image_url, image_hash, mood, status
      )
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
      RETURNING *`,
     [
       input.designerId,
       input.name,
       input.category,
       input.price || null,
+      input.supplyPrice || null,
       input.color || null,
       input.description || null,
       input.imageUrl,
@@ -183,6 +186,7 @@ export async function updateProductForDesigner(designerId: string, productId: st
   name: string;
   category: string;
   price: string | null;
+  supplyPrice: string | null;
   color: string | null;
   description: string | null;
   imageUrl: string;
@@ -197,13 +201,14 @@ export async function updateProductForDesigner(designerId: string, productId: st
      SET name = COALESCE($3, name),
          category = COALESCE($4, category),
          price = COALESCE($5, price),
-         color = COALESCE($6, color),
-         description = COALESCE($7, description),
-         image_url = COALESCE($8, image_url),
-         tryon_image_url = COALESCE($9, tryon_image_url),
-         image_hash = COALESCE($10, image_hash),
-         mood = COALESCE($11, mood),
-         status = COALESCE($12, status),
+         supply_price = COALESCE($6, supply_price),
+         color = COALESCE($7, color),
+         description = COALESCE($8, description),
+         image_url = COALESCE($9, image_url),
+         tryon_image_url = COALESCE($10, tryon_image_url),
+         image_hash = COALESCE($11, image_hash),
+         mood = COALESCE($12, mood),
+         status = COALESCE($13, status),
          updated_at = now()
      WHERE designer_id = $1 AND id = $2
      RETURNING *`,
@@ -213,6 +218,7 @@ export async function updateProductForDesigner(designerId: string, productId: st
       input.name ?? null,
       input.category ?? null,
       input.price ?? null,
+      input.supplyPrice ?? null,
       input.color ?? null,
       input.description ?? null,
       input.imageUrl ?? null,
@@ -383,5 +389,25 @@ export async function updateDesignerApprovalStatus(id: string, status: "approved
   return one<Designer>(
     "UPDATE designers SET approval_status = $2, updated_at = now() WHERE id = $1 RETURNING *",
     [id, status],
+  );
+}
+
+export async function updateDesignerProfile(id: string, input: Partial<{
+  brand_name: string;
+  description: string;
+  mood: string;
+  country: string;
+}>) {
+  if (!hasDatabase()) throw new Error("DATABASE_URL is required for profile updates.");
+  return one<Designer>(
+    `UPDATE designers
+     SET brand_name = COALESCE($2, brand_name),
+         description = COALESCE($3, description),
+         mood = COALESCE($4, mood),
+         country = COALESCE($5, country),
+         updated_at = now()
+     WHERE id = $1
+     RETURNING *`,
+    [id, input.brand_name ?? null, input.description ?? null, input.mood ?? null, input.country ?? null],
   );
 }

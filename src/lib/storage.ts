@@ -1,6 +1,28 @@
 import { createHash, randomUUID } from "node:crypto";
 import { createReadStream, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import sharp from "sharp";
+
+const MAX_EDGE = 1600;
+
+// 업로드 이미지를 표시 크기로 리사이즈 + 재압축 (디자이너가 용량 신경 안 쓰게).
+// 실패 시 원본 유지. 결과가 더 크면 원본 유지.
+async function optimizeImage(bytes: Buffer, ext: string): Promise<Buffer> {
+  try {
+    let img = sharp(bytes, { failOn: "none" }).rotate();
+    const meta = await img.metadata();
+    if ((meta.width || 0) > MAX_EDGE || (meta.height || 0) > MAX_EDGE) {
+      img = img.resize({ width: MAX_EDGE, height: MAX_EDGE, fit: "inside", withoutEnlargement: true });
+    }
+    if (ext === ".png") img = img.png({ compressionLevel: 9, palette: true, quality: 82, effort: 8 });
+    else if (ext === ".webp") img = img.webp({ quality: 82 });
+    else img = img.jpeg({ quality: 80, mozjpeg: true });
+    const out = await img.toBuffer();
+    return out.length < bytes.length ? out : bytes;
+  } catch {
+    return bytes;
+  }
+}
 
 const projectRoot = /* turbopackIgnore: true */ process.cwd();
 const assetsRoot = path.join(projectRoot, "assets");
@@ -47,16 +69,18 @@ export function validateImageUpload(input: { mimeType: string; byteLength: numbe
   return ext;
 }
 
-export function saveStorageImage(kind: StorageKind, bytes: Buffer, mimeType: string) {
+export async function saveStorageImage(kind: StorageKind, bytes: Buffer, mimeType: string) {
   ensureStorage();
   const ext = validateImageUpload({ mimeType, byteLength: bytes.length });
+  const optimized = await optimizeImage(bytes, ext);
   const fileName = `${randomUUID()}${ext}`;
   const filePath = path.join(/* turbopackIgnore: true */ roots[kind], fileName);
-  writeFileSync(filePath, bytes);
+  writeFileSync(filePath, optimized);
+  const imageHash = getImageHash(optimized);
 
-  if (kind === "productUploads") return { url: `/uploads/products/${fileName}`, imageHash: getImageHash(bytes) };
-  if (kind === "generatedLooks") return { url: `/generated-looks/${fileName}`, imageHash: getImageHash(bytes) };
-  return { url: `/model-templates/${fileName}`, imageHash: getImageHash(bytes) };
+  if (kind === "productUploads") return { url: `/uploads/products/${fileName}`, imageHash };
+  if (kind === "generatedLooks") return { url: `/generated-looks/${fileName}`, imageHash };
+  return { url: `/model-templates/${fileName}`, imageHash };
 }
 
 export function saveGeneratedPng(fileName: string, base64Image: string) {

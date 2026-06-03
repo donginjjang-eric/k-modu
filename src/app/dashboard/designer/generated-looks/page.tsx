@@ -1,32 +1,40 @@
 import { requireApprovedDesigner } from "@/lib/auth";
-import { getGeneratedLooksForDesigner } from "@/lib/db";
+import { getProductsForDesigner, getModelTemplates, getGeneratedLooksForDesigner } from "@/lib/db";
+import StylingBoard from "@/components/StylingBoard";
 
-export default async function DesignerGeneratedLooksPage() {
+export default async function DesignerAiLookPage() {
   const { designer } = await requireApprovedDesigner();
-  const looks = await getGeneratedLooksForDesigner(designer.id);
+  const [products, templates, looks] = await Promise.all([
+    getProductsForDesigner(designer.id),
+    getModelTemplates(),
+    getGeneratedLooksForDesigner(designer.id),
+  ]);
 
   return (
-    <main className="page">
-      <p className="kicker">Generated Looks</p>
-      <h1 style={{ marginTop: 0, fontSize: 48 }}>생성 이미지</h1>
-      <section className="designer-grid">
-        {looks.length ? looks.map((look) => (
-          <article className="designer-card" key={look.id}>
-            <img src={look.image_url} alt="AI lookbook preview" />
-            <div className="designer-card-body">
-              <p className="kicker">{look.cache_hit ? "Cached Look" : "New AI Look"}</p>
-              <h2>Full Look Preview</h2>
-              <p className="notice">{look.status} · {new Date(look.created_at).toLocaleString()}</p>
-            </div>
-          </article>
-        )) : (
-          <article className="dash-card">
-            <p className="kicker">No Looks</p>
-            <h2>아직 생성된 이미지가 없습니다.</h2>
-            <p className="notice">스타일링 보드에서 상품을 2개 이상 선택한 뒤 Generate AI Look을 실행하세요.</p>
-          </article>
-        )}
-      </section>
-    </main>
+    <>
+      <h1 className="st-title">✨ AI 룩 만들기</h1>
+      <p className="st-sub">모델과 상품을 골라 모델 착장 이미지를 만들어요.</p>
+
+      <StylingBoard
+        designer={{
+          brandName: designer.brand_name,
+          mood: designer.mood,
+          heroImage: products[0]?.image_url || "/assets/mainmodel_2.png",
+        }}
+        products={products.map((p) => ({ id: p.id, name: p.name, category: p.category, status: p.status, image: p.image_url }))}
+        modelTemplates={templates.map((t) => ({ id: t.id, label: t.name, image: t.image_url }))}
+      />
+
+      {looks.length ? (
+        <>
+          <div className="st-sec-head" style={{ marginTop: 32 }}><h2>내가 만든 룩</h2></div>
+          <div className="st-rail">
+            {looks.map((l) => (
+              <div key={l.id} className="thumb" style={{ backgroundImage: `url('${l.image_url}')` }} />
+            ))}
+          </div>
+        </>
+      ) : null}
+    </>
   );
 }

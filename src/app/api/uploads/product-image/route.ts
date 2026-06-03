@@ -6,7 +6,7 @@ export async function POST(request: Request) {
 
   try {
     const { bytes, mimeType } = await readImageFormFile(request, "image");
-    const saved = saveStorageImage("productUploads", bytes, mimeType);
+    const saved = await saveStorageImage("productUploads", bytes, mimeType);
     return Response.json({
       ok: true,
       imageUrl: saved.url,

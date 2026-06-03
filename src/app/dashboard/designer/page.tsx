@@ -1,25 +1,54 @@
 import Link from "next/link";
 import { requireApprovedDesigner } from "@/lib/auth";
+import { getProductsForDesigner, getGeneratedLooksForDesigner } from "@/lib/db";
 
-export default async function DesignerDashboardPage() {
+export default async function DesignerHome() {
   const { designer } = await requireApprovedDesigner();
+  const [products, looks] = await Promise.all([
+    getProductsForDesigner(designer.id),
+    getGeneratedLooksForDesigner(designer.id),
+  ]);
+  const recent = products.slice(0, 6);
 
   return (
-    <main className="page">
-      <p className="kicker">Designer Dashboard</p>
-      <h1 style={{ marginTop: 0, fontSize: 48 }}>{designer.brand_name}</h1>
-      <section className="dashboard-grid">
-        <Link className="dash-card" href="/dashboard/designer/products">
-          <p className="kicker">Products</p>
-          <h2>상품 관리</h2>
-          <p className="notice">상품 등록, 수정, 삭제와 이미지 업로드를 관리합니다.</p>
+    <>
+      <h1 className="st-title">안녕하세요, {designer.brand_name} 님 👋</h1>
+      <p className="st-sub">오늘도 멋진 룩을 올려볼까요?</p>
+
+      <div className="st-stats">
+        <div className="st-stat"><div className="n">{products.length}</div><div className="l">상품</div></div>
+        <div className="st-stat"><div className="n">{looks.length}</div><div className="l">AI 룩</div></div>
+        <div className="st-stat"><div className="n">0</div><div className="l">숏폼</div></div>
+      </div>
+
+      <div className="st-actions">
+        <Link className="st-bigbtn dark" href="/dashboard/designer/products">
+          <div><div className="t">＋ 상품 올리기</div><div className="d">사진만 올리면 끝, 자동으로 정리돼요</div></div>
+          <div className="go">→</div>
         </Link>
-        <Link className="dash-card" href="/dashboard/designer/generated-looks">
-          <p className="kicker">Generated Looks</p>
-          <h2>생성 이미지</h2>
-          <p className="notice">AI 룩북 생성 결과와 캐시 상태를 확인합니다.</p>
+        <Link className="st-bigbtn" href="/dashboard/designer/generated-looks">
+          <div><div className="t">✨ AI 룩 만들기</div><div className="d">상품을 골라 모델 착장을 만들어요</div></div>
+          <div className="go">→</div>
         </Link>
-      </section>
-    </main>
+      </div>
+
+      <div className="st-sec-head">
+        <h2>최근 올린 상품</h2>
+        <Link href="/dashboard/designer/products">더보기 →</Link>
+      </div>
+      {recent.length ? (
+        <div className="st-rail">
+          {recent.map((p) => (
+            <div key={p.id} className="thumb" style={{ backgroundImage: `url('${p.image_url}')` }} />
+          ))}
+        </div>
+      ) : (
+        <div className="st-empty">
+          <div className="ic">👕</div>
+          <p>아직 올린 상품이 없어요. 첫 상품을 올려볼까요?</p>
+          <Link className="st-btn" href="/dashboard/designer/products">＋ 상품 올리기</Link>
+        </div>
+      )}
+    </>
   );
 }

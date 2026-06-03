@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS products (
   name text NOT NULL,
   category text NOT NULL,
   price text,
+  supply_price text,
   color text,
   description text,
   image_url text NOT NULL,
@@ -38,6 +39,9 @@ CREATE TABLE IF NOT EXISTS products (
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
+
+-- 기존 DB 마이그레이션: 컬럼이 없으면 추가 (price=판매가, supply_price=공급가)
+ALTER TABLE products ADD COLUMN IF NOT EXISTS supply_price text;
 
 CREATE TABLE IF NOT EXISTS model_templates (
   id text PRIMARY KEY DEFAULT gen_random_uuid()::text,

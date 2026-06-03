@@ -18,6 +18,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     name: body.name ? String(body.name).trim() : undefined,
     category: body.category ? String(body.category).trim() : undefined,
     price: body.price ? String(body.price) : undefined,
+    supplyPrice: (body.supplyPrice ?? body.supply_price) ? String(body.supplyPrice ?? body.supply_price) : undefined,
     color: body.color ? String(body.color) : undefined,
     description: body.description ? String(body.description) : undefined,
     imageUrl: body.imageUrl ? String(body.imageUrl) : undefined,

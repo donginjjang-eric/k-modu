@@ -24,6 +24,7 @@ export async function POST(request: Request) {
       name,
       category,
       price: body.price ? String(body.price) : null,
+      supplyPrice: body.supplyPrice ?? body.supply_price ? String(body.supplyPrice ?? body.supply_price) : null,
       color: body.color ? String(body.color) : null,
       description: body.description ? String(body.description) : null,
       imageUrl,

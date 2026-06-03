@@ -30,6 +30,7 @@ export type Product = {
   name: string;
   category: string;
   price: string | null;
+  supply_price: string | null;
   color: string | null;
   description: string | null;
   image_url: string;
