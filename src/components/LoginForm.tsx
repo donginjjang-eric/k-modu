@@ -3,8 +3,8 @@
 import { useState } from "react";
 
 export default function LoginForm() {
-  const [email, setEmail] = useState("designer@k-modu.test");
-  const [password, setPassword] = useState("kmodu-demo-password");
+  const [email, setEmail] = useState("test");
+  const [password, setPassword] = useState("1234");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -32,12 +32,12 @@ export default function LoginForm() {
   return (
     <form className="generate-box" onSubmit={submit}>
       <label>
-        <p className="kicker">Email</p>
+        <p className="kicker">아이디</p>
         <input
           style={{ width: "100%", minHeight: 48, padding: 12 }}
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          autoComplete="email"
+          autoComplete="username"
         />
       </label>
       <label>
@@ -55,7 +55,7 @@ export default function LoginForm() {
       </button>
       {message ? <p className="notice">{message}</p> : null}
       <p className="notice">
-        Local demo: designer@k-modu.test / kmodu-demo-password, admin@k-modu.test / demo-admin-password
+        데모 계정 — 디자이너: <b>test / 1234</b> · 관리자: <b>admin / 1234</b>
       </p>
     </form>
   );

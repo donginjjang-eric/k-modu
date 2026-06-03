@@ -21,11 +21,22 @@ async function seedAdmin() {
 }
 
 async function seedDemoData() {
+  // 쉬운 데모 계정 — 디자이너: test / 1234
   await query(
     `INSERT INTO users (id, email, password_hash, role)
-     VALUES ('demo-designer-user', 'designer@k-modu.test', $1, 'designer')
-     ON CONFLICT (email) DO NOTHING`,
-    [hashPassword("kmodu-demo-password")],
+     VALUES ('demo-designer-user', 'test', $1, 'designer')
+     ON CONFLICT (id) DO UPDATE
+       SET email = EXCLUDED.email, password_hash = EXCLUDED.password_hash, role = 'designer', updated_at = now()`,
+    [hashPassword("1234")],
+  );
+
+  // 쉬운 데모 계정 — 관리자: admin / 1234
+  await query(
+    `INSERT INTO users (id, email, password_hash, role)
+     VALUES ('demo-admin-user', 'admin', $1, 'admin')
+     ON CONFLICT (id) DO UPDATE
+       SET email = EXCLUDED.email, password_hash = EXCLUDED.password_hash, role = 'admin', updated_at = now()`,
+    [hashPassword("1234")],
   );
 
   await query(
