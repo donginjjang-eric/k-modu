@@ -2046,6 +2046,40 @@
       .hc-slide { flex-basis: 360px; }
       .hc-status { left: calc(50% - 170px); }
     }
+    /* ===== Global creator band (flags + KPI) ===== */
+    .global-band{background:var(--outer);color:#fff;padding:66px 6vw 58px;text-align:center;}
+    .gb-eyebrow{font-size:var(--fs-label);letter-spacing:.2em;color:rgba(255,255,255,.5);font-weight:var(--fw-bold);margin:0 0 12px;text-transform:uppercase;}
+    .gb-title{font-size:clamp(22px,3.2vw,36px);font-weight:var(--fw-bold);margin:0 0 40px;letter-spacing:-.02em;}
+    .flag-row{display:flex;flex-wrap:wrap;justify-content:center;gap:26px 36px;margin:0 0 56px;}
+    .flag{display:flex;flex-direction:column;align-items:center;gap:11px;transition:transform .2s ease;}
+    .flag:hover{transform:translateY(-4px);}
+    .flag img{width:58px;height:58px;border-radius:999px;box-shadow:0 6px 18px rgba(0,0,0,.45);}
+    .flag span{font-size:var(--fs-sm);color:rgba(255,255,255,.78);font-weight:var(--fw-medium);}
+    .flag.soon{opacity:.4;filter:grayscale(.55);}
+    .flag.soon:hover{transform:none;}
+    .flag.soon span{color:rgba(255,255,255,.5);}
+    .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;max-width:1000px;margin:0 auto;border-top:1px solid rgba(255,255,255,.15);padding-top:42px;}
+    .kpi-num{font-size:clamp(30px,4.2vw,54px);font-weight:var(--fw-bold);letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums;}
+    .kpi-label{margin-top:10px;font-size:var(--fs-sm);color:rgba(255,255,255,.55);font-weight:var(--fw-medium);}
+    @media(max-width:760px){.kpi-row{grid-template-columns:1fr 1fr;gap:32px 12px;padding-top:34px;}.flag img{width:46px;height:46px;}.flag span{font-size:var(--fs-xs);}.flag-row{gap:18px 22px;margin-bottom:42px;}.global-band{padding:48px 20px 44px;}}
+
+    /* ===== Locale (language) dropdown ===== */
+    .locale-switch{position:relative;}
+    .locale-btn{display:inline-flex;align-items:center;gap:7px;background:none;border:1px solid var(--hair);border-radius:999px;padding:5px 10px 5px 6px;cursor:pointer;font:inherit;}
+    .locale-btn img{width:24px;height:24px;border-radius:999px;}
+    .locale-btn b{font-size:var(--fs-label);font-weight:var(--fw-bold);letter-spacing:.04em;}
+    .locale-btn .caret{font-size:9px;color:var(--soft);transition:transform .2s ease;}
+    .locale-switch.open .locale-btn .caret{transform:rotate(180deg);}
+    .locale-menu{position:absolute;top:calc(100% + 8px);right:0;min-width:190px;background:#fff;border:1px solid var(--hair);border-radius:14px;box-shadow:0 16px 40px rgba(0,0,0,.16);padding:6px;display:none;z-index:60;}
+    .locale-switch.open .locale-menu{display:block;}
+    .locale-opt{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;}
+    .locale-opt img{width:26px;height:26px;border-radius:999px;}
+    .locale-opt strong{font-size:var(--fs-sm);font-weight:var(--fw-semibold);flex:1;text-align:left;}
+    .locale-opt em{font-size:var(--fs-micro);font-style:normal;font-weight:var(--fw-bold);letter-spacing:.06em;color:var(--soft);}
+    .locale-opt.is-on{background:rgba(5,5,5,.05);}
+    .locale-opt.is-on em{color:#1f7a4d;}
+    .locale-opt:not(.is-soon):hover{background:rgba(5,5,5,.05);}
+    .locale-opt.is-soon{opacity:.38;cursor:default;}
   </style>
 </head>
 <body>
@@ -2059,10 +2093,16 @@
         <a href="#contact">문의</a>
       </nav>
       <div class="nav-right">
-        <div class="locale-switch" aria-label="Language">
-          <a class="active" href="#">KR</a>
-          <span>/</span>
-          <a href="#">US</a>
+        <div class="locale-switch" id="localeSwitch" aria-label="언어 선택">
+          <button class="locale-btn" type="button" aria-haspopup="true" aria-expanded="false">
+            <img src="assets/flags/kr.svg" alt="" /><b>KR</b><i class="caret">▾</i>
+          </button>
+          <div class="locale-menu" role="menu">
+            <a class="locale-opt is-on" href="#" role="menuitem"><img src="assets/flags/us.svg" alt="" /><strong>English</strong><em>OPEN</em></a>
+            <a class="locale-opt" href="#" role="menuitem"><img src="assets/flags/kr.svg" alt="" /><strong>한국어</strong><em>현재</em></a>
+            <a class="locale-opt is-soon" role="menuitem"><img src="assets/flags/cn.svg" alt="" /><strong>中文</strong><em>준비중</em></a>
+            <a class="locale-opt is-soon" role="menuitem"><img src="assets/flags/jp.svg" alt="" /><strong>日本語</strong><em>준비중</em></a>
+          </div>
         </div>
         <a class="login-btn" href="/login.html">로그인</a>
       </div>
@@ -2074,8 +2114,11 @@
         <a href="/designers">디자이너</a>
         <a href="/creators">크리에이터</a>
         <a href="#contact">문의</a>
-        <div class="mobile-utility">
-          <span>KR / US</span>
+        <div class="mobile-utility" style="display:flex;align-items:center;gap:10px;">
+          <img src="assets/flags/kr.svg" alt="한국어" style="width:28px;height:28px;border-radius:999px;" />
+          <img src="assets/flags/us.svg" alt="English" style="width:28px;height:28px;border-radius:999px;" />
+          <img src="assets/flags/cn.svg" alt="中文" style="width:28px;height:28px;border-radius:999px;opacity:.38;" />
+          <img src="assets/flags/jp.svg" alt="日本語" style="width:28px;height:28px;border-radius:999px;opacity:.38;" />
         </div>
         <a class="mobile-login" href="/login.html">로그인</a>
       </div>
@@ -2142,6 +2185,30 @@
       <p class="vision-subcopy">한국 디자이너 브랜드가 전세계 패션 크리에이터와 만나는 지점. K-MODU는 브랜드 스토리, 상품, 캠페인을 하나의 연결된 글로벌 확장 흐름으로 만듭니다.</p>
       <div class="center-model">
         <img loading="lazy" decoding="async" src="assets/us-influencer-2-transparent.png" alt="US influencer profile" />
+      </div>
+    </section>
+
+    <section class="global-band" aria-label="글로벌 크리에이터 네트워크">
+      <p class="gb-eyebrow">Global Creator Network</p>
+      <h2 class="gb-title">전 세계 크리에이터가 함께합니다</h2>
+      <div class="flag-row">
+        <div class="flag"><img loading="lazy" src="assets/flags/cn.svg" alt="중국 국기" /><span>중국</span></div>
+        <div class="flag"><img loading="lazy" src="assets/flags/jp.svg" alt="일본 국기" /><span>일본</span></div>
+        <div class="flag"><img loading="lazy" src="assets/flags/vn.svg" alt="베트남 국기" /><span>베트남</span></div>
+        <div class="flag"><img loading="lazy" src="assets/flags/th.svg" alt="태국 국기" /><span>태국</span></div>
+        <div class="flag"><img loading="lazy" src="assets/flags/id.svg" alt="인도네시아 국기" /><span>인도네시아</span></div>
+        <div class="flag"><img loading="lazy" src="assets/flags/my.svg" alt="말레이시아 국기" /><span>말레이시아</span></div>
+        <div class="flag"><img loading="lazy" src="assets/flags/sg.svg" alt="싱가포르 국기" /><span>싱가포르</span></div>
+        <div class="flag"><img loading="lazy" src="assets/flags/tw.svg" alt="대만 국기" /><span>대만</span></div>
+        <div class="flag soon"><img loading="lazy" src="assets/flags/us.svg" alt="미국 국기" /><span>미국</span></div>
+        <div class="flag soon"><img loading="lazy" src="assets/flags/fr.svg" alt="프랑스 국기" /><span>프랑스</span></div>
+        <div class="flag soon"><img loading="lazy" src="assets/flags/ru.svg" alt="러시아 국기" /><span>러시아</span></div>
+      </div>
+      <div class="kpi-row">
+        <div class="kpi"><div class="kpi-num" data-target="12480">0</div><div class="kpi-label">AI Generated Images</div></div>
+        <div class="kpi"><div class="kpi-num" data-target="3240">0</div><div class="kpi-label">Orders</div></div>
+        <div class="kpi"><div class="kpi-num" data-target="48.2" data-decimals="1" data-suffix="M">0</div><div class="kpi-label">Influencer Followers</div></div>
+        <div class="kpi"><div class="kpi-num" data-prefix="$" data-target="2.1" data-decimals="1" data-suffix="M">0</div><div class="kpi-label">Revenue</div></div>
       </div>
     </section>
 
@@ -2677,6 +2744,49 @@
 
     requestAnimationFrame(() => goTo(0, false));
     setPlaying(true);
+  })();
+
+  // KPI 카운트업 (스크롤 진입 시 0→목표)
+  (function () {
+    const fmt = (n, dec) => dec > 0 ? n.toFixed(dec) : Math.round(n).toLocaleString('en-US');
+    const run = (el) => {
+      const target = parseFloat(el.dataset.target || '0');
+      const dec = parseInt(el.dataset.decimals || '0', 10);
+      const prefix = el.dataset.prefix || '';
+      const suffix = el.dataset.suffix || '';
+      const dur = 1600;
+      let startTs = null;
+      const step = (ts) => {
+        if (startTs === null) startTs = ts;
+        const p = Math.min(1, (ts - startTs) / dur);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = prefix + fmt(target * eased, dec) + suffix;
+        if (p < 1) requestAnimationFrame(step);
+        else el.textContent = prefix + fmt(target, dec) + suffix;
+      };
+      requestAnimationFrame(step);
+    };
+    const nums = document.querySelectorAll('.kpi-num');
+    if (!nums.length) return;
+    if (!('IntersectionObserver' in window)) { nums.forEach(run); return; }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) { run(e.target); io.unobserve(e.target); } });
+    }, { threshold: 0.4 });
+    nums.forEach((el) => io.observe(el));
+  })();
+
+  // 언어(국기) 드롭다운
+  (function () {
+    const sw = document.getElementById('localeSwitch');
+    if (!sw) return;
+    const btn = sw.querySelector('.locale-btn');
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const open = sw.classList.toggle('open');
+      btn.setAttribute('aria-expanded', String(open));
+    });
+    document.addEventListener('click', () => sw.classList.remove('open'));
+    sw.querySelectorAll('.locale-opt.is-soon').forEach((o) => o.addEventListener('click', (e) => e.preventDefault()));
   })();
   </script>
 </body>
