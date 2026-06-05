@@ -1431,29 +1431,30 @@
       showAiNotice('AI 룩 생성을 시작했습니다', '잠시만 기다려주세요. 완료되면 화면의 모델 룩으로 바로 반영됩니다.', 'success');
 
       try {
-        setAiProgress(10, '디자이너가 미리 승인한 동일 조합 룩이 있는지 확인 중입니다.', 'starting');
+        setAiProgress(35, 'AI가 상품 조합을 분석 중입니다.', 'starting');
         const approvedLook = await fetchApprovedLookMatch(items);
         if (approvedLook && approvedLook.imageUrl) {
+          setAiProgress(75, 'AI가 스타일을 모델 룩에 적용 중입니다.', 'processing');
           const approvedImage = new Image();
           approvedImage.src = approvedLook.imageUrl;
           await (approvedImage.decode ? approvedImage.decode().catch(() => {}) : Promise.resolve());
           applyGeneratedLook(approvedLook.imageUrl, items, {
-            label: 'Approved AI Look',
-            status: '선택한 상품 조합과 정확히 일치하는 승인 룩을 불러왔습니다.'
+            label: 'AI Look',
+            status: 'AI 룩 생성 완료'
           });
           addGeneratedLook(approvedLook.imageUrl);
-          setAiProgress(100, '정확히 일치하는 승인 룩을 불러왔습니다.', 'done');
+          setAiProgress(100, 'AI 룩 생성 완료', 'done');
           setAiTryOnLoading(false);
-          showAiNotice('저장된 승인 룩을 찾았습니다', '선택한 상품 조합과 정확히 같은 승인 룩을 불러왔습니다.', 'success');
+          showAiNotice('AI 룩 생성 완료', '선택한 상품 조합으로 모델 룩을 완성했습니다.', 'success');
           if (window.matchMedia('(max-width: 900px)').matches) {
             openLightbox(generatedLooks, 0);
           }
           return;
         }
-        setAiProgress(12, '동일 조합 승인 룩이 없어 OpenAI로 새 룩을 생성합니다.', 'processing');
+        setAiProgress(45, 'AI가 스타일 방향을 구성 중입니다.', 'processing');
       } catch (error) {
         aiTryonStatus.hidden = false;
-        aiTryonStatus.textContent = '승인 룩 확인에 실패해 OpenAI 생성으로 진행합니다.';
+        aiTryonStatus.textContent = 'AI가 스타일 방향을 구성 중입니다.';
       }
 
       try {
@@ -1465,12 +1466,12 @@
         await (generatedImage.decode ? generatedImage.decode().catch(() => {}) : Promise.resolve());
 
         applyGeneratedLook(liveResult.imageUrl, items, {
-          label: liveResult.cacheHit ? 'Saved AI Look' : 'OpenAI Look',
-          status: liveResult.cacheHit ? '저장된 AI 룩을 불러왔습니다.' : 'OpenAI로 새 AI 룩을 생성했습니다.'
+          label: 'AI Look',
+          status: 'AI 룩 생성 완료'
         });
         addGeneratedLook(liveResult.imageUrl);
-        setAiProgress(100, liveResult.cacheHit ? '저장된 AI 룩을 불러왔습니다.' : 'OpenAI 생성이 완료되었습니다.', 'done');
-        showAiNotice('AI 룩 준비 완료', liveResult.cacheHit ? '저장된 AI 룩을 불러왔습니다.' : 'OpenAI 생성이 완료되었습니다.', 'success');
+        setAiProgress(100, 'AI 룩 생성 완료', 'done');
+        showAiNotice('AI 룩 생성 완료', '선택한 상품 조합으로 모델 룩을 완성했습니다.', 'success');
         if (window.matchMedia('(max-width: 900px)').matches) {
           openLightbox(generatedLooks, 0);
         }
