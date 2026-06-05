@@ -1076,7 +1076,8 @@
       }
     };
 
-    const getStylingButtonKey = (button) => normalizeStylingCategory(button.dataset.category || 'Item');
+    const MAX_PUBLIC_AI_ITEMS = 4;
+    const getStylingButtonKey = (button) => button.dataset.productId || `${button.dataset.category || 'Item'}:${button.dataset.itemName || ''}`;
 
     const getSelectedStylingItems = () => Array.from(selectedStylingItems.values());
 
@@ -1113,8 +1114,8 @@
         ? items.map((item) => `<span>${escapeHtml(item.category)} · ${escapeHtml(item.name)}</span>`).join('')
         : '<span class="is-empty">선택된 항목 없음</span>';
       aiTryonSelection.textContent = items.length
-        ? `${items.length}개 선택됨. ${items.length >= 2 ? '룩을 생성할 수 있어요.' : '한 개 더 선택하면 생성할 수 있어요.'}`
-        : '오른쪽에서 옷·바지·가방·신발을 선택해 룩을 구성하세요.';
+        ? `${items.length}개 선택됨. ${items.length >= 2 ? 'AI 룩을 생성할 수 있어요.' : '한 개 더 선택하면 생성할 수 있어요.'}`
+        : '상품 2~4개를 선택해 AI 룩을 구성하세요.';
     };
 
     const toggleStylingItemSelection = (button) => {
@@ -1126,10 +1127,10 @@
         selectedStylingItems.delete(key);
         setTryOnButtonState(button, false);
       } else {
-        if (existing) {
-          if (existing.flatNode) existing.flatNode.remove();
-          if (existing.buttonNode) setTryOnButtonState(existing.buttonNode, false);
-          selectedStylingItems.delete(key);
+        if (selectedStylingItems.size >= MAX_PUBLIC_AI_ITEMS) {
+          aiTryonStatus.textContent = '상품은 최대 4개까지 조합할 수 있어요. 다른 상품을 고르려면 선택된 상품을 먼저 해제해주세요.';
+          updateAiTryOnControls();
+          return;
         }
         const image = button.dataset.itemImage || '';
         const category = button.dataset.category || 'Item';
@@ -1257,6 +1258,11 @@
       const items = getSelectedStylingItems();
       if (items.length < 2) {
         aiTryonStatus.textContent = '생성하려면 제품을 2개 이상 선택하세요.';
+        updateAiTryOnControls();
+        return;
+      }
+      if (items.length > MAX_PUBLIC_AI_ITEMS) {
+        aiTryonStatus.textContent = '상품은 최대 4개까지 조합할 수 있어요. 선택을 줄인 뒤 다시 생성해주세요.';
         updateAiTryOnControls();
         return;
       }
