@@ -19,7 +19,7 @@ export default function DraggableTabs({
   onChange,
 }: DraggableTabsProps) {
   const scrollerRef = useRef<HTMLDivElement>(null);
-  const dragRef = useRef({ active: false, startX: 0, scrollLeft: 0, moved: false });
+  const dragRef = useRef({ active: false, startX: 0, scrollLeft: 0, moved: false, suppressClick: false });
 
   const stopDrag = (event: PointerEvent<HTMLDivElement>) => {
     const scroller = scrollerRef.current;
@@ -27,6 +27,13 @@ export default function DraggableTabs({
     dragRef.current.active = false;
     scroller.classList.remove("is-dragging");
     if (scroller.hasPointerCapture(event.pointerId)) scroller.releasePointerCapture(event.pointerId);
+    if (dragRef.current.moved) {
+      dragRef.current.suppressClick = true;
+      window.setTimeout(() => {
+        dragRef.current.moved = false;
+        dragRef.current.suppressClick = false;
+      }, 0);
+    }
   };
 
   return (
@@ -43,6 +50,7 @@ export default function DraggableTabs({
           startX: event.clientX,
           scrollLeft: scroller.scrollLeft,
           moved: false,
+          suppressClick: false,
         };
         scroller.classList.add("is-dragging");
         scroller.setPointerCapture(event.pointerId);
@@ -58,10 +66,11 @@ export default function DraggableTabs({
       onPointerUp={stopDrag}
       onPointerCancel={stopDrag}
       onClickCapture={(event) => {
-        if (!dragRef.current.moved) return;
+        if (!dragRef.current.suppressClick) return;
         event.preventDefault();
         event.stopPropagation();
         dragRef.current.moved = false;
+        dragRef.current.suppressClick = false;
       }}
     >
       {categories.map((category) => (
