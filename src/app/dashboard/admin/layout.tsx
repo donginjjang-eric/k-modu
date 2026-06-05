@@ -5,7 +5,6 @@ import { AdminSideNav, AdminTabBar } from "@/components/AdminNav";
 
 export default async function AdminStudioLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser("admin");
-  const initial = (user.email || "A").trim().charAt(0).toUpperCase();
 
   return (
     <div className="studio admin-studio">
@@ -16,20 +15,22 @@ export default async function AdminStudioLayout({ children }: { children: React.
         </Link>
         <div className="top-context">
           <Link className="top-link" href="/dashboard/designer">디자이너 화면</Link>
-          <div className="me">
+          <div className="me compact">
             <span className="role-label">운영자</span>
             <span>{user.email}</span>
-            <span className="ava">{initial}</span>
-            <Link className="logout" href="/login">로그아웃</Link>
           </div>
         </div>
       </header>
 
       <div className="st-shell">
-        <AdminSideNav />
+        <AdminSideNav email={user.email} />
         <main className="st-main">{children}</main>
       </div>
 
+      <div className="st-mobile-account">
+        <span>{user.email}</span>
+        <Link href="/login">로그아웃</Link>
+      </div>
       <AdminTabBar />
     </div>
   );

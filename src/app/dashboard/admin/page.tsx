@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getAdminDashboardStats, getAllDesigners, getGeneratedLooksForAdmin } from "@/lib/db";
+import { getApprovalStatusLabel } from "@/lib/status-labels";
 
 export default async function AdminDashboardPage() {
   const [stats, designers, looks] = await Promise.all([
@@ -50,7 +51,7 @@ export default async function AdminDashboardPage() {
                     <b>{designer.brand_name}</b>
                     <span>{designer.country || "국가 미입력"} · {designer.mood || "무드 미입력"}</span>
                   </div>
-                  <em className="status-badge pending">pending</em>
+                  <em className="status-badge pending">{getApprovalStatusLabel(designer.approval_status)}</em>
                 </Link>
               ))}
             </div>

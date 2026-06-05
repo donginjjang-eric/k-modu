@@ -26,7 +26,6 @@ export default function DraggableTabs({
     if (!scroller || !dragRef.current.active) return;
     dragRef.current.active = false;
     scroller.classList.remove("is-dragging");
-    if (scroller.hasPointerCapture(event.pointerId)) scroller.releasePointerCapture(event.pointerId);
     if (dragRef.current.moved) {
       dragRef.current.suppressClick = true;
       window.setTimeout(() => {
@@ -53,7 +52,6 @@ export default function DraggableTabs({
           suppressClick: false,
         };
         scroller.classList.add("is-dragging");
-        scroller.setPointerCapture(event.pointerId);
       }}
       onPointerMove={(event) => {
         const scroller = scrollerRef.current;

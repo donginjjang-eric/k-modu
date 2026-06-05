@@ -45,6 +45,7 @@ export default function StylingBoard({
   const [isGenerating, setIsGenerating] = useState(false);
   const [statusText, setStatusText] = useState("상품 2~4개를 선택하면 AI 룩을 생성할 수 있습니다.");
   const [resultLabel, setResultLabel] = useState("");
+  const [modal, setModal] = useState<{ title: string; message: string; tone?: "success" | "warning" | "error" } | null>(null);
 
   const groupProductCategory = (category: string) => {
     const raw = String(category || "").trim();
@@ -70,7 +71,9 @@ export default function StylingBoard({
     setSelectedProductIds((current) => {
       if (current.includes(productId)) return current.filter((id) => id !== productId);
       if (current.length >= maxAiProducts) {
-        setStatusText("상품은 최대 4개까지 조합할 수 있어요. 다른 상품을 고르려면 선택된 상품을 해제하거나 초기화해주세요.");
+        const message = "상품은 최대 4개까지 조합할 수 있어요. 다른 상품을 고르려면 선택된 상품을 해제하거나 초기화해주세요.";
+        setStatusText(message);
+        setModal({ title: "선택 개수 확인", message, tone: "warning" });
         return current;
       }
       return [...current, productId];
@@ -81,7 +84,9 @@ export default function StylingBoard({
     setSelectedProductIds([]);
     setPreviewImage(designer.heroImage);
     setResultLabel("");
-    setStatusText("선택을 초기화했습니다. 상품 2~4개를 다시 골라 AI 룩을 생성해보세요.");
+    const message = "선택을 초기화했습니다. 상품 2~4개를 다시 골라 AI 룩을 생성해보세요.";
+    setStatusText(message);
+    setModal({ title: "선택 초기화 완료", message, tone: "success" });
   };
 
   const pollGeneratedLook = async (cacheKey: string) => {
@@ -106,7 +111,9 @@ export default function StylingBoard({
     if (selectedProductIds.length < minAiProducts || selectedProductIds.length > maxAiProducts || isGenerating) return;
 
     setIsGenerating(true);
-    setStatusText("AI 룩 생성 중입니다. 보통 1~3분 정도 걸립니다.");
+    const startMessage = "AI 룩 생성 중입니다. 보통 1~3분 정도 걸립니다.";
+    setStatusText(startMessage);
+    setModal({ title: "AI 룩 생성을 시작했습니다", message: startMessage, tone: "success" });
     setResultLabel("");
 
     try {
@@ -134,9 +141,13 @@ export default function StylingBoard({
 
       setPreviewImage(finalResult.imageUrl);
       setResultLabel(finalResult.cacheHit ? "저장된 룩" : "새 AI 룩");
-      setStatusText(finalResult.cacheHit ? "저장된 AI 룩을 불러왔습니다." : "AI 룩 이미지가 생성되었습니다.");
+      const doneMessage = finalResult.cacheHit ? "저장된 AI 룩을 불러왔습니다." : "AI 룩 이미지가 생성되었습니다.";
+      setStatusText(doneMessage);
+      setModal({ title: "AI 룩 준비 완료", message: doneMessage, tone: "success" });
     } catch (error) {
-      setStatusText(error instanceof Error ? error.message : "AI 룩 생성에 실패했습니다.");
+      const errorMessage = error instanceof Error ? error.message : "AI 룩 생성에 실패했습니다.";
+      setStatusText(errorMessage);
+      setModal({ title: "AI 생성 실패", message: errorMessage, tone: "error" });
     } finally {
       setIsGenerating(false);
     }
@@ -206,9 +217,12 @@ export default function StylingBoard({
           </div>
         </div>
 
-        <div className={`generate-box ${selectedProducts.length ? "is-sticky" : ""}`}>
+        <div className={`generate-box premium-generate ${selectedProducts.length ? "is-sticky" : ""}`}>
           <div className="generate-head">
-            <p className="kicker">AI 룩 생성</p>
+            <div>
+              <p className="kicker">AI 가상 피팅</p>
+              <h3>고정 모델 룩 생성</h3>
+            </div>
             {resultLabel ? <strong>{resultLabel}</strong> : null}
           </div>
           <div className="selected-stack" aria-label="선택된 상품">
@@ -236,6 +250,18 @@ export default function StylingBoard({
           <p className="notice">{statusText}</p>
         </div>
       </div>
+
+      {modal ? (
+        <div className="ai-notice-modal" role="dialog" aria-modal="true" aria-labelledby="aiNoticeTitle">
+          <button className="ai-notice-backdrop" type="button" aria-label="닫기" onClick={() => setModal(null)} />
+          <div className={`ai-notice-card ${modal.tone || ""}`}>
+            <span className="ai-notice-mark">{modal.tone === "error" ? "!" : "AI"}</span>
+            <h2 id="aiNoticeTitle">{modal.title}</h2>
+            <p>{modal.message}</p>
+            <button type="button" onClick={() => setModal(null)}>확인</button>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }

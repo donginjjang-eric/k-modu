@@ -1,6 +1,7 @@
 import Link from "next/link";
 import AdminDesignerActions from "@/components/AdminDesignerActions";
 import { getAllDesigners } from "@/lib/db";
+import { getApprovalStatusLabel } from "@/lib/status-labels";
 
 function statusClass(status: string) {
   if (status === "approved") return "approved";
@@ -38,7 +39,7 @@ export default async function AdminDesignersPage() {
                   <p>{designer.description || designer.mood || "설명 미입력"}</p>
                 </div>
                 <span>{designer.country || "-"}</span>
-                <span><em className={`status-badge ${statusClass(designer.approval_status)}`}>{designer.approval_status}</em></span>
+                <span><em className={`status-badge ${statusClass(designer.approval_status)}`}>{getApprovalStatusLabel(designer.approval_status)}</em></span>
                 <AdminDesignerActions designerId={designer.id} />
               </article>
             ))}

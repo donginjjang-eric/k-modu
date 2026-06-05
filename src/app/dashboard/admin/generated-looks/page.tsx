@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getGeneratedLooksForAdmin } from "@/lib/db";
 import AdminGeneratedLookActions from "@/components/AdminGeneratedLookActions";
+import { getGeneratedLookStatusLabel, getGenerationTypeLabel } from "@/lib/status-labels";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("ko-KR", {
@@ -24,7 +25,7 @@ export default async function AdminGeneratedLooksPage() {
           {looks.map((look) => (
             <article className="st-pcard" key={look.id}>
               <div className="img" style={{ backgroundImage: `url('${look.image_url}')` }}>
-                <span className={`badge ${look.status === "approved" ? "pub" : "priv"}`}>{look.status}</span>
+                <span className={`badge ${look.status === "approved" ? "pub" : "priv"}`}>{getGeneratedLookStatusLabel(look.status)}</span>
               </div>
               <div className="b">
                 <div className="c">
@@ -32,7 +33,7 @@ export default async function AdminGeneratedLooksPage() {
                     {look.designer_brand_name || "Unknown designer"}
                   </Link>
                 </div>
-                <div className="n">{look.cache_hit ? "Cached generation" : "Live generation"}</div>
+                <div className="n">{getGenerationTypeLabel(look.cache_hit)}</div>
                 <div className="st-prices">
                   <span className="supply">{formatDate(look.created_at)}</span>
                   <span className="retail">{look.provider}</span>

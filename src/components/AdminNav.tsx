@@ -24,8 +24,10 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function AdminSideNav() {
+export function AdminSideNav({ email }: { email: string }) {
   const pathname = usePathname();
+  const initial = (email || "A").trim().charAt(0).toUpperCase();
+
   return (
     <aside className="st-side">
       <nav>
@@ -36,6 +38,17 @@ export function AdminSideNav() {
           </Link>
         ))}
       </nav>
+      <div className="st-account-card admin">
+        <div className="st-account-avatar">{initial}</div>
+        <div className="st-account-copy">
+          <span>관리자 콘솔</span>
+          <strong>{email}</strong>
+        </div>
+        <div className="st-account-actions">
+          <Link href="/dashboard/designer">디자이너 화면</Link>
+          <Link href="/login">로그아웃</Link>
+        </div>
+      </div>
     </aside>
   );
 }

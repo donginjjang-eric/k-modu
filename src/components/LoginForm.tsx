@@ -61,30 +61,30 @@ export default function LoginForm() {
         />
       </label>
       <button className="generate-button" type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Checking..." : "Login"}
+        {isSubmitting ? "확인 중..." : "로그인"}
       </button>
       {message ? <p className="notice">{message}</p> : null}
-      <div style={{ display: "grid", gap: 8, marginTop: 12 }}>
-        <button className="st-btn" type="button" disabled={isSubmitting} onClick={() => quickLogin("test")}>
-          Designer test / 1234
+      <div className="login-quick-grid">
+        <button className="login-quick-button" type="button" disabled={isSubmitting} onClick={() => quickLogin("test")}>
+          디자이너 test / 1234
         </button>
-        <button className="st-btn" type="button" disabled={isSubmitting} onClick={() => quickLogin("admin")}>
-          Admin admin / 1234
+        <button className="login-quick-button" type="button" disabled={isSubmitting} onClick={() => quickLogin("admin")}>
+          관리자 admin / 1234
         </button>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8, marginTop: 12 }}>
-        <button className="st-btn" type="button" disabled={isSubmitting} onClick={() => quickLogin("test")}>
-          Kakao
+      <div className="login-social-grid">
+        <button className="login-social-button" type="button" disabled={isSubmitting} onClick={() => quickLogin("test")}>
+          카카오
         </button>
-        <button className="st-btn" type="button" disabled={isSubmitting} onClick={() => quickLogin("test")}>
-          Naver
+        <button className="login-social-button" type="button" disabled={isSubmitting} onClick={() => quickLogin("test")}>
+          네이버
         </button>
-        <button className="st-btn" type="button" disabled={isSubmitting} onClick={() => quickLogin("test")}>
-          Google
+        <button className="login-social-button" type="button" disabled={isSubmitting} onClick={() => quickLogin("test")}>
+          구글
         </button>
       </div>
       <p className="notice">
-        Easy login - designer: <b>test / 1234</b> - admin: <b>admin / 1234</b>
+        간편 로그인 - 디자이너: <b>test / 1234</b> - 관리자: <b>admin / 1234</b>
       </p>
     </form>
   );

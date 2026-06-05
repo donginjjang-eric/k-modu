@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { createSessionToken, loginUser, sessionCookieName } from "@/lib/auth";
+import { createSessionToken, loginUser, sessionCookieName, sessionMaxAgeSeconds } from "@/lib/auth";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: 60 * 60 * 24 * 7,
+    maxAge: sessionMaxAgeSeconds,
   });
 
   return Response.json({

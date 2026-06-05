@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { GeneratedLookStatus } from "@/lib/types";
+import { getGeneratedLookStatusLabel } from "@/lib/status-labels";
 
 export default function AdminGeneratedLookActions({
   lookId,
@@ -31,7 +32,7 @@ export default function AdminGeneratedLookActions({
     }
 
     setCurrentStatus(result.generatedLook.status);
-    setMessage(`Updated: ${result.generatedLook.status}`);
+    setMessage(`상태를 '${getGeneratedLookStatusLabel(result.generatedLook.status)}'으로 변경했습니다.`);
   };
 
   const badgeClass =
@@ -41,7 +42,7 @@ export default function AdminGeneratedLookActions({
 
   return (
     <div className="admin-actions">
-      <span className={`status-badge ${badgeClass}`}>{currentStatus}</span>
+      <span className={`status-badge ${badgeClass}`}>{getGeneratedLookStatusLabel(currentStatus)}</span>
       <button type="button" disabled={isSaving || currentStatus === "approved"} onClick={() => mutate("approved")}>
         공개 승인
       </button>

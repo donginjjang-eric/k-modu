@@ -5,6 +5,7 @@ import { ensureEasyAccessAccounts, getDesignerForUser, getUserByEmail } from "./
 import type { Role, User } from "./types";
 
 export const sessionCookieName = "kmodu_session";
+export const sessionMaxAgeSeconds = 60 * 60 * 24 * 30;
 
 type SessionUser = Pick<User, "id" | "email" | "role"> & { exp: number };
 
@@ -43,7 +44,7 @@ export function createSessionToken(user: Pick<User, "id" | "email" | "role">) {
     id: user.id,
     email: user.email,
     role: user.role,
-    exp: Date.now() + 1000 * 60 * 60 * 24 * 7,
+    exp: Date.now() + sessionMaxAgeSeconds * 1000,
   })).toString("base64url");
   return `${payload}.${sign(payload)}`;
 }

@@ -6,6 +6,7 @@ import {
   getGeneratedLooksForDesigner,
   getProductsForDesignerForAdmin,
 } from "@/lib/db";
+import { getApprovalStatusLabel, getGeneratedLookStatusLabel, getGenerationTypeLabel } from "@/lib/status-labels";
 
 function statusClass(status: string) {
   if (status === "approved" || status === "active" || status === "generated") return "approved";
@@ -47,7 +48,7 @@ export default async function AdminDesignerDetailPage({ params }: { params: Prom
             <div className="admin-avatar">{designer.brand_name.trim().charAt(0).toUpperCase()}</div>
             <div>
               <h2>{designer.brand_name}</h2>
-              <em className={`status-badge ${statusClass(designer.approval_status)}`}>{designer.approval_status}</em>
+              <em className={`status-badge ${statusClass(designer.approval_status)}`}>{getApprovalStatusLabel(designer.approval_status)}</em>
             </div>
           </div>
           <div className="admin-meta-grid">
@@ -90,10 +91,10 @@ export default async function AdminDesignerDetailPage({ params }: { params: Prom
             {looks.slice(0, 12).map((look) => (
               <article className="st-pcard" key={look.id}>
                 <div className="img" style={{ backgroundImage: `url('${look.image_url}')` }}>
-                  <span className={`badge ${look.status === "hidden" ? "priv" : "pub"}`}>{look.status}</span>
+                  <span className={`badge ${look.status === "hidden" ? "priv" : "pub"}`}>{getGeneratedLookStatusLabel(look.status)}</span>
                 </div>
                 <div className="b">
-                  <div className="c">{look.cache_hit ? "cached" : "live"}</div>
+                  <div className="c">{getGenerationTypeLabel(look.cache_hit)}</div>
                   <div className="n">{formatDate(look.created_at)}</div>
                 </div>
               </article>

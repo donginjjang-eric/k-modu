@@ -32,10 +32,11 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function StudioSideNav() {
+export function StudioSideNav({ brandName }: { brandName: string }) {
   const pathname = usePathname();
   const productActive = isActive(pathname, "/dashboard/designer/products");
   const [productOpen, setProductOpen] = useState(productActive);
+  const initial = (brandName || "K").trim().charAt(0).toUpperCase();
 
   return (
     <aside className="st-side">
@@ -82,6 +83,17 @@ export function StudioSideNav() {
           );
         })}
       </nav>
+      <div className="st-account-card">
+        <div className="st-account-avatar">{initial}</div>
+        <div className="st-account-copy">
+          <span>디자이너 스튜디오</span>
+          <strong>{brandName}</strong>
+        </div>
+        <div className="st-account-actions">
+          <Link href="/designers/maison-lune">공개 페이지</Link>
+          <Link href="/login">로그아웃</Link>
+        </div>
+      </div>
     </aside>
   );
 }
