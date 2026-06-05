@@ -31,11 +31,12 @@ export default function StylingBoard({
   products: Product[];
   modelTemplates: ModelTemplate[];
 }) {
+  const maxAiProducts = 2;
   const [selectedTemplate, setSelectedTemplate] = useState(modelTemplates[0]?.id || "");
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
   const [previewImage, setPreviewImage] = useState(designer.heroImage);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [statusText, setStatusText] = useState("상품을 2개 이상 선택하면 AI 룩 생성 버튼이 활성화됩니다.");
+  const [statusText, setStatusText] = useState("상품 2개를 선택하면 AI 룩을 생성할 수 있습니다.");
   const [resultLabel, setResultLabel] = useState("");
 
   const selectedProducts = useMemo(
@@ -44,18 +45,21 @@ export default function StylingBoard({
   );
 
   const toggleProduct = (productId: string) => {
-    setSelectedProductIds((current) => (
-      current.includes(productId)
-        ? current.filter((id) => id !== productId)
-        : [...current, productId]
-    ));
+    setSelectedProductIds((current) => {
+      if (current.includes(productId)) return current.filter((id) => id !== productId);
+      if (current.length >= maxAiProducts) {
+        setStatusText("현재 실시간 AI 생성은 상품 2개까지 지원합니다. 더 많은 상품은 비동기 생성 기능에서 확장합니다.");
+        return current;
+      }
+      return [...current, productId];
+    });
   };
 
   const generateLook = async () => {
-    if (selectedProductIds.length < 2 || isGenerating) return;
+    if (selectedProductIds.length !== maxAiProducts || isGenerating) return;
 
     setIsGenerating(true);
-    setStatusText("AI 룩북 생성 중입니다. 보통 20~40초 정도 걸립니다.");
+    setStatusText("AI 룩 생성 중입니다. 보통 60~90초 정도 걸립니다.");
     setResultLabel("");
 
     try {
@@ -65,20 +69,21 @@ export default function StylingBoard({
         body: JSON.stringify({
           modelTemplateId: selectedTemplate,
           productIds: selectedProductIds,
-          stylingPrompt: `브랜드 무드: ${designer.mood}. Minimal K-fashion editorial full look preview.`,
+          stylingPrompt: `Brand mood: ${designer.mood}. Minimal K-fashion editorial full look preview.`,
           forceRegenerate: false,
         }),
       });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "AI 룩 생성에 실패했습니다.");
+
+      const contentType = response.headers.get("content-type") || "";
+      const result = contentType.includes("application/json") ? await response.json() : null;
+      if (!response.ok) {
+        throw new Error(result?.error || `AI 생성 서버 응답 오류 (${response.status}). 잠시 후 상품 2개로 다시 시도해주세요.`);
+      }
+      if (!result?.imageUrl) throw new Error("AI 생성 결과 이미지가 없습니다.");
 
       setPreviewImage(result.imageUrl);
       setResultLabel(result.cacheHit ? "저장된 룩" : "새 AI 룩");
-      setStatusText(
-        result.cacheHit
-          ? "저장된 AI 착장 미리보기를 불러왔습니다."
-          : "AI 룩 이미지가 생성되었습니다.",
-      );
+      setStatusText(result.cacheHit ? "저장된 AI 룩을 불러왔습니다." : "AI 룩 이미지가 생성되었습니다.");
     } catch (error) {
       setStatusText(error instanceof Error ? error.message : "AI 룩 생성에 실패했습니다.");
     } finally {
@@ -89,11 +94,11 @@ export default function StylingBoard({
   return (
     <section className="detail-layout">
       <div className="look-frame">
-        <img src={previewImage} alt={`${designer.brandName} 착장 미리보기`} />
+        <img src={previewImage} alt={`${designer.brandName} AI 룩 미리보기`} />
         {isGenerating ? (
           <div className="tryon-loading-overlay">
-            <strong>AI 룩북 생성</strong>
-            <span>AI 룩을 생성 중입니다. 보통 20~40초 정도 걸립니다.</span>
+            <strong>AI 룩 생성</strong>
+            <span>AI 룩을 생성 중입니다. 보통 60~90초 정도 걸립니다.</span>
           </div>
         ) : null}
       </div>
@@ -143,20 +148,20 @@ export default function StylingBoard({
 
         <div className="generate-box">
           <div className="generate-head">
-            <p className="kicker">AI 룩북 생성</p>
+            <p className="kicker">AI 룩 생성</p>
             {resultLabel ? <strong>{resultLabel}</strong> : null}
           </div>
-          <div className="selected-stack" aria-label="선택한 상품">
+          <div className="selected-stack" aria-label="선택된 상품">
             {selectedProducts.length ? (
               selectedProducts.map((product) => <span key={product.id}>{product.name}</span>)
             ) : (
-              <p className="notice" style={{ margin: 0 }}>상품을 2개 이상 선택해주세요.</p>
+              <p className="notice" style={{ margin: 0 }}>상품 2개를 선택해주세요.</p>
             )}
           </div>
           <button
             className="generate-button"
             type="button"
-            disabled={selectedProducts.length < 2 || isGenerating}
+            disabled={selectedProducts.length !== maxAiProducts || isGenerating}
             onClick={generateLook}
           >
             {isGenerating ? "생성 중..." : "AI 룩 생성"}
