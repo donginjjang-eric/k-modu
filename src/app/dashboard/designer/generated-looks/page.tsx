@@ -1,6 +1,7 @@
 import { requireApprovedDesigner } from "@/lib/auth";
 import { getProductsForDesigner, getModelTemplates, getGeneratedLooksForDesigner } from "@/lib/db";
 import StylingBoard from "@/components/StylingBoard";
+import DesignerGeneratedLooks from "@/components/DesignerGeneratedLooks";
 
 export default async function DesignerAiLookPage() {
   const { designer } = await requireApprovedDesigner();
@@ -35,16 +36,7 @@ export default async function DesignerAiLookPage() {
         }))}
       />
 
-      {looks.length ? (
-        <>
-          <div className="st-sec-head" style={{ marginTop: 32 }}><h2>내가 만든 룩</h2></div>
-          <div className="st-rail">
-            {looks.map((look) => (
-              <div key={look.id} className="thumb" style={{ backgroundImage: `url('${look.image_url}')` }} />
-            ))}
-          </div>
-        </>
-      ) : null}
+      <DesignerGeneratedLooks initialLooks={looks} />
     </>
   );
 }

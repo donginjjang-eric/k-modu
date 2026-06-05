@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import NavIcon from "@/components/NavIcons";
 
 export type NavItem = {
@@ -33,6 +34,9 @@ function isActive(pathname: string, href: string) {
 
 export function StudioSideNav() {
   const pathname = usePathname();
+  const productActive = isActive(pathname, "/dashboard/designer/products");
+  const [productOpen, setProductOpen] = useState(productActive);
+
   return (
     <aside className="st-side">
       <nav>
@@ -40,19 +44,32 @@ export function StudioSideNav() {
           const active = isActive(pathname, item.href);
           if (item.href === "/dashboard/designer/products") {
             return (
-              <div className={`st-nav-group${active ? " is-open" : ""}`} key={item.href}>
-                <Link href={item.href} className={active ? "is-active" : ""}>
-                  <span className="ic"><NavIcon name={item.icon} /></span> {item.label}
-                </Link>
-                <div className="st-subnav" aria-label="상품 예정 기능">
-                  {PRODUCT_SUBNAV.map((subitem) => (
-                    <span className="st-subitem is-soon" key={subitem.label}>
-                      <span className="ic"><NavIcon name={subitem.icon} /></span>
-                      {subitem.label}
-                      <span className="tag">{subitem.tag}</span>
-                    </span>
-                  ))}
-                </div>
+              <div className={`st-nav-group${productOpen ? " is-open" : ""}`} key={item.href}>
+                <button
+                  type="button"
+                  className={`st-nav-toggle ${active ? "is-active" : ""}`}
+                  onClick={() => setProductOpen((current) => !current)}
+                  aria-expanded={productOpen}
+                >
+                  <span className="ic"><NavIcon name={item.icon} /></span>
+                  {item.label}
+                  <span className="st-chevron" aria-hidden="true">{productOpen ? "−" : "+"}</span>
+                </button>
+                {productOpen ? (
+                  <div className="st-subnav" aria-label="상품 작업 하위 메뉴">
+                    <Link className={active ? "st-subitem is-active" : "st-subitem"} href={item.href}>
+                      <span className="ic"><NavIcon name="shirt" /></span>
+                      내 상품
+                    </Link>
+                    {PRODUCT_SUBNAV.map((subitem) => (
+                      <span className="st-subitem is-soon" key={subitem.label}>
+                        <span className="ic"><NavIcon name={subitem.icon} /></span>
+                        {subitem.label}
+                        <span className="tag">{subitem.tag}</span>
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
               </div>
             );
           }

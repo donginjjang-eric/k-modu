@@ -34,10 +34,21 @@ export default function StylingBoard({
   const maxAiProducts = 2;
   const [selectedTemplate, setSelectedTemplate] = useState(modelTemplates[0]?.id || "");
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
+  const [activeCategory, setActiveCategory] = useState("전체");
   const [previewImage, setPreviewImage] = useState(designer.heroImage);
   const [isGenerating, setIsGenerating] = useState(false);
   const [statusText, setStatusText] = useState("상품 2개를 선택하면 AI 룩을 생성할 수 있습니다.");
   const [resultLabel, setResultLabel] = useState("");
+
+  const categories = useMemo(() => {
+    const unique = Array.from(new Set(products.map((product) => product.category || "기타")));
+    return ["전체", ...unique];
+  }, [products]);
+
+  const visibleProducts = useMemo(
+    () => activeCategory === "전체" ? products : products.filter((product) => product.category === activeCategory),
+    [activeCategory, products],
+  );
 
   const selectedProducts = useMemo(
     () => products.filter((product) => selectedProductIds.includes(product.id)),
@@ -48,7 +59,7 @@ export default function StylingBoard({
     setSelectedProductIds((current) => {
       if (current.includes(productId)) return current.filter((id) => id !== productId);
       if (current.length >= maxAiProducts) {
-        setStatusText("현재 실시간 AI 생성은 상품 2개까지 지원합니다. 더 많은 상품은 비동기 생성 기능에서 확장합니다.");
+        setStatusText("현재 실시간 AI 생성은 상품 2개까지 지원합니다. 선택을 바꾸려면 먼저 선택된 상품을 해제해주세요.");
         return current;
       }
       return [...current, productId];
@@ -77,7 +88,7 @@ export default function StylingBoard({
     if (selectedProductIds.length !== maxAiProducts || isGenerating) return;
 
     setIsGenerating(true);
-    setStatusText("AI 룩 생성 중입니다. 보통 60~90초 정도 걸립니다.");
+    setStatusText("AI 룩 생성 중입니다. 보통 1~3분 정도 걸립니다.");
     setResultLabel("");
 
     try {
@@ -120,7 +131,7 @@ export default function StylingBoard({
         {isGenerating ? (
           <div className="tryon-loading-overlay">
             <strong>AI 룩 생성</strong>
-            <span>AI 룩을 생성 중입니다. 보통 60~90초 정도 걸립니다.</span>
+            <span>AI 룩을 생성 중입니다. 보통 1~3분 정도 걸립니다.</span>
           </div>
         ) : null}
       </div>
@@ -144,9 +155,24 @@ export default function StylingBoard({
         </div>
 
         <div>
-          <p className="kicker">스타일링 상품</p>
+          <div className="product-filter-head">
+            <p className="kicker">스타일링 상품</p>
+            <div className="product-tabs" aria-label="상품 카테고리">
+              {categories.map((category) => (
+                <button
+                  className={activeCategory === category ? "is-active" : ""}
+                  key={category}
+                  type="button"
+                  onClick={() => setActiveCategory(category)}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="product-list">
-            {products.map((product) => {
+            {visibleProducts.map((product) => {
               const isActive = selectedProductIds.includes(product.id);
               return (
                 <button
@@ -168,7 +194,7 @@ export default function StylingBoard({
           </div>
         </div>
 
-        <div className="generate-box">
+        <div className={`generate-box ${selectedProducts.length ? "is-sticky" : ""}`}>
           <div className="generate-head">
             <p className="kicker">AI 룩 생성</p>
             {resultLabel ? <strong>{resultLabel}</strong> : null}

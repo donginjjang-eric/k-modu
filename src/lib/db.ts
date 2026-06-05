@@ -488,6 +488,19 @@ export async function getGeneratedLookForDesigner(designerId: string, id: string
   );
 }
 
+export async function updateGeneratedLookForDesigner(designerId: string, id: string, input: { status: GeneratedLook["status"] }) {
+  if (!hasDatabase()) throw new Error("DATABASE_URL is required for generated look updates.");
+  return one<GeneratedLook>(
+    `UPDATE generated_looks
+        SET status = $3,
+            updated_at = now()
+      WHERE designer_id = $1
+        AND id = $2
+      RETURNING *`,
+    [designerId, id, input.status],
+  );
+}
+
 export async function updateGeneratedLookForAdmin(id: string, input: { status: GeneratedLook["status"] }) {
   if (!hasDatabase()) throw new Error("DATABASE_URL is required for generated look updates.");
   return one<AdminGeneratedLook>(

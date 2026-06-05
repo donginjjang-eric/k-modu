@@ -30,16 +30,23 @@
 .st-shell { display: grid; grid-template-columns: 230px minmax(0,1fr); max-width: 1240px; margin: 0 auto; }
 .st-side { padding: 22px 14px; position: sticky; top: 61px; align-self: start; height: calc(100vh - 61px); }
 .st-side nav { display: flex; flex-direction: column; gap: 4px; }
-.st-side a { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; font-weight: 700; font-size: 15px; color: #2a271f; }
-.st-side a .ic { width: 22px; min-width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; color: var(--muted); }
+.st-side a,
+.st-nav-toggle { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 14px; border: 0; border-radius: 12px; background: transparent; font: inherit; font-weight: 700; font-size: 15px; color: #2a271f; text-align: left; cursor: pointer; }
+.st-side a .ic,
+.st-nav-toggle .ic { width: 22px; min-width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; color: var(--muted); }
 .nav-svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
-.st-side a:hover { background: var(--soft); }
-.st-side a.is-active { background: var(--ink); color: #fff; }
-.st-side a.is-active .ic { color: #fff; }
+.st-side a:hover,
+.st-nav-toggle:hover { background: var(--soft); }
+.st-side a.is-active,
+.st-nav-toggle.is-active { background: var(--ink); color: #fff; }
+.st-side a.is-active .ic,
+.st-nav-toggle.is-active .ic { color: #fff; }
 .st-side .tag { margin-left: auto; font-size: 10px; font-weight: 800; background: #e7b34a; color: #1a1400; padding: 2px 7px; border-radius: 999px; }
 .st-nav-group { display: grid; gap: 3px; }
+.st-chevron { margin-left: auto; font-weight: 900; opacity: .8; }
 .st-subnav { display: grid; gap: 2px; padding: 2px 0 6px 18px; }
 .st-subitem { display: flex; align-items: center; gap: 10px; min-height: 34px; padding: 7px 10px 7px 12px; border-radius: 10px; color: var(--muted); font-size: 13px; font-weight: 800; }
+.st-subitem.is-active { color: var(--ink); background: var(--soft); }
 .st-subitem .ic { width: 18px; min-width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; color: var(--muted); }
 .st-subitem .nav-svg { width: 17px; height: 17px; stroke-width: 1.8; }
 .st-subitem.is-soon { opacity: .72; cursor: default; }
@@ -113,6 +120,33 @@
 .st-prices .retail { font-size: 14px; font-weight: 800; }
 .st-pcard .row { display: flex; gap: 8px; margin-top: 10px; }
 .st-pcard .row button { flex: 1; min-height: 34px; border-radius: 9px; border: 1px solid var(--line2); background: #fff; font-weight: 700; font-size: 12px; }
+.product-manager-head { align-items: flex-start; gap: 14px; }
+.product-tabs.compact { max-width: 520px; }
+
+.look-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap: 16px; }
+.look-card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.look-card-image { position: relative; display: block; width: 100%; padding: 0; border: 0; background: #e6e0d4; cursor: zoom-in; }
+.look-card-image img { display: block; width: 100%; aspect-ratio: 3/4; object-fit: cover; object-position: center top; }
+.look-card .badge { position: absolute; top: 10px; left: 10px; padding: 4px 11px; border-radius: 999px; font-size: 11px; font-weight: 800; color: #fff; backdrop-filter: blur(4px); }
+.look-card .badge.pub { background: rgba(31,122,77,.92); }
+.look-card .badge.priv { background: rgba(10,10,10,.72); }
+.look-card-body { padding: 12px 13px; }
+.look-card-body strong { display: block; font-size: 15px; }
+.look-card-body p { margin: 4px 0 0; color: var(--muted); font-size: 12px; font-weight: 700; }
+.look-card-body .row { display: flex; gap: 8px; margin-top: 10px; }
+.look-card-body .row button,
+.look-modal-info .row button { flex: 1; min-height: 34px; border-radius: 9px; border: 1px solid var(--line2); background: #fff; color: var(--ink); font-weight: 800; font-size: 12px; }
+.look-card-body .row button:disabled,
+.look-modal-info .row button:disabled { opacity: .45; cursor: not-allowed; }
+.look-modal { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 24px; }
+.look-modal-backdrop { position: absolute; inset: 0; border: 0; background: rgba(0,0,0,.66); }
+.look-modal-panel { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(260px, 520px) minmax(240px, 320px); max-width: min(920px, 94vw); max-height: 92vh; overflow: hidden; border-radius: 16px; background: var(--panel); }
+.look-modal-panel img { width: 100%; height: min(82vh, 720px); object-fit: contain; background: #111; }
+.look-modal-close { position: absolute; top: 12px; right: 12px; z-index: 2; min-height: 34px; padding: 0 12px; border: 1px solid var(--line2); border-radius: 999px; background: rgba(255,255,255,.92); font-weight: 900; }
+.look-modal-info { padding: 24px; align-self: center; }
+.look-modal-info strong { display: block; font-size: 18px; }
+.look-modal-info p { color: var(--muted); line-height: 1.6; }
+.look-modal-info .row { display: flex; gap: 8px; margin-top: 18px; }
 
 .st-empty { border: 1px dashed var(--line2); border-radius: var(--r); background: var(--panel); padding: 46px 20px; text-align: center; }
 .st-empty .ic { font-size: 40px; }
@@ -214,12 +248,18 @@
   .st-2 { grid-template-columns: 1fr; }
   .st-plist { grid-template-columns: 1fr 1fr; gap: 12px; }
   .st-pickgrid { grid-template-columns: repeat(3,1fr); }
+  .product-manager-head { display: grid; }
+  .product-tabs.compact { justify-content: flex-start; max-width: none; }
   .admin-table-head { display: none; }
   .admin-table-row { grid-template-columns: 1fr; gap: 9px; align-items: start; }
   .admin-table-row p { white-space: normal; }
   .admin-look-grid { grid-template-columns: repeat(4,1fr); }
   .admin-detail-head { flex-direction: column; }
   .admin-meta-grid { grid-template-columns: 1fr; }
+  .look-modal { padding: 12px; align-items: end; }
+  .look-modal-panel { grid-template-columns: 1fr; width: 100%; max-height: 94vh; overflow-y: auto; }
+  .look-modal-panel img { height: auto; max-height: 68vh; }
+  .look-modal-info { padding: 18px; }
   .st-tabbar { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: rgba(255,255,255,.97);
     border-top: 1px solid var(--line); backdrop-filter: blur(8px); padding-bottom: env(safe-area-inset-bottom); }
   .st-tabbar a { flex: 1; padding: 9px 0 11px; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 10px; font-weight: 700; color: var(--muted); }

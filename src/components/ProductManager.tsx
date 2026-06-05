@@ -1,9 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { Product } from "@/lib/types";
 
-const CATEGORIES = ["상의", "하의", "아우터", "가방", "신발", "액세서리"];
+const CATEGORIES = ["상의", "하의", "아우터", "가방", "신발", "악세서리"];
 
 type FormState = {
   name: string;
@@ -27,6 +27,7 @@ const EMPTY: FormState = {
 
 export default function ProductManager({ initialProducts }: { initialProducts: Product[] }) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [activeCategory, setActiveCategory] = useState("전체");
   const [form, setForm] = useState<FormState>(EMPTY);
   const [imageUrl, setImageUrl] = useState("");
   const [imageHash, setImageHash] = useState("");
@@ -35,6 +36,15 @@ export default function ProductManager({ initialProducts }: { initialProducts: P
   const [drag, setDrag] = useState(false);
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const productCategories = useMemo(() => {
+    const unique = Array.from(new Set(products.map((product) => product.category || "기타")));
+    return ["전체", ...unique];
+  }, [products]);
+  const visibleProducts = useMemo(
+    () => activeCategory === "전체" ? products : products.filter((product) => product.category === activeCategory),
+    [activeCategory, products],
+  );
 
   const setField = (key: keyof FormState, value: string) => setForm((current) => ({ ...current, [key]: value }));
 
@@ -118,13 +128,11 @@ export default function ProductManager({ initialProducts }: { initialProducts: P
   return (
     <>
       <h1 className="st-title">상품 올리기</h1>
-      <p className="st-sub">사진을 올리고 간단한 정보만 입력하면 상품이 스튜디오에 저장됩니다.</p>
+      <p className="st-sub">사진을 올리고 기본 정보를 입력하면 디자이너 스튜디오에 저장됩니다.</p>
 
       <div className="st-grid2col">
         <form className="st-card" onSubmit={submit}>
-          <div className="st-step">
-            <span className="num">1</span> 사진 올리기
-          </div>
+          <div className="st-step"><span className="num">1</span> 사진 올리기</div>
           <div
             className={`st-dz${drag ? " drag" : ""}`}
             onClick={() => fileRef.current?.click()}
@@ -140,7 +148,7 @@ export default function ProductManager({ initialProducts }: { initialProducts: P
             }}
           >
             <div className="ic">UP</div>
-            <div className="big">{uploading ? "업로드 중..." : "사진을 여기에 끌어놓거나 선택하세요"}</div>
+            <div className="big">{uploading ? "업로드 중..." : "사진을 여기에 놓거나 선택하세요"}</div>
             <div className="small">JPG, PNG, WEBP 파일을 지원합니다.</div>
             <input
               ref={fileRef}
@@ -153,20 +161,16 @@ export default function ProductManager({ initialProducts }: { initialProducts: P
           {imageUrl ? (
             <div className="st-previews">
               <div className="p" style={{ backgroundImage: `url('${imageUrl}')` }}>
-                <button type="button" className="x" onClick={() => { setImageUrl(""); setImageHash(""); }}>
-                  X
-                </button>
+                <button type="button" className="x" onClick={() => { setImageUrl(""); setImageHash(""); }}>X</button>
               </div>
             </div>
           ) : null}
 
-          <div className="st-step" style={{ marginTop: 24 }}>
-            <span className="num">2</span> 상품 정보
-          </div>
+          <div className="st-step" style={{ marginTop: 24 }}><span className="num">2</span> 상품 정보</div>
           <div className="st-2">
             <div className="st-field">
               <label>상품 이름</label>
-              <input value={form.name} onChange={(event) => setField("name", event.target.value)} placeholder="예: 아이보리 레이스 블라우스" />
+              <input value={form.name} onChange={(event) => setField("name", event.target.value)} placeholder="예: 블랙 니트 가디건" />
             </div>
             <div className="st-field">
               <label>종류</label>
@@ -178,11 +182,11 @@ export default function ProductManager({ initialProducts }: { initialProducts: P
           <div className="st-2">
             <div className="st-field">
               <label>공급가 <span className="opt">(선택)</span></label>
-              <input value={form.supplyPrice} onChange={(event) => setField("supplyPrice", event.target.value)} placeholder="예: 180,000" />
+              <input value={form.supplyPrice} onChange={(event) => setField("supplyPrice", event.target.value)} placeholder="예: 18000" />
             </div>
             <div className="st-field">
               <label>판매가 <span className="opt">(선택)</span></label>
-              <input value={form.price} onChange={(event) => setField("price", event.target.value)} placeholder="예: 320,000" />
+              <input value={form.price} onChange={(event) => setField("price", event.target.value)} placeholder="예: 32000" />
             </div>
           </div>
           <div className="st-2">
@@ -192,7 +196,7 @@ export default function ProductManager({ initialProducts }: { initialProducts: P
             </div>
             <div className="st-field">
               <label>설명 <span className="opt">(선택)</span></label>
-              <input value={form.description} onChange={(event) => setField("description", event.target.value)} placeholder="간단한 소재나 핏 설명" />
+              <input value={form.description} onChange={(event) => setField("description", event.target.value)} placeholder="소재, 핏, 무드 설명" />
             </div>
           </div>
           <div className="st-field">
@@ -204,18 +208,30 @@ export default function ProductManager({ initialProducts }: { initialProducts: P
             <p className="hint">공개 상품은 작업 페이지와 관리자 콘솔에 표시됩니다.</p>
           </div>
 
-          <div className="st-step" style={{ marginTop: 24 }}>
-            <span className="num">3</span> 저장
-          </div>
+          <div className="st-step" style={{ marginTop: 24 }}><span className="num">3</span> 저장</div>
           <button className="st-btn block" type="submit" disabled={!canSave}>{saving ? "저장 중..." : "저장하기"}</button>
           {msg ? <p className={`st-msg ${msg.ok ? "ok" : "err"}`}>{msg.text}</p> : null}
         </form>
 
         <div>
-          <div className="st-sec-head"><h2>내 상품 ({products.length})</h2></div>
-          {products.length ? (
+          <div className="st-sec-head product-manager-head">
+            <h2>내 상품 ({visibleProducts.length}/{products.length})</h2>
+            <div className="product-tabs compact" aria-label="내 상품 카테고리">
+              {productCategories.map((category) => (
+                <button
+                  className={activeCategory === category ? "is-active" : ""}
+                  key={category}
+                  type="button"
+                  onClick={() => setActiveCategory(category)}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
+          {visibleProducts.length ? (
             <div className="st-plist">
-              {products.map((product) => {
+              {visibleProducts.map((product) => {
                 const isPublic = product.status === "active";
                 return (
                   <article className="st-pcard" key={product.id}>
@@ -241,7 +257,7 @@ export default function ProductManager({ initialProducts }: { initialProducts: P
           ) : (
             <div className="st-empty">
               <div className="ic">0</div>
-              <p>아직 올린 상품이 없습니다.<br />왼쪽에서 첫 상품을 올려보세요.</p>
+              <p>이 카테고리에 등록된 상품이 없습니다.</p>
             </div>
           )}
         </div>
