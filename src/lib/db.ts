@@ -470,7 +470,7 @@ export async function createGeneratedLook(input: {
        designer_id, model_template_id, selected_product_ids, cache_key, prompt, image_url, provider, cache_hit, status
      )
      VALUES ($1, $2, $3::jsonb, $4, $5, $6, 'openai', $7, 'generated')
-     ON CONFLICT (cache_key) DO UPDATE
+     ON CONFLICT (cache_key) WHERE status <> 'hidden' DO UPDATE
        SET updated_at = now()
      RETURNING *`,
     [
