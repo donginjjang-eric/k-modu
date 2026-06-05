@@ -262,14 +262,25 @@ p {
   margin-bottom: 10px;
 }
 
+.product-filter-head .kicker {
+  flex: 0 0 auto;
+}
+
 .product-tabs {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: flex-end;
   gap: 6px;
+  min-width: 0;
+  max-width: min(100%, 390px);
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  padding-bottom: 3px;
+  scrollbar-width: thin;
 }
 
 .product-tabs button {
+  flex: 0 0 auto;
   min-height: 32px;
   padding: 0 11px;
   border: 1px solid #d8d4cb;
@@ -278,6 +289,7 @@ p {
   color: #4f4a42;
   font-size: 12px;
   font-weight: 900;
+  white-space: nowrap;
   cursor: pointer;
 }
 
@@ -444,6 +456,7 @@ p {
 
   .product-tabs {
     justify-content: flex-start;
+    max-width: 100%;
   }
 
   .styling-panel .generate-box.is-sticky {
