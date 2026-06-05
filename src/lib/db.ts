@@ -45,6 +45,45 @@ export async function one<T extends QueryResultRow>(sql: string, params: unknown
   return rows[0] ?? null;
 }
 
+export async function ensureEasyAccessAccounts() {
+  if (!hasDatabase()) return;
+
+  await query(
+    `INSERT INTO users (id, email, password_hash, role)
+     VALUES ('demo-admin-user', 'admin', '1234', 'admin')
+     ON CONFLICT (email) DO UPDATE
+       SET password_hash = '1234',
+           role = 'admin',
+           updated_at = now()`,
+  );
+
+  await query(
+    `INSERT INTO users (id, email, password_hash, role)
+     VALUES ('demo-designer-user', 'test', '1234', 'designer')
+     ON CONFLICT (email) DO UPDATE
+       SET password_hash = '1234',
+           role = 'designer',
+           updated_at = now()`,
+  );
+
+  await query(
+    `INSERT INTO designers (id, user_id, brand_name, description, mood, country, approval_status)
+     VALUES (
+       'maison-lune-seoul',
+       'demo-designer-user',
+       'Maison Lune Seoul',
+       'Easy-access designer account for K-MODU service testing.',
+       'Seoul K-fashion, minimal black tailoring, warm editorial lookbook',
+       'South Korea',
+       'approved'
+     )
+     ON CONFLICT (id) DO UPDATE
+       SET user_id = EXCLUDED.user_id,
+           approval_status = 'approved',
+           updated_at = now()`,
+  );
+}
+
 export function toDemoDesigner(): Designer {
   const now = new Date("2026-05-30T00:00:00Z").toISOString();
   return {
@@ -420,7 +459,12 @@ export async function getDesignerForUser(userId: string): Promise<Designer | nul
     return userId === "demo-designer-user" ? toDemoDesigner() : null;
   }
   try {
-    return await one<Designer>("SELECT * FROM designers WHERE user_id = $1", [userId]);
+    const designer = await one<Designer>("SELECT * FROM designers WHERE user_id = $1", [userId]);
+    if (!designer && userId === "demo-designer-user") {
+      await ensureEasyAccessAccounts();
+      return await one<Designer>("SELECT * FROM designers WHERE user_id = $1", [userId]);
+    }
+    return designer;
   } catch (error) {
     if (!canUseDemoData()) throw error;
     return userId === "demo-designer-user" ? toDemoDesigner() : null;

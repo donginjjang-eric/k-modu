@@ -27,16 +27,23 @@
 
 - Run `npm run build`.
 - POST `/api/system/db-setup` with the `x-setup-token` header.
-- Confirm admin login with `ADMIN_EMAIL` / `ADMIN_PASSWORD`.
-- Confirm designer login and dashboard access.
+- Confirm admin login with `admin / 1234`.
+- Confirm designer login with `test / 1234`.
+- Confirm Kakao/Naver/Google login buttons enter the designer test account until real OAuth is connected.
 - Confirm `designers.html` loads and shows `Generate Short-form Video`.
 - Confirm product image upload works.
 - Confirm AI look generation works with the production `OPENAI_API_KEY`.
 - Confirm generated image and upload storage paths persist after server restart.
 
+## Current production login policy
+
+- Easy access is intentionally enabled for the current service launch stage.
+- Admin login: `admin / 1234`.
+- Designer test login: `test / 1234`.
+- SNS buttons are temporary shortcuts into the designer test account until OAuth is implemented.
+
 ## Production safety rules
 
-- Do not set `SEED_DEMO_DATA=true` unless this is a demo deployment.
+- Do not set `SEED_DEMO_DATA=true` unless intentionally reseeding demo content.
 - Do not expose `DB_SETUP_TOKEN`.
 - Do not deploy without `AUTH_SECRET`.
-- Do not use `test / 1234` or `admin / 1234` as real service accounts.

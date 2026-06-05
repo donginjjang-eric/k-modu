@@ -3,21 +3,19 @@
 import { useState } from "react";
 
 export default function LoginForm() {
-  const showDemoLogin = process.env.NODE_ENV !== "production";
-  const [email, setEmail] = useState(showDemoLogin ? "test" : "");
-  const [password, setPassword] = useState(showDemoLogin ? "1234" : "");
+  const [email, setEmail] = useState("test");
+  const [password, setPassword] = useState("1234");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const login = async (nextEmail = email, nextPassword = password) => {
     setIsSubmitting(true);
     setMessage("");
 
     const response = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email: nextEmail, password: nextPassword }),
     });
     const result = await response.json();
     setIsSubmitting(false);
@@ -28,6 +26,17 @@ export default function LoginForm() {
     }
 
     window.location.href = result.redirectTo || "/dashboard/designer";
+  };
+
+  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    await login();
+  };
+
+  const quickLogin = async (nextEmail: string) => {
+    setEmail(nextEmail);
+    setPassword("1234");
+    await login(nextEmail, "1234");
   };
 
   return (
@@ -55,11 +64,28 @@ export default function LoginForm() {
         {isSubmitting ? "Checking..." : "Login"}
       </button>
       {message ? <p className="notice">{message}</p> : null}
-      {showDemoLogin ? (
-        <p className="notice">
-          Demo account - designer: <b>test / 1234</b> · admin: <b>admin / 1234</b>
-        </p>
-      ) : null}
+      <div style={{ display: "grid", gap: 8, marginTop: 12 }}>
+        <button className="st-btn" type="button" disabled={isSubmitting} onClick={() => quickLogin("test")}>
+          Designer test / 1234
+        </button>
+        <button className="st-btn" type="button" disabled={isSubmitting} onClick={() => quickLogin("admin")}>
+          Admin admin / 1234
+        </button>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 8, marginTop: 12 }}>
+        <button className="st-btn" type="button" disabled={isSubmitting} onClick={() => quickLogin("test")}>
+          Kakao
+        </button>
+        <button className="st-btn" type="button" disabled={isSubmitting} onClick={() => quickLogin("test")}>
+          Naver
+        </button>
+        <button className="st-btn" type="button" disabled={isSubmitting} onClick={() => quickLogin("test")}>
+          Google
+        </button>
+      </div>
+      <p className="notice">
+        Easy login - designer: <b>test / 1234</b> - admin: <b>admin / 1234</b>
+      </p>
     </form>
   );
 }
