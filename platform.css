@@ -1751,9 +1751,9 @@ body.dark-theme .brand img {
 
 .designer-proposal-sheet.has-ai-selection .ai-tryon-panel {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 158px;
-  gap: 9px 12px;
-  align-items: center;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  align-items: stretch;
   padding: 13px 14px;
   border-style: solid;
   border-radius: 14px;
@@ -1861,17 +1861,18 @@ body.dark-theme .brand img {
 }
 
 .designer-proposal-sheet.has-ai-selection .ai-tryon-generate {
-  grid-column: 2;
-  grid-row: 1;
+  grid-column: 1 / -1;
+  grid-row: 3;
   width: 100%;
   min-width: 0;
-  min-height: 42px;
+  min-height: 48px;
   border-radius: 12px;
   box-shadow: 0 10px 22px rgba(5, 5, 5, .16);
 }
 
 .designer-proposal-sheet.has-ai-selection .ai-tryon-status {
   grid-column: 1 / -1;
+  grid-row: 4;
   min-height: 0;
   margin-top: 0;
   font-size: var(--fs-label-sm);
@@ -1884,6 +1885,7 @@ body.dark-theme .brand img {
 
 .designer-proposal-sheet.has-ai-selection .generated-looks {
   grid-column: 1 / -1;
+  grid-row: 5;
   margin-top: 2px;
   padding-top: 10px;
 }
@@ -4991,7 +4993,7 @@ body.dark-theme .mini-stats strong {
     bottom: calc(18px + env(safe-area-inset-bottom));
     width: auto;
     max-width: calc(100vw - 84px);
-    z-index: 120;
+    z-index: 2600;
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto auto;
     gap: 6px;
@@ -5064,6 +5066,10 @@ body.dark-theme .mini-stats strong {
   .mobile-ai-submit:disabled {
     background: rgba(5, 5, 5, .14);
     color: rgba(5, 5, 5, .5);
+  }
+
+  body.has-mobile-ai-quickbar .demo-fab {
+    bottom: calc(86px + env(safe-area-inset-bottom)) !important;
   }
 
   .designer-profile-meta {

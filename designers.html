@@ -14,7 +14,7 @@
   <title>Designers | K-MODU</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
-  <link rel="stylesheet" href="platform.css?v=20260605b" />
+  <link rel="stylesheet" href="platform.css?v=20260605c" />
 </head>
 <body>
   <main class="platform designer-board">
@@ -1168,6 +1168,7 @@
         const isMobileSheet = window.matchMedia('(max-width: 900px)').matches;
         const quickBarOpen = hasSelection && isMobileSheet && proposalSheet.classList.contains('is-open') && !aiTryonPanelVisible;
         mobileAiQuickBar.classList.toggle('is-open', quickBarOpen);
+        document.body.classList.toggle('has-mobile-ai-quickbar', quickBarOpen);
         mobileAiQuickBar.classList.toggle('is-ready', items.length >= 2 && !isLoading);
         mobileAiQuickBar.setAttribute('aria-hidden', quickBarOpen ? 'false' : 'true');
         mobileAiQuickCount.textContent = `${items.length}개 선택`;
@@ -1233,6 +1234,7 @@
       // Hide the side column entirely when nothing is selected (no empty box on entry).
       if (selectedStylingItems.size === 0) {
         stylingCollageFlatlay.hidden = true;
+        document.body.classList.remove('has-mobile-ai-quickbar');
       }
 
       // Selection changed: any previously generated look no longer matches.
@@ -1761,7 +1763,20 @@
     loadAiTryOnConfig();
     aiTryonGenerate.addEventListener('click', generateAiTryOnLook);
     stageGenerate.addEventListener('click', generateAiTryOnLook);
-    if (mobileAiQuickGenerate) mobileAiQuickGenerate.addEventListener('click', generateAiTryOnLook);
+    if (mobileAiQuickGenerate) {
+      let lastQuickGenerateAt = 0;
+      const triggerMobileAiGenerate = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (mobileAiQuickGenerate.disabled) return;
+        const now = Date.now();
+        if (now - lastQuickGenerateAt < 600) return;
+        lastQuickGenerateAt = now;
+        generateAiTryOnLook();
+      };
+      mobileAiQuickGenerate.addEventListener('pointerup', triggerMobileAiGenerate);
+      mobileAiQuickGenerate.addEventListener('click', triggerMobileAiGenerate);
+    }
     if (mobileAiQuickClear) mobileAiQuickClear.addEventListener('click', resetTryOnStage);
     if (aiNoticeClose) aiNoticeClose.addEventListener('click', closeAiNotice);
     if (aiNoticeBackdrop) aiNoticeBackdrop.addEventListener('click', closeAiNotice);
