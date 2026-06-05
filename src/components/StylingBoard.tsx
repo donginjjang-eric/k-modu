@@ -34,21 +34,30 @@ export default function StylingBoard({
 }) {
   const minAiProducts = 2;
   const maxAiProducts = 4;
-  const [selectedTemplate, setSelectedTemplate] = useState(modelTemplates[0]?.id || "");
+  const visibleModelTemplates = useMemo(
+    () => modelTemplates.filter((template) => !`${template.id} ${template.label}`.toLowerCase().includes("male")),
+    [modelTemplates],
+  );
+  const [selectedTemplate, setSelectedTemplate] = useState(visibleModelTemplates[0]?.id || "");
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
-  const [activeCategory, setActiveCategory] = useState("전체");
+  const [activeCategory, setActiveCategory] = useState("상의");
   const [previewImage, setPreviewImage] = useState(designer.heroImage);
   const [isGenerating, setIsGenerating] = useState(false);
   const [statusText, setStatusText] = useState("상품 2~4개를 선택하면 AI 룩을 생성할 수 있습니다.");
   const [resultLabel, setResultLabel] = useState("");
 
-  const categories = useMemo(() => {
-    const unique = Array.from(new Set(products.map((product) => product.category || "기타")));
-    return ["전체", ...unique];
-  }, [products]);
+  const groupProductCategory = (category: string) => {
+    const raw = String(category || "").trim();
+    const value = raw.toLowerCase();
+    if (raw.includes("하의") || ["bottom", "bottoms", "pants", "trouser", "trousers", "skirt"].includes(value)) return "하의";
+    if (raw.includes("상의") || raw.includes("아우터") || ["top", "tops", "inner", "shirt", "outer", "outerwear", "jacket", "coat"].includes(value)) return "상의";
+    return "악세서리";
+  };
+
+  const categories = ["상의", "하의", "악세서리"];
 
   const visibleProducts = useMemo(
-    () => activeCategory === "전체" ? products : products.filter((product) => product.category === activeCategory),
+    () => products.filter((product) => groupProductCategory(product.category) === activeCategory),
     [activeCategory, products],
   );
 
@@ -149,7 +158,7 @@ export default function StylingBoard({
         <div>
           <p className="kicker">모델 템플릿</p>
           <div className="template-row">
-            {modelTemplates.map((template) => (
+            {visibleModelTemplates.map((template) => (
               <button
                 className={`template-button ${selectedTemplate === template.id ? "is-active" : ""}`}
                 key={template.id}

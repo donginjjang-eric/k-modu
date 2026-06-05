@@ -223,6 +223,8 @@
 .admin-products .st-pcard .row,
 .admin-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
 .admin-actions button { min-height: 32px; padding: 0 10px; border-radius: 9px; border: 1px solid var(--line2); background: #fff; font-weight: 800; font-size: 12px; color: var(--ink); }
+.admin-actions button.primary { border-color: #111827; background: #111827; color: #fff; }
+.admin-actions button.danger { border-color: #e3d6c6; background: #fff8ee; color: #6f3f00; }
 .admin-actions button:disabled { opacity: .38; cursor: not-allowed; }
 .admin-actions small { width: 100%; color: var(--muted); font-weight: 800; font-size: 12px; }
 .st-empty.compact { padding: 24px 16px; }

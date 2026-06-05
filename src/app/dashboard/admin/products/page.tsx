@@ -4,6 +4,7 @@ import { getProductsForAdmin } from "@/lib/db";
 
 export default async function AdminProductsPage() {
   const products = await getProductsForAdmin();
+  const getStatusLabel = (status: string) => status === "active" ? "공개" : status === "hidden" ? "숨김" : "비공개";
 
   return (
     <>
@@ -15,7 +16,7 @@ export default async function AdminProductsPage() {
           {products.map((product) => (
             <article className="st-pcard" key={product.id}>
               <div className="img" style={{ backgroundImage: `url('${product.image_url}')` }}>
-                <span className={`badge ${product.status === "active" ? "pub" : "priv"}`}>{product.status}</span>
+                <span className={`badge ${product.status === "active" ? "pub" : "priv"}`}>{getStatusLabel(product.status)}</span>
               </div>
               <div className="b">
                 <div className="c">
