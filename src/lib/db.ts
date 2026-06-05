@@ -567,7 +567,7 @@ export async function countDailyLiveGenerations(designerId: string) {
 }
 
 export async function createGenerationLog(input: {
-  userId: string;
+  userId: string | null;
   designerId: string;
   provider: string;
   cacheKey?: string | null;

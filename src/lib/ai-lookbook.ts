@@ -78,7 +78,7 @@ export async function generateOpenAiLookbook(input: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-2",
+      model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-1.5",
       size: process.env.OPENAI_IMAGE_SIZE || "1024x1536",
       prompt,
       images: imageInputs.map((image) => ({ image_url: readPublicImageAsDataUrl(image) })),

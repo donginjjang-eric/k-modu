@@ -2273,13 +2273,58 @@ body.has-ai-quickbar .demo-fab {
   background: #6f4ce8;
 }
 
+.ai-tryon-result-meta .ai-progress-pill {
+  min-width: 58px;
+  justify-content: center;
+  border-color: transparent;
+  color: #fff;
+  font-size: 14px;
+  letter-spacing: 0;
+  box-shadow: 0 10px 24px rgba(5, 5, 5, .16);
+}
+
+.ai-tryon-result-meta .ai-progress-pill.starting {
+  background: #6b5a2a;
+}
+
+.ai-tryon-result-meta .ai-progress-pill.processing {
+  background: #0c4a6e;
+}
+
+.ai-tryon-result-meta .ai-progress-pill.finishing {
+  background: #6d28d9;
+}
+
+.ai-tryon-result-meta .ai-progress-pill.done {
+  background: #087443;
+}
+
+.ai-tryon-result-meta .ai-progress-pill.error {
+  background: #b42318;
+}
+
 .ai-tryon-result-meta strong {
   min-width: 0;
   overflow-wrap: anywhere;
-  color: rgba(5, 5, 5, .68);
-  font-size: var(--fs-small);
-  line-height: 1.42;
+  color: rgba(5, 5, 5, .78);
+  font-size: 14px;
+  line-height: 1.38;
   font-weight: var(--fw-bold);
+}
+
+.ai-progress-track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(5, 5, 5, .08);
+}
+
+.ai-progress-track i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #050505 0%, #7c3aed 56%, #10b981 100%);
+  transition: width .24s ease;
 }
 
 .styling-shortform-note {
@@ -4892,8 +4937,16 @@ body.dark-theme .mini-stats strong {
     justify-content: center;
   }
 
-  .designer-proposal-sheet.has-ai-selection .ai-tryon-panel.is-sticky .ai-tryon-result-meta,
   .designer-proposal-sheet.has-ai-selection .ai-tryon-panel.is-sticky #aiTryonSelection {
+    display: none !important;
+  }
+
+  .designer-proposal-sheet.has-ai-selection .ai-tryon-panel.is-sticky .ai-tryon-result-meta {
+    display: grid;
+    padding: 10px;
+  }
+
+  .designer-proposal-sheet.has-ai-selection .ai-tryon-panel.is-sticky .ai-tryon-result-meta[hidden] {
     display: none !important;
   }
 

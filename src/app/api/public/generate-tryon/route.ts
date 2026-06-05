@@ -1,0 +1,167 @@
+import { spawn } from "node:child_process";
+import path from "node:path";
+import {
+  countDailyLiveGenerations,
+  createGenerationLog,
+  getDesigner,
+  getGeneratedLookByCacheKey,
+  getLatestGenerationLogForDesigner,
+  getModelTemplate,
+  getOwnedProductsForGeneration,
+} from "@/lib/db";
+import { buildLookCacheKey, buildLookbookPrompt } from "@/lib/ai-lookbook";
+
+function startGenerationWorker(input: unknown) {
+  const payload = Buffer.from(JSON.stringify(input), "utf8").toString("base64url");
+  const workerPath = path.join(process.cwd(), "scripts", "ai-generate-worker.mjs");
+  const child = spawn(process.execPath, [workerPath, payload], {
+    cwd: process.cwd(),
+    detached: true,
+    stdio: "ignore",
+    env: process.env,
+  });
+  child.unref();
+}
+
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const designerId = url.searchParams.get("designerId")?.trim() || "";
+  const cacheKey = url.searchParams.get("cacheKey")?.trim() || "";
+
+  if (!designerId || !cacheKey) {
+    return Response.json({ ok: false, error: "designerId and cacheKey are required." }, { status: 400 });
+  }
+
+  const generatedLook = await getGeneratedLookByCacheKey(cacheKey);
+  if (generatedLook && generatedLook.designer_id === designerId) {
+    return Response.json({
+      ok: true,
+      status: "completed",
+      provider: generatedLook.provider,
+      cacheHit: generatedLook.cache_hit,
+      imageUrl: generatedLook.image_url,
+      generatedLookId: generatedLook.id,
+    });
+  }
+
+  const latestLog = await getLatestGenerationLogForDesigner(designerId, cacheKey);
+  if (latestLog?.status === "failed") {
+    return Response.json({ ok: false, status: "failed", error: latestLog.error_message || "AI generation failed." }, { status: 500 });
+  }
+
+  return Response.json({ ok: true, status: "processing" });
+}
+
+export async function POST(request: Request) {
+  const body = await request.json().catch(() => ({}));
+  const designerId = String(body.designerId || "").trim();
+  const productIds = Array.isArray(body.productIds) ? body.productIds.map(String).filter(Boolean) : [];
+  const modelTemplateId = String(body.modelTemplateId || body.modelTemplate || "");
+  const stylingPrompt = String(body.stylingPrompt || "minimal editorial K-fashion look");
+  const provider = "openai" as const;
+
+  if (!designerId) {
+    return Response.json({ ok: false, error: "designerId is required." }, { status: 400 });
+  }
+  if (productIds.length < 2) {
+    return Response.json({ ok: false, error: "Select at least two products." }, { status: 400 });
+  }
+  if (productIds.length > 4) {
+    return Response.json({ ok: false, error: "Real-time AI generation supports up to four products." }, { status: 400 });
+  }
+  if (new Set(productIds).size !== productIds.length) {
+    return Response.json({ ok: false, error: "Duplicate products are not allowed." }, { status: 400 });
+  }
+
+  const designer = await getDesigner(designerId);
+  if (!designer || designer.approval_status !== "approved") {
+    return Response.json({ ok: false, error: "Approved designer is required for public AI generation." }, { status: 403 });
+  }
+
+  const [products, template] = await Promise.all([
+    getOwnedProductsForGeneration(designer.id, productIds),
+    getModelTemplate(modelTemplateId),
+  ]);
+
+  if (products.length !== new Set(productIds).size) {
+    return Response.json({ ok: false, error: "One or more products are unavailable." }, { status: 403 });
+  }
+  if (!template) {
+    return Response.json({ ok: false, error: "Model template not found." }, { status: 404 });
+  }
+
+  const cacheKey = buildLookCacheKey({
+    designerId: designer.id,
+    modelTemplateId: template.id,
+    products,
+    stylingPrompt,
+    provider,
+  });
+  const prompt = buildLookbookPrompt({ designer, template, products, stylingPrompt });
+
+  const cached = await getGeneratedLookByCacheKey(cacheKey);
+  if (cached && cached.designer_id === designer.id) {
+    await createGenerationLog({
+      userId: null,
+      designerId: designer.id,
+      provider,
+      cacheKey,
+      cacheHit: true,
+      status: "cached",
+    });
+    return Response.json({
+      ok: true,
+      provider,
+      cacheHit: true,
+      imageUrl: cached.image_url,
+      generatedLookId: cached.id,
+      selectedItems: products,
+      promptMetadata: {
+        cacheKey,
+        promptVersion: "kmodu-lookbook-v1",
+        prompt,
+      },
+    });
+  }
+
+  const dailyLimit = Number(process.env.PUBLIC_DAILY_GENERATION_LIMIT || process.env.DAILY_GENERATION_LIMIT || 20);
+  const dailyCount = await countDailyLiveGenerations(designer.id);
+  if (dailyCount >= dailyLimit) {
+    return Response.json({
+      ok: false,
+      error: `Daily generation limit reached (${dailyLimit}). Cached looks are still available.`,
+    }, { status: 429 });
+  }
+
+  await createGenerationLog({
+    userId: null,
+    designerId: designer.id,
+    provider,
+    cacheKey,
+    cacheHit: false,
+    status: "processing",
+  });
+
+  startGenerationWorker({
+    userId: null,
+    designer,
+    template,
+    products,
+    stylingPrompt,
+    cacheKey,
+  });
+
+  return Response.json({
+    ok: true,
+    provider,
+    status: "processing",
+    cacheHit: false,
+    cacheKey,
+    selectedItems: products,
+    promptMetadata: {
+      cacheKey,
+      promptVersion: "kmodu-lookbook-v1",
+      prompt,
+    },
+  }, { status: 202 });
+}

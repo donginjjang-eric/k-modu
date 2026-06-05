@@ -14,7 +14,7 @@
   <title>Designers | K-MODU</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
-  <link rel="stylesheet" href="platform.css?v=20260605d" />
+  <link rel="stylesheet" href="platform.css?v=20260605e" />
 </head>
 <body>
   <main class="platform designer-board">
@@ -1337,6 +1337,60 @@
       return data && data.ok !== false ? data.look : null;
     };
 
+    const setAiProgress = (percent, message, tone = 'processing') => {
+      aiTryonStatus.hidden = false;
+      aiTryonStatus.textContent = message;
+      aiTryonResultMeta.hidden = false;
+      aiTryonResultMeta.innerHTML = `
+        <span class="is-loading ai-progress-pill ${tone}">${percent}%</span>
+        <strong>${escapeHtml(message)}</strong>
+        <div class="ai-progress-track" aria-hidden="true"><i style="width:${Math.max(0, Math.min(100, percent))}%"></i></div>
+      `;
+    };
+
+    const pollPublicGeneratedLook = async (cacheKey) => {
+      for (let attempt = 0; attempt < 48; attempt += 1) {
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+        const percent = Math.min(95, 25 + Math.round(((attempt + 1) / 48) * 70));
+        setAiProgress(percent, `OpenAI가 룩을 생성 중입니다. ${percent}% 완료`, percent >= 80 ? 'finishing' : 'processing');
+        const response = await fetch(`/api/public/generate-tryon?designerId=${encodeURIComponent(currentDesignerId)}&cacheKey=${encodeURIComponent(cacheKey)}`);
+        const contentType = response.headers.get('content-type') || '';
+        const result = contentType.includes('application/json') ? await response.json() : null;
+        if (!response.ok) {
+          throw new Error(result?.error || `AI 생성 상태 확인 오류 (${response.status})`);
+        }
+        if (result?.status === 'completed' && result.imageUrl) return result;
+      }
+
+      throw new Error('AI 생성이 오래 걸리고 있습니다. 잠시 후 다시 확인해주세요.');
+    };
+
+    const requestPublicGeneratedLook = async (items) => {
+      const productIds = items.map((item) => item.productId).filter(Boolean);
+      setAiProgress(15, '상품 조합과 모델 템플릿을 서버로 보내는 중입니다.', 'starting');
+      const response = await fetch('/api/public/generate-tryon', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          designerId: currentDesignerId,
+          modelTemplateId: selectedModelTemplate,
+          productIds,
+          stylingPrompt: `Brand mood: ${proposalBrandMood.textContent || 'K-fashion editorial full look preview'}.`,
+        })
+      });
+      const contentType = response.headers.get('content-type') || '';
+      const result = contentType.includes('application/json') ? await response.json() : null;
+      if (!response.ok) {
+        throw new Error(result?.error || `AI 생성 서버 응답 오류 (${response.status})`);
+      }
+      if (result?.imageUrl) return result;
+      if (result?.status === 'processing' && result.cacheKey) {
+        setAiProgress(25, 'OpenAI 생성 작업이 시작됐습니다. 이미지를 만드는 중입니다.', 'processing');
+        return pollPublicGeneratedLook(result.cacheKey);
+      }
+      throw new Error('AI 생성 응답에 결과 정보가 없습니다.');
+    };
+
     const generateAiTryOnLook = async () => {
       const items = getSelectedStylingItems();
       if (items.length < 2) {
@@ -1357,8 +1411,7 @@
       setAiTryOnLoading(true);
       aiTryonStatus.hidden = false;
       aiTryonResultMeta.hidden = false;
-      aiTryonResultMeta.innerHTML = '<span class="is-loading">생성 중</span><strong>AI가 선택한 제품을 모델에 입히는 중…</strong>';
-      aiTryonStatus.textContent = 'AI 룩 생성 중…';
+      setAiProgress(5, 'AI 룩 생성을 준비 중입니다.', 'starting');
       showAiNotice('AI 룩 생성을 시작했습니다', '잠시만 기다려주세요. 완료되면 화면의 모델 룩으로 바로 반영됩니다.', 'success');
 
       try {
@@ -1383,30 +1436,33 @@
         }
       } catch (error) {
         aiTryonStatus.hidden = false;
-        aiTryonStatus.textContent = '승인 룩 확인에 실패해 임시 룩으로 보여드립니다.';
+        aiTryonStatus.textContent = '승인 룩 확인에 실패해 OpenAI 생성으로 진행합니다.';
       }
 
-      // Demo mode: no live API call. Preload + decode the chosen look DURING the
-      // ~5s wait so it appears instantly at the 5s mark (no extra load lag).
-      const chosenLook = pickDemoLook();
-      const preloader = new Image();
-      preloader.src = chosenLook;
-      await Promise.all([
-        new Promise((resolve) => setTimeout(resolve, 5000)),
-        (preloader.decode ? preloader.decode().catch(() => {}) : Promise.resolve())
-      ]);
+      try {
+        const liveResult = await requestPublicGeneratedLook(items);
+        if (!liveResult?.imageUrl) throw new Error('AI 생성 결과 이미지가 없습니다.');
+        setAiProgress(98, '생성된 이미지를 화면에 적용하는 중입니다.', 'finishing');
+        const generatedImage = new Image();
+        generatedImage.src = liveResult.imageUrl;
+        await (generatedImage.decode ? generatedImage.decode().catch(() => {}) : Promise.resolve());
 
-      applyGeneratedLook(chosenLook, items, {
-        label: 'AI Look',
-        status: 'AI 룩 생성 완료. 썸네일로 다시 볼 수 있어요.'
-      });
-      addGeneratedLook(chosenLook);
-      setAiTryOnLoading(false);
-      aiTryonStatus.hidden = false;
-      showAiNotice('AI 룩 준비 완료', 'AI 룩 생성이 완료되었습니다. 썸네일로 다시 볼 수 있어요.', 'success');
-      // 모바일(≤900px)에서만 결과를 오버레이 팝업으로 띄움. PC에서는 인라인 결과로 충분하므로 생략.
-      if (window.matchMedia('(max-width: 900px)').matches) {
-        openLightbox(generatedLooks, 0);
+        applyGeneratedLook(liveResult.imageUrl, items, {
+          label: liveResult.cacheHit ? 'Saved AI Look' : 'OpenAI Look',
+          status: liveResult.cacheHit ? '저장된 AI 룩을 불러왔습니다.' : 'OpenAI로 새 AI 룩을 생성했습니다.'
+        });
+        addGeneratedLook(liveResult.imageUrl);
+        setAiProgress(100, liveResult.cacheHit ? '저장된 AI 룩을 불러왔습니다.' : 'OpenAI 생성이 완료되었습니다.', 'done');
+        showAiNotice('AI 룩 준비 완료', liveResult.cacheHit ? '저장된 AI 룩을 불러왔습니다.' : 'OpenAI 생성이 완료되었습니다.', 'success');
+        if (window.matchMedia('(max-width: 900px)').matches) {
+          openLightbox(generatedLooks, 0);
+        }
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'AI 룩 생성에 실패했습니다.';
+        setAiProgress(0, message, 'error');
+        showAiNotice('AI 생성 실패', message, 'error');
+      } finally {
+        setAiTryOnLoading(false);
       }
     };
 

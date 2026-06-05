@@ -285,7 +285,7 @@ const generateOpenAiLookbook = async ({ payload, template }) => {
       generatedImage: cachedLook.generatedImage,
       cacheHit: true,
       promptMetadata: {
-        model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-2",
+        model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-1.5",
         size: process.env.OPENAI_IMAGE_SIZE || "1024x1536",
         prompt,
         inputImages,
@@ -295,7 +295,7 @@ const generateOpenAiLookbook = async ({ payload, template }) => {
   }
 
   const imagePayload = {
-    model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-2",
+    model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-1.5",
     prompt,
     images: inputImages.map((image) => ({ image_url: toImageInput(image) })),
     size: process.env.OPENAI_IMAGE_SIZE || "1024x1536",
