@@ -21,9 +21,13 @@ export default async function AdminDashboardPage() {
         <div className="st-stat"><div className="n">{stats.generatedLooksTotal}</div><div className="l">AI 생성 이미지</div></div>
       </div>
 
-      <div className="st-actions">
+      <div className="st-actions admin-actions-grid">
         <Link className="st-bigbtn dark" href="/dashboard/admin/designers">
           <div><div className="t">디자이너 승인 관리</div><div className="d">신규 브랜드를 승인하거나 비활성화합니다.</div></div>
+          <div className="go">→</div>
+        </Link>
+        <Link className="st-bigbtn" href="/dashboard/admin/products">
+          <div><div className="t">상품 전체 관리</div><div className="d">등록 상품을 확인하고 공개 상태를 조정합니다.</div></div>
           <div className="go">→</div>
         </Link>
         <Link className="st-bigbtn" href="/dashboard/admin/generated-looks">

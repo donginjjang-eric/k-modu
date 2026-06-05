@@ -189,6 +189,32 @@ export async function getProductsForDesigner(designerId: string): Promise<Produc
   }
 }
 
+export type AdminProduct = Product & {
+  designer_brand_name: string | null;
+  designer_approval_status: Designer["approval_status"] | null;
+};
+
+export async function getProductsForAdmin(limit = 120): Promise<AdminProduct[]> {
+  if (!hasDatabase()) {
+    return toDemoProducts().map((product) => ({
+      ...product,
+      designer_brand_name: phaseDesigner.brandName,
+      designer_approval_status: "approved",
+    }));
+  }
+
+  return query<AdminProduct>(
+    `SELECT products.*,
+            designers.brand_name AS designer_brand_name,
+            designers.approval_status AS designer_approval_status
+       FROM products
+       LEFT JOIN designers ON designers.id = products.designer_id
+      ORDER BY products.created_at DESC
+      LIMIT $1`,
+    [limit],
+  );
+}
+
 export async function getProductForDesigner(designerId: string, productId: string): Promise<Product | null> {
   if (!hasDatabase()) {
     requireDatabaseForProduction();
@@ -197,6 +223,22 @@ export async function getProductForDesigner(designerId: string, productId: strin
   return one<Product>(
     "SELECT * FROM products WHERE designer_id = $1 AND id = $2 AND status <> 'hidden'",
     [designerId, productId],
+  );
+}
+
+export async function updateProductForAdmin(productId: string, input: Partial<{
+  status: Product["status"];
+}>) {
+  if (!hasDatabase()) throw new Error("DATABASE_URL is required for product updates.");
+  return one<AdminProduct>(
+    `UPDATE products
+        SET status = COALESCE($2, status),
+            updated_at = now()
+      WHERE products.id = $1
+      RETURNING products.*,
+                (SELECT brand_name FROM designers WHERE designers.id = products.designer_id) AS designer_brand_name,
+                (SELECT approval_status FROM designers WHERE designers.id = products.designer_id) AS designer_approval_status`,
+    [productId, input.status ?? null],
   );
 }
 

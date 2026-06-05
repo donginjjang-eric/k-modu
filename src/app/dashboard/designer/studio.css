@@ -121,6 +121,7 @@
 /* admin console */
 .admin-studio .st-shell { max-width: 1320px; }
 .admin-stats { grid-template-columns: repeat(4,1fr); }
+.admin-actions-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
 .admin-list { display: grid; gap: 10px; }
 .admin-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line); }
 .admin-row:last-child { border-bottom: 0; }
@@ -142,6 +143,11 @@
 .admin-table-row b { display: block; font-size: 15px; }
 .admin-table-row p { margin: 3px 0 0; color: var(--muted); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .admin-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap: 16px; }
+.admin-products .st-pcard .row,
+.admin-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+.admin-actions button { min-height: 32px; padding: 0 10px; border-radius: 9px; border: 1px solid var(--line2); background: #fff; font-weight: 800; font-size: 12px; color: var(--ink); }
+.admin-actions button:disabled { opacity: .38; cursor: not-allowed; }
+.admin-actions small { width: 100%; color: var(--muted); font-weight: 800; font-size: 12px; }
 .st-empty.compact { padding: 24px 16px; }
 .st-empty.compact p { margin: 0; }
 
@@ -156,6 +162,7 @@
   .st-main { padding: 20px 14px 92px; }
   .st-title { font-size: 25px; }
   .st-actions { grid-template-columns: 1fr; }
+  .admin-actions-grid { grid-template-columns: 1fr; }
   .admin-stats { grid-template-columns: 1fr 1fr; }
   .st-bigbtn { min-height: 96px; }
   .st-grid2col { grid-template-columns: 1fr; }
