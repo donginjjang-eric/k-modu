@@ -380,6 +380,31 @@ export async function getGeneratedLooksForDesigner(designerId: string): Promise<
   );
 }
 
+export async function getApprovedGeneratedLooksForDesigner(designerId: string, limit = 12): Promise<GeneratedLook[]> {
+  if (!hasDatabase()) return [];
+  return query<GeneratedLook>(
+    `SELECT * FROM generated_looks
+      WHERE designer_id = $1
+        AND status = 'approved'
+      ORDER BY updated_at DESC, created_at DESC
+      LIMIT $2`,
+    [designerId, limit],
+  );
+}
+
+export async function getApprovedGeneratedLooksForPublic(limit = 12): Promise<AdminGeneratedLook[]> {
+  if (!hasDatabase()) return [];
+  return query<AdminGeneratedLook>(
+    `SELECT generated_looks.*, designers.brand_name AS designer_brand_name
+       FROM generated_looks
+       LEFT JOIN designers ON designers.id = generated_looks.designer_id
+      WHERE generated_looks.status = 'approved'
+      ORDER BY generated_looks.updated_at DESC, generated_looks.created_at DESC
+      LIMIT $1`,
+    [limit],
+  );
+}
+
 export async function getAdminDashboardStats() {
   if (!hasDatabase()) {
     return {
@@ -452,6 +477,19 @@ export async function getGeneratedLookForDesigner(designerId: string, id: string
   return one<GeneratedLook>(
     "SELECT * FROM generated_looks WHERE designer_id = $1 AND id = $2",
     [designerId, id],
+  );
+}
+
+export async function updateGeneratedLookForAdmin(id: string, input: { status: GeneratedLook["status"] }) {
+  if (!hasDatabase()) throw new Error("DATABASE_URL is required for generated look updates.");
+  return one<AdminGeneratedLook>(
+    `UPDATE generated_looks
+        SET status = $2,
+            updated_at = now()
+      WHERE generated_looks.id = $1
+      RETURNING generated_looks.*,
+                (SELECT brand_name FROM designers WHERE designers.id = generated_looks.designer_id) AS designer_brand_name`,
+    [id, input.status],
   );
 }
 

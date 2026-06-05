@@ -2561,6 +2561,38 @@
     });
   });
 
+  const loadApprovedAiLooks = async () => {
+    if (!campaignGalleryMain || !campaignGalleryButtons.length) return;
+    try {
+      const response = await fetch('/api/public/approved-looks?limit=5', { cache: 'no-store' });
+      if (!response.ok) return;
+      const data = await response.json();
+      const looks = Array.isArray(data.looks) ? data.looks.filter((look) => look.imageUrl) : [];
+      if (!looks.length) return;
+
+      const first = looks[0];
+      campaignGalleryMain.src = first.imageUrl;
+      campaignGalleryMain.alt = `${first.designerName || 'K-MODU'} approved AI look`;
+      document.querySelector('.gallery-note').textContent = 'Approved AI Looks';
+
+      campaignGalleryButtons.forEach((button, index) => {
+        const look = looks[index + 1] || looks[index] || first;
+        const alt = `${look.designerName || 'K-MODU'} approved AI look`;
+        button.dataset.gallerySrc = look.imageUrl;
+        button.dataset.galleryAlt = alt;
+        button.setAttribute('aria-label', alt);
+        const img = button.querySelector('img');
+        if (img) {
+          img.src = look.imageUrl;
+          img.alt = alt;
+        }
+      });
+    } catch (error) {
+      console.warn('Approved AI looks unavailable', error);
+    }
+  };
+  loadApprovedAiLooks();
+
   const menuToggle = document.querySelector('.menu-toggle');
   const closeMobileMenu = () => {
     nav.classList.remove('menu-open');

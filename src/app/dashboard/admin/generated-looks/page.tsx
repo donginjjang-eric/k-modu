@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getGeneratedLooksForAdmin } from "@/lib/db";
+import AdminGeneratedLookActions from "@/components/AdminGeneratedLookActions";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("ko-KR", {
@@ -15,15 +16,15 @@ export default async function AdminGeneratedLooksPage() {
 
   return (
     <>
-      <h1 className="st-title">AI 생성 이미지</h1>
-      <p className="st-sub">최근 생성 이미지, 브랜드, 캐시 여부와 생성 상태를 확인합니다.</p>
+      <h1 className="st-title">AI 결과 검수</h1>
+      <p className="st-sub">생성된 AI 룩을 확인하고 공개 승인, 반려, 숨김 상태를 관리합니다.</p>
 
       {looks.length ? (
         <div className="admin-gallery">
           {looks.map((look) => (
             <article className="st-pcard" key={look.id}>
               <div className="img" style={{ backgroundImage: `url('${look.image_url}')` }}>
-                <span className={`badge ${look.status === "hidden" ? "priv" : "pub"}`}>{look.status}</span>
+                <span className={`badge ${look.status === "approved" ? "pub" : "priv"}`}>{look.status}</span>
               </div>
               <div className="b">
                 <div className="c">
@@ -36,6 +37,7 @@ export default async function AdminGeneratedLooksPage() {
                   <span className="supply">{formatDate(look.created_at)}</span>
                   <span className="retail">{look.provider}</span>
                 </div>
+                <AdminGeneratedLookActions lookId={look.id} status={look.status} />
               </div>
             </article>
           ))}
