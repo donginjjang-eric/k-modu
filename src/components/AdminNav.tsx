@@ -6,10 +6,10 @@ import { usePathname } from "next/navigation";
 type NavItem = { href: string; icon: string; label: string; short: string; tag?: string };
 
 const ADMIN_NAV: NavItem[] = [
-  { href: "/dashboard/admin", icon: "HM", label: "홈", short: "홈" },
+  { href: "/dashboard/admin", icon: "HM", label: "운영 홈", short: "홈" },
   { href: "/dashboard/admin/designers", icon: "DS", label: "디자이너 승인", short: "승인" },
-  { href: "/dashboard/admin/products", icon: "PR", label: "상품 관리", short: "상품" },
-  { href: "/dashboard/admin/generated-looks", icon: "AI", label: "AI 생성 이미지", short: "AI" },
+  { href: "/dashboard/admin/products", icon: "PR", label: "상품 검수", short: "상품" },
+  { href: "/dashboard/admin/generated-looks", icon: "AI", label: "AI 결과 검수", short: "AI" },
 ];
 
 function isActive(pathname: string, href: string) {

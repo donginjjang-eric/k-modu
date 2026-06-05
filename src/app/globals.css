@@ -25,6 +25,10 @@ input {
   min-height: 100vh;
 }
 
+.site-shell:has(.studio) > .top-nav {
+  display: none;
+}
+
 .top-nav {
   position: sticky;
   top: 0;

@@ -43,6 +43,13 @@ export async function GET(_: Request, { params }: { params: Promise<{ legacyPath
   const requestedPath = legacyPath.join("/");
   const legacyName = cleanLegacyRoutes[requestedPath] || requestedPath;
 
+  if (legacyName === "designer-studio.html") {
+    return new Response(null, { status: 307, headers: { Location: "/dashboard/designer" } });
+  }
+  if (legacyName === "admin.html") {
+    return new Response(null, { status: 307, headers: { Location: "/dashboard/admin" } });
+  }
+
   if (!legacyFiles.has(legacyName)) {
     return new Response("Not found", { status: 404 });
   }

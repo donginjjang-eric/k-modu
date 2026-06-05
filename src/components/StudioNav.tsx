@@ -6,12 +6,12 @@ import { usePathname } from "next/navigation";
 export type NavItem = { href: string; icon: string; label: string; short?: string; tag?: string };
 
 export const STUDIO_NAV: NavItem[] = [
-  { href: "/dashboard/designer", icon: "HM", label: "홈", short: "홈" },
-  { href: "/dashboard/designer/products", icon: "PR", label: "상품", short: "상품" },
-  { href: "/dashboard/designer/generated-looks", icon: "AI", label: "AI 룩", short: "AI" },
-  { href: "/dashboard/designer/short", icon: "SF", label: "숏폼", short: "숏폼" },
+  { href: "/dashboard/designer", icon: "HM", label: "스튜디오 홈", short: "홈" },
+  { href: "/dashboard/designer/products", icon: "PR", label: "상품 작업", short: "상품" },
+  { href: "/dashboard/designer/generated-looks", icon: "AI", label: "AI 룩 제작", short: "AI" },
+  { href: "/dashboard/designer/short", icon: "SF", label: "숏폼 제작", short: "숏폼" },
   { href: "/dashboard/designer/orders", icon: "OR", label: "받은 의뢰", short: "의뢰", tag: "예정" },
-  { href: "/dashboard/designer/brand", icon: "BR", label: "내 브랜드", short: "브랜드" },
+  { href: "/dashboard/designer/brand", icon: "BR", label: "브랜드 프로필", short: "브랜드" },
 ];
 
 function isActive(pathname: string, href: string) {
