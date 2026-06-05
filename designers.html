@@ -1367,6 +1367,20 @@
       throw new Error('AI 생성이 오래 걸리고 있습니다. 잠시 후 다시 확인해주세요.');
     };
 
+    const buildPublicStylingPrompt = (items) => {
+      const brand = (proposalBrandName?.textContent || 'K-MODU designer').trim();
+      const title = (proposalBriefTitle?.textContent || '').trim();
+      const summary = (proposalSummary?.textContent || '').trim();
+      const itemNames = items.map((item) => `${item.categoryLabel || item.category}: ${item.name}`).join(', ');
+      return [
+        `Brand: ${brand}.`,
+        title ? `Portfolio mood: ${title}.` : '',
+        summary ? `Brand note: ${summary}.` : '',
+        itemNames ? `Selected styling products: ${itemNames}.` : '',
+        'Create a premium K-fashion editorial full-body look preview with realistic styling.'
+      ].filter(Boolean).join(' ');
+    };
+
     const requestPublicGeneratedLook = async (items) => {
       const productIds = items.map((item) => item.productId).filter(Boolean);
       setAiProgress(15, '상품 조합과 모델 템플릿을 서버로 보내는 중입니다.', 'starting');
@@ -1377,7 +1391,7 @@
           designerId: currentDesignerId,
           modelTemplateId: selectedModelTemplate,
           productIds,
-          stylingPrompt: `Brand mood: ${proposalBrandMood.textContent || 'K-fashion editorial full look preview'}.`,
+          stylingPrompt: buildPublicStylingPrompt(items),
         })
       });
       const contentType = response.headers.get('content-type') || '';
