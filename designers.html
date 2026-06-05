@@ -1029,7 +1029,18 @@
       }
     };
 
-    const getStylingButtonKey = (button) => `${button.dataset.category || 'Item'}:${button.dataset.itemName || ''}`;
+    const normalizeStylingCategory = (category) => {
+      const value = String(category || 'Item').trim().toLowerCase();
+      if (['하의', 'bottom', 'bottoms', 'pants', 'skirt'].includes(value)) return 'bottom';
+      if (['상의', 'top', 'inner', 'shirt'].includes(value)) return 'top';
+      if (['아우터', 'outer', 'outerwear', 'jacket', 'coat'].includes(value)) return 'outer';
+      if (['가방', 'bag', 'bags'].includes(value)) return 'bag';
+      if (['신발', 'shoes', 'shoe', 'footwear'].includes(value)) return 'shoes';
+      if (['악세서리', '액세서리', 'accessory', 'accessories', 'eyewear'].includes(value)) return 'accessory';
+      return value;
+    };
+
+    const getStylingButtonKey = (button) => normalizeStylingCategory(button.dataset.category || 'Item');
 
     const getSelectedStylingItems = () => Array.from(selectedStylingItems.values());
 
@@ -1071,11 +1082,16 @@
       const key = getStylingButtonKey(button);
       const existing = selectedStylingItems.get(key);
 
-      if (existing) {
+      if (existing && existing.productId === (button.dataset.productId || '')) {
         if (existing.flatNode) existing.flatNode.remove();
         selectedStylingItems.delete(key);
         setTryOnButtonState(button, false);
       } else {
+        if (existing) {
+          if (existing.flatNode) existing.flatNode.remove();
+          if (existing.buttonNode) setTryOnButtonState(existing.buttonNode, false);
+          selectedStylingItems.delete(key);
+        }
         const image = button.dataset.itemImage || '';
         const category = button.dataset.category || 'Item';
         const card = document.createElement('div');
@@ -1093,7 +1109,8 @@
           name: button.dataset.itemName || button.querySelector('strong')?.textContent || 'Selected item',
           image,
           modelLookImage: button.dataset.modelLookImage || '',
-          flatNode: card
+          flatNode: card,
+          buttonNode: button
         });
         setTryOnButtonState(button, true);
       }
