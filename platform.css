@@ -2505,7 +2505,8 @@ body.dark-theme .brand img {
   margin-bottom: 26px;
 }
 
-.social-login a {
+.social-login a,
+.social-login button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2517,27 +2518,32 @@ body.dark-theme .brand img {
   font-size: var(--fs-body);
   font-weight: var(--fw-bold);
   letter-spacing: -.005em;
+  cursor: pointer;
   transition: filter .2s ease, transform .2s ease, border-color .2s ease;
 }
 
-.social-login a:hover {
+.social-login a:hover,
+.social-login button:hover {
   transform: translateY(-1px);
   filter: brightness(.97);
 }
 
-.social-login a.kakao {
+.social-login a.kakao,
+.social-login button.kakao {
   background: #F4E08C;
   border-color: #ECD47A;
   color: #2B2710;
 }
 
-.social-login a.google {
+.social-login a.google,
+.social-login button.google {
   background: #fff;
   border-color: rgba(5, 5, 5, .18);
   color: #1f1f1f;
 }
 
-.social-login a.google:hover {
+.social-login a.google:hover,
+.social-login button.google:hover {
   border-color: #4285F4;
 }
 

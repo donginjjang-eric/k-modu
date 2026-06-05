@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="한국 디자이너 브랜드를 글로벌 패션·뷰티 크리에이터와 연결하는 매칭 플랫폼. 마크브릿지가 운영합니다." />
+  <meta name="description" content="K-MODU는 한국 디자이너 브랜드와 글로벌 패션 크리에이터를 연결합니다." />
   <link rel="icon" type="image/png" href="assets/favicon.png" />
   <link rel="apple-touch-icon" href="assets/favicon.png" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="K-MODU by MARKBRIDGE" />
-  <meta property="og:description" content="한국 디자이너 브랜드를 글로벌 패션·뷰티 크리에이터와 연결합니다." />
+  <meta property="og:description" content="K-MODU는 한국 디자이너 브랜드와 글로벌 패션 크리에이터를 연결합니다." />
   <meta property="og:image" content="assets/og-image.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <title>Login | K-MODU</title>
@@ -28,7 +28,7 @@
       </nav>
       <div class="top-actions">
         <a href="/apply">입점 신청</a>
-        <a class="pill" href="/admin">관리자 데모</a>
+        <a class="pill" href="/dashboard/admin">관리자 데모</a>
       </div>
       <details class="platform-menu">
         <summary aria-label="메뉴"><span></span></summary>
@@ -36,7 +36,7 @@
           <a href="/#about">소개</a>
           <a href="/designers">디자이너</a>
           <a href="/creators">크리에이터</a>
-        <a href="/#contact">문의</a>
+          <a href="/#contact">문의</a>
           <a href="/apply">입점 신청</a>
           <a href="/login.html">로그인</a>
         </div>
@@ -57,18 +57,18 @@
         <div class="login-card">
           <p class="eyebrow">Partner Login</p>
           <h2>Sign in to K-MODU</h2>
-          <p>브랜드 신청 현황, 캠페인 브리프, 크리에이터 매칭 결과를 확인하려면 파트너 계정으로 로그인하세요.</p>
+          <p>운영 테스트 계정은 관리자 <b>admin / 1234</b>, 디자이너 <b>test / 1234</b> 입니다.</p>
 
           <div class="social-login" aria-label="SNS login options">
-            <a class="kakao" href="/admin" aria-label="카카오로 시작하기">
+            <button class="kakao" type="button" data-demo-login="test" aria-label="카카오로 시작하기">
               <span class="social-icon">
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                   <path fill="#181600" d="M12 3.5C6.753 3.5 2.5 6.84 2.5 10.96c0 2.66 1.76 5 4.4 6.33l-.83 3.04c-.08.28.22.5.46.34l3.6-2.38c.62.08 1.26.13 1.87.13 5.247 0 9.5-3.34 9.5-7.46S17.247 3.5 12 3.5Z"/>
                 </svg>
               </span>
               <span>카카오로 시작하기</span>
-            </a>
-            <a class="google" href="/admin" aria-label="Google로 시작하기">
+            </button>
+            <button class="google" type="button" data-demo-login="test" aria-label="Google로 시작하기">
               <span class="social-icon">
                 <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
                   <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917Z"/>
@@ -78,22 +78,23 @@
                 </svg>
               </span>
               <span>Google로 시작하기</span>
-            </a>
+            </button>
           </div>
 
           <div class="login-divider">or</div>
 
-          <form action="/admin">
+          <form id="partnerLoginForm">
             <div class="form-grid" style="grid-template-columns: 1fr;">
               <div class="field">
-                <label>Email</label>
-                <input type="email" placeholder="brand@company.com" />
+                <label for="email">Email</label>
+                <input id="email" name="email" type="text" placeholder="admin 또는 test" autocomplete="username" />
               </div>
               <div class="field">
-                <label>Password</label>
-                <input type="password" placeholder="Password" />
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password" placeholder="1234" autocomplete="current-password" />
               </div>
             </div>
+            <p id="loginStatus" class="login-footnote" role="status" aria-live="polite"></p>
             <div class="form-actions">
               <button class="pill" type="submit">Login</button>
             </div>
@@ -104,5 +105,44 @@
       </div>
     </section>
   </main>
+
+  <script>
+    const form = document.getElementById("partnerLoginForm");
+    const statusEl = document.getElementById("loginStatus");
+
+    async function login(email, password) {
+      statusEl.textContent = "로그인 중입니다...";
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.ok) {
+        throw new Error(result.error || "로그인에 실패했습니다.");
+      }
+      window.location.href = result.redirectTo || "/dashboard/designer";
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const data = new FormData(form);
+      try {
+        await login(String(data.get("email") || "").trim(), String(data.get("password") || ""));
+      } catch (error) {
+        statusEl.textContent = error instanceof Error ? error.message : "로그인에 실패했습니다.";
+      }
+    });
+
+    document.querySelectorAll("[data-demo-login]").forEach((button) => {
+      button.addEventListener("click", async () => {
+        try {
+          await login(button.getAttribute("data-demo-login") || "test", "1234");
+        } catch (error) {
+          statusEl.textContent = error instanceof Error ? error.message : "로그인에 실패했습니다.";
+        }
+      });
+    });
+  </script>
 </body>
 </html>
