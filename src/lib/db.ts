@@ -189,6 +189,18 @@ export async function getProductsForDesigner(designerId: string): Promise<Produc
   }
 }
 
+export async function getProductsForDesignerForAdmin(designerId: string): Promise<Product[]> {
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    return designerId === phaseDesigner.id ? toDemoProducts() : [];
+  }
+
+  return query<Product>(
+    "SELECT * FROM products WHERE designer_id = $1 ORDER BY created_at DESC",
+    [designerId],
+  );
+}
+
 export type AdminProduct = Product & {
   designer_brand_name: string | null;
   designer_approval_status: Designer["approval_status"] | null;

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getGeneratedLooksForAdmin } from "@/lib/db";
 
 function formatDate(value: string) {
@@ -25,7 +26,11 @@ export default async function AdminGeneratedLooksPage() {
                 <span className={`badge ${look.status === "hidden" ? "priv" : "pub"}`}>{look.status}</span>
               </div>
               <div className="b">
-                <div className="c">{look.designer_brand_name || "Unknown designer"}</div>
+                <div className="c">
+                  <Link href={`/dashboard/admin/designers/${look.designer_id}`}>
+                    {look.designer_brand_name || "Unknown designer"}
+                  </Link>
+                </div>
                 <div className="n">{look.cache_hit ? "Cached generation" : "Live generation"}</div>
                 <div className="st-prices">
                   <span className="supply">{formatDate(look.created_at)}</span>

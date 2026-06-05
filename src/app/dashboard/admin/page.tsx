@@ -45,7 +45,7 @@ export default async function AdminDashboardPage() {
           {pending.length ? (
             <div className="admin-list">
               {pending.map((designer) => (
-                <Link key={designer.id} className="admin-row" href="/dashboard/admin/designers">
+                <Link key={designer.id} className="admin-row" href={`/dashboard/admin/designers/${designer.id}`}>
                   <div>
                     <b>{designer.brand_name}</b>
                     <span>{designer.country || "국가 미입력"} · {designer.mood || "무드 미입력"}</span>

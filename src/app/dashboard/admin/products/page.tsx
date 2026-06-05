@@ -1,3 +1,4 @@
+import Link from "next/link";
 import AdminProductActions from "@/components/AdminProductActions";
 import { getProductsForAdmin } from "@/lib/db";
 
@@ -17,7 +18,15 @@ export default async function AdminProductsPage() {
                 <span className={`badge ${product.status === "active" ? "pub" : "priv"}`}>{product.status}</span>
               </div>
               <div className="b">
-                <div className="c">{product.designer_brand_name || "Unknown designer"}</div>
+                <div className="c">
+                  {product.designer_id ? (
+                    <Link href={`/dashboard/admin/designers/${product.designer_id}`}>
+                      {product.designer_brand_name || "Unknown designer"}
+                    </Link>
+                  ) : (
+                    product.designer_brand_name || "Unknown designer"
+                  )}
+                </div>
                 <div className="n">{product.name}</div>
                 <div className="st-prices">
                   <span className="supply">{product.category}</span>

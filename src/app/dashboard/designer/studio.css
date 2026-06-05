@@ -127,6 +127,14 @@
 .admin-row:last-child { border-bottom: 0; }
 .admin-row b { display: block; font-size: 15px; }
 .admin-row span { display: block; color: var(--muted); font-size: 13px; margin-top: 2px; }
+.admin-title-link { display: inline-flex; align-items: center; gap: 7px; font-weight: 900; text-decoration: underline; text-underline-offset: 3px; }
+.admin-detail-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+.admin-avatar { flex: 0 0 72px; width: 72px; height: 72px; border-radius: 14px; background: #dfd8ca center/cover; border: 1px solid var(--line); display: grid; place-items: center; color: var(--muted); font-weight: 900; }
+.admin-meta-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; margin-top: 18px; }
+.admin-meta-grid div { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; background: #fbfaf7; }
+.admin-meta-grid span { display: block; color: var(--muted); font-size: 12px; font-weight: 800; margin-bottom: 4px; }
+.admin-meta-grid b { display: block; font-size: 15px; }
+.admin-detail-copy { margin: 16px 0 0; color: var(--muted); font-size: 14px; }
 .status-badge { display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; font-size: 11px; font-style: normal; font-weight: 900; text-transform: uppercase; }
 .status-badge.pending { background: #fff2cf; color: #7a5200; }
 .status-badge.approved { background: #dff3e8; color: #155c39; }
@@ -173,6 +181,8 @@
   .admin-table-row { grid-template-columns: 1fr; gap: 9px; align-items: start; }
   .admin-table-row p { white-space: normal; }
   .admin-look-grid { grid-template-columns: repeat(4,1fr); }
+  .admin-detail-head { flex-direction: column; }
+  .admin-meta-grid { grid-template-columns: 1fr; }
   .st-tabbar { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: rgba(255,255,255,.97);
     border-top: 1px solid var(--line); backdrop-filter: blur(8px); padding-bottom: env(safe-area-inset-bottom); }
   .st-tabbar a { flex: 1; padding: 9px 0 11px; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 10px; font-weight: 700; color: var(--muted); }

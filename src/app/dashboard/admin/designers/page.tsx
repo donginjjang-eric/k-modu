@@ -1,3 +1,4 @@
+import Link from "next/link";
 import AdminDesignerActions from "@/components/AdminDesignerActions";
 import { getAllDesigners } from "@/lib/db";
 
@@ -31,7 +32,9 @@ export default async function AdminDesignersPage() {
             {designers.map((designer) => (
               <article className="admin-table-row" key={designer.id}>
                 <div>
-                  <b>{designer.brand_name}</b>
+                  <Link className="admin-title-link" href={`/dashboard/admin/designers/${designer.id}`}>
+                    {designer.brand_name}
+                  </Link>
                   <p>{designer.description || designer.mood || "설명 미입력"}</p>
                 </div>
                 <span>{designer.country || "-"}</span>
