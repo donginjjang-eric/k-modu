@@ -1,7 +1,8 @@
+import { spawn } from "node:child_process";
+import path from "node:path";
 import { getCurrentUser } from "@/lib/auth";
 import {
   countDailyLiveGenerations,
-  createGeneratedLook,
   createGenerationLog,
   getGeneratedLookByCacheKey,
   getGeneratedLookByCacheKeyForDesigner,
@@ -10,7 +11,19 @@ import {
   getModelTemplate,
   getOwnedProductsForGeneration,
 } from "@/lib/db";
-import { buildLookCacheKey, buildLookbookPrompt, generateOpenAiLookbook } from "@/lib/ai-lookbook";
+import { buildLookCacheKey, buildLookbookPrompt } from "@/lib/ai-lookbook";
+
+function startGenerationWorker(input: unknown) {
+  const payload = Buffer.from(JSON.stringify(input), "utf8").toString("base64url");
+  const workerPath = path.join(process.cwd(), "scripts", "ai-generate-worker.mjs");
+  const child = spawn(process.execPath, [workerPath, payload], {
+    cwd: process.cwd(),
+    detached: true,
+    stdio: "ignore",
+    env: process.env,
+  });
+  child.unref();
+}
 
 export async function GET(request: Request) {
   const user = await getCurrentUser();
@@ -145,40 +158,13 @@ export async function POST(request: Request) {
     status: "processing",
   });
 
-  generateOpenAiLookbook({
+  startGenerationWorker({
+    userId: user.id,
     designer,
     template,
     products,
     stylingPrompt,
     cacheKey,
-  }).then(async (generated) => {
-    await createGeneratedLook({
-      designerId: designer.id,
-      modelTemplateId: template.id,
-      selectedProductIds: products.map((product) => product.id),
-      cacheKey,
-      prompt: generated.prompt,
-      imageUrl: generated.imageUrl,
-      cacheHit: false,
-    });
-    await createGenerationLog({
-      userId: user.id,
-      designerId: designer.id,
-      provider,
-      cacheKey,
-      cacheHit: false,
-      status: "generated",
-    });
-  }).catch(async (error) => {
-    await createGenerationLog({
-      userId: user.id,
-      designerId: designer.id,
-      provider,
-      cacheKey,
-      cacheHit: false,
-      status: "failed",
-      errorMessage: error instanceof Error ? error.message : "Unknown generation error",
-    });
   });
 
   return Response.json({
