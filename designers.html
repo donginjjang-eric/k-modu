@@ -1334,7 +1334,9 @@
       });
       if (!response.ok) throw new Error(`approved look match failed ${response.status}`);
       const data = await response.json();
-      return data && data.ok !== false ? data.look : null;
+      return data && data.ok !== false && data.exactMatch && data.look
+        ? { ...data.look, exactMatch: true }
+        : null;
     };
 
     const setAiProgress = (percent, message, tone = 'processing') => {
@@ -1415,25 +1417,26 @@
       showAiNotice('AI 룩 생성을 시작했습니다', '잠시만 기다려주세요. 완료되면 화면의 모델 룩으로 바로 반영됩니다.', 'success');
 
       try {
+        setAiProgress(10, '디자이너가 미리 승인한 동일 조합 룩이 있는지 확인 중입니다.', 'starting');
         const approvedLook = await fetchApprovedLookMatch(items);
         if (approvedLook && approvedLook.imageUrl) {
           const approvedImage = new Image();
           approvedImage.src = approvedLook.imageUrl;
           await (approvedImage.decode ? approvedImage.decode().catch(() => {}) : Promise.resolve());
           applyGeneratedLook(approvedLook.imageUrl, items, {
-            label: approvedLook.exactMatch ? 'Approved AI Look' : 'Approved Brand Look',
-            status: approvedLook.exactMatch
-              ? '승인된 디자이너 룩을 불러왔습니다. 썸네일에서 다시 볼 수 있어요.'
-              : '디자이너가 승인한 대표 룩을 불러왔습니다.'
+            label: 'Approved AI Look',
+            status: '선택한 상품 조합과 정확히 일치하는 승인 룩을 불러왔습니다.'
           });
           addGeneratedLook(approvedLook.imageUrl);
+          setAiProgress(100, '정확히 일치하는 승인 룩을 불러왔습니다.', 'done');
           setAiTryOnLoading(false);
-          showAiNotice('저장된 승인 룩을 찾았습니다', '선택한 조합에 맞는 디자이너 승인 룩을 불러왔습니다.', 'success');
+          showAiNotice('저장된 승인 룩을 찾았습니다', '선택한 상품 조합과 정확히 같은 승인 룩을 불러왔습니다.', 'success');
           if (window.matchMedia('(max-width: 900px)').matches) {
             openLightbox(generatedLooks, 0);
           }
           return;
         }
+        setAiProgress(12, '동일 조합 승인 룩이 없어 OpenAI로 새 룩을 생성합니다.', 'processing');
       } catch (error) {
         aiTryonStatus.hidden = false;
         aiTryonStatus.textContent = '승인 룩 확인에 실패해 OpenAI 생성으로 진행합니다.';

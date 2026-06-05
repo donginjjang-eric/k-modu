@@ -17,17 +17,16 @@ export async function POST(request: Request) {
 
   const looks = await getApprovedGeneratedLooksForDesigner(designerId, 40);
   const exact = looks.find((look) => sameProductSet(look.selected_product_ids, productIds));
-  const look = exact || looks[0] || null;
 
   return Response.json({
     ok: true,
     exactMatch: Boolean(exact),
-    look: look ? {
-      id: look.id,
-      designerId: look.designer_id,
-      imageUrl: look.image_url,
-      selectedProductIds: look.selected_product_ids,
-      createdAt: look.created_at,
+    look: exact ? {
+      id: exact.id,
+      designerId: exact.designer_id,
+      imageUrl: exact.image_url,
+      selectedProductIds: exact.selected_product_ids,
+      createdAt: exact.created_at,
     } : null,
   });
 }
