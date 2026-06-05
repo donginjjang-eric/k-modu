@@ -35,7 +35,7 @@ export default function StylingBoard({
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
   const [previewImage, setPreviewImage] = useState(designer.heroImage);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [statusText, setStatusText] = useState("상품을 2개 이상 선택하면 Generate 버튼이 활성화됩니다.");
+  const [statusText, setStatusText] = useState("상품을 2개 이상 선택하면 AI 룩 생성 버튼이 활성화됩니다.");
   const [resultLabel, setResultLabel] = useState("");
 
   const selectedProducts = useMemo(
@@ -55,7 +55,7 @@ export default function StylingBoard({
     if (selectedProductIds.length < 2 || isGenerating) return;
 
     setIsGenerating(true);
-    setStatusText("AI 룩북 생성 중 · 약 20-40초");
+    setStatusText("AI 룩북 생성 중입니다. 보통 20~40초 정도 걸립니다.");
     setResultLabel("");
 
     try {
@@ -70,17 +70,17 @@ export default function StylingBoard({
         }),
       });
       const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "AI 룩북 생성에 실패했습니다.");
+      if (!response.ok) throw new Error(result.error || "AI 룩 생성에 실패했습니다.");
 
       setPreviewImage(result.imageUrl);
-      setResultLabel(result.cacheHit ? "Cached Look" : "New AI Look");
+      setResultLabel(result.cacheHit ? "저장된 룩" : "새 AI 룩");
       setStatusText(
         result.cacheHit
           ? "저장된 AI 착장 미리보기를 불러왔습니다."
-          : "새 AI 룩북 이미지가 생성되었습니다.",
+          : "AI 룩 이미지가 생성되었습니다.",
       );
     } catch (error) {
-      setStatusText(error instanceof Error ? error.message : "AI 룩북 생성에 실패했습니다.");
+      setStatusText(error instanceof Error ? error.message : "AI 룩 생성에 실패했습니다.");
     } finally {
       setIsGenerating(false);
     }
@@ -89,18 +89,18 @@ export default function StylingBoard({
   return (
     <section className="detail-layout">
       <div className="look-frame">
-        <img src={previewImage} alt={`${designer.brandName} Full Look Preview`} />
+        <img src={previewImage} alt={`${designer.brandName} 착장 미리보기`} />
         {isGenerating ? (
           <div className="tryon-loading-overlay">
-            <strong>AI Lookbook Generation</strong>
-            <span>AI 룩북 생성 중 · 약 20-40초</span>
+            <strong>AI 룩북 생성</strong>
+            <span>AI 룩을 생성 중입니다. 보통 20~40초 정도 걸립니다.</span>
           </div>
         ) : null}
       </div>
 
       <div className="styling-panel">
         <div>
-          <p className="kicker">Model Template</p>
+          <p className="kicker">모델 템플릿</p>
           <div className="template-row">
             {modelTemplates.map((template) => (
               <button
@@ -117,7 +117,7 @@ export default function StylingBoard({
         </div>
 
         <div>
-          <p className="kicker">Styling Products</p>
+          <p className="kicker">스타일링 상품</p>
           <div className="product-list">
             {products.map((product) => {
               const isActive = selectedProductIds.includes(product.id);
@@ -134,7 +134,7 @@ export default function StylingBoard({
                     <small>{product.category}</small>
                     <strong>{product.name}</strong>
                   </span>
-                  <span className="status-badge">{isActive ? "Selected" : product.status}</span>
+                  <span className="status-badge">{isActive ? "선택됨" : product.status}</span>
                 </button>
               );
             })}
@@ -143,10 +143,10 @@ export default function StylingBoard({
 
         <div className="generate-box">
           <div className="generate-head">
-            <p className="kicker">AI Lookbook Generation</p>
+            <p className="kicker">AI 룩북 생성</p>
             {resultLabel ? <strong>{resultLabel}</strong> : null}
           </div>
-          <div className="selected-stack" aria-label="Selected products">
+          <div className="selected-stack" aria-label="선택한 상품">
             {selectedProducts.length ? (
               selectedProducts.map((product) => <span key={product.id}>{product.name}</span>)
             ) : (
@@ -159,7 +159,7 @@ export default function StylingBoard({
             disabled={selectedProducts.length < 2 || isGenerating}
             onClick={generateLook}
           >
-            {isGenerating ? "Generating..." : "Generate AI Look"}
+            {isGenerating ? "생성 중..." : "AI 룩 생성"}
           </button>
           <p className="notice">{statusText}</p>
         </div>

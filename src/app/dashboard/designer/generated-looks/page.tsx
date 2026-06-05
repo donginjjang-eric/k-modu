@@ -12,8 +12,8 @@ export default async function DesignerAiLookPage() {
 
   return (
     <>
-      <h1 className="st-title">✨ AI 룩 만들기</h1>
-      <p className="st-sub">모델과 상품을 골라 모델 착장 이미지를 만들어요.</p>
+      <h1 className="st-title">AI 룩 만들기</h1>
+      <p className="st-sub">모델과 상품을 골라 AI 착장 이미지를 생성합니다.</p>
 
       <StylingBoard
         designer={{
@@ -21,16 +21,26 @@ export default async function DesignerAiLookPage() {
           mood: designer.mood,
           heroImage: products[0]?.image_url || "/assets/mainmodel_2.png",
         }}
-        products={products.map((p) => ({ id: p.id, name: p.name, category: p.category, status: p.status, image: p.image_url }))}
-        modelTemplates={templates.map((t) => ({ id: t.id, label: t.name, image: t.image_url }))}
+        products={products.map((product) => ({
+          id: product.id,
+          name: product.name,
+          category: product.category,
+          status: product.status,
+          image: product.image_url,
+        }))}
+        modelTemplates={templates.map((template) => ({
+          id: template.id,
+          label: template.name,
+          image: template.image_url,
+        }))}
       />
 
       {looks.length ? (
         <>
           <div className="st-sec-head" style={{ marginTop: 32 }}><h2>내가 만든 룩</h2></div>
           <div className="st-rail">
-            {looks.map((l) => (
-              <div key={l.id} className="thumb" style={{ backgroundImage: `url('${l.image_url}')` }} />
+            {looks.map((look) => (
+              <div key={look.id} className="thumb" style={{ backgroundImage: `url('${look.image_url}')` }} />
             ))}
           </div>
         </>
