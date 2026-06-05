@@ -55,6 +55,24 @@ export default function StylingBoard({
     });
   };
 
+  const pollGeneratedLook = async (cacheKey: string) => {
+    for (let attempt = 0; attempt < 48; attempt += 1) {
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+      const response = await fetch(`/api/generate-tryon?cacheKey=${encodeURIComponent(cacheKey)}`);
+      const contentType = response.headers.get("content-type") || "";
+      const result = contentType.includes("application/json") ? await response.json() : null;
+
+      if (!response.ok) {
+        throw new Error(result?.error || `AI 생성 상태 확인 오류 (${response.status}).`);
+      }
+      if (result?.status === "completed" && result.imageUrl) return result;
+
+      setStatusText(`AI 룩 생성 중입니다. 완료되면 자동으로 표시됩니다. (${attempt + 1}/48)`);
+    }
+
+    throw new Error("AI 생성이 오래 걸리고 있습니다. 잠시 후 내가 만든 룩 목록을 새로고침해 확인해주세요.");
+  };
+
   const generateLook = async () => {
     if (selectedProductIds.length !== maxAiProducts || isGenerating) return;
 
@@ -79,11 +97,15 @@ export default function StylingBoard({
       if (!response.ok) {
         throw new Error(result?.error || `AI 생성 서버 응답 오류 (${response.status}). 잠시 후 상품 2개로 다시 시도해주세요.`);
       }
-      if (!result?.imageUrl) throw new Error("AI 생성 결과 이미지가 없습니다.");
+      const finalResult = result?.status === "processing" && result.cacheKey
+        ? await pollGeneratedLook(result.cacheKey)
+        : result;
 
-      setPreviewImage(result.imageUrl);
-      setResultLabel(result.cacheHit ? "저장된 룩" : "새 AI 룩");
-      setStatusText(result.cacheHit ? "저장된 AI 룩을 불러왔습니다." : "AI 룩 이미지가 생성되었습니다.");
+      if (!finalResult?.imageUrl) throw new Error("AI 생성 결과 이미지가 없습니다.");
+
+      setPreviewImage(finalResult.imageUrl);
+      setResultLabel(finalResult.cacheHit ? "저장된 룩" : "새 AI 룩");
+      setStatusText(finalResult.cacheHit ? "저장된 AI 룩을 불러왔습니다." : "AI 룩 이미지가 생성되었습니다.");
     } catch (error) {
       setStatusText(error instanceof Error ? error.message : "AI 룩 생성에 실패했습니다.");
     } finally {

@@ -472,6 +472,14 @@ export async function getGeneratedLookByCacheKey(cacheKey: string): Promise<Gene
   );
 }
 
+export async function getGeneratedLookByCacheKeyForDesigner(designerId: string, cacheKey: string): Promise<GeneratedLook | null> {
+  if (!hasDatabase()) return null;
+  return one<GeneratedLook>(
+    "SELECT * FROM generated_looks WHERE designer_id = $1 AND cache_key = $2 AND status <> 'hidden' ORDER BY created_at DESC LIMIT 1",
+    [designerId, cacheKey],
+  );
+}
+
 export async function getGeneratedLookForDesigner(designerId: string, id: string): Promise<GeneratedLook | null> {
   if (!hasDatabase()) return null;
   return one<GeneratedLook>(
@@ -568,6 +576,24 @@ export async function createGenerationLog(input: {
       input.status,
       input.errorMessage || null,
     ],
+  );
+}
+
+export async function getLatestGenerationLogForDesigner(designerId: string, cacheKey: string) {
+  if (!hasDatabase()) return null;
+  return one<{
+    id: string;
+    status: string;
+    error_message: string | null;
+    created_at: string;
+  }>(
+    `SELECT id, status, error_message, created_at
+       FROM generation_logs
+      WHERE designer_id = $1
+        AND cache_key = $2
+      ORDER BY created_at DESC
+      LIMIT 1`,
+    [designerId, cacheKey],
   );
 }
 
