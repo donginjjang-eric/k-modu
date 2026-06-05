@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import DraggableTabs from "./DraggableTabs";
 
 type Designer = {
   brandName: string;
@@ -157,18 +158,12 @@ export default function StylingBoard({
         <div>
           <div className="product-filter-head">
             <p className="kicker">스타일링 상품</p>
-            <div className="product-tabs" aria-label="상품 카테고리">
-              {categories.map((category) => (
-                <button
-                  className={activeCategory === category ? "is-active" : ""}
-                  key={category}
-                  type="button"
-                  onClick={() => setActiveCategory(category)}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
+            <DraggableTabs
+              categories={categories}
+              activeCategory={activeCategory}
+              ariaLabel="상품 카테고리"
+              onChange={setActiveCategory}
+            />
           </div>
 
           <div className="product-list">

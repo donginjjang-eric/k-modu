@@ -121,7 +121,7 @@
 .st-pcard .row { display: flex; gap: 8px; margin-top: 10px; }
 .st-pcard .row button { flex: 1; min-height: 34px; border-radius: 9px; border: 1px solid var(--line2); background: #fff; font-weight: 700; font-size: 12px; }
 .product-manager-head { align-items: flex-start; gap: 14px; }
-.product-tabs.compact { max-width: min(100%, 520px); }
+.product-tabs.compact { max-width: min(100%, 520px); justify-content: flex-start; }
 
 .look-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap: 16px; }
 .look-card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }

@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import type { Product } from "@/lib/types";
+import DraggableTabs from "./DraggableTabs";
 
 const CATEGORIES = ["상의", "하의", "아우터", "가방", "신발", "악세서리"];
 
@@ -216,18 +217,13 @@ export default function ProductManager({ initialProducts }: { initialProducts: P
         <div>
           <div className="st-sec-head product-manager-head">
             <h2>내 상품 ({visibleProducts.length}/{products.length})</h2>
-            <div className="product-tabs compact" aria-label="내 상품 카테고리">
-              {productCategories.map((category) => (
-                <button
-                  className={activeCategory === category ? "is-active" : ""}
-                  key={category}
-                  type="button"
-                  onClick={() => setActiveCategory(category)}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
+            <DraggableTabs
+              categories={productCategories}
+              activeCategory={activeCategory}
+              ariaLabel="내 상품 카테고리"
+              className="compact"
+              onChange={setActiveCategory}
+            />
           </div>
           {visibleProducts.length ? (
             <div className="st-plist">

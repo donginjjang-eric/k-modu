@@ -125,6 +125,11 @@
                   <div class="styling-board-section-head">
                     <h3>보유 제품</h3>
                     <span>디자이너 보유</span>
+                    <div class="owned-category-tabs" id="ownedCategoryTabs" aria-label="보유 제품 종류">
+                      <button type="button" data-owned-category="top">상의</button>
+                      <button type="button" data-owned-category="bottom">하의</button>
+                      <button type="button" data-owned-category="accessory">악세서리</button>
+                    </div>
                   </div>
                   <div class="styling-item-list" id="stylingOwnedItems"></div>
                 </div>
@@ -456,7 +461,9 @@
     const proposalPanels = Array.from(document.querySelectorAll('[data-proposal-panel]'));
     const stylingBoardImage = document.querySelector('#stylingBoardImage');
     const stylingOwnedItems = document.querySelector('#stylingOwnedItems');
+    const ownedCategoryTabs = document.querySelector('#ownedCategoryTabs');
     const stylingRecommendedItems = document.querySelector('#stylingRecommendedItems');
+    const aiTryonPanel = document.querySelector('.ai-tryon-panel');
     const aiTryonGenerate = document.querySelector('#aiTryonGenerate');
     const aiTryonSelection = document.querySelector('#aiTryonSelection');
     const aiTryonStatus = document.querySelector('#aiTryonStatus');
@@ -736,6 +743,9 @@
     let proposalGalleryTimer = null;
     const selectedStylingItems = new Map();
     let selectedModelTemplate = 'fixed-female-minimal';
+    let currentDesignerId = '';
+    let currentOwnedItems = [];
+    let ownedCategoryFilter = 'all';
     let modelTemplateImages = {
       'fixed-female-minimal': 'assets/mainmodel_2.png',
       'fixed-street': 'assets/mainmodel_3.png'
@@ -948,6 +958,43 @@
       </button>
     `).join('');
 
+    const normalizeStylingCategory = (category) => {
+      const raw = String(category || 'Item').trim();
+      const value = raw.toLowerCase();
+      if (raw.includes('하의') || ['bottom', 'bottoms', 'pants', 'trouser', 'trousers', 'skirt'].includes(value)) return 'bottom';
+      if (raw.includes('상의') || raw.includes('아우터') || ['top', 'tops', 'inner', 'shirt', 'outer', 'outerwear', 'jacket', 'coat'].includes(value)) return 'top';
+      if (
+        raw.includes('가방') ||
+        raw.includes('신발') ||
+        raw.includes('악세') ||
+        raw.includes('액세') ||
+        ['bag', 'bags', 'shoes', 'shoe', 'footwear', 'accessory', 'accessories', 'eyewear', 'hat', 'cap'].includes(value)
+      ) return 'accessory';
+      return value;
+    };
+
+    const renderOwnedCategoryTabs = () => {
+      if (!ownedCategoryTabs) return;
+      const available = new Set(currentOwnedItems.map((item) => normalizeStylingCategory(item.category)));
+      Array.from(ownedCategoryTabs.querySelectorAll('[data-owned-category]')).forEach((button) => {
+        const category = button.dataset.ownedCategory;
+        const hasItems = available.has(category);
+        button.hidden = !hasItems;
+        button.classList.toggle('is-active', ownedCategoryFilter === category);
+        button.setAttribute('aria-pressed', String(ownedCategoryFilter === category));
+      });
+    };
+
+    const renderOwnedItems = () => {
+      const filtered = ownedCategoryFilter === 'all'
+        ? currentOwnedItems
+        : currentOwnedItems.filter((item) => normalizeStylingCategory(item.category) === ownedCategoryFilter);
+      stylingOwnedItems.innerHTML = filtered.length
+        ? renderStylingItems(filtered)
+        : '<div class="styling-empty-state">이 종류의 보유 제품이 아직 없습니다.</div>';
+      renderOwnedCategoryTabs();
+    };
+
     const clearStylingItemSelection = () => {
       [...stylingOwnedItems.children, ...stylingRecommendedItems.children].forEach((button) => {
         button.classList.remove('is-active');
@@ -1029,17 +1076,6 @@
       }
     };
 
-    const normalizeStylingCategory = (category) => {
-      const value = String(category || 'Item').trim().toLowerCase();
-      if (['하의', 'bottom', 'bottoms', 'pants', 'skirt'].includes(value)) return 'bottom';
-      if (['상의', 'top', 'inner', 'shirt'].includes(value)) return 'top';
-      if (['아우터', 'outer', 'outerwear', 'jacket', 'coat'].includes(value)) return 'outer';
-      if (['가방', 'bag', 'bags'].includes(value)) return 'bag';
-      if (['신발', 'shoes', 'shoe', 'footwear'].includes(value)) return 'shoes';
-      if (['악세서리', '액세서리', 'accessory', 'accessories', 'eyewear'].includes(value)) return 'accessory';
-      return value;
-    };
-
     const getStylingButtonKey = (button) => normalizeStylingCategory(button.dataset.category || 'Item');
 
     const getSelectedStylingItems = () => Array.from(selectedStylingItems.values());
@@ -1067,9 +1103,12 @@
 
     const updateAiTryOnControls = () => {
       const items = getSelectedStylingItems();
+      const hasSelection = items.length > 0;
       const disabled = items.length < 2 || aiTryonGenerate.dataset.loading === 'true';
       aiTryonGenerate.disabled = disabled;
       stageGenerate.disabled = disabled;
+      proposalSheet.classList.toggle('has-ai-selection', hasSelection);
+      if (aiTryonPanel) aiTryonPanel.classList.toggle('is-sticky', hasSelection);
       aiSelectedStack.innerHTML = items.length
         ? items.map((item) => `<span>${escapeHtml(item.category)} · ${escapeHtml(item.name)}</span>`).join('')
         : '<span class="is-empty">선택된 항목 없음</span>';
@@ -1200,6 +1239,20 @@
     };
     renderGeneratedLooks();
 
+    const fetchApprovedLookMatch = async (items) => {
+      if (!currentDesignerId) return null;
+      const productIds = items.map((item) => item.productId).filter(Boolean);
+      if (productIds.length < 2) return null;
+      const response = await fetch('/api/public/approved-look-match', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ designerId: currentDesignerId, productIds })
+      });
+      if (!response.ok) throw new Error(`approved look match failed ${response.status}`);
+      const data = await response.json();
+      return data && data.ok !== false ? data.look : null;
+    };
+
     const generateAiTryOnLook = async () => {
       const items = getSelectedStylingItems();
       if (items.length < 2) {
@@ -1212,6 +1265,29 @@
       aiTryonResultMeta.hidden = false;
       aiTryonResultMeta.innerHTML = '<span class="is-loading">생성 중</span><strong>AI가 선택한 제품을 모델에 입히는 중…</strong>';
       aiTryonStatus.textContent = 'AI 룩 생성 중…';
+
+      try {
+        const approvedLook = await fetchApprovedLookMatch(items);
+        if (approvedLook && approvedLook.imageUrl) {
+          const approvedImage = new Image();
+          approvedImage.src = approvedLook.imageUrl;
+          await (approvedImage.decode ? approvedImage.decode().catch(() => {}) : Promise.resolve());
+          applyGeneratedLook(approvedLook.imageUrl, items, {
+            label: approvedLook.exactMatch ? 'Approved AI Look' : 'Approved Brand Look',
+            status: approvedLook.exactMatch
+              ? '승인된 디자이너 룩을 불러왔습니다. 썸네일에서 다시 볼 수 있어요.'
+              : '디자이너가 승인한 대표 룩을 불러왔습니다.'
+          });
+          addGeneratedLook(approvedLook.imageUrl);
+          setAiTryOnLoading(false);
+          if (window.matchMedia('(max-width: 900px)').matches) {
+            openLightbox(generatedLooks, 0);
+          }
+          return;
+        }
+      } catch (error) {
+        aiTryonStatus.textContent = '승인 룩 확인에 실패해 임시 룩으로 보여드립니다.';
+      }
 
       // Demo mode: no live API call. Preload + decode the chosen look DURING the
       // ~5s wait so it appears instantly at the 5s mark (no extra load lag).
@@ -1309,7 +1385,9 @@
       const board = stylingBoardData[profileIndex] || defaultStylingBoard;
       currentStylingBoard = board;
       stylingBoardImage.src = board.fullLookImage;
-      stylingOwnedItems.innerHTML = renderStylingItems(board.ownedItems);
+      currentOwnedItems = board.ownedItems || [];
+      ownedCategoryFilter = 'all';
+      renderOwnedItems();
       stylingRecommendedItems.innerHTML = renderStylingItems(board.recommendedItems);
       resetTryOnStage();
       bindStylingItemPreviews();
@@ -1330,7 +1408,9 @@
         recommendedItems: [],
         shortformStatus: 'coming-soon'
       };
-      stylingOwnedItems.innerHTML = renderStylingItems(ownedItems);
+      currentOwnedItems = ownedItems;
+      ownedCategoryFilter = 'all';
+      renderOwnedItems();
       stylingRecommendedItems.innerHTML = '';
       resetTryOnStage();
       bindStylingItemPreviews();
@@ -1506,6 +1586,7 @@
       const profileIndex = Number(card.dataset.index || 0);
       const meta = getDesignerMeta(profileIndex, brand, kicker, tags);
       currentProposalIndex = profileIndex;
+      currentDesignerId = card.dataset.designerId || '';
 
       proposalBrandName.textContent = brand;
       proposalBriefTitle.textContent = 'Representative looks and portfolio mood';
@@ -1582,6 +1663,16 @@
     aiTryonGenerate.addEventListener('click', generateAiTryOnLook);
     stageGenerate.addEventListener('click', generateAiTryOnLook);
     if (shortformGenerate) shortformGenerate.addEventListener('click', generateShortformVideo);
+    if (ownedCategoryTabs) {
+      ownedCategoryTabs.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-owned-category]');
+        if (!button) return;
+        const nextFilter = button.dataset.ownedCategory || 'all';
+        ownedCategoryFilter = ownedCategoryFilter === nextFilter ? 'all' : nextFilter;
+        renderOwnedItems();
+        bindStylingItemPreviews();
+      });
+    }
 
     document.querySelectorAll('[data-proposal-trigger]').forEach((trigger) => {
       trigger.addEventListener('click', (event) => {

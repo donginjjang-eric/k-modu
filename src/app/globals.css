@@ -275,8 +275,30 @@ p {
   max-width: min(100%, 390px);
   overflow-x: auto;
   overscroll-behavior-inline: contain;
-  padding-bottom: 3px;
+  padding: 0 2px 5px;
   scrollbar-width: thin;
+  cursor: grab;
+  user-select: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.product-tabs.is-dragging {
+  cursor: grabbing;
+  scroll-behavior: auto;
+}
+
+.product-tabs::-webkit-scrollbar {
+  height: 7px;
+}
+
+.product-tabs::-webkit-scrollbar-track {
+  background: rgba(17, 17, 17, .08);
+  border-radius: 999px;
+}
+
+.product-tabs::-webkit-scrollbar-thumb {
+  background: rgba(17, 17, 17, .32);
+  border-radius: 999px;
 }
 
 .product-tabs button {
