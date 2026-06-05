@@ -14,7 +14,7 @@
   <title>Designers | K-MODU</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
-  <link rel="stylesheet" href="platform.css?v=20260603a" />
+  <link rel="stylesheet" href="platform.css?v=20260605b" />
 </head>
 <body>
   <main class="platform designer-board">
@@ -1165,7 +1165,8 @@
       if (mobileAiQuickBar) {
         const isLoading = aiTryonGenerate.dataset.loading === 'true';
         const names = items.map((item) => item.name);
-        const quickBarOpen = hasSelection && proposalSheet.classList.contains('is-open') && !aiTryonPanelVisible;
+        const isMobileSheet = window.matchMedia('(max-width: 900px)').matches;
+        const quickBarOpen = hasSelection && isMobileSheet && proposalSheet.classList.contains('is-open') && !aiTryonPanelVisible;
         mobileAiQuickBar.classList.toggle('is-open', quickBarOpen);
         mobileAiQuickBar.classList.toggle('is-ready', items.length >= 2 && !isLoading);
         mobileAiQuickBar.setAttribute('aria-hidden', quickBarOpen ? 'false' : 'true');
@@ -1803,7 +1804,10 @@
       const aiPanelObserver = new IntersectionObserver((entries) => {
         aiTryonPanelVisible = entries.some((entry) => {
           const rect = entry.boundingClientRect;
-          return entry.isIntersecting && rect.top < window.innerHeight - 72 && rect.bottom > 72;
+          const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+          const visibleEnough = entry.intersectionRatio >= 0.64;
+          const centeredEnough = rect.top < viewportHeight - 180 && rect.bottom > viewportHeight * 0.36;
+          return entry.isIntersecting && visibleEnough && centeredEnough;
         });
         updateAiTryOnControls();
       }, { threshold: [0, 0.28, 0.6] });

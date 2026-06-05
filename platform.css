@@ -4847,6 +4847,10 @@ body.dark-theme .mini-stats strong {
     box-shadow: none;
   }
 
+  .designer-proposal-sheet.has-ai-selection .ai-tryon-panel.is-sticky::before {
+    height: 0;
+  }
+
   .designer-proposal-sheet.has-ai-selection .ai-tryon-panel.is-sticky .ai-tryon-head,
   .designer-proposal-sheet.has-ai-selection .ai-tryon-panel.is-sticky .ai-tryon-status {
     display: block;
@@ -4888,8 +4892,8 @@ body.dark-theme .mini-stats strong {
     grid-column: 1;
     grid-row: 3;
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 5px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
     width: 100%;
     max-width: 100%;
     min-height: 0;
@@ -4900,16 +4904,22 @@ body.dark-theme .mini-stats strong {
 
   .designer-proposal-sheet.has-ai-selection .ai-tryon-panel.is-sticky .ai-selected-stack span {
     min-width: 0;
-    min-height: 70px;
+    height: 96px;
+    min-height: 96px;
     max-width: none;
     overflow: hidden;
     padding: 0;
-    border-radius: 9px;
+    border-radius: 10px;
+    background: #f5f1e9;
   }
 
   .designer-proposal-sheet.has-ai-selection .ai-tryon-panel.is-sticky .ai-selected-stack .ai-selected-thumb img {
-    height: 70px;
-    padding: 6px;
+    width: 100%;
+    height: 96px;
+    max-height: 96px;
+    padding: 8px;
+    object-fit: contain;
+    object-position: center;
   }
 
   .designer-proposal-sheet.has-ai-selection .ai-tryon-panel.is-sticky .ai-selected-stack .ai-selected-thumb b {
