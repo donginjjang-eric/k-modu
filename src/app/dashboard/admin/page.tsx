@@ -1,25 +1,78 @@
 import Link from "next/link";
-import { requireUser } from "@/lib/auth";
+import { getAdminDashboardStats, getAllDesigners, getGeneratedLooksForAdmin } from "@/lib/db";
 
 export default async function AdminDashboardPage() {
-  await requireUser("admin");
+  const [stats, designers, looks] = await Promise.all([
+    getAdminDashboardStats(),
+    getAllDesigners(),
+    getGeneratedLooksForAdmin(8),
+  ]);
+  const pending = designers.filter((designer) => designer.approval_status === "pending").slice(0, 4);
 
   return (
-    <main className="page">
-      <p className="kicker">Admin Dashboard</p>
-      <h1 style={{ marginTop: 0, fontSize: 48 }}>관리자 대시보드</h1>
-      <section className="dashboard-grid">
-        <Link className="dash-card" href="/dashboard/admin/designers">
-          <p className="kicker">Designers</p>
-          <h2>디자이너 승인</h2>
-          <p className="notice">Phase 3에서 승인/비활성화 기능을 연결합니다.</p>
+    <>
+      <h1 className="st-title">관리자 홈</h1>
+      <p className="st-sub">디자이너 승인, 상품/AI 생성 현황, 운영 체크를 한 화면에서 봅니다.</p>
+
+      <div className="st-stats admin-stats">
+        <div className="st-stat"><div className="n">{stats.designersTotal}</div><div className="l">전체 디자이너</div></div>
+        <div className="st-stat"><div className="n">{stats.pendingDesigners}</div><div className="l">승인 대기</div></div>
+        <div className="st-stat"><div className="n">{stats.productsTotal}</div><div className="l">공개 상품</div></div>
+        <div className="st-stat"><div className="n">{stats.generatedLooksTotal}</div><div className="l">AI 생성 이미지</div></div>
+      </div>
+
+      <div className="st-actions">
+        <Link className="st-bigbtn dark" href="/dashboard/admin/designers">
+          <div><div className="t">디자이너 승인 관리</div><div className="d">신규 브랜드를 승인하거나 비활성화합니다.</div></div>
+          <div className="go">→</div>
         </Link>
-        <Link className="dash-card" href="/dashboard/admin/generated-looks">
-          <p className="kicker">Logs</p>
-          <h2>생성 이미지 확인</h2>
-          <p className="notice">Phase 6에서 생성 로그와 비용 관리용 화면을 연결합니다.</p>
+        <Link className="st-bigbtn" href="/dashboard/admin/generated-looks">
+          <div><div className="t">AI 생성 이미지 확인</div><div className="d">최근 생성 결과와 상태를 빠르게 점검합니다.</div></div>
+          <div className="go">→</div>
         </Link>
-      </section>
-    </main>
+      </div>
+
+      <div className="st-grid2col">
+        <section className="st-card">
+          <div className="st-sec-head">
+            <h2>승인 대기</h2>
+            <Link href="/dashboard/admin/designers">전체 보기 →</Link>
+          </div>
+          {pending.length ? (
+            <div className="admin-list">
+              {pending.map((designer) => (
+                <Link key={designer.id} className="admin-row" href="/dashboard/admin/designers">
+                  <div>
+                    <b>{designer.brand_name}</b>
+                    <span>{designer.country || "국가 미입력"} · {designer.mood || "무드 미입력"}</span>
+                  </div>
+                  <em className="status-badge pending">pending</em>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="st-empty compact"><p>현재 승인 대기 디자이너가 없습니다.</p></div>
+          )}
+        </section>
+
+        <section className="st-card">
+          <div className="st-sec-head">
+            <h2>최근 AI 생성</h2>
+            <Link href="/dashboard/admin/generated-looks">전체 보기 →</Link>
+          </div>
+          {looks.length ? (
+            <div className="admin-look-grid">
+              {looks.map((look) => (
+                <div key={look.id} className="admin-look-thumb" style={{ backgroundImage: `url('${look.image_url}')` }}>
+                  <span>{look.designer_brand_name || "Unknown"}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="st-empty compact"><p>아직 생성된 AI 이미지가 없습니다.</p></div>
+          )}
+        </section>
+      </div>
+    </>
   );
 }

@@ -1,23 +1,49 @@
 import AdminDesignerActions from "@/components/AdminDesignerActions";
-import { requireUser } from "@/lib/auth";
 import { getAllDesigners } from "@/lib/db";
 
+function statusClass(status: string) {
+  if (status === "approved") return "approved";
+  if (status === "disabled") return "disabled";
+  return "pending";
+}
+
 export default async function AdminDesignersPage() {
-  await requireUser("admin");
   const designers = await getAllDesigners();
 
   return (
-    <main className="page">
-      <p className="kicker">Admin Designers</p>
-      <h1 style={{ marginTop: 0, fontSize: 48 }}>디자이너 승인 관리</h1>
-      {designers.map((designer) => (
-        <article className="dash-card" key={designer.id}>
-          <p className="kicker">{designer.approval_status}</p>
-          <h2>{designer.brand_name}</h2>
-          <p className="notice">Phase 3에서 승인/비활성화 액션을 연결합니다.</p>
-          <AdminDesignerActions designerId={designer.id} />
-        </article>
-      ))}
-    </main>
+    <>
+      <h1 className="st-title">디자이너 승인 관리</h1>
+      <p className="st-sub">브랜드 신청 상태를 확인하고 운영 노출 여부를 관리합니다.</p>
+
+      <section className="st-card">
+        <div className="st-sec-head">
+          <h2>디자이너 {designers.length}개</h2>
+        </div>
+
+        {designers.length ? (
+          <div className="admin-table">
+            <div className="admin-table-head">
+              <span>브랜드</span>
+              <span>국가</span>
+              <span>상태</span>
+              <span>관리</span>
+            </div>
+            {designers.map((designer) => (
+              <article className="admin-table-row" key={designer.id}>
+                <div>
+                  <b>{designer.brand_name}</b>
+                  <p>{designer.description || designer.mood || "설명 미입력"}</p>
+                </div>
+                <span>{designer.country || "-"}</span>
+                <span><em className={`status-badge ${statusClass(designer.approval_status)}`}>{designer.approval_status}</em></span>
+                <AdminDesignerActions designerId={designer.id} />
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div className="st-empty compact"><p>등록된 디자이너가 없습니다.</p></div>
+        )}
+      </section>
+    </>
   );
 }

@@ -326,6 +326,65 @@ export async function getGeneratedLooksForDesigner(designerId: string): Promise<
   );
 }
 
+export async function getAdminDashboardStats() {
+  if (!hasDatabase()) {
+    return {
+      designersTotal: 1,
+      pendingDesigners: 0,
+      approvedDesigners: 1,
+      productsTotal: toDemoProducts().length,
+      generatedLooksTotal: 0,
+      liveGenerationsToday: 0,
+    };
+  }
+
+  const [row] = await query<{
+    designers_total: string;
+    pending_designers: string;
+    approved_designers: string;
+    products_total: string;
+    generated_looks_total: string;
+    live_generations_today: string;
+  }>(
+    `SELECT
+       (SELECT COUNT(*)::text FROM designers) AS designers_total,
+       (SELECT COUNT(*)::text FROM designers WHERE approval_status = 'pending') AS pending_designers,
+       (SELECT COUNT(*)::text FROM designers WHERE approval_status = 'approved') AS approved_designers,
+       (SELECT COUNT(*)::text FROM products WHERE status <> 'hidden') AS products_total,
+       (SELECT COUNT(*)::text FROM generated_looks WHERE status <> 'hidden') AS generated_looks_total,
+       (SELECT COUNT(*)::text
+          FROM generation_logs
+         WHERE cache_hit = false
+           AND status = 'generated'
+           AND created_at >= date_trunc('day', now())) AS live_generations_today`,
+  );
+
+  return {
+    designersTotal: Number(row?.designers_total || 0),
+    pendingDesigners: Number(row?.pending_designers || 0),
+    approvedDesigners: Number(row?.approved_designers || 0),
+    productsTotal: Number(row?.products_total || 0),
+    generatedLooksTotal: Number(row?.generated_looks_total || 0),
+    liveGenerationsToday: Number(row?.live_generations_today || 0),
+  };
+}
+
+export type AdminGeneratedLook = GeneratedLook & {
+  designer_brand_name: string | null;
+};
+
+export async function getGeneratedLooksForAdmin(limit = 80): Promise<AdminGeneratedLook[]> {
+  if (!hasDatabase()) return [];
+  return query<AdminGeneratedLook>(
+    `SELECT generated_looks.*, designers.brand_name AS designer_brand_name
+       FROM generated_looks
+       LEFT JOIN designers ON designers.id = generated_looks.designer_id
+      ORDER BY generated_looks.created_at DESC
+      LIMIT $1`,
+    [limit],
+  );
+}
+
 export async function getGeneratedLookByCacheKey(cacheKey: string): Promise<GeneratedLook | null> {
   if (!hasDatabase()) return null;
   return one<GeneratedLook>(
