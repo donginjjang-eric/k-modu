@@ -37,6 +37,12 @@
 .st-side a.is-active { background: var(--ink); color: #fff; }
 .st-side a.is-active .ic { color: #fff; }
 .st-side .tag { margin-left: auto; font-size: 10px; font-weight: 800; background: #e7b34a; color: #1a1400; padding: 2px 7px; border-radius: 999px; }
+.st-nav-group { display: grid; gap: 3px; }
+.st-subnav { display: grid; gap: 2px; padding: 2px 0 6px 18px; }
+.st-subitem { display: flex; align-items: center; gap: 10px; min-height: 34px; padding: 7px 10px 7px 12px; border-radius: 10px; color: var(--muted); font-size: 13px; font-weight: 800; }
+.st-subitem .ic { width: 18px; min-width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; color: var(--muted); }
+.st-subitem .nav-svg { width: 17px; height: 17px; stroke-width: 1.8; }
+.st-subitem.is-soon { opacity: .72; cursor: default; }
 
 .st-main { padding: 30px 28px 90px; min-height: calc(100vh - 61px); min-width: 0; }
 .st-title { font-size: 30px; font-weight: 900; letter-spacing: -.03em; margin: 0 0 6px; }

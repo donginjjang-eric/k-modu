@@ -12,6 +12,11 @@ export type NavItem = {
   tag?: string;
 };
 
+const PRODUCT_SUBNAV = [
+  { icon: "file" as const, label: "상세페이지", tag: "예정" },
+  { icon: "book" as const, label: "룩북 제작", tag: "예정" },
+];
+
 export const STUDIO_NAV: NavItem[] = [
   { href: "/dashboard/designer", icon: "home", label: "스튜디오 홈", short: "홈" },
   { href: "/dashboard/designer/products", icon: "shirt", label: "상품 작업", short: "상품" },
@@ -31,12 +36,34 @@ export function StudioSideNav() {
   return (
     <aside className="st-side">
       <nav>
-        {STUDIO_NAV.map((item) => (
-          <Link key={item.href} href={item.href} className={isActive(pathname, item.href) ? "is-active" : ""}>
-            <span className="ic"><NavIcon name={item.icon} /></span> {item.label}
-            {item.tag ? <span className="tag">{item.tag}</span> : null}
-          </Link>
-        ))}
+        {STUDIO_NAV.map((item) => {
+          const active = isActive(pathname, item.href);
+          if (item.href === "/dashboard/designer/products") {
+            return (
+              <div className={`st-nav-group${active ? " is-open" : ""}`} key={item.href}>
+                <Link href={item.href} className={active ? "is-active" : ""}>
+                  <span className="ic"><NavIcon name={item.icon} /></span> {item.label}
+                </Link>
+                <div className="st-subnav" aria-label="상품 예정 기능">
+                  {PRODUCT_SUBNAV.map((subitem) => (
+                    <span className="st-subitem is-soon" key={subitem.label}>
+                      <span className="ic"><NavIcon name={subitem.icon} /></span>
+                      {subitem.label}
+                      <span className="tag">{subitem.tag}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            );
+          }
+
+          return (
+            <Link key={item.href} href={item.href} className={active ? "is-active" : ""}>
+              <span className="ic"><NavIcon name={item.icon} /></span> {item.label}
+              {item.tag ? <span className="tag">{item.tag}</span> : null}
+            </Link>
+          );
+        })}
       </nav>
     </aside>
   );

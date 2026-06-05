@@ -1,5 +1,16 @@
 type IconProps = {
-  name: "home" | "shirt" | "sparkles" | "video" | "inbox" | "badge" | "users" | "package" | "image";
+  name:
+    | "home"
+    | "shirt"
+    | "sparkles"
+    | "video"
+    | "inbox"
+    | "badge"
+    | "users"
+    | "package"
+    | "image"
+    | "file"
+    | "book";
 };
 
 const paths: Record<IconProps["name"], React.ReactNode> = {
@@ -61,6 +72,22 @@ const paths: Record<IconProps["name"], React.ReactNode> = {
       <rect x="3" y="5" width="18" height="14" rx="2" />
       <circle cx="8.5" cy="10" r="1.5" />
       <path d="m21 15-4.5-4.5L8 19" />
+    </>
+  ),
+  file: (
+    <>
+      <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6Z" />
+      <path d="M14 3v6h6" />
+      <path d="M8 13h8" />
+      <path d="M8 17h6" />
+    </>
+  ),
+  book: (
+    <>
+      <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z" />
+      <path d="M4 19a2.5 2.5 0 0 1 2.5-2.5H20" />
+      <path d="M8 7h8" />
+      <path d="M8 11h6" />
     </>
   ),
 };
