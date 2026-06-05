@@ -82,10 +82,10 @@ export async function POST(request: Request) {
   if (productIds.length < 2) {
     return Response.json({ ok: false, error: "Select at least two products." }, { status: 400 });
   }
-  if (productIds.length > 2) {
+  if (productIds.length > 4) {
     return Response.json({
       ok: false,
-      error: "Real-time AI generation currently supports up to two products. Select two products and try again.",
+      error: "Real-time AI generation supports up to four products. Remove one or more products and try again.",
     }, { status: 400 });
   }
   if (new Set(productIds).size !== productIds.length) {

@@ -413,6 +413,13 @@ p {
   text-transform: uppercase;
 }
 
+.generate-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: stretch;
+}
+
 .generate-button {
   width: 100%;
   min-height: 52px;
@@ -426,6 +433,22 @@ p {
 .generate-button:disabled {
   cursor: not-allowed;
   opacity: 0.35;
+}
+
+.reset-selection-button {
+  min-height: 52px;
+  padding: 0 16px;
+  border: 1px solid #d8d4cb;
+  background: #fff;
+  color: #111;
+  font-weight: 900;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.reset-selection-button:disabled {
+  cursor: not-allowed;
+  opacity: .45;
 }
 
 .notice {
@@ -484,5 +507,9 @@ p {
   .styling-panel .generate-box.is-sticky {
     position: static;
     box-shadow: none;
+  }
+
+  .generate-actions {
+    grid-template-columns: 1fr;
   }
 }

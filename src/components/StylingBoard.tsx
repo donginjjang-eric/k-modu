@@ -32,13 +32,14 @@ export default function StylingBoard({
   products: Product[];
   modelTemplates: ModelTemplate[];
 }) {
-  const maxAiProducts = 2;
+  const minAiProducts = 2;
+  const maxAiProducts = 4;
   const [selectedTemplate, setSelectedTemplate] = useState(modelTemplates[0]?.id || "");
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState("전체");
   const [previewImage, setPreviewImage] = useState(designer.heroImage);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [statusText, setStatusText] = useState("상품 2개를 선택하면 AI 룩을 생성할 수 있습니다.");
+  const [statusText, setStatusText] = useState("상품 2~4개를 선택하면 AI 룩을 생성할 수 있습니다.");
   const [resultLabel, setResultLabel] = useState("");
 
   const categories = useMemo(() => {
@@ -60,11 +61,18 @@ export default function StylingBoard({
     setSelectedProductIds((current) => {
       if (current.includes(productId)) return current.filter((id) => id !== productId);
       if (current.length >= maxAiProducts) {
-        setStatusText("현재 실시간 AI 생성은 상품 2개까지 지원합니다. 선택을 바꾸려면 먼저 선택된 상품을 해제해주세요.");
+        setStatusText("상품은 최대 4개까지 조합할 수 있어요. 다른 상품을 고르려면 선택된 상품을 해제하거나 초기화해주세요.");
         return current;
       }
       return [...current, productId];
     });
+  };
+
+  const clearSelection = () => {
+    setSelectedProductIds([]);
+    setPreviewImage(designer.heroImage);
+    setResultLabel("");
+    setStatusText("선택을 초기화했습니다. 상품 2~4개를 다시 골라 AI 룩을 생성해보세요.");
   };
 
   const pollGeneratedLook = async (cacheKey: string) => {
@@ -86,7 +94,7 @@ export default function StylingBoard({
   };
 
   const generateLook = async () => {
-    if (selectedProductIds.length !== maxAiProducts || isGenerating) return;
+    if (selectedProductIds.length < minAiProducts || selectedProductIds.length > maxAiProducts || isGenerating) return;
 
     setIsGenerating(true);
     setStatusText("AI 룩 생성 중입니다. 보통 1~3분 정도 걸립니다.");
@@ -107,7 +115,7 @@ export default function StylingBoard({
       const contentType = response.headers.get("content-type") || "";
       const result = contentType.includes("application/json") ? await response.json() : null;
       if (!response.ok) {
-        throw new Error(result?.error || `AI 생성 서버 응답 오류 (${response.status}). 잠시 후 상품 2개로 다시 시도해주세요.`);
+        throw new Error(result?.error || `AI 생성 서버 응답 오류 (${response.status}). 잠시 후 상품 2~4개로 다시 시도해주세요.`);
       }
       const finalResult = result?.status === "processing" && result.cacheKey
         ? await pollGeneratedLook(result.cacheKey)
@@ -198,17 +206,24 @@ export default function StylingBoard({
             {selectedProducts.length ? (
               selectedProducts.map((product) => <span key={product.id}>{product.name}</span>)
             ) : (
-              <p className="notice" style={{ margin: 0 }}>상품 2개를 선택해주세요.</p>
+              <p className="notice" style={{ margin: 0 }}>상품 2~4개를 선택해주세요.</p>
             )}
           </div>
-          <button
-            className="generate-button"
-            type="button"
-            disabled={selectedProducts.length !== maxAiProducts || isGenerating}
-            onClick={generateLook}
-          >
-            {isGenerating ? "생성 중..." : "AI 룩 생성"}
-          </button>
+          <div className="generate-actions">
+            <button
+              className="generate-button"
+              type="button"
+              disabled={selectedProducts.length < minAiProducts || selectedProducts.length > maxAiProducts || isGenerating}
+              onClick={generateLook}
+            >
+              {isGenerating ? "생성 중..." : "AI 룩 생성"}
+            </button>
+            {selectedProducts.length ? (
+              <button className="reset-selection-button" type="button" onClick={clearSelection} disabled={isGenerating}>
+                선택 초기화
+              </button>
+            ) : null}
+          </div>
           <p className="notice">{statusText}</p>
         </div>
       </div>
