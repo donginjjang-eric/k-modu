@@ -31,9 +31,11 @@
 .st-side { padding: 22px 14px; position: sticky; top: 61px; align-self: start; height: calc(100vh - 61px); }
 .st-side nav { display: flex; flex-direction: column; gap: 4px; }
 .st-side a { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; font-weight: 700; font-size: 15px; color: #2a271f; }
-.st-side a .ic { font-size: 18px; width: 22px; text-align: center; }
+.st-side a .ic { width: 22px; min-width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; color: var(--muted); }
+.nav-svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
 .st-side a:hover { background: var(--soft); }
 .st-side a.is-active { background: var(--ink); color: #fff; }
+.st-side a.is-active .ic { color: #fff; }
 .st-side .tag { margin-left: auto; font-size: 10px; font-weight: 800; background: #e7b34a; color: #1a1400; padding: 2px 7px; border-radius: 999px; }
 
 .st-main { padding: 30px 28px 90px; min-height: calc(100vh - 61px); min-width: 0; }
@@ -215,7 +217,8 @@
   .st-tabbar { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: rgba(255,255,255,.97);
     border-top: 1px solid var(--line); backdrop-filter: blur(8px); padding-bottom: env(safe-area-inset-bottom); }
   .st-tabbar a { flex: 1; padding: 9px 0 11px; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 10px; font-weight: 700; color: var(--muted); }
-  .st-tabbar a .ic { font-size: 19px; }
+  .st-tabbar a .ic { width: 21px; height: 21px; display: inline-flex; align-items: center; justify-content: center; }
+  .st-tabbar .nav-svg { width: 20px; height: 20px; }
   .st-tabbar a.is-active { color: var(--ink); }
 }
 @media (max-width: 430px) {
