@@ -14,7 +14,7 @@
   <title>Designers | K-MODU</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
-  <link rel="stylesheet" href="platform.css?v=20260605c" />
+  <link rel="stylesheet" href="platform.css?v=20260605d" />
 </head>
 <body>
   <main class="platform designer-board">
@@ -1166,9 +1166,10 @@
         const isLoading = aiTryonGenerate.dataset.loading === 'true';
         const names = items.map((item) => item.name);
         const isMobileSheet = window.matchMedia('(max-width: 900px)').matches;
-        const quickBarOpen = hasSelection && isMobileSheet && proposalSheet.classList.contains('is-open') && !aiTryonPanelVisible;
+        const quickBarOpen = hasSelection && proposalSheet.classList.contains('is-open') && (isMobileSheet || !aiTryonPanelVisible);
         mobileAiQuickBar.classList.toggle('is-open', quickBarOpen);
         document.body.classList.toggle('has-mobile-ai-quickbar', quickBarOpen);
+        document.body.classList.toggle('has-ai-quickbar', quickBarOpen);
         mobileAiQuickBar.classList.toggle('is-ready', items.length >= 2 && !isLoading);
         mobileAiQuickBar.setAttribute('aria-hidden', quickBarOpen ? 'false' : 'true');
         mobileAiQuickCount.textContent = `${items.length}개 선택`;
@@ -1235,6 +1236,7 @@
       if (selectedStylingItems.size === 0) {
         stylingCollageFlatlay.hidden = true;
         document.body.classList.remove('has-mobile-ai-quickbar');
+        document.body.classList.remove('has-ai-quickbar');
       }
 
       // Selection changed: any previously generated look no longer matches.
@@ -1751,7 +1753,7 @@
         mobileAiQuickBar.setAttribute('aria-hidden', 'true');
       }
       proposalSheet.setAttribute('aria-hidden', 'true');
-      document.body.classList.remove('sheet-open');
+      document.body.classList.remove('sheet-open', 'has-mobile-ai-quickbar', 'has-ai-quickbar');
     };
 
     proposalTabs.forEach((tab) => {
