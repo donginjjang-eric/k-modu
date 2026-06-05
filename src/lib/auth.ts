@@ -1,4 +1,4 @@
-import { createHmac, pbkdf2Sync, timingSafeEqual } from "node:crypto";
+import { createHmac, pbkdf2Sync, randomBytes, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getDesignerForUser, getUserByEmail } from "./db";
@@ -9,14 +9,19 @@ export const sessionCookieName = "kmodu_session";
 type SessionUser = Pick<User, "id" | "email" | "role"> & { exp: number };
 
 function getAuthSecret() {
-  return process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || "kmodu-local-dev-secret";
+  const secret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET;
+  if (secret) return secret;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("AUTH_SECRET is required in production.");
+  }
+  return "kmodu-local-dev-secret";
 }
 
 function sign(payload: string) {
   return createHmac("sha256", getAuthSecret()).update(payload).digest("base64url");
 }
 
-export function hashPassword(password: string, salt = "kmodu-demo-salt") {
+export function hashPassword(password: string, salt = randomBytes(16).toString("base64url")) {
   const hash = pbkdf2Sync(password, salt, 120000, 32, "sha256").toString("base64url");
   return `${salt}:${hash}`;
 }

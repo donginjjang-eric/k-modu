@@ -3,8 +3,9 @@
 import { useState } from "react";
 
 export default function LoginForm() {
-  const [email, setEmail] = useState("test");
-  const [password, setPassword] = useState("1234");
+  const showDemoLogin = process.env.NODE_ENV !== "production";
+  const [email, setEmail] = useState(showDemoLogin ? "test" : "");
+  const [password, setPassword] = useState(showDemoLogin ? "1234" : "");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -32,7 +33,7 @@ export default function LoginForm() {
   return (
     <form className="generate-box" onSubmit={submit}>
       <label>
-        <p className="kicker">아이디</p>
+        <p className="kicker">ID / Email</p>
         <input
           style={{ width: "100%", minHeight: 48, padding: 12 }}
           value={email}
@@ -54,9 +55,11 @@ export default function LoginForm() {
         {isSubmitting ? "Checking..." : "Login"}
       </button>
       {message ? <p className="notice">{message}</p> : null}
-      <p className="notice">
-        데모 계정 — 디자이너: <b>test / 1234</b> · 관리자: <b>admin / 1234</b>
-      </p>
+      {showDemoLogin ? (
+        <p className="notice">
+          Demo account - designer: <b>test / 1234</b> · admin: <b>admin / 1234</b>
+        </p>
+      ) : null}
     </form>
   );
 }

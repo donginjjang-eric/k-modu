@@ -4,3 +4,5 @@ node_modules/
 .env
 .env.*
 기타폴더/
+.codex-remote-attachments/
+kmodu-shortform-backup-*.tar.gz

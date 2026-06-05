@@ -118,12 +118,15 @@ export async function POST(request: Request) {
   const schema = readFileSync(path.join(process.cwd(), "db", "schema.sql"), "utf8");
   await query(schema);
   const adminSeeded = await seedAdmin();
-  await seedDemoData();
+  const demoSeeded = process.env.SEED_DEMO_DATA === "true";
+  if (demoSeeded) {
+    await seedDemoData();
+  }
 
   return Response.json({
     ok: true,
     schemaApplied: true,
     adminSeeded,
-    demoSeeded: true,
+    demoSeeded,
   });
 }

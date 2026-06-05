@@ -9,6 +9,16 @@ export function hasDatabase() {
   return Boolean(process.env.DATABASE_URL);
 }
 
+export function canUseDemoData() {
+  return process.env.NODE_ENV !== "production" || process.env.KMODU_ENABLE_DEMO === "true";
+}
+
+function requireDatabaseForProduction() {
+  if (!canUseDemoData()) {
+    throw new Error("DATABASE_URL is required in production.");
+  }
+}
+
 export function getDb() {
   if (!process.env.DATABASE_URL) {
     throw new Error("DATABASE_URL is not configured.");
@@ -86,46 +96,63 @@ export function toDemoModelTemplates(): ModelTemplate[] {
 }
 
 export async function getPublicDesigners(): Promise<Designer[]> {
-  if (!hasDatabase()) return [toDemoDesigner()];
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    return [toDemoDesigner()];
+  }
   try {
     return await query<Designer>("SELECT * FROM designers WHERE approval_status = 'approved' ORDER BY created_at DESC");
-  } catch {
+  } catch (error) {
+    if (!canUseDemoData()) throw error;
     return [toDemoDesigner()];
   }
 }
 
 export async function getAllDesigners(): Promise<Designer[]> {
-  if (!hasDatabase()) return [toDemoDesigner()];
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    return [toDemoDesigner()];
+  }
   try {
     return await query<Designer>("SELECT * FROM designers ORDER BY created_at DESC");
-  } catch {
+  } catch (error) {
+    if (!canUseDemoData()) throw error;
     return [toDemoDesigner()];
   }
 }
 
 export async function getDesigner(id: string): Promise<Designer | null> {
-  if (!hasDatabase()) return id === phaseDesigner.id ? toDemoDesigner() : null;
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    return id === phaseDesigner.id ? toDemoDesigner() : null;
+  }
   try {
     return await one<Designer>("SELECT * FROM designers WHERE id = $1", [id]);
-  } catch {
+  } catch (error) {
+    if (!canUseDemoData()) throw error;
     return id === phaseDesigner.id ? toDemoDesigner() : null;
   }
 }
 
 export async function getProductsForDesigner(designerId: string): Promise<Product[]> {
-  if (!hasDatabase()) return designerId === phaseDesigner.id ? toDemoProducts() : [];
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    return designerId === phaseDesigner.id ? toDemoProducts() : [];
+  }
   try {
     return await query<Product>(
       "SELECT * FROM products WHERE designer_id = $1 AND status <> 'hidden' ORDER BY created_at DESC",
       [designerId],
     );
-  } catch {
+  } catch (error) {
+    if (!canUseDemoData()) throw error;
     return designerId === phaseDesigner.id ? toDemoProducts() : [];
   }
 }
 
 export async function getProductForDesigner(designerId: string, productId: string): Promise<Product | null> {
   if (!hasDatabase()) {
+    requireDatabaseForProduction();
     return toDemoProducts().find((product) => product.designer_id === designerId && product.id === productId) ?? null;
   }
   return one<Product>(
@@ -136,6 +163,7 @@ export async function getProductForDesigner(designerId: string, productId: strin
 
 export async function getOwnedProductsForGeneration(designerId: string, productIds: string[]): Promise<Product[]> {
   if (!hasDatabase()) {
+    requireDatabaseForProduction();
     return toDemoProducts().filter((product) => product.designer_id === designerId && productIds.includes(product.id));
   }
   return query<Product>(
@@ -231,16 +259,23 @@ export async function updateProductForDesigner(designerId: string, productId: st
 }
 
 export async function getModelTemplates(): Promise<ModelTemplate[]> {
-  if (!hasDatabase()) return toDemoModelTemplates();
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    return toDemoModelTemplates();
+  }
   try {
     return await query<ModelTemplate>("SELECT * FROM model_templates ORDER BY created_at ASC");
-  } catch {
+  } catch (error) {
+    if (!canUseDemoData()) throw error;
     return toDemoModelTemplates();
   }
 }
 
 export async function getModelTemplate(id: string): Promise<ModelTemplate | null> {
-  if (!hasDatabase()) return toDemoModelTemplates().find((template) => template.id === id) ?? toDemoModelTemplates()[0] ?? null;
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    return toDemoModelTemplates().find((template) => template.id === id) ?? toDemoModelTemplates()[0] ?? null;
+  }
   return one<ModelTemplate>("SELECT * FROM model_templates WHERE id = $1", [id]);
 }
 
@@ -350,42 +385,53 @@ export async function getUserByEmail(email: string): Promise<(User & { password_
     const demoUsers: Array<User & { password_hash: string }> = [
       {
         id: "demo-admin-user",
-        email: "admin@k-modu.test",
+        email: "admin",
         role: "admin",
-        password_hash: "demo-admin-password",
+        password_hash: "1234",
         created_at: now,
         updated_at: now,
       },
       {
         id: "demo-designer-user",
-        email: "designer@k-modu.test",
+        email: "test",
         role: "designer",
-        password_hash: "kmodu-demo-password",
+        password_hash: "1234",
         created_at: now,
         updated_at: now,
       },
     ];
     return demoUsers.find((user) => user.email === email.toLowerCase()) ?? null;
   }
-  if (!hasDatabase()) return demoUser();
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    return demoUser();
+  }
   try {
     return await one<User & { password_hash: string }>("SELECT * FROM users WHERE email = $1", [email.toLowerCase()]);
-  } catch {
+  } catch (error) {
+    if (!canUseDemoData()) throw error;
     return demoUser();
   }
 }
 
 export async function getDesignerForUser(userId: string): Promise<Designer | null> {
-  if (!hasDatabase()) return userId === "demo-designer-user" ? toDemoDesigner() : null;
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    return userId === "demo-designer-user" ? toDemoDesigner() : null;
+  }
   try {
     return await one<Designer>("SELECT * FROM designers WHERE user_id = $1", [userId]);
-  } catch {
+  } catch (error) {
+    if (!canUseDemoData()) throw error;
     return userId === "demo-designer-user" ? toDemoDesigner() : null;
   }
 }
 
 export async function updateDesignerApprovalStatus(id: string, status: "approved" | "disabled") {
-  if (!hasDatabase()) return toDemoDesigner();
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    return toDemoDesigner();
+  }
   return one<Designer>(
     "UPDATE designers SET approval_status = $2, updated_at = now() WHERE id = $1 RETURNING *",
     [id, status],
