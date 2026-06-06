@@ -1009,6 +1009,25 @@
       return value;
     };
 
+    const normalizeStylingSlot = (category) => {
+      const raw = String(category || 'Item').trim();
+      const value = raw.toLowerCase();
+      if (raw.includes('하의') || ['bottom', 'bottoms', 'pants', 'trouser', 'trousers', 'skirt'].includes(value)) return 'bottom';
+      if (raw.includes('상의') || raw.includes('아우터') || ['top', 'tops', 'inner', 'shirt', 'outer', 'outerwear', 'jacket', 'coat'].includes(value)) return 'top';
+      if (raw.includes('가방') || ['bag', 'bags'].includes(value)) return 'bag';
+      if (raw.includes('신발') || ['shoes', 'shoe', 'footwear'].includes(value)) return 'shoes';
+      if (raw.includes('악세') || raw.includes('액세') || ['accessory', 'accessories', 'eyewear', 'hat', 'cap'].includes(value)) return 'accessory';
+      return normalizeStylingCategory(category);
+    };
+
+    const stylingSlotLabel = (slot) => ({
+      top: '상의',
+      bottom: '하의',
+      bag: '가방',
+      shoes: '신발',
+      accessory: '악세서리'
+    }[slot] || '상품');
+
     const renderOwnedCategoryTabs = () => {
       if (!ownedCategoryTabs) return;
       const available = new Set(currentOwnedItems.map((item) => normalizeStylingCategory(item.category)));
@@ -1068,6 +1087,12 @@
       button.setAttribute('aria-pressed', String(isActive));
       const indicator = button.querySelector('b');
       if (indicator) indicator.textContent = isActive ? '선택됨' : '선택';
+    };
+
+    const removeSelectedStylingEntry = (key, entry) => {
+      if (entry?.flatNode) entry.flatNode.remove();
+      if (entry?.buttonNode) setTryOnButtonState(entry.buttonNode, false);
+      selectedStylingItems.delete(key);
     };
 
     const bindAiModelOptions = () => {
@@ -1205,10 +1230,17 @@
       const existing = selectedStylingItems.get(key);
 
       if (existing && existing.productId === (button.dataset.productId || '')) {
-        if (existing.flatNode) existing.flatNode.remove();
-        selectedStylingItems.delete(key);
-        setTryOnButtonState(button, false);
+        removeSelectedStylingEntry(key, existing);
       } else {
+        const category = button.dataset.category || 'Item';
+        const slot = normalizeStylingSlot(category);
+        const duplicate = Array.from(selectedStylingItems.entries())
+          .find(([existingKey, item]) => existingKey !== key && item.slot === slot);
+        if (duplicate) {
+          removeSelectedStylingEntry(duplicate[0], duplicate[1]);
+          aiTryonStatus.hidden = false;
+          aiTryonStatus.textContent = `${stylingSlotLabel(slot)} 선택을 새 상품으로 바꿨어요.`;
+        }
         if (selectedStylingItems.size >= MAX_PUBLIC_AI_ITEMS) {
           const message = '상품은 최대 4개까지 조합할 수 있어요. 다른 상품을 고르려면 선택된 상품을 먼저 해제해주세요.';
           aiTryonStatus.textContent = message;
@@ -1217,7 +1249,6 @@
           return;
         }
         const image = button.dataset.itemImage || '';
-        const category = button.dataset.category || 'Item';
         const card = document.createElement('div');
         card.className = 'styling-flat-card';
         card.innerHTML = `<button class="flat-remove" type="button" aria-label="Remove ${escapeHtml(category)}">×</button><img src="${escapeHtml(image)}" alt="" loading="lazy" /><span>${escapeHtml(category)}</span>`;
@@ -1230,6 +1261,7 @@
         selectedStylingItems.set(key, {
           productId: button.dataset.productId || '',
           category,
+          slot,
           name: button.dataset.itemName || button.querySelector('strong')?.textContent || 'Selected item',
           image,
           modelLookImage: button.dataset.modelLookImage || '',
