@@ -25,7 +25,7 @@ export default function LoginForm() {
       return;
     }
 
-    window.location.href = result.redirectTo || "/dashboard/designer";
+    window.location.href = result.redirectTo || "/";
   };
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
