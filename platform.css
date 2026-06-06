@@ -991,8 +991,15 @@ body.dark-theme .brand img {
   flex-direction: column;
   gap: 8px;
   padding: 4px 2px;
-  overflow-y: auto;
+  overflow: hidden;
   align-content: flex-start;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  contain: layout paint;
+}
+
+.styling-collage-flatlay::-webkit-scrollbar {
+  display: none;
 }
 
 .styling-collage-flatlay[hidden] {
@@ -1006,7 +1013,7 @@ body.dark-theme .brand img {
   overflow: hidden;
   background: #fff;
   box-shadow: 0 6px 16px rgba(20, 16, 12, .12);
-  animation: flatCardIn .32s ease both;
+  animation: none;
 }
 
 .styling-flat-card img {
