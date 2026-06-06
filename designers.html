@@ -781,7 +781,7 @@
     let aiTryonPanelVisible = false;
     let currentDesignerId = '';
     let currentOwnedItems = [];
-    let ownedCategoryFilter = 'all';
+    let ownedCategoryFilter = 'top';
     let modelTemplateImages = {
       'fixed-female-minimal': 'assets/mainmodel_2.png',
       'fixed-street': 'assets/mainmodel_3.png'
@@ -1019,6 +1019,13 @@
         button.classList.toggle('is-active', ownedCategoryFilter === category);
         button.setAttribute('aria-pressed', String(ownedCategoryFilter === category));
       });
+    };
+
+    const setDefaultOwnedCategoryFilter = () => {
+      const available = new Set(currentOwnedItems.map((item) => normalizeStylingCategory(item.category)));
+      ownedCategoryFilter = available.has('top')
+        ? 'top'
+        : (available.has('bottom') ? 'bottom' : (available.has('accessory') ? 'accessory' : 'top'));
     };
 
     const renderOwnedItems = () => {
@@ -1559,7 +1566,7 @@
       currentStylingBoard = board;
       stylingBoardImage.src = board.fullLookImage;
       currentOwnedItems = board.ownedItems || [];
-      ownedCategoryFilter = 'all';
+      setDefaultOwnedCategoryFilter();
       renderOwnedItems();
       stylingRecommendedItems.innerHTML = renderStylingItems(board.recommendedItems);
       resetTryOnStage();
@@ -1582,7 +1589,7 @@
         shortformStatus: 'coming-soon'
       };
       currentOwnedItems = ownedItems;
-      ownedCategoryFilter = 'all';
+      setDefaultOwnedCategoryFilter();
       renderOwnedItems();
       stylingRecommendedItems.innerHTML = '';
       resetTryOnStage();
@@ -1861,8 +1868,7 @@
       ownedCategoryTabs.addEventListener('click', (event) => {
         const button = event.target.closest('[data-owned-category]');
         if (!button) return;
-        const nextFilter = button.dataset.ownedCategory || 'all';
-        ownedCategoryFilter = ownedCategoryFilter === nextFilter ? 'all' : nextFilter;
+        ownedCategoryFilter = button.dataset.ownedCategory || 'top';
         renderOwnedItems();
         bindStylingItemPreviews();
       });
