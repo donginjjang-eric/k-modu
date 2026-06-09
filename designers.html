@@ -153,7 +153,7 @@
                   <p id="aiTryonSelection">제품을 선택해 모델 착장 룩을 생성하세요.</p>
                   <div class="ai-tryon-result-meta" id="aiTryonResultMeta" hidden></div>
                   <button class="ai-tryon-generate generation-action" id="aiTryonGenerate" type="button" disabled><span aria-hidden="true">✨</span> AI 룩 생성</button>
-                  <p class="ai-tryon-status" id="aiTryonStatus" role="status" aria-live="polite">제품을 2개 이상 선택하고 룩을 생성하세요.</p>
+                  <p class="ai-tryon-status" id="aiTryonStatus" role="status" aria-live="polite">제품을 1개 이상 선택하고 룩을 생성하세요.</p>
                   <div class="generated-looks" id="generatedLooks" hidden>
                     <span class="generated-looks-head">생성된 룩</span>
                     <div class="generated-looks-row" id="generatedLooksRow" aria-label="생성된 룩 목록"></div>
@@ -241,7 +241,7 @@
     <div class="mobile-ai-quickbar" id="mobileAiQuickBar" aria-hidden="true">
       <div class="mobile-ai-quickbar-copy">
         <strong id="mobileAiQuickCount">0개 선택</strong>
-        <span id="mobileAiQuickSummary">상품 2~4개를 선택해 AI 룩을 생성하세요.</span>
+        <span id="mobileAiQuickSummary">상품 1~4개를 선택해 AI 룩을 생성하세요.</span>
       </div>
       <button class="mobile-ai-clear" id="mobileAiQuickClear" type="button">초기화</button>
       <button class="mobile-ai-submit" id="mobileAiQuickGenerate" type="button" disabled>AI 룩 생성</button>
@@ -1072,7 +1072,7 @@
       stylingCollageCaption.innerHTML = '';
       aiTryonResultMeta.hidden = true;
       aiTryonResultMeta.innerHTML = '';
-      aiTryonStatus.textContent = '제품을 2개 이상 선택하고 룩을 생성하세요.';
+      aiTryonStatus.textContent = '제품을 1개 이상 선택하고 룩을 생성하세요.';
       updateAiTryOnControls();
       resetShortform();
     };
@@ -1184,7 +1184,7 @@
     const updateAiTryOnControls = () => {
       const items = getSelectedStylingItems();
       const hasSelection = items.length > 0;
-      const disabled = items.length < 2 || aiTryonGenerate.dataset.loading === 'true';
+      const disabled = items.length < 1 || aiTryonGenerate.dataset.loading === 'true';
       aiTryonGenerate.disabled = disabled;
       stageGenerate.disabled = disabled;
       proposalSheet.classList.toggle('has-ai-selection', hasSelection);
@@ -1197,14 +1197,14 @@
         mobileAiQuickBar.classList.toggle('is-open', quickBarOpen);
         document.body.classList.toggle('has-mobile-ai-quickbar', quickBarOpen);
         document.body.classList.toggle('has-ai-quickbar', quickBarOpen);
-        mobileAiQuickBar.classList.toggle('is-ready', items.length >= 2 && !isLoading);
+        mobileAiQuickBar.classList.toggle('is-ready', items.length >= 1 && !isLoading);
         mobileAiQuickBar.setAttribute('aria-hidden', quickBarOpen ? 'false' : 'true');
         mobileAiQuickCount.textContent = `${items.length}개 선택`;
         mobileAiQuickSummary.textContent = items.length
           ? `${names.slice(0, 2).join(' · ')}${names.length > 2 ? ` 외 ${names.length - 2}개` : ''}`
-          : '상품 2~4개를 선택해 AI 룩을 생성하세요.';
+          : '상품 1~4개를 선택해 AI 룩을 생성하세요.';
         mobileAiQuickGenerate.disabled = disabled;
-        mobileAiQuickGenerate.textContent = isLoading ? '생성 중...' : (items.length >= 2 ? 'AI 룩 생성' : '1개 더 선택');
+        mobileAiQuickGenerate.textContent = isLoading ? '생성 중...' : (items.length >= 1 ? 'AI 룩 생성' : '상품 선택');
       }
       aiSelectedStack.innerHTML = items.length
         ? items.map((item) => `
@@ -1215,9 +1215,9 @@
         `).join('')
         : '<span class="is-empty">선택된 항목 없음</span>';
       aiTryonSelection.textContent = items.length
-        ? `${items.length}개 선택됨. ${items.length >= 2 ? 'AI 룩을 생성할 수 있어요.' : '한 개 더 선택하면 생성할 수 있어요.'}`
-        : '상품 2~4개를 선택해 AI 룩을 구성하세요.';
-      aiTryonStatus.hidden = hasSelection && items.length >= 2 && aiTryonGenerate.dataset.loading !== 'true';
+        ? `${items.length}개 선택됨. AI 룩을 생성할 수 있어요.`
+        : '상품 1~4개를 선택해 AI 룩을 구성하세요.';
+      aiTryonStatus.hidden = hasSelection && items.length >= 1 && aiTryonGenerate.dataset.loading !== 'true';
     };
 
     const toggleStylingItemSelection = (button) => {
@@ -1289,13 +1289,13 @@
 
     const setAiTryOnLoading = (isLoading) => {
       aiTryonGenerate.dataset.loading = String(isLoading);
-      aiTryonGenerate.disabled = isLoading || selectedStylingItems.size < 2;
-      stageGenerate.disabled = isLoading || selectedStylingItems.size < 2;
+      aiTryonGenerate.disabled = isLoading || selectedStylingItems.size < 1;
+      stageGenerate.disabled = isLoading || selectedStylingItems.size < 1;
       stageGenerate.classList.toggle('is-loading', isLoading);
       aiTryonGenerate.innerHTML = isLoading ? '<span aria-hidden="true">⏳</span> 생성 중...' : '<span aria-hidden="true">✨</span> AI 룩 생성';
       if (mobileAiQuickGenerate) {
-        mobileAiQuickGenerate.disabled = isLoading || selectedStylingItems.size < 2;
-        mobileAiQuickGenerate.textContent = isLoading ? '생성 중...' : (selectedStylingItems.size >= 2 ? 'AI 룩 생성' : '1개 더 선택');
+        mobileAiQuickGenerate.disabled = isLoading || selectedStylingItems.size < 1;
+        mobileAiQuickGenerate.textContent = isLoading ? '생성 중...' : (selectedStylingItems.size >= 1 ? 'AI 룩 생성' : '상품 선택');
       }
       tryonLoadingOverlay.hidden = !isLoading;
     };
@@ -1360,7 +1360,7 @@
     const fetchApprovedLookMatch = async (items) => {
       if (!currentDesignerId) return null;
       const productIds = items.map((item) => item.productId).filter(Boolean);
-      if (productIds.length < 2) return null;
+      if (productIds.length < 1) return null;
       const response = await fetch('/api/public/approved-look-match', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1443,8 +1443,8 @@
 
     const generateAiTryOnLook = async () => {
       const items = getSelectedStylingItems();
-      if (items.length < 2) {
-        const message = '생성하려면 제품을 2개 이상 선택하세요.';
+      if (items.length < 1) {
+        const message = '생성하려면 제품을 1개 이상 선택하세요.';
         aiTryonStatus.textContent = message;
         showAiNotice('상품을 더 선택해주세요', message, 'warning');
         updateAiTryOnControls();

@@ -32,7 +32,7 @@ export default function StylingBoard({
   products: Product[];
   modelTemplates: ModelTemplate[];
 }) {
-  const minAiProducts = 2;
+  const minAiProducts = 1;
   const maxAiProducts = 4;
   const visibleModelTemplates = useMemo(
     () => modelTemplates.filter((template) => !`${template.id} ${template.label}`.toLowerCase().includes("male")),
@@ -43,7 +43,7 @@ export default function StylingBoard({
   const [activeCategory, setActiveCategory] = useState("상의");
   const [previewImage, setPreviewImage] = useState(designer.heroImage);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [statusText, setStatusText] = useState("상품 2~4개를 선택하면 AI 룩을 생성할 수 있습니다.");
+  const [statusText, setStatusText] = useState("상품 1~4개를 선택하면 AI 룩을 생성할 수 있습니다.");
   const [resultLabel, setResultLabel] = useState("");
   const [modal, setModal] = useState<{ title: string; message: string; tone?: "success" | "warning" | "error" } | null>(null);
 
@@ -84,7 +84,7 @@ export default function StylingBoard({
     setSelectedProductIds([]);
     setPreviewImage(designer.heroImage);
     setResultLabel("");
-    const message = "선택을 초기화했습니다. 상품 2~4개를 다시 골라 AI 룩을 생성해보세요.";
+    const message = "선택을 초기화했습니다. 상품 1~4개를 다시 골라 AI 룩을 생성해보세요.";
     setStatusText(message);
     setModal({ title: "선택 초기화 완료", message, tone: "success" });
   };
@@ -131,7 +131,7 @@ export default function StylingBoard({
       const contentType = response.headers.get("content-type") || "";
       const result = contentType.includes("application/json") ? await response.json() : null;
       if (!response.ok) {
-        throw new Error(result?.error || `AI 생성 서버 응답 오류 (${response.status}). 잠시 후 상품 2~4개로 다시 시도해주세요.`);
+        throw new Error(result?.error || `AI 생성 서버 응답 오류 (${response.status}). 잠시 후 상품 1~4개로 다시 시도해주세요.`);
       }
       const finalResult = result?.status === "processing" && result.cacheKey
         ? await pollGeneratedLook(result.cacheKey)
@@ -229,7 +229,7 @@ export default function StylingBoard({
             {selectedProducts.length ? (
               selectedProducts.map((product) => <span key={product.id}>{product.name}</span>)
             ) : (
-              <p className="notice" style={{ margin: 0 }}>상품 2~4개를 선택해주세요.</p>
+              <p className="notice" style={{ margin: 0 }}>상품 1~4개를 선택해주세요.</p>
             )}
           </div>
           <div className="generate-actions">

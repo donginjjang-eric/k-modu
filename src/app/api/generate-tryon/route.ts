@@ -79,8 +79,8 @@ export async function POST(request: Request) {
   const forceRegenerate = Boolean(body.forceRegenerate);
   const provider = "openai" as const;
 
-  if (productIds.length < 2) {
-    return Response.json({ ok: false, error: "Select at least two products." }, { status: 400 });
+  if (productIds.length < 1) {
+    return Response.json({ ok: false, error: "Select at least one product." }, { status: 400 });
   }
   if (productIds.length > 4) {
     return Response.json({
