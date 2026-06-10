@@ -1940,6 +1940,111 @@ body.dark-theme .brand img {
   word-break: keep-all;
 }
 
+.beta-launch-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 260;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .22s ease;
+}
+
+.beta-launch-modal.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.beta-launch-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(184, 134, 64, .2), transparent 34%),
+    rgba(5, 5, 5, .68);
+  backdrop-filter: blur(9px);
+  cursor: pointer;
+}
+
+.beta-launch-card {
+  position: relative;
+  z-index: 1;
+  width: min(430px, 100%);
+  padding: 34px 32px 30px;
+  border: 1px solid rgba(213, 183, 117, .58);
+  border-radius: 7px;
+  background:
+    linear-gradient(145deg, rgba(255, 253, 247, .98), rgba(235, 228, 212, .98)),
+    #f7f4ec;
+  box-shadow: 0 34px 90px rgba(0, 0, 0, .36), inset 0 1px 0 rgba(255, 255, 255, .74);
+  text-align: center;
+  transform: translateY(10px) scale(.98);
+  transition: transform .22s ease;
+}
+
+.beta-launch-modal.is-open .beta-launch-card {
+  transform: translateY(0) scale(1);
+}
+
+.beta-launch-card::before {
+  content: "";
+  display: block;
+  width: 54px;
+  height: 1px;
+  margin: 0 auto 20px;
+  background: #9b7b37;
+}
+
+.beta-launch-eyebrow {
+  display: block;
+  color: #9b7b37;
+  font-size: var(--fs-nano);
+  font-weight: var(--fw-black);
+  letter-spacing: .18em;
+}
+
+.beta-launch-card h2 {
+  margin: 14px 0 10px;
+  color: #050505;
+  font-size: 25px;
+  line-height: 1.25;
+  letter-spacing: 0;
+  word-break: keep-all;
+}
+
+.beta-launch-card p {
+  margin: 0;
+  color: rgba(5, 5, 5, .62);
+  font-size: var(--fs-sm);
+  line-height: 1.65;
+  word-break: keep-all;
+}
+
+.beta-launch-confirm {
+  width: 100%;
+  min-height: 46px;
+  margin-top: 24px;
+  border: 0;
+  border-radius: 999px;
+  background: #050505;
+  color: #fff;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-black);
+  cursor: pointer;
+  box-shadow: 0 12px 26px rgba(5, 5, 5, .18);
+}
+
+.beta-launch-confirm:hover {
+  background: #1c1c1c;
+}
+
+.beta-launch-confirm:focus-visible {
+  outline: 2px solid #9b7b37;
+  outline-offset: 3px;
+}
+
 .ai-notice-card > button {
   width: 100%;
   min-height: 48px;
