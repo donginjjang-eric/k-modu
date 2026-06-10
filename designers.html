@@ -247,6 +247,16 @@
       <button class="mobile-ai-submit" id="mobileAiQuickGenerate" type="button" disabled>AI 룩 생성</button>
     </div>
 
+    <div class="beta-launch-modal" id="designerBetaLaunchModal" aria-hidden="true">
+      <button class="beta-launch-backdrop" type="button" aria-label="알림 닫기"></button>
+      <div class="beta-launch-card" role="dialog" aria-modal="true" aria-labelledby="designerBetaLaunchTitle">
+        <span class="beta-launch-eyebrow">K-MODU BETA</span>
+        <h2 id="designerBetaLaunchTitle">7월 20일 BETA 런칭 예정입니다</h2>
+        <p>TikTok 업로드 기능은 베타 오픈과 함께 순차적으로 제공됩니다.</p>
+        <button class="beta-launch-confirm" type="button">확인</button>
+      </div>
+    </div>
+
     <div class="ai-notice-modal" id="aiNoticeModal" role="dialog" aria-modal="true" aria-labelledby="aiNoticeTitle" aria-hidden="true">
       <button class="ai-notice-backdrop" id="aiNoticeBackdrop" type="button" aria-label="닫기"></button>
       <div class="ai-notice-card" id="aiNoticeCard">
@@ -682,8 +692,22 @@
     const sfPlatStep = document.querySelector('#sfPlatStep');
     const sfPlats = document.querySelector('#sfPlats');
     const sfPubAction = document.querySelector('#sfPubAction');
+    const designerBetaLaunchModal = document.querySelector('#designerBetaLaunchModal');
+    const designerBetaLaunchBackdrop = designerBetaLaunchModal?.querySelector('.beta-launch-backdrop');
+    const designerBetaLaunchConfirm = designerBetaLaunchModal?.querySelector('.beta-launch-confirm');
     const pubHandle = () => slugifyHandle((proposalBrandName.textContent || 'k-modu').trim()) || 'k-modu';
     const platName = () => (PUB_PLATFORMS.find((p) => p.id === pubPlatform) || {}).name || '';
+
+    const openDesignerBetaLaunchModal = () => {
+      designerBetaLaunchModal?.classList.add('is-open');
+      designerBetaLaunchModal?.setAttribute('aria-hidden', 'false');
+      designerBetaLaunchConfirm?.focus();
+    };
+
+    const closeDesignerBetaLaunchModal = () => {
+      designerBetaLaunchModal?.classList.remove('is-open');
+      designerBetaLaunchModal?.setAttribute('aria-hidden', 'true');
+    };
 
     const renderPubAction = () => {
       if (!sfPubAction) return;
@@ -703,14 +727,7 @@
       window.setTimeout(() => { pubConnected = true; renderPubAction(); }, 1300);
     }
     function pubUpload() {
-      const country = PUB_COUNTRIES.find((c) => c[0] === pubCountry);
-      sfPubAction.innerHTML = '<button class="sf-upload-btn" type="button" disabled><span class="sf-spin"></span> 업로드 중…</button><div class="sf-progress"><span></span></div>';
-      const bar = sfPubAction.querySelector('.sf-progress span');
-      requestAnimationFrame(() => { if (bar) bar.style.width = '100%'; });
-      window.setTimeout(() => {
-        sfPubAction.innerHTML = `<div class="sf-done">✓ ${platName()} 업로드 완료${country ? ' · ' + country[1] : ''}</div><button class="sf-pub-reset" type="button">다른 채널에 등록</button>`;
-        sfPubAction.querySelector('.sf-pub-reset').addEventListener('click', () => { pubPlatform = null; pubConnected = false; renderPubPlats(); renderPubAction(); });
-      }, 1900);
+      openDesignerBetaLaunchModal();
     }
     const renderPubFlags = () => {
       if (!sfFlagRow) return;
@@ -1890,6 +1907,8 @@
     if (mobileAiQuickClear) mobileAiQuickClear.addEventListener('click', resetTryOnStage);
     if (aiNoticeClose) aiNoticeClose.addEventListener('click', closeAiNotice);
     if (aiNoticeBackdrop) aiNoticeBackdrop.addEventListener('click', closeAiNotice);
+    if (designerBetaLaunchBackdrop) designerBetaLaunchBackdrop.addEventListener('click', closeDesignerBetaLaunchModal);
+    if (designerBetaLaunchConfirm) designerBetaLaunchConfirm.addEventListener('click', closeDesignerBetaLaunchModal);
     if (shortformGenerate) shortformGenerate.addEventListener('click', generateShortformVideo);
     if (ownedCategoryTabs) {
       ownedCategoryTabs.addEventListener('click', (event) => {
@@ -1922,6 +1941,7 @@
     });
     window.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && proposalSheet.classList.contains('is-open')) closeProposalSheet();
+      if (event.key === 'Escape' && designerBetaLaunchModal?.classList.contains('is-open')) closeDesignerBetaLaunchModal();
     });
 
     if ('IntersectionObserver' in window && aiTryonPanel) {
