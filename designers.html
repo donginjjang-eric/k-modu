@@ -1471,18 +1471,22 @@
     // ----- 생성된 룩 히스토리 (localStorage로 유지) -----
     const GENERATED_LOOKS_KEY = 'kmodu-generated-looks';
     let generatedLooks = [];
+    // 현재 모달 디자이너의 스튜디오 승인 AI 룩. 세션 히스토리(localStorage)와 분리해 디자이너 간 누수를 막는다.
+    let designerApprovedLooks = [];
     try { const saved = JSON.parse(localStorage.getItem(GENERATED_LOOKS_KEY) || '[]'); if (Array.isArray(saved)) generatedLooks = saved.filter((s) => typeof s === 'string'); } catch (e) {}
 
     const saveGeneratedLooks = () => { try { localStorage.setItem(GENERATED_LOOKS_KEY, JSON.stringify(generatedLooks.slice(0, 30))); } catch (e) {} };
 
     const renderGeneratedLooks = () => {
-      if (!generatedLooks.length) { generatedLooksEl.hidden = true; generatedLooksRow.innerHTML = ''; return; }
+      // 세션에서 방금 생성한 룩이 앞, 스튜디오 승인 룩이 뒤. 같은 이미지는 한 번만.
+      const looks = [...generatedLooks, ...designerApprovedLooks.filter((src) => !generatedLooks.includes(src))];
+      if (!looks.length) { generatedLooksEl.hidden = true; generatedLooksRow.innerHTML = ''; return; }
       generatedLooksEl.hidden = false;
-      generatedLooksRow.innerHTML = generatedLooks.map((src, i) =>
+      generatedLooksRow.innerHTML = looks.map((src, i) =>
         `<button class="generated-look-thumb" type="button" aria-label="생성된 룩 ${i + 1} 다시 보기"><img src="${escapeHtml(src)}" alt="" loading="lazy" /></button>`
       ).join('');
       Array.from(generatedLooksRow.children).forEach((btn, i) => {
-        btn.addEventListener('click', () => openLightbox(generatedLooks, i));
+        btn.addEventListener('click', () => openLightbox(looks, i));
       });
     };
 
@@ -1737,6 +1741,9 @@
       setDefaultOwnedCategoryFilter();
       renderOwnedItems();
       stylingRecommendedItems.innerHTML = renderStylingItems(board.recommendedItems);
+      // 정적/샘플 보드에는 승인 룩이 없으므로 이전 디자이너의 승인 룩을 비운다.
+      designerApprovedLooks = [];
+      renderGeneratedLooks();
       resetTryOnStage();
       bindStylingItemPreviews();
     };
@@ -1760,6 +1767,9 @@
       setDefaultOwnedCategoryFilter();
       renderOwnedItems();
       stylingRecommendedItems.innerHTML = '';
+      // 스튜디오에서 승인된 AI 룩을 "생성된 룩" 줄에 미리 채운다.
+      designerApprovedLooks = (data.approvedLooks || []).map((look) => look.image).filter(Boolean);
+      renderGeneratedLooks();
       resetTryOnStage();
       bindStylingItemPreviews();
     };

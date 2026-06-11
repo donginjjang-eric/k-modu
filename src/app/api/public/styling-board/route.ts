@@ -1,4 +1,4 @@
-import { getApprovedDesigner, getPublicProductsForDesigner } from "@/lib/db";
+import { getApprovedDesigner, getApprovedGeneratedLooksForDesigner, getPublicProductsForDesigner } from "@/lib/db";
 
 // Public (no-auth) read endpoint for the legacy styling board.
 // Returns a designer + their products so designers.html can render the
@@ -15,6 +15,7 @@ export async function GET(request: Request) {
   }
 
   const products = await getPublicProductsForDesigner(designer.id);
+  const approvedLooks = await getApprovedGeneratedLooksForDesigner(designer.id, 12);
 
   return Response.json({
     ok: true,
@@ -30,6 +31,11 @@ export async function GET(request: Request) {
       category: product.category,
       image: product.image_url,
       status: "보유",
+    })),
+    // 스튜디오에서 승인된 AI 룩. 모달 스타일링 보드 탭의 "생성된 룩" 줄에 미리 채워진다.
+    approvedLooks: approvedLooks.map((look) => ({
+      id: look.id,
+      image: look.image_url,
     })),
   });
 }
