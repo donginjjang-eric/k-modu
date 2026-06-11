@@ -87,7 +87,7 @@ export default async function AdminDesignerDetailPage({ params }: { params: Prom
 
       <section className="st-card" style={{ marginTop: 24 }}>
         <div className="st-sec-head">
-          <h2>프로필 / 포트폴리오 사진 검수</h2>
+          <h2>프로필 / 포트폴리오 사진 관리</h2>
         </div>
         {portfolioImages.length ? (
           <div className="admin-gallery">

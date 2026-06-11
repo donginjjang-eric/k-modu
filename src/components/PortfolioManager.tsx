@@ -11,8 +11,8 @@ const KINDS: Array<{ value: PortfolioImageKind; label: string }> = [
 ];
 
 const STATUS_LABELS: Record<DesignerPortfolioImage["status"], string> = {
-  pending: "검수 대기",
-  approved: "승인",
+  pending: "등록됨",
+  approved: "공개 중",
   rejected: "반려",
   hidden: "숨김",
 };
@@ -43,7 +43,7 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
       if (!response.ok) throw new Error(result.error || "이미지 업로드에 실패했습니다.");
       setImageUrl(result.imageUrl);
       setImageHash(result.imageHash);
-      setMsg({ text: "이미지가 업로드되었습니다. 저장하면 관리자 검수 대기로 등록됩니다.", ok: true });
+      setMsg({ text: "이미지가 업로드되었습니다. 등록하면 바로 공개 프로필에 반영됩니다.", ok: true });
     } catch (error) {
       setMsg({ text: error instanceof Error ? error.message : "이미지 업로드에 실패했습니다.", ok: false });
     } finally {
@@ -68,7 +68,7 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
       setKind("lookbook");
       setImageUrl("");
       setImageHash("");
-      setMsg({ text: "포트폴리오 이미지가 검수 대기로 등록되었습니다.", ok: true });
+      setMsg({ text: "포트폴리오 이미지가 바로 등록되었습니다.", ok: true });
     } catch (error) {
       setMsg({ text: error instanceof Error ? error.message : "포트폴리오 저장에 실패했습니다.", ok: false });
     } finally {
@@ -99,13 +99,11 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
       product: 0,
       sample: 0,
       approved: 0,
-      pending: 0,
       rejected: 0,
     };
     images.forEach((image) => {
       base[image.kind] += 1;
       if (image.status === "approved") base.approved += 1;
-      if (image.status === "pending") base.pending += 1;
       if (image.status === "rejected") base.rejected += 1;
     });
     return base;
@@ -125,8 +123,8 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
         </div>
         <div className="portfolio-summary" aria-label="포트폴리오 상태 요약">
           <span><b>{counts.all}</b> 전체</span>
-          <span><b>{counts.approved}</b> 승인</span>
-          <span><b>{counts.pending}</b> 검수 대기</span>
+          <span><b>{counts.approved}</b> 공개 중</span>
+          <span><b>{counts.rejected}</b> 제외됨</span>
         </div>
       </div>
 
@@ -188,10 +186,10 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
           <div className="st-field">
             <label>이미지 제목</label>
             <input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="예: 2026 SS 대표 룩" />
-            <p className="hint">저장 후 관리자 승인 전까지는 공개 페이지에 노출하지 않습니다.</p>
+            <p className="hint">등록하면 바로 공개 프로필과 포트폴리오 분류에 반영됩니다.</p>
           </div>
           <button className="st-btn block" type="submit" disabled={!imageUrl || saving}>
-            {saving ? "저장 중..." : "검수 요청하기"}
+            {saving ? "저장 중..." : "바로 등록하기"}
           </button>
           {msg ? <p className={`st-msg ${msg.ok ? "ok" : "err"}`}>{msg.text}</p> : null}
         </form>

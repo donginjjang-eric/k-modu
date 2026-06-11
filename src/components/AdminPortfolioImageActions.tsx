@@ -4,9 +4,9 @@ import { useState } from "react";
 import type { PortfolioImageStatus } from "@/lib/types";
 
 const LABELS: Record<PortfolioImageStatus, string> = {
-  pending: "검수 대기",
-  approved: "승인",
-  rejected: "반려",
+  pending: "등록됨",
+  approved: "공개 중",
+  rejected: "제외됨",
   hidden: "숨김",
 };
 
@@ -50,10 +50,10 @@ export default function AdminPortfolioImageActions({
     <div className="admin-actions">
       <span className={`status-badge ${badgeClass}`}>{LABELS[currentStatus]}</span>
       <button type="button" disabled={isSaving || currentStatus === "approved"} onClick={() => mutate("approved")}>
-        승인
+        공개
       </button>
       <button type="button" disabled={isSaving || currentStatus === "rejected"} onClick={() => mutate("rejected")}>
-        반려
+        제외
       </button>
       <button type="button" disabled={isSaving || currentStatus === "hidden"} onClick={() => mutate("hidden")}>
         숨김

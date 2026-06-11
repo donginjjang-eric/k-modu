@@ -316,12 +316,17 @@ async function ensurePortfolioImagesTable() {
       kind text NOT NULL DEFAULT 'lookbook' CHECK (kind IN ('profile', 'lookbook', 'product', 'sample')),
       image_url text NOT NULL,
       image_hash text,
-      status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected', 'hidden')),
+      status text NOT NULL DEFAULT 'approved' CHECK (status IN ('pending', 'approved', 'rejected', 'hidden')),
       created_at timestamptz NOT NULL DEFAULT now(),
       updated_at timestamptz NOT NULL DEFAULT now()
     );
     CREATE INDEX IF NOT EXISTS designer_portfolio_images_designer_status_idx
       ON designer_portfolio_images(designer_id, status, kind);
+    ALTER TABLE designer_portfolio_images
+      ALTER COLUMN status SET DEFAULT 'approved';
+    UPDATE designer_portfolio_images
+      SET status = 'approved', updated_at = now()
+      WHERE status = 'pending';
   `);
 }
 
@@ -360,7 +365,7 @@ export async function createPortfolioImageForDesigner(input: {
   await ensurePortfolioImagesTable();
   return one<DesignerPortfolioImage>(
     `INSERT INTO designer_portfolio_images (designer_id, title, kind, image_url, image_hash, status)
-     VALUES ($1, $2, $3, $4, $5, 'pending')
+     VALUES ($1, $2, $3, $4, $5, 'approved')
      RETURNING *`,
     [input.designerId, input.title, input.kind, input.imageUrl, input.imageHash || null],
   );

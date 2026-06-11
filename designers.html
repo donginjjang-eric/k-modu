@@ -1823,7 +1823,7 @@
             samples: grouped.samples.length ? grouped.samples : getProposalAssetImages(profileIndex).samples
           });
           if (proposalPortfolioNote) {
-            proposalPortfolioNote.textContent = `승인된 프로필/포트폴리오 ${grouped.counts.all}장을 분류별로 보여줍니다.`;
+            proposalPortfolioNote.textContent = `등록된 프로필/포트폴리오 ${grouped.counts.all}장을 분류별로 보여줍니다.`;
           }
         })
         .catch(() => { /* keep hardcoded fallback portfolio */ });

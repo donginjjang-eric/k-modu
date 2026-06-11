@@ -43,16 +43,22 @@ export default async function DesignerBrandPage() {
           </div>
           <div className="brand-preview-note">
             <b>{approvedImages.length}</b>
-            <span>승인된 사진만 메인 카드 모달에 노출됩니다.</span>
+            <span>등록한 사진이 메인 카드 모달에 바로 노출됩니다.</span>
           </div>
         </div>
       </section>
+
+      <div className="brand-profile-divider">
+        <span>1. 프로필/포트폴리오 사진 정리</span>
+        <p>사진을 먼저 정리하면 공개 카드 첫 화면과 포트폴리오 구성이 바로 보입니다.</p>
+      </div>
+      <PortfolioManager initialImages={portfolioImages} />
 
       <section className="brand-profile-workspace">
         <div>
           <div className="st-sec-head">
             <div>
-              <h2>1. 브랜드 기본 정보</h2>
+              <h2>2. 브랜드 기본 정보</h2>
               <p className="st-sub tight">브랜드명, 소개, 무드는 프로필 첫 화면의 텍스트가 됩니다.</p>
             </div>
           </div>
@@ -63,12 +69,6 @@ export default async function DesignerBrandPage() {
           />
         </div>
       </section>
-
-      <div className="brand-profile-divider">
-        <span>2. 프로필/포트폴리오 사진 정리</span>
-        <p>분류해서 올리면 공개 모달에서 같은 분류로 정돈됩니다.</p>
-      </div>
-      <PortfolioManager initialImages={portfolioImages} />
     </>
   );
 }
