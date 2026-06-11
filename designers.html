@@ -1041,15 +1041,28 @@
       accessory: '악세서리'
     }[slot] || '상품');
 
+    const ownedCategoryLabel = (category) => ({
+      top: '상의',
+      bottom: '하의',
+      accessory: '악세서리'
+    }[category] || category);
+
+    const getOwnedCategorySelectedCount = (category) => Array.from(selectedStylingItems.values())
+      .filter((item) => normalizeStylingCategory(item.category) === category).length;
+
     const renderOwnedCategoryTabs = () => {
       if (!ownedCategoryTabs) return;
       const available = new Set(currentOwnedItems.map((item) => normalizeStylingCategory(item.category)));
       Array.from(ownedCategoryTabs.querySelectorAll('[data-owned-category]')).forEach((button) => {
         const category = button.dataset.ownedCategory;
         const hasItems = available.has(category);
+        const selectedCount = getOwnedCategorySelectedCount(category);
         button.hidden = !hasItems;
         button.classList.toggle('is-active', ownedCategoryFilter === category);
+        button.classList.toggle('has-selection', selectedCount > 0);
         button.setAttribute('aria-pressed', String(ownedCategoryFilter === category));
+        button.setAttribute('aria-label', `${ownedCategoryLabel(category)} ${selectedCount ? `${selectedCount}개 선택됨` : '선택 없음'}`);
+        button.innerHTML = `${ownedCategoryLabel(category)}${selectedCount ? `<span class="owned-category-count">${selectedCount}</span>` : ''}`;
       });
     };
 
@@ -1067,6 +1080,7 @@
       stylingOwnedItems.innerHTML = filtered.length
         ? renderStylingItems(filtered)
         : '<div class="styling-empty-state">이 종류의 보유 제품이 아직 없습니다.</div>';
+      syncStylingItemStates();
       renderOwnedCategoryTabs();
     };
 
@@ -1091,6 +1105,7 @@
       aiTryonResultMeta.hidden = true;
       aiTryonResultMeta.innerHTML = '';
       aiTryonStatus.textContent = '제품을 1개 이상 선택하고 룩을 생성하세요.';
+      renderOwnedCategoryTabs();
       updateAiTryOnControls();
       resetShortform();
     };
@@ -1102,10 +1117,21 @@
       if (indicator) indicator.textContent = isActive ? '선택됨' : '선택';
     };
 
+    const syncStylingItemStates = () => {
+      [...stylingOwnedItems.children, ...stylingRecommendedItems.children].forEach((button) => {
+        if (!button.matches?.('.styling-item-card')) return;
+        const key = getStylingButtonKey(button);
+        const entry = selectedStylingItems.get(key);
+        setTryOnButtonState(button, Boolean(entry));
+        if (entry) entry.buttonNode = button;
+      });
+    };
+
     const removeSelectedStylingEntry = (key, entry) => {
       if (entry?.flatNode) entry.flatNode.remove();
       if (entry?.buttonNode) setTryOnButtonState(entry.buttonNode, false);
       selectedStylingItems.delete(key);
+      renderOwnedCategoryTabs();
     };
 
     const bindAiModelOptions = () => {
@@ -1312,6 +1338,7 @@
         resetShortform();
       }
       showModelTemplatePreview();
+      renderOwnedCategoryTabs();
       updateAiTryOnControls();
     };
 
