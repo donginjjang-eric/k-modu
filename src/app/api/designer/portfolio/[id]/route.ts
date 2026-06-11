@@ -1,4 +1,4 @@
-import { requireApprovedDesigner } from "@/lib/auth";
+import { getApprovedDesignerForApi } from "@/lib/auth";
 import { updatePortfolioImageForDesigner } from "@/lib/db";
 import type { PortfolioImageKind, PortfolioImageStatus } from "@/lib/types";
 
@@ -6,7 +6,9 @@ const KINDS: PortfolioImageKind[] = ["profile", "lookbook", "product", "sample"]
 const DESIGNER_STATUSES: PortfolioImageStatus[] = ["pending", "hidden"];
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { designer } = await requireApprovedDesigner();
+  const auth = await getApprovedDesignerForApi();
+  if (!auth.ok) return Response.json({ ok: false, error: auth.error }, { status: auth.status });
+  const { designer } = auth;
   const { id } = await params;
   const body = await request.json().catch(() => ({}));
   const status = body.status ? String(body.status) as PortfolioImageStatus : undefined;
@@ -29,7 +31,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 }
 
 export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { designer } = await requireApprovedDesigner();
+  const auth = await getApprovedDesignerForApi();
+  if (!auth.ok) return Response.json({ ok: false, error: auth.error }, { status: auth.status });
+  const { designer } = auth;
   const { id } = await params;
   const image = await updatePortfolioImageForDesigner(designer.id, id, { status: "hidden" });
   if (!image) return Response.json({ ok: false, error: "Portfolio image not found." }, { status: 404 });

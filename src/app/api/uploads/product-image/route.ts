@@ -1,8 +1,9 @@
-import { requireApprovedDesigner } from "@/lib/auth";
+import { getApprovedDesignerForApi } from "@/lib/auth";
 import { readImageFormFile, saveStorageImage } from "@/lib/storage";
 
 export async function POST(request: Request) {
-  await requireApprovedDesigner();
+  const auth = await getApprovedDesignerForApi();
+  if (!auth.ok) return Response.json({ ok: false, error: auth.error }, { status: auth.status });
 
   try {
     const { bytes, mimeType } = await readImageFormFile(request, "image");

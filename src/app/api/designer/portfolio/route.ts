@@ -1,17 +1,21 @@
-import { requireApprovedDesigner } from "@/lib/auth";
+import { getApprovedDesignerForApi } from "@/lib/auth";
 import { createPortfolioImageForDesigner, getPortfolioImagesForDesigner } from "@/lib/db";
 import type { PortfolioImageKind } from "@/lib/types";
 
 const KINDS: PortfolioImageKind[] = ["profile", "lookbook", "product", "sample"];
 
 export async function GET() {
-  const { designer } = await requireApprovedDesigner();
+  const auth = await getApprovedDesignerForApi();
+  if (!auth.ok) return Response.json({ ok: false, error: auth.error }, { status: auth.status });
+  const { designer } = auth;
   const images = await getPortfolioImagesForDesigner(designer.id);
   return Response.json({ ok: true, images });
 }
 
 export async function POST(request: Request) {
-  const { designer } = await requireApprovedDesigner();
+  const auth = await getApprovedDesignerForApi();
+  if (!auth.ok) return Response.json({ ok: false, error: auth.error }, { status: auth.status });
+  const { designer } = auth;
   const body = await request.json().catch(() => ({}));
   const imageUrl = String(body.imageUrl || "").trim();
   const title = String(body.title || "").trim();

@@ -18,6 +18,22 @@ const STATUS_LABELS: Record<DesignerPortfolioImage["status"], string> = {
 };
 
 const KIND_LABELS = Object.fromEntries(KINDS.map((kind) => [kind.value, kind.label])) as Record<PortfolioImageKind, string>;
+const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
+async function readJsonResponse(response: Response) {
+  const contentType = response.headers.get("content-type") || "";
+  if (contentType.includes("application/json")) return response.json();
+
+  const text = await response.text().catch(() => "");
+  if (response.status === 413) {
+    return { ok: false, error: "이미지 용량이 너무 큽니다. 8MB 이하의 JPG, PNG, WEBP로 올려주세요." };
+  }
+  if (response.status === 401 || response.redirected || text.includes("<!DOCTYPE")) {
+    return { ok: false, error: "로그인이 만료되었거나 업로드 요청이 차단되었습니다. 새로고침 후 다시 로그인해주세요." };
+  }
+  return { ok: false, error: `업로드 서버가 정상 응답을 주지 않았습니다. (${response.status})` };
+}
 
 export default function PortfolioManager({ initialImages }: { initialImages: DesignerPortfolioImage[] }) {
   const [images, setImages] = useState(initialImages);
@@ -33,13 +49,22 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
   const fileRef = useRef<HTMLInputElement>(null);
 
   const upload = async (file: File) => {
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setMsg({ text: "JPG, PNG, WEBP 이미지만 업로드할 수 있습니다.", ok: false });
+      return;
+    }
+    if (file.size > MAX_UPLOAD_BYTES) {
+      setMsg({ text: "이미지 용량이 너무 큽니다. 8MB 이하로 줄여서 다시 올려주세요.", ok: false });
+      return;
+    }
+
     setUploading(true);
     setMsg(null);
     try {
       const body = new FormData();
       body.append("image", file);
       const response = await fetch("/api/uploads/portfolio-image", { method: "POST", body });
-      const result = await response.json();
+      const result = await readJsonResponse(response);
       if (!response.ok) throw new Error(result.error || "이미지 업로드에 실패했습니다.");
       setImageUrl(result.imageUrl);
       setImageHash(result.imageHash);
@@ -61,7 +86,7 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title, kind, imageUrl, imageHash }),
       });
-      const result = await response.json();
+      const result = await readJsonResponse(response);
       if (!response.ok) throw new Error(result.error || "포트폴리오 저장에 실패했습니다.");
       setImages((current) => [result.image, ...current]);
       setTitle("");

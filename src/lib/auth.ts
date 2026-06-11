@@ -83,6 +83,20 @@ export async function requireApprovedDesigner() {
   return { user, designer };
 }
 
+export async function getApprovedDesignerForApi() {
+  const user = await getCurrentUser();
+  if (!user || user.role !== "designer") {
+    return { ok: false as const, status: 401, error: "로그인이 만료되었습니다. 다시 로그인해주세요." };
+  }
+
+  const designer = await getDesignerForUser(user.id);
+  if (!designer || designer.approval_status !== "approved") {
+    return { ok: false as const, status: 403, error: "승인된 디자이너 계정만 사용할 수 있습니다." };
+  }
+
+  return { ok: true as const, user, designer };
+}
+
 export async function loginUser(email: string, password: string) {
   const normalizedEmail = email.trim().toLowerCase();
   if (normalizedEmail === "test" || normalizedEmail === "admin") return null;
