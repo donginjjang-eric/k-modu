@@ -1849,8 +1849,11 @@
       const lookbook = byKind('lookbook');
       const product = byKind('product');
       const sample = byKind('sample');
+      // 대표 캐러셀/Portfolio Preview는 프로필+룩북 컷만 사용. 제품/샘플 컷은 각자 영역에만 노출.
+      // 룩 컷이 한 장도 없으면 빈 캐러셀 방지를 위해 제품/샘플 컷으로 대체.
+      const lookCuts = [...profile, ...lookbook];
       return {
-        gallery: [...profile, ...lookbook, ...product, ...sample],
+        gallery: lookCuts.length ? lookCuts : [...product, ...sample],
         products: product.map((item) => item.image),
         samples: sample.map((item) => item.image),
         counts: {
@@ -1864,19 +1867,24 @@
     };
 
     const renderProposalAssetPreviews = (assets) => {
-      proposalProductPreview.innerHTML = (assets.products || []).map((image, index) => `
+      const products = assets.products || [];
+      const samples = assets.samples || [];
+      // 분류에 해당하는 이미지가 없으면 섹션 자체를 숨긴다 (다른 분류 이미지 재사용 금지).
+      proposalProductPreview.closest('.designer-asset-section').hidden = !products.length;
+      proposalSamplePreview.closest('.designer-asset-section').hidden = !samples.length;
+      proposalProductPreview.innerHTML = products.map((image, index) => `
         <button type="button" data-asset-image="${escapeHtml(image)}" aria-label="Hero product ${index + 1}" aria-pressed="false">
           <img src="${escapeHtml(image)}" alt="" loading="lazy" />
         </button>
       `).join('');
-      proposalSamplePreview.innerHTML = (assets.samples || []).map((image, index) => `
+      proposalSamplePreview.innerHTML = samples.map((image, index) => `
         <button type="button" data-asset-image="${escapeHtml(image)}" aria-label="Available sample ${index + 1}" aria-pressed="false">
           <img src="${escapeHtml(image)}" alt="" loading="lazy" />
         </button>
       `).join('');
       Array.from(proposalProductPreview.children).forEach((button, index) => {
         button.addEventListener('click', () => {
-          showImageInProposalFrame(assets.products[index], `Hero product ${index + 1}`);
+          showImageInProposalFrame(products[index], `Hero product ${index + 1}`);
           clearAssetPreviewSelection();
           button.classList.add('is-active');
           button.setAttribute('aria-pressed', 'true');
@@ -1884,7 +1892,7 @@
       });
       Array.from(proposalSamplePreview.children).forEach((button, index) => {
         button.addEventListener('click', () => {
-          showImageInProposalFrame(assets.samples[index], `Available sample ${index + 1}`);
+          showImageInProposalFrame(samples[index], `Available sample ${index + 1}`);
           clearAssetPreviewSelection();
           button.classList.add('is-active');
           button.setAttribute('aria-pressed', 'true');
@@ -1904,9 +1912,10 @@
           const grouped = groupLivePortfolioImages(data.images, brand);
           if (!grouped.gallery.length) return;
           startProposalGallery(profileIndex, grouped.gallery);
+          // DB 디자이너는 분류 그대로 노출. 비어 있으면 renderProposalAssetPreviews가 섹션을 숨긴다.
           renderProposalAssetPreviews({
-            products: grouped.products.length ? grouped.products : getProposalAssetImages(profileIndex).products,
-            samples: grouped.samples.length ? grouped.samples : getProposalAssetImages(profileIndex).samples
+            products: grouped.products,
+            samples: grouped.samples
           });
           if (proposalPortfolioNote) {
             proposalPortfolioNote.textContent = `등록된 프로필/포트폴리오 ${grouped.counts.all}장을 분류별로 보여줍니다.`;
@@ -2039,18 +2048,27 @@
       proposalBriefTitle.textContent = 'Representative looks and portfolio mood';
       proposalSummary.textContent = description;
       proposalTags.innerHTML = tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join('');
-      proposalProfileMeta.innerHTML = [
-        ['Designer', card.dataset.designerName || meta.designer],
-        ['Season', meta.season],
-        ['City', meta.city],
-        ['Hero Product', meta.heroProduct]
-      ].map(([label, value]) => `
+      // DB 카드는 실데이터 항목만 노출(Season/Hero Product 같은 인덱스 생성값 제외). 샘플 카드는 기존 연출 메타 유지.
+      const isDbCard = Boolean(card.dataset.designerId);
+      const metaRows = isDbCard
+        ? [
+            ['Designer', card.dataset.designerName || ''],
+            ['City', meta.city]
+          ].filter(([, value]) => value)
+        : [
+            ['Designer', meta.designer],
+            ['Season', meta.season],
+            ['City', meta.city],
+            ['Hero Product', meta.heroProduct]
+          ];
+      proposalProfileMeta.innerHTML = metaRows.map(([label, value]) => `
         <div>
           <span>${label}</span>
           <strong>${escapeHtml(value)}</strong>
         </div>
       `).join('');
-      const assets = getProposalAssetImages(profileIndex);
+      // DB 카드는 포트폴리오 API 응답이 올 때까지 에셋 영역을 비워둔다 (갤러리 이미지 재사용 방지).
+      const assets = isDbCard ? { products: [], samples: [] } : getProposalAssetImages(profileIndex);
       renderProposalAssetPreviews(assets);
       if (proposalPortfolioNote) proposalPortfolioNote.textContent = '대표 이미지와 이어지는 룩북 컷을 순차적으로 보여줍니다.';
       proposalCreatorDirection.textContent = getCreatorDirection(tags);
