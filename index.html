@@ -2209,6 +2209,34 @@
       letter-spacing: .08em;
     }
 
+    .designer-beta-actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .designer-beta-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+      padding: 0 28px;
+      border: 1px solid #050505;
+      border-radius: 999px;
+      background: #050505;
+      color: #fff;
+      font-size: 15px;
+      font-weight: var(--fw-black);
+      text-decoration: none;
+      letter-spacing: 0;
+      box-shadow: 0 18px 40px rgba(5, 5, 5, .2);
+    }
+
+    .designer-beta-cta:hover {
+      transform: translateY(-1px);
+    }
+
     .designer-beta-close {
       position: absolute;
       top: 18px;
@@ -2240,6 +2268,13 @@
         padding: 0 14px;
         font-size: 11px;
       }
+      .designer-beta-actions { margin-top: 16px; }
+      .designer-beta-cta {
+        width: 100%;
+        min-height: 50px;
+        padding: 0 16px;
+        font-size: 14px;
+      }
       .designer-beta-close { top: 12px; right: 12px; }
     }
   </style>
@@ -2253,6 +2288,9 @@
       <h2 id="designerProductBetaTitle">디자이너 상품 등록<br />6월 16일 사전 BETA<br />시작</h2>
       <p>디자이너분들의 브랜드 상품 등록과 AI 룩 제작 기능이 사전 beta로 순차 오픈됩니다.</p>
       <span class="designer-beta-date">JUNE 16 · DESIGNER PRE BETA</span>
+      <div class="designer-beta-actions">
+        <a class="designer-beta-cta" href="/apply">사전 디자이너 접수신청</a>
+      </div>
     </div>
   </div>
   <main class="site">
@@ -2700,21 +2738,15 @@
     const betaModal = document.getElementById('designerProductBetaModal');
     if (!betaModal) return;
     const closeButtons = betaModal.querySelectorAll('.designer-beta-backdrop, .designer-beta-close');
-    let closeTimer = null;
 
     const closeDesignerBetaModal = () => {
       betaModal.classList.remove('is-open');
       betaModal.setAttribute('aria-hidden', 'true');
-      if (closeTimer) {
-        clearTimeout(closeTimer);
-        closeTimer = null;
-      }
     };
 
     requestAnimationFrame(() => {
       betaModal.classList.add('is-open');
       betaModal.setAttribute('aria-hidden', 'false');
-      closeTimer = setTimeout(closeDesignerBetaModal, 5000);
     });
 
     closeButtons.forEach((button) => {
