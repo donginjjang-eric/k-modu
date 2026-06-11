@@ -30,11 +30,10 @@ export default function LoginForm() {
   };
 
   return (
-    <form className="generate-box" onSubmit={submit}>
-      <label>
+    <form className="generate-box login-form-card" onSubmit={submit}>
+      <label className="login-field">
         <p className="kicker">ID / Email</p>
         <input
-          style={{ width: "100%", minHeight: 48, padding: 12 }}
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           autoComplete="username"
@@ -42,10 +41,9 @@ export default function LoginForm() {
           required
         />
       </label>
-      <label>
+      <label className="login-field">
         <p className="kicker">Password</p>
         <input
-          style={{ width: "100%", minHeight: 48, padding: 12 }}
           type="password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}

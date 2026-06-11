@@ -2,9 +2,9 @@ import LoginForm from "@/components/LoginForm";
 
 export default function LoginPage() {
   return (
-    <main className="page">
-      <section className="hero" style={{ minHeight: "auto" }}>
-        <div>
+    <main className="page login-page">
+      <section className="login-hero">
+        <div className="login-copy">
           <p className="kicker">Partner Login</p>
           <h1>로그인</h1>
           <p className="lead">
