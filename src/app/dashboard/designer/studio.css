@@ -22,6 +22,7 @@
 .role-chip.admin { background: #111827; color: #fff; }
 .top-context { display: flex; align-items: center; gap: 14px; }
 .top-link { min-height: 34px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); font-size: 12px; font-weight: 900; }
+.mobile-home-link { display: none; }
 .st-top .me { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 14px; }
 .st-top .me .role-label { color: var(--muted); font-size: 11px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
 .st-top .me .ava { width: 32px; height: 32px; border-radius: 999px; background: #dfd8ca; display: grid; place-items: center; font-size: 13px; font-weight: 800; }
@@ -277,10 +278,28 @@
   .st-shell { grid-template-columns: minmax(0,1fr); }
   .st-side { display: none; }
   .st-top { padding: 12px 16px; }
+  .st-top .brand { flex: 0 0 auto; align-items: center; gap: 8px; }
+  .st-top .brand b { font-size: 22px; white-space: nowrap; }
   .st-top .brand span { display: none; }
   .role-chip { display: inline-flex !important; }
   .top-link, .st-top .me .role-label { display: none; }
-  .st-top .me { font-size: 13px; max-width: 50vw; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .top-context { gap: 9px; min-width: 0; }
+  .mobile-home-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    min-height: 34px;
+    padding: 0;
+    border: 1px solid var(--line2);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--ink);
+    font-size: 18px;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+  .st-top .me { display: none; }
   .st-main { padding: 20px 14px 92px; }
   .st-title { font-size: 25px; }
   .st-actions { grid-template-columns: 1fr; }
