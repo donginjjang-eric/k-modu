@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import DraggableTabs from "./DraggableTabs";
+import { STYLING_PRODUCT_CATEGORY_LIMITS, groupStylingProductCategory } from "@/lib/product-selection-rules";
 
 type Designer = {
   brandName: string;
@@ -53,15 +54,9 @@ export default function StylingBoard({
   const [resultLabel, setResultLabel] = useState("");
   const [modal, setModal] = useState<{ title: string; message: string; tone?: "success" | "warning" | "error" } | null>(null);
 
-  const groupProductCategory = (category: string) => {
-    const raw = String(category || "").trim();
-    const value = raw.toLowerCase();
-    if (raw.includes("하의") || ["bottom", "bottoms", "pants", "trouser", "trousers", "skirt"].includes(value)) return "하의";
-    if (raw.includes("상의") || raw.includes("아우터") || ["top", "tops", "inner", "shirt", "outer", "outerwear", "jacket", "coat"].includes(value)) return "상의";
-    return "악세서리";
-  };
+  const groupProductCategory = groupStylingProductCategory;
 
-  const categories = ["상의", "하의", "악세서리"];
+  const categories = Object.keys(STYLING_PRODUCT_CATEGORY_LIMITS);
 
   const visibleProducts = useMemo(
     () => products.filter((product) => groupProductCategory(product.category) === activeCategory),
@@ -76,6 +71,19 @@ export default function StylingBoard({
   const toggleProduct = (productId: string) => {
     setSelectedProductIds((current) => {
       if (current.includes(productId)) return current.filter((id) => id !== productId);
+      const product = products.find((item) => item.id === productId);
+      const productCategory = groupProductCategory(product?.category || "");
+      const categoryLimit = STYLING_PRODUCT_CATEGORY_LIMITS[productCategory];
+      const selectedInCategory = current.filter((id) => {
+        const selectedProduct = products.find((item) => item.id === id);
+        return groupProductCategory(selectedProduct?.category || "") === productCategory;
+      }).length;
+      if (selectedInCategory >= categoryLimit) {
+        const message = `${productCategory}는 최대 ${categoryLimit}개까지 선택할 수 있어요. 상의 1개, 하의 1개, 악세서리 2개 조합으로 선택해주세요.`;
+        setStatusText(message);
+        setModal({ title: "카테고리 선택 확인", message, tone: "warning" });
+        return current;
+      }
       if (current.length >= maxAiProducts) {
         const message = "상품은 최대 4개까지 조합할 수 있어요. 다른 상품을 고르려면 선택된 상품을 해제하거나 초기화해주세요.";
         setStatusText(message);

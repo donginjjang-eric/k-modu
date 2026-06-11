@@ -1157,6 +1157,11 @@
     };
 
     const MAX_PUBLIC_AI_ITEMS = 4;
+    const STYLING_SLOT_LIMITS = {
+      top: 1,
+      bottom: 1,
+      accessory: 2
+    };
     const getStylingButtonKey = (button) => button.dataset.productId || `${button.dataset.category || 'Item'}:${button.dataset.itemName || ''}`;
 
     const getSelectedStylingItems = () => Array.from(selectedStylingItems.values());
@@ -1246,12 +1251,17 @@
       } else {
         const category = button.dataset.category || 'Item';
         const slot = normalizeStylingSlot(category);
-        const duplicate = Array.from(selectedStylingItems.entries())
-          .find(([existingKey, item]) => existingKey !== key && item.slot === slot);
-        if (duplicate) {
-          removeSelectedStylingEntry(duplicate[0], duplicate[1]);
+        const limitSlot = ['top', 'bottom'].includes(slot) ? slot : 'accessory';
+        const slotLimit = STYLING_SLOT_LIMITS[limitSlot] || 1;
+        const selectedInSlot = Array.from(selectedStylingItems.values())
+          .filter((item) => (['top', 'bottom'].includes(item.slot) ? item.slot : 'accessory') === limitSlot).length;
+        if (selectedInSlot >= slotLimit) {
+          const message = `${stylingSlotLabel(limitSlot)}는 최대 ${slotLimit}개까지 선택할 수 있어요. 상의 1개, 하의 1개, 악세서리 2개 조합으로 선택해주세요.`;
           aiTryonStatus.hidden = false;
-          aiTryonStatus.textContent = `${stylingSlotLabel(slot)} 선택을 새 상품으로 바꿨어요.`;
+          aiTryonStatus.textContent = message;
+          showAiNotice('카테고리 선택 확인', message, 'warning');
+          updateAiTryOnControls();
+          return;
         }
         if (selectedStylingItems.size >= MAX_PUBLIC_AI_ITEMS) {
           const message = '상품은 최대 4개까지 조합할 수 있어요. 다른 상품을 고르려면 선택된 상품을 먼저 해제해주세요.';

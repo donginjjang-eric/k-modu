@@ -13,6 +13,7 @@ import {
 } from "@/lib/db";
 import { buildLookCacheKey, buildLookbookPrompt, promptVersion } from "@/lib/ai-lookbook";
 import { applyDesignerDefaultModelTemplate } from "@/lib/designer-defaults";
+import { validateStylingProductSelection } from "@/lib/product-selection-rules";
 
 function startGenerationWorker(input: unknown) {
   const payload = Buffer.from(JSON.stringify(input), "utf8").toString("base64url");
@@ -100,6 +101,10 @@ export async function POST(request: Request) {
 
   if (products.length !== new Set(productIds).size) {
     return Response.json({ ok: false, error: "One or more products do not belong to this designer." }, { status: 403 });
+  }
+  const selectionValidation = validateStylingProductSelection(products);
+  if (!selectionValidation.ok) {
+    return Response.json({ ok: false, error: selectionValidation.error }, { status: 400 });
   }
   if (!template) {
     return Response.json({ ok: false, error: "Model template not found." }, { status: 404 });
