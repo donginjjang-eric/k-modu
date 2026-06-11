@@ -4,7 +4,15 @@ import { useMemo, useRef, useState } from "react";
 import type { Product } from "@/lib/types";
 import DraggableTabs from "./DraggableTabs";
 
-const CATEGORIES = ["상의", "하의", "아우터", "가방", "신발", "악세서리"];
+const CATEGORIES = ["상의", "하의", "악세서리"];
+
+const groupProductCategory = (category: string) => {
+  const raw = String(category || "").trim();
+  const value = raw.toLowerCase();
+  if (raw.includes("하의") || ["bottom", "bottoms", "pants", "trouser", "trousers", "skirt"].includes(value)) return "하의";
+  if (raw.includes("상의") || raw.includes("아우터") || ["top", "tops", "inner", "shirt", "outer", "outerwear", "jacket", "coat"].includes(value)) return "상의";
+  return "악세서리";
+};
 
 type FormState = {
   name: string;
@@ -39,11 +47,10 @@ export default function ProductManager({ initialProducts }: { initialProducts: P
   const fileRef = useRef<HTMLInputElement>(null);
 
   const productCategories = useMemo(() => {
-    const unique = Array.from(new Set(products.map((product) => product.category || "기타")));
-    return ["전체", ...unique];
-  }, [products]);
+    return ["전체", ...CATEGORIES];
+  }, []);
   const visibleProducts = useMemo(
-    () => activeCategory === "전체" ? products : products.filter((product) => product.category === activeCategory),
+    () => activeCategory === "전체" ? products : products.filter((product) => groupProductCategory(product.category) === activeCategory),
     [activeCategory, products],
   );
 
@@ -235,7 +242,7 @@ export default function ProductManager({ initialProducts }: { initialProducts: P
                       <span className={`badge ${isPublic ? "pub" : "priv"}`}>{isPublic ? "공개" : "비공개"}</span>
                     </div>
                     <div className="b">
-                      <div className="c">{product.category}</div>
+                      <div className="c">{groupProductCategory(product.category)}</div>
                       <div className="n">{product.name}</div>
                       <div className="st-prices">
                         {product.supply_price ? <span className="supply">공급가 {product.supply_price}</span> : null}
