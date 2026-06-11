@@ -31,7 +31,7 @@ const fallbackTryOnConfig = {
     {
       id: "fixed-female-minimal",
       label: "K-Fashion Female",
-      previewImage: "assets/mainmodel_2.png",
+      previewImage: "assets/designer-samples/model_1.png",
       generatedLookImage: "assets/generated-looks/maison-lune-kfashion-female-full-look.png",
     },
   ],

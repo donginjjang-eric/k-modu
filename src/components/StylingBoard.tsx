@@ -41,7 +41,7 @@ export default function StylingBoard({
   );
   const displayModelTemplates = useMemo(
     () => visibleModelTemplates.map((template, index) => (
-      index === 0 ? { ...template, label: "기본 모델", image: designer.heroImage } : template
+      { ...template, label: index === 0 ? "기본 모델" : template.label, image: designer.heroImage }
     )),
     [designer.heroImage, visibleModelTemplates],
   );

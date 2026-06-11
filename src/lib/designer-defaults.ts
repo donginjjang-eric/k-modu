@@ -1,6 +1,6 @@
 import type { Designer, ModelTemplate } from "./types";
 
-export const DEFAULT_DESIGNER_MODEL_IMAGE = "/assets/designer-profile-real-01.png";
+export const DEFAULT_DESIGNER_MODEL_IMAGE = "/assets/designer-samples/model_1.png";
 export const DEFAULT_MODEL_TEMPLATE_ID = "fixed-female-minimal";
 export const DEFAULT_MODEL_TEMPLATE_LABEL = "기본 모델";
 

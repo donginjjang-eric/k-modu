@@ -60,8 +60,8 @@ async function seedDemoData() {
   );
 
   const templates = [
-    ["fixed-female-minimal", "기본 모델", "k_fashion_female", "/assets/designer-profile-real-01.png"],
-    ["fixed-street", "Street", "street", "/assets/mainmodel_3.png"],
+    ["fixed-female-minimal", "기본 모델", "k_fashion_female", "/assets/designer-samples/model_1.png"],
+    ["fixed-street", "Street", "street", "/assets/designer-samples/model_1.png"],
   ];
 
   for (const template of templates) {
