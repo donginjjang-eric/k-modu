@@ -69,6 +69,7 @@
           <tr>
             <th>Brand Name</th>
             <th>Designer</th>
+            <th>Phone</th>
             <th>Country</th>
             <th>Category</th>
             <th>Status</th>
@@ -112,9 +113,9 @@
 
     // --- 2. PIPELINE DATA MANAGER ---
     const defaultBrands = [
-      { brand: 'Maison Lune Seoul', designer: 'Han Seo Yoon', country: 'South Korea', category: 'Minimal Womenswear', status: 'Reviewing', submitted: '2026.05.19' },
-      { brand: 'Archive Row', designer: 'Kim Jae In', country: 'South Korea', category: 'Street Luxury', status: 'Brief Ready', submitted: '2026.05.18' },
-      { brand: 'Studio Forme', designer: 'Lee Min Ha', country: 'South Korea', category: 'Editorial Fashion', status: 'Pending', submitted: '2026.05.17' }
+      { brand: 'Maison Lune Seoul', designer: 'Han Seo Yoon', phone: '010-0000-0000', country: 'South Korea', category: 'Minimal Womenswear', status: 'Reviewing', submitted: '2026.05.19' },
+      { brand: 'Archive Row', designer: 'Kim Jae In', phone: '010-0000-0000', country: 'South Korea', category: 'Street Luxury', status: 'Brief Ready', submitted: '2026.05.18' },
+      { brand: 'Studio Forme', designer: 'Lee Min Ha', phone: '010-0000-0000', country: 'South Korea', category: 'Editorial Fashion', status: 'Pending', submitted: '2026.05.17' }
     ];
 
     function getApplications() {
@@ -151,7 +152,7 @@
       document.getElementById('statMatched').textContent = pending;
 
       if (apps.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--muted); padding: 32px;">신청 데이터가 없습니다.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--muted); padding: 32px;">신청 데이터가 없습니다.</td></tr>`;
         return;
       }
 
@@ -182,6 +183,7 @@
         tr.innerHTML = `
           <td><strong>${app.brand}</strong></td>
           <td>${app.designer}</td>
+          <td>${app.phone || '-'}</td>
           <td>${app.country}</td>
           <td>${app.category}</td>
           <td><span class="${statusClass}">${app.status}</span></td>

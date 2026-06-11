@@ -255,6 +255,11 @@
         </div>
 
         <div class="receipt-row">
+          <span class="receipt-label">연락처</span>
+          <span class="receipt-value" id="receiptPhone">-</span>
+        </div>
+
+        <div class="receipt-row">
           <span class="receipt-label">접수 일시</span>
           <span class="receipt-value" id="receiptDate">-</span>
         </div>
@@ -314,6 +319,7 @@
         // Populate receipt cards
         document.getElementById('receiptBrand').textContent = latestApp.brand;
         document.getElementById('receiptDesigner').textContent = latestApp.designer;
+        document.getElementById('receiptPhone').textContent = latestApp.phone || '-';
         document.getElementById('receiptDate').textContent = latestApp.submitted;
       } else {
         // Fallback for demo direct visits
@@ -322,6 +328,7 @@
 
         document.getElementById('receiptBrand').textContent = "K-MODU 파트너";
         document.getElementById('receiptDesigner').textContent = "검토 중";
+        document.getElementById('receiptPhone').textContent = "-";
         document.getElementById('receiptDate').textContent = formattedDate;
       }
     } catch (e) {

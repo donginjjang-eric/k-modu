@@ -355,6 +355,11 @@
           </div>
 
           <div class="toss-field">
+            <label for="phone">연락용 전화번호</label>
+            <input type="tel" id="phone" name="phone" class="toss-input" placeholder="예: 010-1234-5678" autocomplete="tel" required />
+          </div>
+
+          <div class="toss-field">
             <label for="headline">브랜드 한 줄 소개</label>
             <input type="text" id="headline" name="headline" class="toss-input" placeholder="예: 서울 기반의 콰이어트 럭셔리 미니멀 여성복" required />
           </div>
@@ -604,6 +609,7 @@
           brand: document.getElementById('brandName').value,
           designer: document.getElementById('designerName').value,
           email: document.getElementById('email').value,
+          phone: document.getElementById('phone').value,
           headline: document.getElementById('headline').value,
           product: document.getElementById('product').value,
           category: document.getElementById('category').value,
@@ -656,6 +662,7 @@
       document.getElementById('brandName').value = d.brand || '';
       document.getElementById('designerName').value = d.designer || '';
       document.getElementById('email').value = d.email || '';
+      document.getElementById('phone').value = d.phone || '';
       document.getElementById('headline').value = d.headline || '';
       document.getElementById('product').value = d.product || '';
       document.getElementById('category').value = d.category || '';
@@ -684,6 +691,8 @@
     function submitForm() {
       const brandName = document.getElementById('brandName').value;
       const designerName = document.getElementById('designerName').value;
+      const email = document.getElementById('email').value;
+      const phone = document.getElementById('phone').value;
       const category = document.getElementById('category').value || document.getElementById('headline').value || 'Minimal Fashion';
       const country = 'South Korea';
 
@@ -694,6 +703,8 @@
       const newApp = {
         brand: brandName,
         designer: designerName,
+        email: email,
+        phone: phone,
         category: category,
         country: country,
         status: 'Reviewing',
