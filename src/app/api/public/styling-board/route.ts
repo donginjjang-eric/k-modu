@@ -1,4 +1,4 @@
-import { getDesigner, getPublicProductsForDesigner } from "@/lib/db";
+import { getApprovedDesigner, getPublicProductsForDesigner } from "@/lib/db";
 
 // Public (no-auth) read endpoint for the legacy styling board.
 // Returns a designer + their products so designers.html can render the
@@ -9,7 +9,7 @@ export async function GET(request: Request) {
     return Response.json({ ok: false, error: "designerId is required." }, { status: 400 });
   }
 
-  const designer = await getDesigner(designerId);
+  const designer = await getApprovedDesigner(designerId);
   if (!designer) {
     return Response.json({ ok: false, error: "Designer not found." }, { status: 404 });
   }
