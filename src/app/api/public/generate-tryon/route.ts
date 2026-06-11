@@ -13,6 +13,8 @@ import { buildLookCacheKey, buildLookbookPrompt, promptVersion } from "@/lib/ai-
 import { applyDesignerDefaultModelTemplate } from "@/lib/designer-defaults";
 import { validateStylingProductSelection } from "@/lib/product-selection-rules";
 
+const DEFAULT_PUBLIC_DESIGNER_ID = "maison-lune-seoul";
+
 function startGenerationWorker(input: unknown) {
   const payload = Buffer.from(JSON.stringify(input), "utf8").toString("base64url");
   const workerPath = path.join(process.cwd(), "scripts", "ai-generate-worker.mjs");
@@ -27,7 +29,7 @@ function startGenerationWorker(input: unknown) {
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const designerId = url.searchParams.get("designerId")?.trim() || "";
+  const designerId = url.searchParams.get("designerId")?.trim() || DEFAULT_PUBLIC_DESIGNER_ID;
   const cacheKey = url.searchParams.get("cacheKey")?.trim() || "";
 
   if (!designerId || !cacheKey) {
@@ -56,15 +58,12 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
-  const designerId = String(body.designerId || "").trim();
+  const designerId = String(body.designerId || DEFAULT_PUBLIC_DESIGNER_ID).trim();
   const productIds = Array.isArray(body.productIds) ? body.productIds.map(String).filter(Boolean) : [];
   const modelTemplateId = String(body.modelTemplateId || body.modelTemplate || "");
   const stylingPrompt = String(body.stylingPrompt || "minimal editorial K-fashion look");
   const provider = "openai" as const;
 
-  if (!designerId) {
-    return Response.json({ ok: false, error: "designerId is required." }, { status: 400 });
-  }
   if (productIds.length < 1) {
     return Response.json({ ok: false, error: "Select at least one product." }, { status: 400 });
   }

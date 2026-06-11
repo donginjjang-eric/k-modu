@@ -789,6 +789,7 @@
     let proposalGalleryIndex = 0;
     let proposalGalleryTimer = null;
     const selectedStylingItems = new Map();
+    const DEFAULT_PUBLIC_DESIGNER_ID = 'maison-lune-seoul';
     let selectedModelTemplate = 'fixed-female-minimal';
     let aiTryonPanelVisible = false;
     let currentDesignerId = '';
@@ -1385,13 +1386,13 @@
     renderGeneratedLooks();
 
     const fetchApprovedLookMatch = async (items) => {
-      if (!currentDesignerId) return null;
+      const designerId = currentDesignerId || DEFAULT_PUBLIC_DESIGNER_ID;
       const productIds = items.map((item) => item.productId).filter(Boolean);
       if (productIds.length < 1) return null;
       const response = await fetch('/api/public/approved-look-match', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ designerId: currentDesignerId, productIds })
+        body: JSON.stringify({ designerId, productIds })
       });
       if (!response.ok) throw new Error(`approved look match failed ${response.status}`);
       const data = await response.json();
@@ -1416,7 +1417,8 @@
         await new Promise((resolve) => setTimeout(resolve, 5000));
         const percent = Math.min(95, 25 + Math.round(((attempt + 1) / 48) * 70));
         setAiProgress(percent, `OpenAI가 룩을 생성 중입니다. ${percent}% 완료`, percent >= 80 ? 'finishing' : 'processing');
-        const response = await fetch(`/api/public/generate-tryon?designerId=${encodeURIComponent(currentDesignerId)}&cacheKey=${encodeURIComponent(cacheKey)}`);
+        const designerId = currentDesignerId || DEFAULT_PUBLIC_DESIGNER_ID;
+        const response = await fetch(`/api/public/generate-tryon?designerId=${encodeURIComponent(designerId)}&cacheKey=${encodeURIComponent(cacheKey)}`);
         const contentType = response.headers.get('content-type') || '';
         const result = contentType.includes('application/json') ? await response.json() : null;
         if (!response.ok) {
@@ -1449,7 +1451,7 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          designerId: currentDesignerId,
+          designerId: currentDesignerId || DEFAULT_PUBLIC_DESIGNER_ID,
           modelTemplateId: selectedModelTemplate,
           productIds,
           stylingPrompt: buildPublicStylingPrompt(items),
@@ -1820,7 +1822,7 @@
       const profileIndex = Number(card.dataset.index || 0);
       const meta = getDesignerMeta(profileIndex, brand, kicker, tags);
       currentProposalIndex = profileIndex;
-      currentDesignerId = card.dataset.designerId || '';
+      currentDesignerId = card.dataset.designerId || DEFAULT_PUBLIC_DESIGNER_ID;
 
       proposalBrandName.textContent = brand;
       proposalBriefTitle.textContent = 'Representative looks and portfolio mood';
@@ -1868,7 +1870,7 @@
       proposalBriefLink.href = `/designer-brief?brand=${encodedBrand}`;
       renderStylingBoard(profileIndex);
       // For cards linked to a real DB designer, replace the board with live products.
-      if (card.dataset.designerId) loadStylingBoardForDesigner(card.dataset.designerId);
+      loadStylingBoardForDesigner(currentDesignerId);
       setProposalTab('profile');
       startProposalGallery(profileIndex);
 
