@@ -7,7 +7,7 @@ import {
   getGeneratedLookByCacheKey,
   getLatestGenerationLogForDesigner,
   getModelTemplate,
-  getOwnedProductsForGeneration,
+  getPublicProductsForGeneration,
 } from "@/lib/db";
 import { buildLookCacheKey, buildLookbookPrompt } from "@/lib/ai-lookbook";
 
@@ -79,7 +79,7 @@ export async function POST(request: Request) {
   }
 
   const [products, template] = await Promise.all([
-    getOwnedProductsForGeneration(designer.id, productIds),
+    getPublicProductsForGeneration(designer.id, productIds),
     getModelTemplate(modelTemplateId),
   ]);
 

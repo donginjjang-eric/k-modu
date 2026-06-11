@@ -1,13 +1,13 @@
 import { notFound } from "next/navigation";
 import StylingBoard from "@/components/StylingBoard";
-import { getApprovedGeneratedLooksForDesigner, getDesigner, getModelTemplates, getProductsForDesigner } from "@/lib/db";
+import { getApprovedGeneratedLooksForDesigner, getDesigner, getModelTemplates, getPublicProductsForDesigner } from "@/lib/db";
 
 export default async function DesignerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const designer = await getDesigner(id);
   if (!designer) notFound();
   const [products, modelTemplates, approvedLooks] = await Promise.all([
-    getProductsForDesigner(designer.id),
+    getPublicProductsForDesigner(designer.id),
     getModelTemplates(),
     getApprovedGeneratedLooksForDesigner(designer.id, 12),
   ]);

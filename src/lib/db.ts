@@ -189,6 +189,22 @@ export async function getProductsForDesigner(designerId: string): Promise<Produc
   }
 }
 
+export async function getPublicProductsForDesigner(designerId: string): Promise<Product[]> {
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    return designerId === phaseDesigner.id ? toDemoProducts().filter((product) => product.status === "active") : [];
+  }
+  try {
+    return await query<Product>(
+      "SELECT * FROM products WHERE designer_id = $1 AND status = 'active' ORDER BY created_at DESC",
+      [designerId],
+    );
+  } catch (error) {
+    if (!canUseDemoData()) throw error;
+    return designerId === phaseDesigner.id ? toDemoProducts().filter((product) => product.status === "active") : [];
+  }
+}
+
 export async function getProductsForDesignerForAdmin(designerId: string): Promise<Product[]> {
   if (!hasDatabase()) {
     requireDatabaseForProduction();
@@ -261,6 +277,19 @@ export async function getOwnedProductsForGeneration(designerId: string, productI
   }
   return query<Product>(
     "SELECT * FROM products WHERE designer_id = $1 AND id = ANY($2::text[]) AND status <> 'hidden'",
+    [designerId, productIds],
+  );
+}
+
+export async function getPublicProductsForGeneration(designerId: string, productIds: string[]): Promise<Product[]> {
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    return toDemoProducts().filter((product) => (
+      product.designer_id === designerId && productIds.includes(product.id) && product.status === "active"
+    ));
+  }
+  return query<Product>(
+    "SELECT * FROM products WHERE designer_id = $1 AND id = ANY($2::text[]) AND status = 'active'",
     [designerId, productIds],
   );
 }
