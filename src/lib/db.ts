@@ -137,6 +137,11 @@ export async function getDesigner(id: string): Promise<Designer | null> {
   }
 }
 
+export async function getApprovedDesigner(id: string): Promise<Designer | null> {
+  const designer = await getDesigner(id);
+  return designer && designer.approval_status === "approved" ? designer : null;
+}
+
 export function toDemoPortfolioImages(): DesignerPortfolioImage[] {
   const now = new Date("2026-05-30T00:00:00Z").toISOString();
   return [
@@ -351,6 +356,23 @@ export async function getApprovedPortfolioImagesForDesigner(designerId: string):
   return query<DesignerPortfolioImage>(
     "SELECT * FROM designer_portfolio_images WHERE designer_id = $1 AND status = 'approved' ORDER BY updated_at DESC, created_at DESC",
     [designerId],
+  );
+}
+
+export async function getApprovedPortfolioImagesForDesigners(designerIds: string[]): Promise<DesignerPortfolioImage[]> {
+  if (!designerIds.length) return [];
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    return designerIds.includes(phaseDesigner.id)
+      ? toDemoPortfolioImages().filter((image) => image.status === "approved")
+      : [];
+  }
+  await ensurePortfolioImagesTable();
+  return query<DesignerPortfolioImage>(
+    `SELECT * FROM designer_portfolio_images
+      WHERE designer_id = ANY($1::text[]) AND status = 'approved'
+      ORDER BY designer_id, updated_at DESC, created_at DESC`,
+    [designerIds],
   );
 }
 
