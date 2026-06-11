@@ -20,11 +20,11 @@ const PRODUCT_SUBNAV = [
 
 export const STUDIO_NAV: NavItem[] = [
   { href: "/dashboard/designer/brand", icon: "badge", label: "브랜드 프로필", short: "프로필" },
-  { href: "/dashboard/designer", icon: "home", label: "대시보드", short: "홈" },
   { href: "/dashboard/designer/products", icon: "shirt", label: "상품 작업", short: "상품" },
   { href: "/dashboard/designer/generated-looks", icon: "sparkles", label: "AI 룩 제작", short: "AI" },
   { href: "/dashboard/designer/short", icon: "video", label: "숏폼 제작", short: "숏폼" },
   { href: "/dashboard/designer/orders", icon: "inbox", label: "받은 의뢰", short: "의뢰", tag: "예정" },
+  { href: "/dashboard/designer", icon: "home", label: "대시보드", short: "홈" },
 ];
 
 function isActive(pathname: string, href: string) {
