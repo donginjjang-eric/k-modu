@@ -294,6 +294,9 @@ p {
 }
 
 .product-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   flex: 0 0 auto;
   min-height: 32px;
   padding: 0 11px;
@@ -313,6 +316,30 @@ p {
   color: #fff;
 }
 
+.product-tabs button.has-selection:not(.is-active) {
+  border-color: rgba(17, 17, 17, .5);
+  box-shadow: inset 0 0 0 1px rgba(17, 17, 17, .2);
+}
+
+.tab-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #b99756;
+  color: #fff;
+  font-size: 11px;
+  line-height: 1;
+  font-weight: 900;
+}
+
+.product-tabs button.is-active .tab-count {
+  background: #fff;
+  color: #111;
+}
+
 .product-card {
   display: grid;
   grid-template-columns: 76px 1fr auto;
@@ -329,8 +356,28 @@ p {
 
 .product-card.is-active {
   border-color: #111;
-  background: #f1eee8;
-  box-shadow: inset 0 0 0 2px #111;
+  position: relative;
+  background:
+    linear-gradient(90deg, rgba(185, 151, 86, .16), rgba(255, 255, 255, .95) 44%),
+    #fff;
+  box-shadow: inset 0 0 0 2px #111, 0 14px 30px rgba(17, 17, 17, .12);
+}
+
+.product-card.is-active::after {
+  content: "✓";
+  position: absolute;
+  top: 9px;
+  left: 9px;
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  border-radius: 999px;
+  background: #111;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 900;
+  box-shadow: 0 8px 18px rgba(17, 17, 17, .22);
 }
 
 .product-card img {

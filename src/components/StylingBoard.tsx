@@ -68,6 +68,14 @@ export default function StylingBoard({
     [products, selectedProductIds],
   );
 
+  const selectedCategoryCounts = useMemo(() => (
+    selectedProducts.reduce<Record<string, number>>((counts, product) => {
+      const category = groupProductCategory(product.category);
+      counts[category] = (counts[category] || 0) + 1;
+      return counts;
+    }, {})
+  ), [groupProductCategory, selectedProducts]);
+
   const toggleProduct = (productId: string) => {
     setSelectedProductIds((current) => {
       if (current.includes(productId)) return current.filter((id) => id !== productId);
@@ -203,6 +211,7 @@ export default function StylingBoard({
             <DraggableTabs
               categories={categories}
               activeCategory={activeCategory}
+              counts={selectedCategoryCounts}
               ariaLabel="상품 카테고리"
               onChange={setActiveCategory}
             />

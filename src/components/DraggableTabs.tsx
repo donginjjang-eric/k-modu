@@ -8,6 +8,7 @@ type DraggableTabsProps = {
   activeCategory: string;
   ariaLabel: string;
   className?: string;
+  counts?: Record<string, number>;
   onChange: (category: string) => void;
 };
 
@@ -16,6 +17,7 @@ export default function DraggableTabs({
   activeCategory,
   ariaLabel,
   className = "",
+  counts = {},
   onChange,
 }: DraggableTabsProps) {
   const scrollerRef = useRef<HTMLDivElement>(null);
@@ -71,16 +73,21 @@ export default function DraggableTabs({
         dragRef.current.suppressClick = false;
       }}
     >
-      {categories.map((category) => (
-        <button
-          className={activeCategory === category ? "is-active" : ""}
-          key={category}
-          type="button"
-          onClick={() => onChange(category)}
-        >
-          {category}
-        </button>
-      ))}
+      {categories.map((category) => {
+        const count = counts[category] || 0;
+        return (
+          <button
+            className={`${activeCategory === category ? "is-active" : ""} ${count ? "has-selection" : ""}`.trim()}
+            key={category}
+            type="button"
+            aria-label={`${category} ${count ? `${count}개 선택됨` : "선택 없음"}`}
+            onClick={() => onChange(category)}
+          >
+            {category}
+            {count ? <span className="tab-count">{count}</span> : null}
+          </button>
+        );
+      })}
     </div>
   );
 }
