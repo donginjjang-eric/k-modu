@@ -481,6 +481,7 @@
     const proposalTags = document.querySelector('#proposalTags');
     const proposalProfileMeta = document.querySelector('#proposalProfileMeta');
     const proposalPortfolioThumbs = document.querySelector('#proposalPortfolioThumbs');
+    const proposalPortfolioNote = document.querySelector('.designer-portfolio-note p');
     const proposalProductPreview = document.querySelector('#proposalProductPreview');
     const proposalSamplePreview = document.querySelector('#proposalSamplePreview');
     const proposalCreatorDirection = document.querySelector('#proposalCreatorDirection');
@@ -1750,6 +1751,84 @@
       };
     };
 
+    const groupLivePortfolioImages = (images, brand) => {
+      const normalized = (images || [])
+        .filter((item) => item && item.image)
+        .map((item, index) => ({
+          image: item.image,
+          kind: item.kind || 'lookbook',
+          name: item.title || `${brand} portfolio ${index + 1}`
+        }));
+      const byKind = (kind) => normalized.filter((item) => item.kind === kind);
+      const profile = byKind('profile');
+      const lookbook = byKind('lookbook');
+      const product = byKind('product');
+      const sample = byKind('sample');
+      return {
+        gallery: [...profile, ...lookbook, ...product, ...sample],
+        products: product.map((item) => item.image),
+        samples: sample.map((item) => item.image),
+        counts: {
+          all: normalized.length,
+          profile: profile.length,
+          lookbook: lookbook.length,
+          product: product.length,
+          sample: sample.length
+        }
+      };
+    };
+
+    const renderProposalAssetPreviews = (assets) => {
+      proposalProductPreview.innerHTML = (assets.products || []).map((image, index) => `
+        <button type="button" data-asset-image="${escapeHtml(image)}" aria-label="Hero product ${index + 1}" aria-pressed="false">
+          <img src="${escapeHtml(image)}" alt="" loading="lazy" />
+        </button>
+      `).join('');
+      proposalSamplePreview.innerHTML = (assets.samples || []).map((image, index) => `
+        <button type="button" data-asset-image="${escapeHtml(image)}" aria-label="Available sample ${index + 1}" aria-pressed="false">
+          <img src="${escapeHtml(image)}" alt="" loading="lazy" />
+        </button>
+      `).join('');
+      Array.from(proposalProductPreview.children).forEach((button, index) => {
+        button.addEventListener('click', () => {
+          showImageInProposalFrame(assets.products[index], `Hero product ${index + 1}`);
+          clearAssetPreviewSelection();
+          button.classList.add('is-active');
+          button.setAttribute('aria-pressed', 'true');
+        });
+      });
+      Array.from(proposalSamplePreview.children).forEach((button, index) => {
+        button.addEventListener('click', () => {
+          showImageInProposalFrame(assets.samples[index], `Available sample ${index + 1}`);
+          clearAssetPreviewSelection();
+          button.classList.add('is-active');
+          button.setAttribute('aria-pressed', 'true');
+        });
+      });
+    };
+
+    const loadProposalPortfolioForDesigner = (designerId, profileIndex, brand) => {
+      const requestKey = `${designerId}:${Date.now()}`;
+      proposalSheet.dataset.portfolioRequest = requestKey;
+      fetch(`/api/public/designer-portfolio?designerId=${encodeURIComponent(designerId)}`)
+        .then((response) => (response.ok ? response.json() : Promise.reject(new Error(`status ${response.status}`))))
+        .then((data) => {
+          if (proposalSheet.dataset.portfolioRequest !== requestKey) return;
+          if (!data || data.ok === false || !Array.isArray(data.images) || !data.images.length) return;
+          const grouped = groupLivePortfolioImages(data.images, brand);
+          if (!grouped.gallery.length) return;
+          startProposalGallery(profileIndex, grouped.gallery);
+          renderProposalAssetPreviews({
+            products: grouped.products.length ? grouped.products : getProposalAssetImages(profileIndex).products,
+            samples: grouped.samples.length ? grouped.samples : getProposalAssetImages(profileIndex).samples
+          });
+          if (proposalPortfolioNote) {
+            proposalPortfolioNote.textContent = `승인된 프로필/포트폴리오 ${grouped.counts.all}장을 분류별로 보여줍니다.`;
+          }
+        })
+        .catch(() => { /* keep hardcoded fallback portfolio */ });
+    };
+
     const stopProposalGallery = () => {
       if (!proposalGalleryTimer) return;
       clearInterval(proposalGalleryTimer);
@@ -1801,9 +1880,9 @@
       });
     };
 
-    const startProposalGallery = (startIndex) => {
+    const startProposalGallery = (startIndex, images) => {
       stopProposalGallery();
-      proposalGalleryImages = getProposalGalleryImages(startIndex);
+      proposalGalleryImages = images && images.length ? images : getProposalGalleryImages(startIndex);
       proposalGalleryIndex = 0;
       proposalPortfolioDots.innerHTML = proposalGalleryImages.map((item, index) => (
         `<button type="button" aria-label="${escapeHtml(item.name)} 포트폴리오 이미지 보기" aria-pressed="${index === 0 ? 'true' : 'false'}" class="${index === 0 ? 'is-active' : ''}"></button>`
@@ -1867,32 +1946,8 @@
         </div>
       `).join('');
       const assets = getProposalAssetImages(profileIndex);
-      proposalProductPreview.innerHTML = assets.products.map((image, index) => `
-        <button type="button" data-asset-image="${escapeHtml(image)}" aria-label="Hero product ${index + 1}" aria-pressed="false">
-          <img src="${escapeHtml(image)}" alt="" loading="lazy" />
-        </button>
-      `).join('');
-      proposalSamplePreview.innerHTML = assets.samples.map((image, index) => `
-        <button type="button" data-asset-image="${escapeHtml(image)}" aria-label="Available sample ${index + 1}" aria-pressed="false">
-          <img src="${escapeHtml(image)}" alt="" loading="lazy" />
-        </button>
-      `).join('');
-      Array.from(proposalProductPreview.children).forEach((button, index) => {
-        button.addEventListener('click', () => {
-          showImageInProposalFrame(assets.products[index], `Hero product ${index + 1}`);
-          clearAssetPreviewSelection();
-          button.classList.add('is-active');
-          button.setAttribute('aria-pressed', 'true');
-        });
-      });
-      Array.from(proposalSamplePreview.children).forEach((button, index) => {
-        button.addEventListener('click', () => {
-          showImageInProposalFrame(assets.samples[index], `Available sample ${index + 1}`);
-          clearAssetPreviewSelection();
-          button.classList.add('is-active');
-          button.setAttribute('aria-pressed', 'true');
-        });
-      });
+      renderProposalAssetPreviews(assets);
+      if (proposalPortfolioNote) proposalPortfolioNote.textContent = '대표 이미지와 이어지는 룩북 컷을 순차적으로 보여줍니다.';
       proposalCreatorDirection.textContent = getCreatorDirection(tags);
       proposalBriefLink.href = `/designer-brief?brand=${encodedBrand}`;
       renderStylingBoard(profileIndex);
@@ -1900,6 +1955,7 @@
       loadStylingBoardForDesigner(currentDesignerId);
       setProposalTab('profile');
       startProposalGallery(profileIndex);
+      loadProposalPortfolioForDesigner(currentDesignerId, profileIndex, brand);
 
       proposalSheet.classList.add('is-open');
       proposalSheet.setAttribute('aria-hidden', 'false');

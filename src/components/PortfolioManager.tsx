@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { DesignerPortfolioImage, PortfolioImageKind } from "@/lib/types";
 
 const KINDS: Array<{ value: PortfolioImageKind; label: string }> = [
@@ -21,6 +21,7 @@ const KIND_LABELS = Object.fromEntries(KINDS.map((kind) => [kind.value, kind.lab
 
 export default function PortfolioManager({ initialImages }: { initialImages: DesignerPortfolioImage[] }) {
   const [images, setImages] = useState(initialImages);
+  const [activeKind, setActiveKind] = useState<PortfolioImageKind | "all">("all");
   const [title, setTitle] = useState("");
   const [kind, setKind] = useState<PortfolioImageKind>("lookbook");
   const [imageUrl, setImageUrl] = useState("");
@@ -86,18 +87,57 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
     if (file) upload(file);
   };
 
+  const visibleImages = useMemo(() => (
+    activeKind === "all" ? images : images.filter((image) => image.kind === activeKind)
+  ), [activeKind, images]);
+
+  const counts = useMemo(() => {
+    const base = {
+      all: images.length,
+      profile: 0,
+      lookbook: 0,
+      product: 0,
+      sample: 0,
+      approved: 0,
+      pending: 0,
+      rejected: 0,
+    };
+    images.forEach((image) => {
+      base[image.kind] += 1;
+      if (image.status === "approved") base.approved += 1;
+      if (image.status === "pending") base.pending += 1;
+      if (image.status === "rejected") base.rejected += 1;
+    });
+    return base;
+  }, [images]);
+
+  const tabs: Array<{ value: PortfolioImageKind | "all"; label: string; count: number }> = [
+    { value: "all", label: "전체", count: counts.all },
+    ...KINDS.map((item) => ({ value: item.value, label: item.label, count: counts[item.value] })),
+  ];
+
   return (
     <section className="portfolio-section">
-      <div className="st-sec-head">
+      <div className="st-sec-head portfolio-head">
         <div>
           <h2>프로필 / 포트폴리오 사진</h2>
           <p className="st-sub tight">브랜드 공개 페이지와 매칭 자료에 사용할 대표 사진을 올립니다.</p>
         </div>
+        <div className="portfolio-summary" aria-label="포트폴리오 상태 요약">
+          <span><b>{counts.all}</b> 전체</span>
+          <span><b>{counts.approved}</b> 승인</span>
+          <span><b>{counts.pending}</b> 검수 대기</span>
+        </div>
       </div>
 
-      <div className="st-grid2col">
-        <form className="st-card" onSubmit={submit}>
-          <div className="st-step"><span className="num">1</span> 이미지 업로드</div>
+      <div className="portfolio-layout">
+        <form className="st-card portfolio-upload-card" onSubmit={submit}>
+          <div className="portfolio-card-head">
+            <div>
+              <div className="st-step"><span className="num">1</span> 이미지 업로드</div>
+              <p>대표 프로필, 룩북, 제품 컷, 소재 샘플을 분류해서 저장합니다.</p>
+            </div>
+          </div>
           <div
             className={`st-dz${drag ? " drag" : ""}`}
             onClick={() => fileRef.current?.click()}
@@ -131,15 +171,23 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
           ) : null}
 
           <div className="st-step" style={{ marginTop: 24 }}><span className="num">2</span> 분류</div>
+          <div className="portfolio-kind-picker" role="radiogroup" aria-label="이미지 용도">
+            {KINDS.map((item) => (
+              <button
+                key={item.value}
+                type="button"
+                className={kind === item.value ? "is-active" : ""}
+                onClick={() => setKind(item.value)}
+                aria-pressed={kind === item.value}
+              >
+                <strong>{item.label}</strong>
+                <span>{counts[item.value]}장</span>
+              </button>
+            ))}
+          </div>
           <div className="st-field">
             <label>이미지 제목</label>
             <input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="예: 2026 SS 대표 룩" />
-          </div>
-          <div className="st-field">
-            <label>이미지 용도</label>
-            <select value={kind} onChange={(event) => setKind(event.target.value as PortfolioImageKind)}>
-              {KINDS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
-            </select>
             <p className="hint">저장 후 관리자 승인 전까지는 공개 페이지에 노출하지 않습니다.</p>
           </div>
           <button className="st-btn block" type="submit" disabled={!imageUrl || saving}>
@@ -148,13 +196,29 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
           {msg ? <p className={`st-msg ${msg.ok ? "ok" : "err"}`}>{msg.text}</p> : null}
         </form>
 
-        <div>
-          <div className="st-sec-head">
-            <h2>등록한 사진 ({images.length})</h2>
+        <div className="portfolio-library">
+          <div className="portfolio-library-top">
+            <div>
+              <h2>등록한 사진</h2>
+              <p>{activeKind === "all" ? "전체 사진" : KIND_LABELS[activeKind]} {visibleImages.length}장</p>
+            </div>
+            <div className="portfolio-filter-tabs" aria-label="포트폴리오 분류 필터">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.value}
+                  type="button"
+                  className={activeKind === tab.value ? "is-active" : ""}
+                  onClick={() => setActiveKind(tab.value)}
+                >
+                  {tab.label}
+                  <span>{tab.count}</span>
+                </button>
+              ))}
+            </div>
           </div>
-          {images.length ? (
+          {visibleImages.length ? (
             <div className="portfolio-grid">
-              {images.map((image) => (
+              {visibleImages.map((image) => (
                 <article className="st-pcard" key={image.id}>
                   <div className="img" style={{ backgroundImage: `url('${image.image_url}')` }}>
                     <span className={`badge ${image.status === "approved" ? "pub" : "priv"}`}>{STATUS_LABELS[image.status]}</span>
@@ -170,7 +234,7 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
               ))}
             </div>
           ) : (
-            <div className="st-empty compact"><p>아직 등록한 프로필/포트폴리오 사진이 없습니다.</p></div>
+            <div className="st-empty compact"><p>이 분류에 등록된 사진이 없습니다.</p></div>
           )}
         </div>
       </div>

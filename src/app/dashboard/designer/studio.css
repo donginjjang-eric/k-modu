@@ -166,9 +166,46 @@
 .product-tabs.compact { max-width: min(100%, 520px); justify-content: flex-start; }
 
 .portfolio-section { margin-top: 28px; }
+.portfolio-head { align-items: flex-end; gap: 20px; }
+.portfolio-summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.portfolio-summary span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255,255,255,.72);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+.portfolio-summary b { color: var(--ink); font-size: 14px; }
+.portfolio-layout {
+  display: grid;
+  grid-template-columns: minmax(340px, 420px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.portfolio-upload-card {
+  position: sticky;
+  top: 86px;
+}
+.portfolio-card-head p {
+  margin: -6px 0 14px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
 .portfolio-preview {
   position: relative;
-  width: min(100%, 220px);
+  width: min(100%, 180px);
   aspect-ratio: 3/4;
   margin-top: 14px;
   border: 1px solid var(--line);
@@ -188,6 +225,83 @@
   font-size: 12px;
   font-weight: 900;
 }
+.portfolio-kind-picker {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 8px;
+}
+.portfolio-kind-picker button {
+  display: grid;
+  gap: 2px;
+  min-height: 58px;
+  padding: 10px 12px;
+  border: 1px solid var(--line2);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ink);
+  text-align: left;
+}
+.portfolio-kind-picker button.is-active {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #fff;
+  box-shadow: 0 14px 28px rgba(10,10,10,.12);
+}
+.portfolio-kind-picker strong { font-size: 13px; font-weight: 900; }
+.portfolio-kind-picker span { color: inherit; opacity: .66; font-size: 12px; font-weight: 800; }
+.portfolio-library {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: rgba(255,255,255,.58);
+}
+.portfolio-library-top {
+  display: grid;
+  grid-template-columns: minmax(180px, auto) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  margin-bottom: 16px;
+}
+.portfolio-library-top h2 { margin: 0; font-size: 20px; font-weight: 900; }
+.portfolio-library-top p { margin: 3px 0 0; color: var(--muted); font-size: 13px; font-weight: 800; }
+.portfolio-filter-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+}
+.portfolio-filter-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 0 11px;
+  border: 1px solid var(--line2);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 900;
+}
+.portfolio-filter-tabs button.is-active {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #fff;
+}
+.portfolio-filter-tabs span {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #e9e3d7;
+  color: var(--ink);
+  font-size: 11px;
+  line-height: 1;
+}
+.portfolio-filter-tabs button.is-active span { background: #fff; }
 .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 14px; }
 
 .look-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap: 16px; }
@@ -333,6 +447,12 @@
   .admin-stats { grid-template-columns: 1fr 1fr; }
   .st-bigbtn { min-height: 96px; }
   .st-grid2col { grid-template-columns: 1fr; }
+  .portfolio-head { align-items: flex-start; }
+  .portfolio-summary { justify-content: flex-start; }
+  .portfolio-layout { grid-template-columns: 1fr; }
+  .portfolio-upload-card { position: static; }
+  .portfolio-library-top { grid-template-columns: 1fr; }
+  .portfolio-filter-tabs { justify-content: flex-start; }
   .st-2 { grid-template-columns: 1fr; }
   .st-plist { grid-template-columns: 1fr 1fr; gap: 12px; }
   .st-pickgrid { grid-template-columns: repeat(3,1fr); }
