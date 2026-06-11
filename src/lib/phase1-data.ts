@@ -5,11 +5,11 @@ export const designer = {
   mood: "Seoul K-fashion, minimal black tailoring, warm editorial lookbook",
   description:
     "서울 기반 디자이너 브랜드를 위한 AI 착장 미리보기 MVP입니다. 실제 서비스에서는 DB의 디자이너/상품 데이터로 교체됩니다.",
-  heroImage: "/assets/generated-looks/maison-lune-kfashion-female-full-look.png",
+  heroImage: "/assets/designer-profile-real-01.png",
 };
 
 export const modelTemplates = [
-  { id: "fixed-female-minimal", label: "K-Fashion Female", image: "/assets/mainmodel_2.png" },
+  { id: "fixed-female-minimal", label: "기본 모델", image: "/assets/designer-profile-real-01.png" },
   { id: "fixed-street", label: "Street", image: "/assets/mainmodel_3.png" },
 ];
 

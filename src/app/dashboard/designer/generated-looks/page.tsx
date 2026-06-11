@@ -1,5 +1,6 @@
 import { requireApprovedDesigner } from "@/lib/auth";
 import { getProductsForDesigner, getModelTemplates, getGeneratedLooksForDesigner } from "@/lib/db";
+import { getDesignerDefaultModelImage } from "@/lib/designer-defaults";
 import StylingBoard from "@/components/StylingBoard";
 import DesignerGeneratedLooks from "@/components/DesignerGeneratedLooks";
 
@@ -20,7 +21,7 @@ export default async function DesignerAiLookPage() {
         designer={{
           brandName: designer.brand_name,
           mood: designer.mood,
-          heroImage: products[0]?.image_url || "/assets/mainmodel_2.png",
+          heroImage: getDesignerDefaultModelImage(designer.id),
         }}
         products={products.map((product) => ({
           id: product.id,

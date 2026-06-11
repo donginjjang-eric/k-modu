@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import StylingBoard from "@/components/StylingBoard";
 import { getApprovedGeneratedLooksForDesigner, getDesigner, getModelTemplates, getPublicProductsForDesigner } from "@/lib/db";
+import { getDesignerDefaultModelImage } from "@/lib/designer-defaults";
 
 export default async function DesignerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -25,7 +26,7 @@ export default async function DesignerDetailPage({ params }: { params: Promise<{
         designer={{
           brandName: designer.brand_name,
           mood: designer.mood,
-          heroImage: "/assets/generated-looks/maison-lune-kfashion-female-full-look.png",
+          heroImage: getDesignerDefaultModelImage(designer.id),
         }}
         products={products.map((product) => ({
           id: product.id,

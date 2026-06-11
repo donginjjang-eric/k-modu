@@ -38,6 +38,12 @@ export default function StylingBoard({
     () => modelTemplates.filter((template) => !`${template.id} ${template.label}`.toLowerCase().includes("male")),
     [modelTemplates],
   );
+  const displayModelTemplates = useMemo(
+    () => visibleModelTemplates.map((template, index) => (
+      index === 0 ? { ...template, label: "기본 모델", image: designer.heroImage } : template
+    )),
+    [designer.heroImage, visibleModelTemplates],
+  );
   const [selectedTemplate, setSelectedTemplate] = useState(visibleModelTemplates[0]?.id || "");
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState("상의");
@@ -169,7 +175,7 @@ export default function StylingBoard({
         <div>
           <p className="kicker">모델 템플릿</p>
           <div className="template-row">
-            {visibleModelTemplates.map((template) => (
+            {displayModelTemplates.map((template) => (
               <button
                 className={`template-button ${selectedTemplate === template.id ? "is-active" : ""}`}
                 key={template.id}
@@ -207,7 +213,7 @@ export default function StylingBoard({
                 >
                   <img src={product.image} alt={product.name} />
                   <span className="product-meta">
-                    <small>{product.category}</small>
+                    <small>{groupProductCategory(product.category)}</small>
                     <strong>{product.name}</strong>
                   </span>
                   <span className="status-badge">{isActive ? "선택됨" : product.status}</span>
@@ -236,7 +242,7 @@ export default function StylingBoard({
             <button
               className="generate-button"
               type="button"
-              disabled={selectedProducts.length < minAiProducts || selectedProducts.length > maxAiProducts || isGenerating}
+              disabled={!selectedTemplate || selectedProducts.length < minAiProducts || selectedProducts.length > maxAiProducts || isGenerating}
               onClick={generateLook}
             >
               {isGenerating ? "생성 중..." : "AI 룩 생성"}

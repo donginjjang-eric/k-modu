@@ -11,7 +11,8 @@ import {
   getModelTemplate,
   getOwnedProductsForGeneration,
 } from "@/lib/db";
-import { buildLookCacheKey, buildLookbookPrompt } from "@/lib/ai-lookbook";
+import { buildLookCacheKey, buildLookbookPrompt, promptVersion } from "@/lib/ai-lookbook";
+import { applyDesignerDefaultModelTemplate } from "@/lib/designer-defaults";
 
 function startGenerationWorker(input: unknown) {
   const payload = Buffer.from(JSON.stringify(input), "utf8").toString("base64url");
@@ -103,15 +104,16 @@ export async function POST(request: Request) {
   if (!template) {
     return Response.json({ ok: false, error: "Model template not found." }, { status: 404 });
   }
+  const generationTemplate = applyDesignerDefaultModelTemplate(template, designer);
 
   const cacheKey = buildLookCacheKey({
     designerId: designer.id,
-    modelTemplateId: template.id,
+    modelTemplateId: generationTemplate.id,
     products,
     stylingPrompt,
     provider,
   });
-  const prompt = buildLookbookPrompt({ designer, template, products, stylingPrompt });
+  const prompt = buildLookbookPrompt({ designer, template: generationTemplate, products, stylingPrompt });
 
   if (!forceRegenerate) {
     const cached = await getGeneratedLookByCacheKey(cacheKey);
@@ -133,7 +135,7 @@ export async function POST(request: Request) {
         selectedItems: products,
         promptMetadata: {
           cacheKey,
-          promptVersion: "kmodu-lookbook-v1",
+          promptVersion,
           prompt,
         },
       });
@@ -161,7 +163,7 @@ export async function POST(request: Request) {
   startGenerationWorker({
     userId: user.id,
     designer,
-    template,
+    template: generationTemplate,
     products,
     stylingPrompt,
     cacheKey,
@@ -176,7 +178,7 @@ export async function POST(request: Request) {
     selectedItems: products,
     promptMetadata: {
       cacheKey,
-      promptVersion: "kmodu-lookbook-v1",
+      promptVersion,
       prompt,
     },
   }, { status: 202 });

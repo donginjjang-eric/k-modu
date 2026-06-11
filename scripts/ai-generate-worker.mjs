@@ -66,7 +66,7 @@ function buildPrompt({ designer, template, products, stylingPrompt }) {
     "Selected products:",
     itemLines,
     `Styling prompt: ${stylingPrompt || "minimal editorial K-fashion full look preview"}`,
-    "Use the first input image as the fixed model reference and the remaining input images as product/style references.",
+    "Use the first input image as the fixed brand representative model reference and the remaining input images as product/style references.",
     "Show one adult fashion model wearing a cohesive Full Look Preview inspired by the selected products.",
     "Vertical 4:5 composition, full body or 7/8 body centered, realistic fabric, realistic face and hands.",
     "No text, no logo, no watermark, no collage, no extra people, no product flat-lay.",
