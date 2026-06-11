@@ -1348,8 +1348,20 @@
       pointer-events: none;
     }
 
+    .footer::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background:
+        linear-gradient(180deg, rgba(7,7,7,.08) 0%, rgba(7,7,7,.56) 58%, rgba(7,7,7,.84) 100%),
+        linear-gradient(90deg, rgba(7,7,7,.78) 0%, rgba(7,7,7,.44) 34%, rgba(7,7,7,.26) 58%, rgba(7,7,7,.72) 100%);
+      pointer-events: none;
+    }
+
     .ticker {
       position: absolute;
+      z-index: 3;
       left: 0;
       right: 0;
       top: 0;
@@ -1857,6 +1869,12 @@
         width: 112%;
         height: 260px;
         opacity: .72;
+      }
+
+      .footer::after {
+        background:
+          linear-gradient(180deg, rgba(7,7,7,.18) 0%, rgba(7,7,7,.68) 54%, rgba(7,7,7,.9) 100%),
+          linear-gradient(90deg, rgba(7,7,7,.74) 0%, rgba(7,7,7,.34) 50%, rgba(7,7,7,.78) 100%);
       }
 
       .footer-model {
@@ -2672,8 +2690,8 @@
           <p>k-modu.com<br />hello@markbridge.co</p>
         </div>
       </div>
-      <div class="footer-admin" style="position:relative;z-index:2;margin-top:28px;padding-top:18px;border-top:1px solid rgba(255,255,255,.12);text-align:center;">
-        <a href="/login" style="font-size:11px;letter-spacing:.08em;color:rgba(255,255,255,.45);text-decoration:none;">디자이너 관리자</a>
+      <div class="footer-admin" style="position:relative;z-index:3;margin-top:28px;padding-top:18px;border-top:1px solid rgba(255,255,255,.12);text-align:center;">
+        <a href="/login" style="font-size:11px;letter-spacing:.08em;color:rgba(255,255,255,.58);text-decoration:none;">디자이너 관리자</a>
       </div>
     </footer>
   </main>
