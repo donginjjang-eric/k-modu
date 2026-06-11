@@ -104,10 +104,13 @@ CREATE TABLE IF NOT EXISTS designer_portfolio_images (
   kind text NOT NULL DEFAULT 'lookbook' CHECK (kind IN ('profile', 'lookbook', 'product', 'sample')),
   image_url text NOT NULL,
   image_hash text,
-  status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected', 'hidden')),
+  status text NOT NULL DEFAULT 'approved' CHECK (status IN ('pending', 'approved', 'rejected', 'hidden')),
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 
 CREATE INDEX IF NOT EXISTS designer_portfolio_images_designer_status_idx
   ON designer_portfolio_images(designer_id, status, kind);
+
+ALTER TABLE designer_portfolio_images
+  ALTER COLUMN status SET DEFAULT 'approved';

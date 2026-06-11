@@ -32,7 +32,7 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function StudioSideNav({ brandName }: { brandName: string }) {
+export function StudioSideNav({ brandName, publicHref }: { brandName: string; publicHref: string }) {
   const pathname = usePathname();
   const productActive = isActive(pathname, "/dashboard/designer/products");
   const [productOpen, setProductOpen] = useState(productActive);
@@ -90,7 +90,7 @@ export function StudioSideNav({ brandName }: { brandName: string }) {
           <strong>{brandName}</strong>
         </div>
         <div className="st-account-actions">
-          <Link href="/designers/maison-lune">공개 페이지</Link>
+          <Link href={publicHref}>공개 페이지</Link>
           <Link href="/login">로그아웃</Link>
         </div>
       </div>

@@ -1414,9 +1414,9 @@
     renderGeneratedLooks();
 
     const fetchApprovedLookMatch = async (items) => {
-      const designerId = currentDesignerId || DEFAULT_PUBLIC_DESIGNER_ID;
+      const designerId = currentDesignerId;
       const productIds = items.map((item) => item.productId).filter(Boolean);
-      if (productIds.length < 1) return null;
+      if (!designerId || productIds.length < 1) return null;
       const response = await fetch('/api/public/approved-look-match', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1445,7 +1445,8 @@
         await new Promise((resolve) => setTimeout(resolve, 5000));
         const percent = Math.min(95, 25 + Math.round(((attempt + 1) / 48) * 70));
         setAiProgress(percent, `OpenAI가 룩을 생성 중입니다. ${percent}% 완료`, percent >= 80 ? 'finishing' : 'processing');
-        const designerId = currentDesignerId || DEFAULT_PUBLIC_DESIGNER_ID;
+        const designerId = currentDesignerId;
+        if (!designerId) throw new Error('연결된 디자이너 카드에서만 AI 룩을 생성할 수 있습니다.');
         const response = await fetch(`/api/public/generate-tryon?designerId=${encodeURIComponent(designerId)}&cacheKey=${encodeURIComponent(cacheKey)}`);
         const contentType = response.headers.get('content-type') || '';
         const result = contentType.includes('application/json') ? await response.json() : null;
@@ -1474,12 +1475,15 @@
 
     const requestPublicGeneratedLook = async (items) => {
       const productIds = items.map((item) => item.productId).filter(Boolean);
+      if (!currentDesignerId) {
+        throw new Error('연결된 디자이너 카드에서만 AI 룩을 생성할 수 있습니다.');
+      }
       setAiProgress(15, '상품 조합과 모델 템플릿을 서버로 보내는 중입니다.', 'starting');
       const response = await fetch('/api/public/generate-tryon', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          designerId: currentDesignerId || DEFAULT_PUBLIC_DESIGNER_ID,
+          designerId: currentDesignerId,
           modelTemplateId: selectedModelTemplate,
           productIds,
           stylingPrompt: buildPublicStylingPrompt(items),
@@ -1682,6 +1686,7 @@
 
     // Fetch a designer's real products; falls back to the already-rendered board on failure.
     const loadStylingBoardForDesigner = (designerId) => {
+      if (!designerId) return;
       fetch(`/api/public/styling-board?designerId=${encodeURIComponent(designerId)}`)
         .then((response) => (response.ok ? response.json() : Promise.reject(new Error(`status ${response.status}`))))
         .then((data) => {
@@ -1808,6 +1813,7 @@
     };
 
     const loadProposalPortfolioForDesigner = (designerId, profileIndex, brand) => {
+      if (!designerId) return;
       const requestKey = `${designerId}:${Date.now()}`;
       proposalSheet.dataset.portfolioRequest = requestKey;
       fetch(`/api/public/designer-portfolio?designerId=${encodeURIComponent(designerId)}`)
@@ -1827,6 +1833,25 @@
           }
         })
         .catch(() => { /* keep hardcoded fallback portfolio */ });
+    };
+
+    const applyLiveDesignerCardCover = (designerId) => {
+      const card = document.querySelector(`.work-pin[data-designer-id="${CSS.escape(designerId)}"]`);
+      if (!card) return;
+
+      fetch(`/api/public/designer-portfolio?designerId=${encodeURIComponent(designerId)}`)
+        .then((response) => (response.ok ? response.json() : Promise.reject(new Error(`status ${response.status}`))))
+        .then((data) => {
+          if (!data || data.ok === false || !Array.isArray(data.images) || !data.images.length) return;
+          const grouped = groupLivePortfolioImages(data.images, card.dataset.brand || 'Designer Brand');
+          const cover = grouped.gallery[0]?.image;
+          const image = card.querySelector('.kfashion-main-image');
+          if (!cover || !image) return;
+          image.src = cover;
+          image.alt = `${card.dataset.brand || 'Designer'} public card cover`;
+          card.dataset.image = cover;
+        })
+        .catch(() => { /* keep static card cover */ });
     };
 
     const stopProposalGallery = () => {
@@ -1928,7 +1953,7 @@
       const profileIndex = Number(card.dataset.index || 0);
       const meta = getDesignerMeta(profileIndex, brand, kicker, tags);
       currentProposalIndex = profileIndex;
-      currentDesignerId = card.dataset.designerId || DEFAULT_PUBLIC_DESIGNER_ID;
+      currentDesignerId = card.dataset.designerId || '';
 
       proposalBrandName.textContent = brand;
       proposalBriefTitle.textContent = 'Representative looks and portfolio mood';
@@ -1951,7 +1976,7 @@
       proposalCreatorDirection.textContent = getCreatorDirection(tags);
       proposalBriefLink.href = `/designer-brief?brand=${encodedBrand}`;
       renderStylingBoard(profileIndex);
-      // For cards linked to a real DB designer, replace the board with live products.
+      // Only cards linked to a real DB designer can replace samples with that designer's own data.
       loadStylingBoardForDesigner(currentDesignerId);
       setProposalTab('profile');
       startProposalGallery(profileIndex);
@@ -2029,6 +2054,7 @@
         if (card) openProposalSheet(card);
       });
     });
+    applyLiveDesignerCardCover(DEFAULT_PUBLIC_DESIGNER_ID);
 
     proposalClose.addEventListener('click', closeProposalSheet);
     proposalSheet.addEventListener('click', (event) => {
