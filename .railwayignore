@@ -4,9 +4,14 @@ node_modules
 .next
 .runtime
 .codex-remote-attachments
+outputs
+etc
 server-backup
 기타폴더
 *.tar.gz
+*.docx
+pnpm-lock.yaml
+pnpm-workspace.yaml
 
 # Keep optimized image/video assets in deployment because designers.html
 # references styling looks and short-form sample media directly.
