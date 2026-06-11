@@ -199,8 +199,12 @@ export async function getPublicProductsForDesigner(designerId: string): Promise<
       "SELECT * FROM products WHERE designer_id = $1 AND status = 'active' ORDER BY created_at DESC",
       [designerId],
     );
-    if (!products.length && designerId === phaseDesigner.id) {
-      return toDemoProducts().filter((product) => product.status === "active");
+    if (designerId === phaseDesigner.id) {
+      const existingIds = new Set(products.map((product) => product.id));
+      const fallbackProducts = toDemoProducts().filter((product) => (
+        product.status === "active" && !existingIds.has(product.id)
+      ));
+      return [...products, ...fallbackProducts];
     }
     return products;
   } catch (error) {
