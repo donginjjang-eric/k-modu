@@ -9,7 +9,7 @@ export default async function DesignerStudioLayout({ children }: { children: Rea
   return (
     <div className="studio designer-studio">
       <header className="st-top">
-        <Link className="brand" href="/dashboard/designer">
+        <Link className="brand" href="/dashboard/designer/brand">
           <b>K-MODU</b>
           <span className="role-chip designer">디자이너 스튜디오</span>
         </Link>
