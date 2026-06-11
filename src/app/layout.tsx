@@ -16,7 +16,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Link className="brand" href="/">K-MODU</Link>
             <nav className="nav-links" aria-label="Main navigation">
               <Link href="/designers">디자이너</Link>
-              <Link href="/dashboard/designer">대시보드</Link>
               <Link className="pill" href="/login">로그인</Link>
             </nav>
           </header>

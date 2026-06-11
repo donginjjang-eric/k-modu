@@ -597,45 +597,6 @@ p {
   cursor: pointer;
 }
 
-.login-quick-grid {
-  display: grid;
-  gap: 8px;
-  margin-top: 14px;
-}
-
-.login-social-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.login-quick-button,
-.login-social-button {
-  min-height: 44px;
-  border: 1px solid #d8d4cb;
-  background: #fff;
-  color: #111;
-  font-weight: 900;
-  cursor: pointer;
-}
-
-.login-quick-button {
-  background: #111;
-  color: #fff;
-  border-color: #111;
-}
-
-.login-social-button {
-  border-radius: 999px;
-}
-
-.login-quick-button:disabled,
-.login-social-button:disabled {
-  opacity: .45;
-  cursor: not-allowed;
-}
-
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));

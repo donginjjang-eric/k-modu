@@ -3,40 +3,30 @@
 import { useState } from "react";
 
 export default function LoginForm() {
-  const [email, setEmail] = useState("test");
-  const [password, setPassword] = useState("1234");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const login = async (nextEmail = email, nextPassword = password) => {
+  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     setIsSubmitting(true);
     setMessage("");
 
     const response = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: nextEmail, password: nextPassword }),
+      body: JSON.stringify({ email: email.trim(), password }),
     });
-    const result = await response.json();
+    const result = await response.json().catch(() => ({}));
     setIsSubmitting(false);
 
-    if (!response.ok) {
-      setMessage(result.error || "Login failed.");
+    if (!response.ok || !result.ok) {
+      setMessage(result.error || "로그인에 실패했습니다.");
       return;
     }
 
     window.location.href = result.redirectTo || "/";
-  };
-
-  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    await login();
-  };
-
-  const quickLogin = async (nextEmail: string) => {
-    setEmail(nextEmail);
-    setPassword("1234");
-    await login(nextEmail, "1234");
   };
 
   return (
@@ -48,6 +38,8 @@ export default function LoginForm() {
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           autoComplete="username"
+          placeholder="파트너 계정 이메일"
+          required
         />
       </label>
       <label>
@@ -58,34 +50,15 @@ export default function LoginForm() {
           value={password}
           onChange={(event) => setPassword(event.target.value)}
           autoComplete="current-password"
+          placeholder="비밀번호"
+          required
         />
       </label>
       <button className="generate-button" type="submit" disabled={isSubmitting}>
         {isSubmitting ? "확인 중..." : "로그인"}
       </button>
       {message ? <p className="notice">{message}</p> : null}
-      <div className="login-quick-grid">
-        <button className="login-quick-button" type="button" disabled={isSubmitting} onClick={() => quickLogin("test")}>
-          디자이너 test / 1234
-        </button>
-        <button className="login-quick-button" type="button" disabled={isSubmitting} onClick={() => quickLogin("admin")}>
-          관리자 admin / 1234
-        </button>
-      </div>
-      <div className="login-social-grid">
-        <button className="login-social-button" type="button" disabled={isSubmitting} onClick={() => quickLogin("test")}>
-          카카오
-        </button>
-        <button className="login-social-button" type="button" disabled={isSubmitting} onClick={() => quickLogin("test")}>
-          네이버
-        </button>
-        <button className="login-social-button" type="button" disabled={isSubmitting} onClick={() => quickLogin("test")}>
-          구글
-        </button>
-      </div>
-      <p className="notice">
-        간편 로그인 - 디자이너: <b>test / 1234</b> - 관리자: <b>admin / 1234</b>
-      </p>
+      <p className="notice">승인된 파트너 계정으로만 로그인할 수 있습니다.</p>
     </form>
   );
 }

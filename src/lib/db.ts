@@ -45,45 +45,6 @@ export async function one<T extends QueryResultRow>(sql: string, params: unknown
   return rows[0] ?? null;
 }
 
-export async function ensureEasyAccessAccounts() {
-  if (!hasDatabase()) return;
-
-  await query(
-    `INSERT INTO users (id, email, password_hash, role)
-     VALUES ('demo-admin-user', 'admin', '1234', 'admin')
-     ON CONFLICT (email) DO UPDATE
-       SET password_hash = '1234',
-           role = 'admin',
-           updated_at = now()`,
-  );
-
-  await query(
-    `INSERT INTO users (id, email, password_hash, role)
-     VALUES ('demo-designer-user', 'test', '1234', 'designer')
-     ON CONFLICT (email) DO UPDATE
-       SET password_hash = '1234',
-           role = 'designer',
-           updated_at = now()`,
-  );
-
-  await query(
-    `INSERT INTO designers (id, user_id, brand_name, description, mood, country, approval_status)
-     VALUES (
-       'maison-lune-seoul',
-       'demo-designer-user',
-       'Maison Lune Seoul',
-       'Easy-access designer account for K-MODU service testing.',
-       'Seoul K-fashion, minimal black tailoring, warm editorial lookbook',
-       'South Korea',
-       'approved'
-     )
-     ON CONFLICT (id) DO UPDATE
-       SET user_id = EXCLUDED.user_id,
-           approval_status = 'approved',
-           updated_at = now()`,
-  );
-}
-
 export function toDemoDesigner(): Designer {
   const now = new Date("2026-05-30T00:00:00Z").toISOString();
   return {
@@ -659,55 +620,28 @@ export async function getLatestGenerationLogForDesigner(designerId: string, cach
 }
 
 export async function getUserByEmail(email: string): Promise<(User & { password_hash: string }) | null> {
-  const demoUser = () => {
-    const now = new Date("2026-05-30T00:00:00Z").toISOString();
-    const demoUsers: Array<User & { password_hash: string }> = [
-      {
-        id: "demo-admin-user",
-        email: "admin",
-        role: "admin",
-        password_hash: "1234",
-        created_at: now,
-        updated_at: now,
-      },
-      {
-        id: "demo-designer-user",
-        email: "test",
-        role: "designer",
-        password_hash: "1234",
-        created_at: now,
-        updated_at: now,
-      },
-    ];
-    return demoUsers.find((user) => user.email === email.toLowerCase()) ?? null;
-  }
   if (!hasDatabase()) {
     requireDatabaseForProduction();
-    return demoUser();
+    return null;
   }
   try {
     return await one<User & { password_hash: string }>("SELECT * FROM users WHERE email = $1", [email.toLowerCase()]);
   } catch (error) {
     if (!canUseDemoData()) throw error;
-    return demoUser();
+    return null;
   }
 }
 
 export async function getDesignerForUser(userId: string): Promise<Designer | null> {
   if (!hasDatabase()) {
     requireDatabaseForProduction();
-    return userId === "demo-designer-user" ? toDemoDesigner() : null;
+    return null;
   }
   try {
-    const designer = await one<Designer>("SELECT * FROM designers WHERE user_id = $1", [userId]);
-    if (!designer && userId === "demo-designer-user") {
-      await ensureEasyAccessAccounts();
-      return await one<Designer>("SELECT * FROM designers WHERE user_id = $1", [userId]);
-    }
-    return designer;
+    return await one<Designer>("SELECT * FROM designers WHERE user_id = $1", [userId]);
   } catch (error) {
     if (!canUseDemoData()) throw error;
-    return userId === "demo-designer-user" ? toDemoDesigner() : null;
+    return null;
   }
 }
 

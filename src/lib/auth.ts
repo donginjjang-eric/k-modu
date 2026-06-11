@@ -1,7 +1,7 @@
 import { createHmac, pbkdf2Sync, randomBytes, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { ensureEasyAccessAccounts, getDesignerForUser, getUserByEmail } from "./db";
+import { getDesignerForUser, getUserByEmail } from "./db";
 import type { Role, User } from "./types";
 
 export const sessionCookieName = "kmodu_session";
@@ -29,6 +29,7 @@ export function hashPassword(password: string, salt = randomBytes(16).toString("
 
 export function verifyPassword(password: string, passwordHash: string) {
   if (!passwordHash.includes(":")) {
+    if (process.env.NODE_ENV === "production") return false;
     return password === passwordHash;
   }
 
@@ -83,11 +84,10 @@ export async function requireApprovedDesigner() {
 }
 
 export async function loginUser(email: string, password: string) {
-  if ((email === "admin" || email === "test") && password === "1234") {
-    await ensureEasyAccessAccounts();
-  }
+  const normalizedEmail = email.trim().toLowerCase();
+  if (normalizedEmail === "test" || normalizedEmail === "admin") return null;
 
-  const user = await getUserByEmail(email);
+  const user = await getUserByEmail(normalizedEmail);
   if (!user || !verifyPassword(password, user.password_hash)) return null;
   return user;
 }
