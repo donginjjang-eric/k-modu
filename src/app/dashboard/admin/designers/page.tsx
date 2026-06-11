@@ -15,7 +15,7 @@ export default async function AdminDesignersPage() {
   return (
     <>
       <h1 className="st-title">디자이너 승인 관리</h1>
-      <p className="st-sub">브랜드 신청 상태를 확인하고 운영 노출 여부를 관리합니다.</p>
+      <p className="st-sub">브랜드 접수 상태와 연락 정보를 확인하고 승인 여부를 관리합니다.</p>
 
       <section className="st-card">
         <div className="st-sec-head">
@@ -36,10 +36,15 @@ export default async function AdminDesignersPage() {
                   <Link className="admin-title-link" href={`/dashboard/admin/designers/${designer.id}`}>
                     {designer.brand_name}
                   </Link>
+                  <p>{designer.designer_name || "신청자 미입력"} · {designer.contact_phone || "연락처 미입력"}</p>
                   <p>{designer.description || designer.mood || "설명 미입력"}</p>
                 </div>
                 <span>{designer.country || "-"}</span>
-                <span><em className={`status-badge ${statusClass(designer.approval_status)}`}>{getApprovalStatusLabel(designer.approval_status)}</em></span>
+                <span>
+                  <em className={`status-badge ${statusClass(designer.approval_status)}`}>
+                    {getApprovalStatusLabel(designer.approval_status)}
+                  </em>
+                </span>
                 <AdminDesignerActions designerId={designer.id} />
               </article>
             ))}

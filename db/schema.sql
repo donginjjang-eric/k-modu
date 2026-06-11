@@ -13,6 +13,9 @@ CREATE TABLE IF NOT EXISTS designers (
   id text PRIMARY KEY DEFAULT gen_random_uuid()::text,
   user_id text REFERENCES users(id) ON DELETE SET NULL,
   brand_name text NOT NULL,
+  designer_name text NOT NULL DEFAULT '',
+  contact_email text NOT NULL DEFAULT '',
+  contact_phone text NOT NULL DEFAULT '',
   description text NOT NULL DEFAULT '',
   mood text NOT NULL DEFAULT '',
   country text NOT NULL DEFAULT '',
@@ -21,6 +24,10 @@ CREATE TABLE IF NOT EXISTS designers (
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
+
+ALTER TABLE designers ADD COLUMN IF NOT EXISTS designer_name text NOT NULL DEFAULT '';
+ALTER TABLE designers ADD COLUMN IF NOT EXISTS contact_email text NOT NULL DEFAULT '';
+ALTER TABLE designers ADD COLUMN IF NOT EXISTS contact_phone text NOT NULL DEFAULT '';
 
 CREATE TABLE IF NOT EXISTS products (
   id text PRIMARY KEY DEFAULT gen_random_uuid()::text,

@@ -688,11 +688,12 @@
     }
 
     // --- 4. SUBMISSION & LOCALSTORAGE PERSISTENCE PIPELINE ---
-    function submitForm() {
+    async function submitForm() {
       const brandName = document.getElementById('brandName').value;
       const designerName = document.getElementById('designerName').value;
       const email = document.getElementById('email').value;
       const phone = document.getElementById('phone').value;
+      const headline = document.getElementById('headline').value;
       const category = document.getElementById('category').value || document.getElementById('headline').value || 'Minimal Fashion';
       const country = 'South Korea';
 
@@ -705,11 +706,31 @@
         designer: designerName,
         email: email,
         phone: phone,
+        headline: headline,
         category: category,
         country: country,
         status: 'Reviewing',
         submitted: formattedDate
       };
+
+      try {
+        nextBtn.disabled = true;
+        nextBtn.textContent = '접수 중';
+        const response = await fetch('/api/applications', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newApp)
+        });
+        const result = await response.json().catch(() => null);
+        if (!response.ok || !result?.ok) {
+          throw new Error(result?.error || '신청 접수에 실패했습니다.');
+        }
+      } catch (error) {
+        alert(error instanceof Error ? error.message : '신청 접수에 실패했습니다.');
+        nextBtn.disabled = false;
+        nextBtn.textContent = '신청 완료';
+        return;
+      }
 
       // Retrieve existing list or create empty
       let apps = [];

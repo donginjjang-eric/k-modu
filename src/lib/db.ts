@@ -51,6 +51,9 @@ export function toDemoDesigner(): Designer {
     id: phaseDesigner.id,
     user_id: "demo-designer-user",
     brand_name: phaseDesigner.brandName,
+    designer_name: "Han Seo Yoon",
+    contact_email: "hello@maisonlune.co.kr",
+    contact_phone: "",
     description: phaseDesigner.description,
     mood: phaseDesigner.mood,
     country: phaseDesigner.country,
@@ -132,6 +135,43 @@ export async function getDesigner(id: string): Promise<Designer | null> {
     if (!canUseDemoData()) throw error;
     return id === phaseDesigner.id ? toDemoDesigner() : null;
   }
+}
+
+export async function createDesignerApplication(input: {
+  brand_name: string;
+  designer_name: string;
+  contact_email: string;
+  contact_phone: string;
+  description?: string;
+  mood?: string;
+  country?: string;
+}) {
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    return toDemoDesigner();
+  }
+
+  await query(`
+    ALTER TABLE designers ADD COLUMN IF NOT EXISTS designer_name text NOT NULL DEFAULT '';
+    ALTER TABLE designers ADD COLUMN IF NOT EXISTS contact_email text NOT NULL DEFAULT '';
+    ALTER TABLE designers ADD COLUMN IF NOT EXISTS contact_phone text NOT NULL DEFAULT '';
+  `);
+
+  return one<Designer>(
+    `INSERT INTO designers
+       (brand_name, designer_name, contact_email, contact_phone, description, mood, country, approval_status)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, 'pending')
+     RETURNING *`,
+    [
+      input.brand_name,
+      input.designer_name,
+      input.contact_email,
+      input.contact_phone,
+      input.description ?? "",
+      input.mood ?? "",
+      input.country ?? "South Korea",
+    ],
+  );
 }
 
 export async function getProductsForDesigner(designerId: string): Promise<Product[]> {

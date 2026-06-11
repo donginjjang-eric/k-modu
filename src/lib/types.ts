@@ -15,6 +15,9 @@ export type Designer = {
   id: string;
   user_id: string | null;
   brand_name: string;
+  designer_name: string;
+  contact_email: string;
+  contact_phone: string;
   description: string;
   mood: string;
   country: string;
