@@ -30,6 +30,7 @@ const dataRoot = process.env.DATA_DIR || (process.env.RAILWAY_ENVIRONMENT ? "/da
 
 const roots = {
   productUploads: path.join(dataRoot, "uploads", "products"),
+  portfolioUploads: path.join(dataRoot, "uploads", "portfolio"),
   generatedLooks: path.join(dataRoot, "generated-looks"),
   modelTemplates: path.join(dataRoot, "model-templates"),
 };
@@ -79,6 +80,7 @@ export async function saveStorageImage(kind: StorageKind, bytes: Buffer, mimeTyp
   const imageHash = getImageHash(optimized);
 
   if (kind === "productUploads") return { url: `/uploads/products/${fileName}`, imageHash };
+  if (kind === "portfolioUploads") return { url: `/uploads/portfolio/${fileName}`, imageHash };
   if (kind === "generatedLooks") return { url: `/generated-looks/${fileName}`, imageHash };
   return { url: `/model-templates/${fileName}`, imageHash };
 }
@@ -106,6 +108,9 @@ export function readPublicImageAsDataUrl(imagePath: string) {
   if (normalized.startsWith("uploads/products/")) {
     filePath = path.join(/* turbopackIgnore: true */ roots.productUploads, path.basename(normalized));
   }
+  if (normalized.startsWith("uploads/portfolio/")) {
+    filePath = path.join(/* turbopackIgnore: true */ roots.portfolioUploads, path.basename(normalized));
+  }
   if (normalized.startsWith("generated-looks/")) {
     filePath = path.join(/* turbopackIgnore: true */ roots.generatedLooks, path.basename(normalized));
   }
@@ -113,7 +118,7 @@ export function readPublicImageAsDataUrl(imagePath: string) {
     filePath = path.join(/* turbopackIgnore: true */ roots.modelTemplates, path.basename(normalized));
   }
 
-  const allowedRoots = [assetsRoot, roots.productUploads, roots.generatedLooks, roots.modelTemplates];
+  const allowedRoots = [assetsRoot, roots.productUploads, roots.portfolioUploads, roots.generatedLooks, roots.modelTemplates];
   const isAllowed = allowedRoots.some((root) => filePath.startsWith(root));
   if (!isAllowed || !existsSync(filePath)) {
     throw new Error(`Image not found: ${imagePath}`);

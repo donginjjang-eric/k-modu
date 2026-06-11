@@ -2,6 +2,8 @@ export type Role = "admin" | "designer";
 export type ApprovalStatus = "pending" | "approved" | "rejected" | "disabled";
 export type ProductStatus = "draft" | "active" | "hidden";
 export type GeneratedLookStatus = "generated" | "approved" | "rejected" | "hidden";
+export type PortfolioImageStatus = "pending" | "approved" | "rejected" | "hidden";
+export type PortfolioImageKind = "profile" | "lookbook" | "product" | "sample";
 
 export type User = {
   id: string;
@@ -41,6 +43,18 @@ export type Product = {
   image_hash: string | null;
   mood: string | null;
   status: ProductStatus;
+  created_at: string;
+  updated_at: string;
+};
+
+export type DesignerPortfolioImage = {
+  id: string;
+  designer_id: string;
+  title: string;
+  kind: PortfolioImageKind;
+  image_url: string;
+  image_hash: string | null;
+  status: PortfolioImageStatus;
   created_at: string;
   updated_at: string;
 };

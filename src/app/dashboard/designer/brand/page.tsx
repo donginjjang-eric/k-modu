@@ -1,8 +1,12 @@
 import { requireApprovedDesigner } from "@/lib/auth";
 import BrandForm from "@/components/BrandForm";
+import PortfolioManager from "@/components/PortfolioManager";
+import { getPortfolioImagesForDesigner } from "@/lib/db";
 
 export default async function DesignerBrandPage() {
   const { designer } = await requireApprovedDesigner();
+  const portfolioImages = await getPortfolioImagesForDesigner(designer.id);
+
   return (
     <>
       <h1 className="st-title">🏷 내 브랜드</h1>
@@ -12,6 +16,7 @@ export default async function DesignerBrandPage() {
         description={designer.description || ""}
         mood={designer.mood || ""}
       />
+      <PortfolioManager initialImages={portfolioImages} />
     </>
   );
 }

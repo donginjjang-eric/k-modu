@@ -95,6 +95,7 @@
 .st-main { padding: 30px 28px 90px; min-height: calc(100vh - 61px); min-width: 0; }
 .st-title { font-size: 30px; font-weight: 900; letter-spacing: -.03em; margin: 0 0 6px; }
 .st-sub { color: var(--muted); margin: 0 0 26px; font-size: 15px; }
+.st-sub.tight { margin: 4px 0 0; }
 
 /* home */
 .st-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 24px; }
@@ -163,6 +164,31 @@
 .st-pcard .row button { flex: 1; min-height: 34px; border-radius: 9px; border: 1px solid var(--line2); background: #fff; font-weight: 700; font-size: 12px; }
 .product-manager-head { align-items: flex-start; gap: 14px; }
 .product-tabs.compact { max-width: min(100%, 520px); justify-content: flex-start; }
+
+.portfolio-section { margin-top: 28px; }
+.portfolio-preview {
+  position: relative;
+  width: min(100%, 220px);
+  aspect-ratio: 3/4;
+  margin-top: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #e6e0d4 center/cover;
+}
+.portfolio-preview button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(10,10,10,.82);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+}
+.portfolio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 14px; }
 
 .look-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap: 16px; }
 .look-card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }

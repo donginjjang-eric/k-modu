@@ -96,3 +96,18 @@ CREATE INDEX IF NOT EXISTS generation_logs_daily_limit_idx
 
 CREATE INDEX IF NOT EXISTS products_designer_status_idx
   ON products(designer_id, status);
+
+CREATE TABLE IF NOT EXISTS designer_portfolio_images (
+  id text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  designer_id text NOT NULL REFERENCES designers(id) ON DELETE CASCADE,
+  title text NOT NULL DEFAULT '',
+  kind text NOT NULL DEFAULT 'lookbook' CHECK (kind IN ('profile', 'lookbook', 'product', 'sample')),
+  image_url text NOT NULL,
+  image_hash text,
+  status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected', 'hidden')),
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS designer_portfolio_images_designer_status_idx
+  ON designer_portfolio_images(designer_id, status, kind);

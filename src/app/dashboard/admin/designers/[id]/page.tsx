@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import AdminDesignerActions from "@/components/AdminDesignerActions";
+import AdminPortfolioImageActions from "@/components/AdminPortfolioImageActions";
 import {
   getDesigner,
   getGeneratedLooksForDesigner,
+  getPortfolioImagesForDesigner,
   getProductsForDesignerForAdmin,
 } from "@/lib/db";
 import { getApprovalStatusLabel, getGeneratedLookStatusLabel, getGenerationTypeLabel } from "@/lib/status-labels";
@@ -27,9 +29,10 @@ export default async function AdminDesignerDetailPage({ params }: { params: Prom
   const designer = await getDesigner(id);
   if (!designer) notFound();
 
-  const [products, looks] = await Promise.all([
+  const [products, looks, portfolioImages] = await Promise.all([
     getProductsForDesignerForAdmin(designer.id),
     getGeneratedLooksForDesigner(designer.id),
+    getPortfolioImagesForDesigner(designer.id),
   ]);
 
   return (
@@ -37,7 +40,7 @@ export default async function AdminDesignerDetailPage({ params }: { params: Prom
       <div className="st-sec-head">
         <div>
           <h1 className="st-title">{designer.brand_name}</h1>
-          <p className="st-sub">브랜드 정보, 상품, AI 생성 이미지를 한 화면에서 확인합니다.</p>
+          <p className="st-sub">브랜드 정보, 상품, 포트폴리오 사진, AI 생성 이미지를 한 화면에서 확인합니다.</p>
         </div>
         <Link className="st-btn light" href="/dashboard/admin/designers">목록으로</Link>
       </div>
@@ -55,6 +58,7 @@ export default async function AdminDesignerDetailPage({ params }: { params: Prom
             <div><span>국가</span><b>{designer.country || "-"}</b></div>
             <div><span>등록일</span><b>{formatDate(designer.created_at)}</b></div>
             <div><span>상품</span><b>{products.length}</b></div>
+            <div><span>포트폴리오</span><b>{portfolioImages.length}</b></div>
             <div><span>AI 이미지</span><b>{looks.length}</b></div>
           </div>
           <p className="admin-detail-copy">{designer.description || "브랜드 설명이 아직 입력되지 않았습니다."}</p>
@@ -80,6 +84,30 @@ export default async function AdminDesignerDetailPage({ params }: { params: Prom
           )}
         </section>
       </div>
+
+      <section className="st-card" style={{ marginTop: 24 }}>
+        <div className="st-sec-head">
+          <h2>프로필 / 포트폴리오 사진 검수</h2>
+        </div>
+        {portfolioImages.length ? (
+          <div className="admin-gallery">
+            {portfolioImages.slice(0, 16).map((image) => (
+              <article className="st-pcard" key={image.id}>
+                <div className="img" style={{ backgroundImage: `url('${image.image_url}')` }}>
+                  <span className={`badge ${image.status === "approved" ? "pub" : "priv"}`}>{image.status}</span>
+                </div>
+                <div className="b">
+                  <div className="c">{image.kind}</div>
+                  <div className="n">{image.title || "제목 없음"}</div>
+                  <AdminPortfolioImageActions imageId={image.id} status={image.status} />
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div className="st-empty compact"><p>아직 등록된 프로필/포트폴리오 사진이 없습니다.</p></div>
+        )}
+      </section>
 
       <section className="st-card" style={{ marginTop: 24 }}>
         <div className="st-sec-head">

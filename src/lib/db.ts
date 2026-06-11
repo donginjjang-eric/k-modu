@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 import type { QueryResultRow } from "pg";
 import { designer as phaseDesigner, modelTemplates as phaseTemplates, products as phaseProducts } from "./phase1-data";
-import type { Designer, GeneratedLook, ModelTemplate, Product, User } from "./types";
+import type { Designer, DesignerPortfolioImage, GeneratedLook, ModelTemplate, PortfolioImageStatus, Product, User } from "./types";
 
 let pool: Pool | null = null;
 
@@ -135,6 +135,23 @@ export async function getDesigner(id: string): Promise<Designer | null> {
     if (!canUseDemoData()) throw error;
     return id === phaseDesigner.id ? toDemoDesigner() : null;
   }
+}
+
+export function toDemoPortfolioImages(): DesignerPortfolioImage[] {
+  const now = new Date("2026-05-30T00:00:00Z").toISOString();
+  return [
+    {
+      id: "demo-profile-1",
+      designer_id: phaseDesigner.id,
+      title: "Maison Lune profile",
+      kind: "profile",
+      image_url: "assets/designer-samples/model_1.png",
+      image_hash: "demo-profile-v1",
+      status: "approved",
+      created_at: now,
+      updated_at: now,
+    },
+  ];
 }
 
 export async function createDesignerApplication(input: {
@@ -287,6 +304,97 @@ export async function getOwnedProductsForGeneration(designerId: string, productI
   return query<Product>(
     "SELECT * FROM products WHERE designer_id = $1 AND id = ANY($2::text[]) AND status <> 'hidden'",
     [designerId, productIds],
+  );
+}
+
+async function ensurePortfolioImagesTable() {
+  await query(`
+    CREATE TABLE IF NOT EXISTS designer_portfolio_images (
+      id text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+      designer_id text NOT NULL REFERENCES designers(id) ON DELETE CASCADE,
+      title text NOT NULL DEFAULT '',
+      kind text NOT NULL DEFAULT 'lookbook' CHECK (kind IN ('profile', 'lookbook', 'product', 'sample')),
+      image_url text NOT NULL,
+      image_hash text,
+      status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected', 'hidden')),
+      created_at timestamptz NOT NULL DEFAULT now(),
+      updated_at timestamptz NOT NULL DEFAULT now()
+    );
+    CREATE INDEX IF NOT EXISTS designer_portfolio_images_designer_status_idx
+      ON designer_portfolio_images(designer_id, status, kind);
+  `);
+}
+
+export async function getPortfolioImagesForDesigner(designerId: string): Promise<DesignerPortfolioImage[]> {
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    return designerId === phaseDesigner.id ? toDemoPortfolioImages() : [];
+  }
+  await ensurePortfolioImagesTable();
+  return query<DesignerPortfolioImage>(
+    "SELECT * FROM designer_portfolio_images WHERE designer_id = $1 AND status <> 'hidden' ORDER BY created_at DESC",
+    [designerId],
+  );
+}
+
+export async function getApprovedPortfolioImagesForDesigner(designerId: string): Promise<DesignerPortfolioImage[]> {
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    return designerId === phaseDesigner.id ? toDemoPortfolioImages().filter((image) => image.status === "approved") : [];
+  }
+  await ensurePortfolioImagesTable();
+  return query<DesignerPortfolioImage>(
+    "SELECT * FROM designer_portfolio_images WHERE designer_id = $1 AND status = 'approved' ORDER BY updated_at DESC, created_at DESC",
+    [designerId],
+  );
+}
+
+export async function createPortfolioImageForDesigner(input: {
+  designerId: string;
+  title: string;
+  kind: DesignerPortfolioImage["kind"];
+  imageUrl: string;
+  imageHash?: string | null;
+}) {
+  if (!hasDatabase()) throw new Error("DATABASE_URL is required for portfolio image creation.");
+  await ensurePortfolioImagesTable();
+  return one<DesignerPortfolioImage>(
+    `INSERT INTO designer_portfolio_images (designer_id, title, kind, image_url, image_hash, status)
+     VALUES ($1, $2, $3, $4, $5, 'pending')
+     RETURNING *`,
+    [input.designerId, input.title, input.kind, input.imageUrl, input.imageHash || null],
+  );
+}
+
+export async function updatePortfolioImageForDesigner(designerId: string, imageId: string, input: Partial<{
+  title: string;
+  kind: DesignerPortfolioImage["kind"];
+  status: PortfolioImageStatus;
+}>) {
+  if (!hasDatabase()) throw new Error("DATABASE_URL is required for portfolio image updates.");
+  await ensurePortfolioImagesTable();
+  return one<DesignerPortfolioImage>(
+    `UPDATE designer_portfolio_images
+        SET title = COALESCE($3, title),
+            kind = COALESCE($4, kind),
+            status = COALESCE($5, status),
+            updated_at = now()
+      WHERE designer_id = $1 AND id = $2
+      RETURNING *`,
+    [designerId, imageId, input.title ?? null, input.kind ?? null, input.status ?? null],
+  );
+}
+
+export async function updatePortfolioImageForAdmin(imageId: string, status: PortfolioImageStatus) {
+  if (!hasDatabase()) throw new Error("DATABASE_URL is required for portfolio image updates.");
+  await ensurePortfolioImagesTable();
+  return one<DesignerPortfolioImage>(
+    `UPDATE designer_portfolio_images
+        SET status = $2,
+            updated_at = now()
+      WHERE id = $1
+      RETURNING *`,
+    [imageId, status],
   );
 }
 
