@@ -504,7 +504,7 @@ export async function getGeneratedLookByCacheKey(cacheKey: string): Promise<Gene
 export async function getGeneratedLookByCacheKeyForDesigner(designerId: string, cacheKey: string): Promise<GeneratedLook | null> {
   if (!hasDatabase()) return null;
   return one<GeneratedLook>(
-    "SELECT * FROM generated_looks WHERE designer_id = $1 AND cache_key = $2 AND status <> 'hidden' ORDER BY created_at DESC LIMIT 1",
+    "SELECT * FROM generated_looks WHERE designer_id = $1 AND cache_key = $2 ORDER BY created_at DESC LIMIT 1",
     [designerId, cacheKey],
   );
 }
@@ -557,7 +557,7 @@ export async function createGeneratedLook(input: {
     `INSERT INTO generated_looks (
        designer_id, model_template_id, selected_product_ids, cache_key, prompt, image_url, provider, cache_hit, status
      )
-     VALUES ($1, $2, $3::jsonb, $4, $5, $6, 'openai', $7, 'generated')
+     VALUES ($1, $2, $3::jsonb, $4, $5, $6, 'openai', $7, 'hidden')
      ON CONFLICT (cache_key) WHERE status <> 'hidden' DO UPDATE
        SET updated_at = now()
      RETURNING *`,

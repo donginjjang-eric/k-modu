@@ -118,7 +118,7 @@ async function main() {
       `INSERT INTO generated_looks (
          designer_id, model_template_id, selected_product_ids, cache_key, prompt, image_url, provider, cache_hit, status
        )
-       VALUES ($1, $2, $3::jsonb, $4, $5, $6, 'openai', false, 'generated')
+       VALUES ($1, $2, $3::jsonb, $4, $5, $6, 'openai', false, 'hidden')
        ON CONFLICT (cache_key) WHERE status <> 'hidden' DO UPDATE
          SET updated_at = now()
        RETURNING id`,

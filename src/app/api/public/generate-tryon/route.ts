@@ -4,7 +4,7 @@ import {
   countDailyLiveGenerations,
   createGenerationLog,
   getDesigner,
-  getGeneratedLookByCacheKey,
+  getGeneratedLookByCacheKeyForDesigner,
   getLatestGenerationLogForDesigner,
   getModelTemplate,
   getPublicProductsForGeneration,
@@ -34,7 +34,7 @@ export async function GET(request: Request) {
     return Response.json({ ok: false, error: "designerId and cacheKey are required." }, { status: 400 });
   }
 
-  const generatedLook = await getGeneratedLookByCacheKey(cacheKey);
+  const generatedLook = await getGeneratedLookByCacheKeyForDesigner(designerId, cacheKey);
   if (generatedLook && generatedLook.designer_id === designerId) {
     return Response.json({
       ok: true,
@@ -106,7 +106,7 @@ export async function POST(request: Request) {
   });
   const prompt = buildLookbookPrompt({ designer, template: generationTemplate, products, stylingPrompt });
 
-  const cached = await getGeneratedLookByCacheKey(cacheKey);
+  const cached = await getGeneratedLookByCacheKeyForDesigner(designer.id, cacheKey);
   if (cached && cached.designer_id === designer.id) {
     await createGenerationLog({
       userId: null,

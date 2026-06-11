@@ -4,7 +4,6 @@ import { getCurrentUser } from "@/lib/auth";
 import {
   countDailyLiveGenerations,
   createGenerationLog,
-  getGeneratedLookByCacheKey,
   getGeneratedLookByCacheKeyForDesigner,
   getDesignerForUser,
   getLatestGenerationLogForDesigner,
@@ -121,7 +120,7 @@ export async function POST(request: Request) {
   const prompt = buildLookbookPrompt({ designer, template: generationTemplate, products, stylingPrompt });
 
   if (!forceRegenerate) {
-    const cached = await getGeneratedLookByCacheKey(cacheKey);
+    const cached = await getGeneratedLookByCacheKeyForDesigner(designer.id, cacheKey);
     if (cached) {
       await createGenerationLog({
         userId: user.id,
