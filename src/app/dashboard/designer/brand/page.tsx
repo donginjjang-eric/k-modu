@@ -32,7 +32,7 @@ export default async function DesignerBrandPage() {
       <section className="brand-public-preview">
         {coverImage ? (
           <div className="brand-preview-visual" style={{ backgroundImage: `url('${coverImage}')` }}>
-            <span>메인 카드 커버</span>
+            <span>메인 커버</span>
           </div>
         ) : (
           <div className="brand-preview-visual is-empty">

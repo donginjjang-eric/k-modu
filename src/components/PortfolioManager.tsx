@@ -115,7 +115,7 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
   };
 
   const hideImage = async (image: DesignerPortfolioImage) => {
-    if (!window.confirm("이 이미지를 숨길까요?")) return;
+    if (!window.confirm("이 사진을 비공개로 전환할까요? 공개 페이지에서 바로 내려가요.")) return;
     const response = await fetch(`/api/designer/portfolio/${image.id}`, { method: "DELETE" });
     if (response.ok) {
       setImages((current) => current.filter((item) => item.id !== image.id));
@@ -251,9 +251,8 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
             <p className="hint">등록 즉시 선택한 분류 위치에 공개돼요. 제목은 비워도 괜찮아요.</p>
           </div>
           <button ref={submitRef} className="st-btn block" type="submit" disabled={!imageUrl || saving}>
-            {saving ? "저장 중..." : `${kindInfo.label} 등록하기`}
+            {saving ? "저장 중..." : imageUrl ? `${kindInfo.label} 등록하기` : "사진을 선택하면 등록할 수 있어요"}
           </button>
-          {!imageUrl && !msg ? <p className="hint center">사진을 업로드하면 {kindInfo.label}에 등록할 수 있어요.</p> : null}
           {msg ? <p className={`st-msg ${msg.ok ? "ok" : "err"}`}>{msg.text}</p> : null}
         </form>
 
@@ -286,9 +285,9 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
                   </div>
                   <div className="b">
                     <div className="c">{KIND_LABELS[image.kind]}</div>
-                    <div className="n">{image.title || "제목 없음"}</div>
+                    {image.title ? <div className="n">{image.title}</div> : null}
                     <div className="row">
-                      <button type="button" onClick={() => hideImage(image)}>숨김</button>
+                      <button type="button" onClick={() => hideImage(image)}>비공개로 전환</button>
                     </div>
                   </div>
                 </article>
