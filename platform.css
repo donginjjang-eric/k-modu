@@ -5612,3 +5612,6 @@ body.dark-theme .mini-stats strong {
 }
 .collab-submit:disabled { opacity: .45; cursor: not-allowed; }
 .collab-status { margin: 0; font-size: 13px; line-height: 1.5; }
+/* hidden 속성이 위 display 선언에 밀리지 않게 보장 */
+.collab-request-box[hidden],
+#proposalBriefActions[hidden] { display: none !important; }
