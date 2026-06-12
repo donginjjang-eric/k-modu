@@ -56,6 +56,7 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
   const [drag, setDrag] = useState(false);
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const submitRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
 
   const upload = async (file: File) => {
@@ -78,7 +79,8 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
       if (!response.ok) throw new Error(result.error || "이미지 업로드에 실패했습니다.");
       setImageUrl(result.imageUrl);
       setImageHash(result.imageHash);
-      setMsg({ text: "이미지가 업로드되었습니다. 등록하면 바로 공개 프로필에 반영됩니다.", ok: true });
+      setMsg({ text: `사진이 선택됐어요. 아래 [${KIND_LABELS[kind]} 등록하기]를 누르면 공개 화면에 반영돼요.`, ok: true });
+      submitRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
     } catch (error) {
       setMsg({ text: error instanceof Error ? error.message : "이미지 업로드에 실패했습니다.", ok: false });
     } finally {
@@ -204,7 +206,7 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
 
           <div className="st-step" style={{ marginTop: 24 }}><span className="num">2</span> 사진 업로드</div>
           <div
-            className={`st-dz${drag ? " drag" : ""}`}
+            className={`st-dz${drag ? " drag" : ""}${imageUrl ? " has-file" : ""}`}
             onClick={() => fileRef.current?.click()}
             onDragOver={(event) => {
               event.preventDefault();
@@ -225,8 +227,8 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
                 <path d="m3 17.2 5.2-5.2 4.1 4.1 2.8-2.8L21 19" />
               </svg>
             </div>
-            <div className="big">{uploading ? "업로드 중..." : "사진을 클릭하거나 끌어와서 업로드"}</div>
-            <div className="small">JPG·PNG·WEBP, 8MB 이하</div>
+            <div className="big">{uploading ? "업로드 중..." : imageUrl ? "사진이 선택되었습니다" : "사진을 클릭하거나 끌어와서 업로드"}</div>
+            <div className="small">{imageUrl ? "다른 사진으로 바꾸려면 다시 클릭하거나 끌어오세요" : "JPG·PNG·WEBP, 8MB 이하"}</div>
             <input
               ref={fileRef}
               type="file"
@@ -238,6 +240,7 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
 
           {imageUrl ? (
             <div className="portfolio-preview" style={{ backgroundImage: `url('${imageUrl}')` }}>
+              <span className="pending-chip">등록 대기 · 공개 전</span>
               <button type="button" onClick={() => { setImageUrl(""); setImageHash(""); }}>X</button>
             </div>
           ) : null}
@@ -247,10 +250,10 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
             <input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="예: 2026 SS 대표 룩" />
             <p className="hint">등록 즉시 선택한 분류 위치에 공개돼요. 제목은 비워도 괜찮아요.</p>
           </div>
-          <button className="st-btn block" type="submit" disabled={!imageUrl || saving}>
-            {saving ? "저장 중..." : "바로 등록하기"}
+          <button ref={submitRef} className="st-btn block" type="submit" disabled={!imageUrl || saving}>
+            {saving ? "저장 중..." : `${kindInfo.label} 등록하기`}
           </button>
-          {!imageUrl && !msg ? <p className="hint center">사진을 업로드하면 등록할 수 있어요.</p> : null}
+          {!imageUrl && !msg ? <p className="hint center">사진을 업로드하면 {kindInfo.label}에 등록할 수 있어요.</p> : null}
           {msg ? <p className={`st-msg ${msg.ok ? "ok" : "err"}`}>{msg.text}</p> : null}
         </form>
 
