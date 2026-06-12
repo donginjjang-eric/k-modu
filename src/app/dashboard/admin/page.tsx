@@ -16,6 +16,7 @@ export default async function AdminDashboardPage() {
       <p className="st-sub">디자이너 승인, 상품/AI 생성 현황, 운영 체크를 한 화면에서 봅니다.</p>
 
       <div className="st-stats admin-stats">
+        <div className="st-stat"><div className="n">{stats.usersTotal}</div><div className="l">가입 회원</div></div>
         <div className="st-stat"><div className="n">{stats.designersTotal}</div><div className="l">전체 디자이너</div></div>
         <div className="st-stat"><div className="n">{stats.pendingDesigners}</div><div className="l">승인 대기</div></div>
         <div className="st-stat"><div className="n">{stats.productsTotal}</div><div className="l">공개 상품</div></div>
@@ -25,6 +26,10 @@ export default async function AdminDashboardPage() {
       <div className="st-actions admin-actions-grid">
         <Link className="st-bigbtn dark" href="/dashboard/admin/designers">
           <div><div className="t">디자이너 승인 관리</div><div className="d">신규 브랜드를 승인하거나 비활성화합니다.</div></div>
+          <div className="go">→</div>
+        </Link>
+        <Link className="st-bigbtn" href="/dashboard/admin/users">
+          <div><div className="t">회원 관리</div><div className="d">가입 계정 전체와 디자이너 신청 전 회원을 봅니다.</div></div>
           <div className="go">→</div>
         </Link>
         <Link className="st-bigbtn" href="/dashboard/admin/products">

@@ -14,6 +14,7 @@ type NavItem = {
 
 const ADMIN_NAV: NavItem[] = [
   { href: "/dashboard/admin", icon: "home", label: "운영 홈", short: "홈" },
+  { href: "/dashboard/admin/users", icon: "users", label: "회원 관리", short: "회원" },
   { href: "/dashboard/admin/designers", icon: "users", label: "디자이너 승인", short: "승인" },
   { href: "/dashboard/admin/products", icon: "package", label: "상품 검수", short: "상품" },
   { href: "/dashboard/admin/generated-looks", icon: "image", label: "AI 결과 검수", short: "AI" },

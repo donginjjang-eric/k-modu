@@ -2,7 +2,7 @@ import { randomBytes, randomUUID } from "node:crypto";
 import { Pool } from "pg";
 import type { QueryResultRow } from "pg";
 import { designer as phaseDesigner, modelTemplates as phaseTemplates, products as phaseProducts } from "./phase1-data";
-import type { Designer, DesignerPortfolioImage, GeneratedLook, ModelTemplate, PortfolioImageStatus, Product, User } from "./types";
+import type { ApprovalStatus, Designer, DesignerPortfolioImage, GeneratedLook, ModelTemplate, PortfolioImageStatus, Product, User } from "./types";
 
 let pool: Pool | null = null;
 
@@ -595,6 +595,7 @@ export async function getApprovedGeneratedLooksForPublic(limit = 12): Promise<Ad
 export async function getAdminDashboardStats() {
   if (!hasDatabase()) {
     return {
+      usersTotal: 1,
       designersTotal: 1,
       pendingDesigners: 0,
       approvedDesigners: 1,
@@ -605,6 +606,7 @@ export async function getAdminDashboardStats() {
   }
 
   const [row] = await query<{
+    users_total: string;
     designers_total: string;
     pending_designers: string;
     approved_designers: string;
@@ -613,6 +615,7 @@ export async function getAdminDashboardStats() {
     live_generations_today: string;
   }>(
     `SELECT
+       (SELECT COUNT(*)::text FROM users) AS users_total,
        (SELECT COUNT(*)::text FROM designers) AS designers_total,
        (SELECT COUNT(*)::text FROM designers WHERE approval_status = 'pending') AS pending_designers,
        (SELECT COUNT(*)::text FROM designers WHERE approval_status = 'approved') AS approved_designers,
@@ -626,6 +629,7 @@ export async function getAdminDashboardStats() {
   );
 
   return {
+    usersTotal: Number(row?.users_total || 0),
     designersTotal: Number(row?.designers_total || 0),
     pendingDesigners: Number(row?.pending_designers || 0),
     approvedDesigners: Number(row?.approved_designers || 0),
@@ -633,6 +637,27 @@ export async function getAdminDashboardStats() {
     generatedLooksTotal: Number(row?.generated_looks_total || 0),
     liveGenerationsToday: Number(row?.live_generations_today || 0),
   };
+}
+
+// 관리자 회원 목록: 가입 계정 + 연결된 디자이너 프로필 (신청 전 가입자도 보이도록 LEFT JOIN)
+export type AdminUserRow = Pick<User, "id" | "email" | "role" | "created_at"> & {
+  designer_id: string | null;
+  brand_name: string | null;
+  approval_status: ApprovalStatus | null;
+};
+
+export async function getAllUsersWithDesigner(): Promise<AdminUserRow[]> {
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    return [];
+  }
+  return query<AdminUserRow>(
+    `SELECT users.id, users.email, users.role, users.created_at,
+            designers.id AS designer_id, designers.brand_name, designers.approval_status
+       FROM users
+       LEFT JOIN designers ON designers.user_id = users.id
+      ORDER BY users.created_at DESC`,
+  );
 }
 
 export type AdminGeneratedLook = GeneratedLook & {
