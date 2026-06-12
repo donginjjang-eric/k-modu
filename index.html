@@ -2744,10 +2744,11 @@
       betaModal.setAttribute('aria-hidden', 'true');
     };
 
-    requestAnimationFrame(() => {
-      betaModal.classList.add('is-open');
-      betaModal.setAttribute('aria-hidden', 'false');
-    });
+    // 사전 BETA 팝업은 온보딩 프로세스 정비 동안 잠시 비활성. 다시 켜려면 아래 주석을 해제.
+    // requestAnimationFrame(() => {
+    //   betaModal.classList.add('is-open');
+    //   betaModal.setAttribute('aria-hidden', 'false');
+    // });
 
     closeButtons.forEach((button) => {
       button.addEventListener('click', closeDesignerBetaModal);
