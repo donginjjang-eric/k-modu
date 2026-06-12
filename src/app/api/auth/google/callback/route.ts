@@ -56,19 +56,21 @@ export async function GET(request: Request) {
 
     // 로그인은 원래 보던 곳으로 돌아가는 게 기본. 입구(/admin, /studio, /apply)로 들어온 경우만 그 목적지로 보낸다.
     const dest = nextPath.startsWith("/") && !nextPath.startsWith("//") ? nextPath : "";
+    // 로그인 성공 피드백(토스트)용 플래그
+    const withWelcome = (path: string) => `${origin}${path}${path.includes("?") ? "&" : "?"}welcome=1`;
 
     if (user.role === "admin") {
-      return Response.redirect(`${origin}${dest || "/"}`, 302);
+      return Response.redirect(withWelcome(dest || "/"), 302);
     }
     if (designer?.approval_status === "approved") {
-      return Response.redirect(`${origin}${dest || "/"}`, 302);
+      return Response.redirect(withWelcome(dest || "/"), 302);
     }
     if (designer) {
       // 신청서는 있으나 아직 승인 전
       return Response.redirect(`${origin}/login?notice=approval_pending`, 302);
     }
     // 신청 내역이 없는 구글 계정: 신청 페이지로 가던 길이면 그대로, 아니면 신청 안내
-    return Response.redirect(`${origin}${dest || "/login?notice=apply_required"}`, 302);
+    return Response.redirect(dest ? withWelcome(dest) : `${origin}/login?notice=apply_required`, 302);
   } catch (error) {
     console.error("[google-login] callback failed:", error);
     return Response.redirect(`${origin}/login?error=google_failed`, 302);

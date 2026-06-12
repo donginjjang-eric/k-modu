@@ -27,6 +27,7 @@ export async function POST(request: Request) {
   // 로그인은 원래 보던 곳(기본: 메인)으로. 입구로 들어온 경우만 next 목적지로 보낸다.
   const next = String(body.next || "");
   const safeNext = next.startsWith("/") && !next.startsWith("//") ? next : "";
+  const dest = safeNext || "/";
 
   return Response.json({
     ok: true,
@@ -35,6 +36,7 @@ export async function POST(request: Request) {
       email: user.email,
       role: user.role,
     },
-    redirectTo: safeNext || "/",
+    // welcome=1: 도착 페이지에서 로그인 성공 토스트 표시
+    redirectTo: `${dest}${dest.includes("?") ? "&" : "?"}welcome=1`,
   });
 }

@@ -48,6 +48,38 @@
     });
   };
 
+  // 로그인 직후 도착 페이지에서 잠깐 보여주는 환영 토스트
+  const showToast = (text) => {
+    const toast = document.createElement('div');
+    toast.textContent = text;
+    toast.style.cssText = 'position:fixed;left:50%;bottom:36px;transform:translateX(-50%) translateY(10px);'
+      + 'background:#111;color:#fff;padding:13px 24px;border-radius:999px;font-size:14px;font-weight:700;'
+      + 'z-index:99999;opacity:0;transition:opacity .25s ease,transform .25s ease;'
+      + 'box-shadow:0 12px 30px rgba(0,0,0,.28);max-width:90vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+    document.body.appendChild(toast);
+    requestAnimationFrame(() => {
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateX(-50%)';
+    });
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      setTimeout(() => toast.remove(), 300);
+    }, 2800);
+  };
+
+  const maybeWelcome = (user, designer) => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('welcome') !== '1' || !user) return;
+    // URL에서 플래그 제거 (새로고침 시 토스트 반복 방지)
+    params.delete('welcome');
+    const query = params.toString();
+    window.history.replaceState(null, '', window.location.pathname + (query ? `?${query}` : '') + window.location.hash);
+    const who = user.role === 'admin'
+      ? '관리자'
+      : (designer && designer.brandName) || user.email;
+    showToast(`✓ ${who}님, 로그인되었습니다`);
+  };
+
   const sync = async () => {
     try {
       const cached = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null');
@@ -60,6 +92,7 @@
       const data = await response.json();
       const target = computeTarget(data && data.user, data && data.designer);
       applyTarget(target);
+      maybeWelcome(data && data.user, data && data.designer);
       try {
         if (target) sessionStorage.setItem(CACHE_KEY, JSON.stringify(target));
         else sessionStorage.removeItem(CACHE_KEY);
