@@ -5636,8 +5636,9 @@ body.dark-theme .mini-stats strong {
 .mobile-ai-quickbar {
   position: fixed;
   left: 50%;
+  right: auto;
   bottom: 18px;
-  z-index: 70;
+  z-index: 2700;
   display: none;
   align-items: center;
   gap: 12px;
@@ -5654,7 +5655,10 @@ body.dark-theme .mini-stats strong {
   transition: opacity .22s ease, transform .22s ease, display .22s allow-discrete;
 }
 
-.mobile-ai-quickbar.is-open { display: flex; }
+.mobile-ai-quickbar.is-open {
+  display: flex;
+  transform: translateX(-50%) translateY(0);
+}
 
 @starting-style {
   .mobile-ai-quickbar.is-open {
