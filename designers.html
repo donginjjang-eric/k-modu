@@ -1523,7 +1523,8 @@
       collageModel.alt = `${(proposalBrandName.textContent || '').trim()} generated look preview`;
       stylingCollageCaption.hidden = true;
       stylingCollageCaption.innerHTML = '';
-      stylingCollage.classList.add('is-generated');
+      // 캡션 없는 미리보기는 is-generated 연출(캡션 공간 확보) 없이 베이스 무대와 같은 클린 렌더 사용
+      stylingCollage.classList.remove('is-generated');
       aiTryonStatus.textContent = '선택한 룩을 무대에 띄웠어요. 아래에서 숏폼 영상으로 만들 수 있어요.';
       if (shortformStatus) shortformStatus.textContent = '이제 숏폼 영상을 만들 수 있어요.';
       updateShortformControls();
