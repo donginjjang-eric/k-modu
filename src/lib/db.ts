@@ -846,9 +846,9 @@ export async function findOrCreateGoogleUser(email: string): Promise<{ user: Use
 
   const existing = await getUserByEmail(email);
   if (existing) {
-    let designer = existing.role === "designer" ? await getDesignerForUser(existing.id) : null;
-    // 구글 로그인 후 신청서를 낸 경우: 다음 로그인에서 이메일로 연결
-    if (!designer && existing.role === "designer") {
+    let designer = await getDesignerForUser(existing.id);
+    // 구글 로그인 후 신청서를 낸 경우: 다음 로그인에서 이메일로 연결 (관리자도 디자이너 프로필을 가질 수 있다)
+    if (!designer && (existing.role === "designer" || existing.role === "admin")) {
       designer = await linkDesignerByEmail(existing.id, email);
     }
     return { user: existing, designer };

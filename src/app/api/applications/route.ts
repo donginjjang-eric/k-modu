@@ -22,10 +22,10 @@ export async function POST(request: Request) {
     return Response.json({ ok: false, error: "Brand, designer, email, and phone are required." }, { status: 400 });
   }
 
-  // 로그인한 디자이너 계정이고 아직 프로필이 없으면 신청서를 그 계정에 바로 연결한다.
+  // 로그인 계정에 아직 디자이너 프로필이 없으면 신청서를 그 계정에 바로 연결한다 (관리자도 디자이너가 될 수 있다).
   let linkUserId: string | undefined;
   const sessionUser = await getCurrentUser();
-  if (sessionUser?.role === "designer") {
+  if (sessionUser?.role === "designer" || sessionUser?.role === "admin") {
     const existing = await getDesignerForUser(sessionUser.id).catch(() => null);
     if (!existing) linkUserId = sessionUser.id;
   }
