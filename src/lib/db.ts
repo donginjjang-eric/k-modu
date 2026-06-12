@@ -810,6 +810,12 @@ export async function getUserByEmail(email: string): Promise<(User & { password_
 
 // 같은 이메일로 제출된 미연결 디자이너 신청서를 이 사용자에 연결한다.
 async function linkDesignerByEmail(userId: string, email: string): Promise<Designer | null> {
+  // 신청서가 한 번도 제출되지 않은 DB에는 연락처 컬럼이 없을 수 있다 (createDesignerApplication과 같은 지연 마이그레이션).
+  await query(`
+    ALTER TABLE designers ADD COLUMN IF NOT EXISTS designer_name text NOT NULL DEFAULT '';
+    ALTER TABLE designers ADD COLUMN IF NOT EXISTS contact_email text NOT NULL DEFAULT '';
+    ALTER TABLE designers ADD COLUMN IF NOT EXISTS contact_phone text NOT NULL DEFAULT '';
+  `);
   return one<Designer>(
     `UPDATE designers
         SET user_id = $1, updated_at = now()
