@@ -9,6 +9,8 @@ const PARAM_MESSAGES: Record<string, string> = {
   apply_required: "이 구글 계정으로 접수된 디자이너 신청이 없어요. 디자이너 등록 신청을 먼저 완료해주세요.",
   login_required: "디자이너 등록 신청은 구글 로그인 후 진행돼요. 로그인하면 신청 페이지로 바로 이동해요.",
   designer_required: "디자이너 계정으로 로그인해야 이용할 수 있는 페이지예요.",
+  admin_login: "관리자 콘솔은 로그인 후 이용할 수 있어요. 관리자 계정으로 로그인해주세요.",
+  designer_login: "디자이너 스튜디오는 로그인 후 이용할 수 있어요. 구글 계정으로 로그인해주세요.",
   google_failed: "구글 로그인에 실패했어요. 잠시 후 다시 시도해주세요.",
   google_not_configured: "구글 로그인이 아직 설정되지 않았어요. 관리자에게 문의해주세요.",
 };
@@ -37,6 +39,8 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
     const key = params.get("notice") || params.get("error") || "";
     if (PARAM_MESSAGES[key]) setMessage(PARAM_MESSAGES[key]);
     if (params.get("error") === "admin_required") setAdminRequired(true);
+    // 관리자 입구로 온 경우 이메일/비밀번호 폼도 바로 펼쳐서 두 로그인 수단을 모두 보여준다.
+    if (key === "admin_login") setShowEmailLogin(true);
     const next = params.get("next") || "";
     if (next.startsWith("/") && !next.startsWith("//")) setNextPath(next);
 

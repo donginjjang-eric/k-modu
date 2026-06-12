@@ -36,6 +36,8 @@ const cleanLegacyRoutes: Record<string, string> = {
   "designer-brief": "designer-brief.html",
   "designer-match": "designer-match.html",
   "designer-studio": "designer-studio.html",
+  "designer_studio": "designer-studio.html",
+  "studio": "designer-studio.html",
   "designers": "designers.html",
   "legacy-login": "login.html",
 };
