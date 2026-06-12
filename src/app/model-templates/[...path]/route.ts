@@ -1,8 +1,7 @@
-import { resolveStoredFile, streamStoredFile } from "@/lib/storage";
+// 모델 템플릿 이미지 서빙: 볼륨(레거시) → 버킷 presigned 302
+import { serveStoredMedia } from "@/lib/storage";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ path: string[] }> }) {
   const { path: segments } = await params;
-  const filePath = resolveStoredFile("modelTemplates", segments.join("/"));
-  if (!filePath) return new Response("Not found", { status: 404 });
-  return streamStoredFile(filePath);
+  return serveStoredMedia("modelTemplates", segments.join("/"));
 }

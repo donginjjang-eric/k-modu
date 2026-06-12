@@ -1,6 +1,8 @@
 import { createHash, randomUUID } from "node:crypto";
 import { createReadStream, existsSync, mkdirSync, readFileSync, statfsSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import sharp from "sharp";
 
 const MAX_EDGE = 1600;
@@ -50,6 +52,69 @@ const contentTypes: Record<string, string> = {
 
 export type StorageKind = keyof typeof roots;
 
+// ── Railway 버킷(S3 호환) 어댑터 ──
+// 설정돼 있으면 업로드는 버킷으로 가고, 서빙은 presigned URL 302로 사용자에게 직접 전송된다 (버킷 egress 무료).
+// 미설정(로컬 개발)이면 기존 볼륨(.runtime / /data) 경로를 그대로 쓴다. 공개 URL 형태는 두 경우 모두 동일.
+const bucketKeyPrefixes: Record<StorageKind, string> = {
+  productUploads: "uploads/products",
+  portfolioUploads: "uploads/portfolio",
+  generatedLooks: "generated-looks",
+  modelTemplates: "model-templates",
+};
+
+export function hasBucket() {
+  return Boolean(
+    process.env.S3_BUCKET &&
+    process.env.S3_ENDPOINT &&
+    process.env.S3_ACCESS_KEY_ID &&
+    process.env.S3_SECRET_ACCESS_KEY,
+  );
+}
+
+let s3Client: S3Client | null = null;
+function getS3() {
+  if (!s3Client) {
+    s3Client = new S3Client({
+      region: process.env.S3_REGION || "auto",
+      endpoint: process.env.S3_ENDPOINT,
+      credentials: {
+        accessKeyId: process.env.S3_ACCESS_KEY_ID || "",
+        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || "",
+      },
+    });
+  }
+  return s3Client;
+}
+
+function bucketKey(kind: StorageKind, fileName: string) {
+  return `${bucketKeyPrefixes[kind]}/${path.basename(fileName)}`;
+}
+
+async function putBucketObject(kind: StorageKind, fileName: string, bytes: Buffer, contentType: string) {
+  await getS3().send(new PutObjectCommand({
+    Bucket: process.env.S3_BUCKET,
+    Key: bucketKey(kind, fileName),
+    Body: bytes,
+    ContentType: contentType,
+    // 파일명이 UUID라 내용이 바뀔 일이 없으므로 브라우저가 1년 캐시해도 안전
+    CacheControl: "public, max-age=31536000, immutable",
+  }));
+}
+
+async function getBucketObjectBytes(kind: StorageKind, fileName: string): Promise<Buffer | null> {
+  if (!hasBucket()) return null;
+  try {
+    const result = await getS3().send(new GetObjectCommand({
+      Bucket: process.env.S3_BUCKET,
+      Key: bucketKey(kind, fileName),
+    }));
+    const bytes = await result.Body?.transformToByteArray();
+    return bytes ? Buffer.from(bytes) : null;
+  } catch {
+    return null;
+  }
+}
+
 export function ensureStorage() {
   Object.values(roots).forEach((dir) => mkdirSync(dir, { recursive: true }));
 }
@@ -92,13 +157,17 @@ function assertStorageSpace(requiredBytes: number) {
 }
 
 export async function saveStorageImage(kind: StorageKind, bytes: Buffer, mimeType: string) {
-  ensureStorage();
   const ext = validateImageUpload({ mimeType, byteLength: bytes.length });
   const optimized = await optimizeImage(bytes, ext);
-  assertStorageSpace(optimized.length);
   const fileName = `${randomUUID()}${ext}`;
-  const filePath = path.join(/* turbopackIgnore: true */ roots[kind], fileName);
-  writeFileSync(filePath, optimized);
+
+  if (hasBucket()) {
+    await putBucketObject(kind, fileName, optimized, contentTypes[ext] || mimeType);
+  } else {
+    ensureStorage();
+    assertStorageSpace(optimized.length);
+    writeFileSync(path.join(/* turbopackIgnore: true */ roots[kind], fileName), optimized);
+  }
   const imageHash = getImageHash(optimized);
 
   if (kind === "productUploads") return { url: `/uploads/products/${fileName}`, imageHash };
@@ -107,49 +176,56 @@ export async function saveStorageImage(kind: StorageKind, bytes: Buffer, mimeTyp
   return { url: `/model-templates/${fileName}`, imageHash };
 }
 
-export function saveGeneratedPng(fileName: string, base64Image: string) {
-  ensureStorage();
+export async function saveGeneratedPng(fileName: string, base64Image: string) {
   const safeFileName = path.basename(fileName).replace(/[^a-z0-9._-]/gi, "-");
-  const filePath = path.join(/* turbopackIgnore: true */ roots.generatedLooks, safeFileName);
   const bytes = Buffer.from(base64Image, "base64");
-  assertStorageSpace(bytes.length);
-  writeFileSync(filePath, bytes);
+
+  if (hasBucket()) {
+    await putBucketObject("generatedLooks", safeFileName, bytes, "image/png");
+  } else {
+    ensureStorage();
+    assertStorageSpace(bytes.length);
+    writeFileSync(path.join(/* turbopackIgnore: true */ roots.generatedLooks, safeFileName), bytes);
+  }
   return {
     url: `/generated-looks/${safeFileName}`,
     imageHash: getImageHash(bytes),
   };
 }
 
-export function readPublicImageAsDataUrl(imagePath: string) {
+export async function readPublicImageAsDataUrl(imagePath: string) {
   if (/^https?:\/\//i.test(imagePath) || imagePath.startsWith("data:")) return imagePath;
 
   const normalized = imagePath.replace(/^\/+/, "");
   let filePath = "";
+  let kind: StorageKind | null = null;
   if (normalized.startsWith("assets/")) {
     filePath = path.join(assetsRoot, normalized.slice("assets/".length));
   }
-  if (normalized.startsWith("uploads/products/")) {
-    filePath = path.join(/* turbopackIgnore: true */ roots.productUploads, path.basename(normalized));
+  if (normalized.startsWith("uploads/products/")) kind = "productUploads";
+  if (normalized.startsWith("uploads/portfolio/")) kind = "portfolioUploads";
+  if (normalized.startsWith("generated-looks/")) kind = "generatedLooks";
+  if (normalized.startsWith("model-templates/")) kind = "modelTemplates";
+  if (kind) {
+    filePath = path.join(/* turbopackIgnore: true */ roots[kind], path.basename(normalized));
   }
-  if (normalized.startsWith("uploads/portfolio/")) {
-    filePath = path.join(/* turbopackIgnore: true */ roots.portfolioUploads, path.basename(normalized));
-  }
-  if (normalized.startsWith("generated-looks/")) {
-    filePath = path.join(/* turbopackIgnore: true */ roots.generatedLooks, path.basename(normalized));
-  }
-  if (normalized.startsWith("model-templates/")) {
-    filePath = path.join(/* turbopackIgnore: true */ roots.modelTemplates, path.basename(normalized));
-  }
+
+  const ext = path.extname(normalized).toLowerCase();
+  const mimeType = contentTypes[ext] || "image/png";
 
   const allowedRoots = [assetsRoot, roots.productUploads, roots.portfolioUploads, roots.generatedLooks, roots.modelTemplates];
-  const isAllowed = allowedRoots.some((root) => filePath.startsWith(root));
-  if (!isAllowed || !existsSync(filePath)) {
-    throw new Error(`Image not found: ${imagePath}`);
+  const isAllowed = Boolean(filePath) && allowedRoots.some((root) => filePath.startsWith(root));
+  if (isAllowed && existsSync(filePath)) {
+    return `data:${mimeType};base64,${readFileSync(filePath).toString("base64")}`;
   }
 
-  const ext = path.extname(filePath).toLowerCase();
-  const mimeType = contentTypes[ext] || "image/png";
-  return `data:${mimeType};base64,${readFileSync(filePath).toString("base64")}`;
+  // 볼륨에 없으면 버킷에서 찾는다 (신규 업로드는 버킷에만 존재)
+  if (kind) {
+    const bytes = await getBucketObjectBytes(kind, path.basename(normalized));
+    if (bytes) return `data:${mimeType};base64,${bytes.toString("base64")}`;
+  }
+
+  throw new Error(`Image not found: ${imagePath}`);
 }
 
 export function resolveStoredFile(kind: StorageKind, fileName: string) {
@@ -167,6 +243,27 @@ export function streamStoredFile(filePath: string) {
       "Cache-Control": "public, max-age=31536000, immutable",
     },
   });
+}
+
+// 미디어 서빙 공통 진입점: 볼륨(레거시 파일) 우선, 없으면 버킷 presigned URL로 302.
+// presign은 로컬 서명이라 버킷에 없는 키도 URL이 만들어진다 — 그 경우 버킷이 404를 응답한다.
+export async function serveStoredMedia(kind: StorageKind, fileName: string) {
+  const filePath = resolveStoredFile(kind, fileName);
+  if (filePath) return streamStoredFile(filePath);
+
+  if (hasBucket()) {
+    try {
+      const url = await getSignedUrl(
+        getS3(),
+        new GetObjectCommand({ Bucket: process.env.S3_BUCKET, Key: bucketKey(kind, fileName) }),
+        { expiresIn: 3600 },
+      );
+      return Response.redirect(url, 302);
+    } catch {
+      // presign 실패 시 404로
+    }
+  }
+  return new Response("Not found", { status: 404 });
 }
 
 export async function readImageFormFile(request: Request, fieldName = "image") {

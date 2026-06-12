@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { Pool } from "pg";
 
 const projectRoot = process.cwd();
@@ -18,37 +19,96 @@ const contentTypes = {
   ".webp": "image/webp",
 };
 
+// Railway 버킷 어댑터 (src/lib/storage.ts와 동일 규칙의 경량 미러)
+const bucketKeyPrefixes = {
+  productUploads: "uploads/products",
+  generatedLooks: "generated-looks",
+  modelTemplates: "model-templates",
+};
+
+const hasBucket = () => Boolean(
+  process.env.S3_BUCKET && process.env.S3_ENDPOINT && process.env.S3_ACCESS_KEY_ID && process.env.S3_SECRET_ACCESS_KEY,
+);
+
+let s3Client = null;
+function getS3() {
+  if (!s3Client) {
+    s3Client = new S3Client({
+      region: process.env.S3_REGION || "auto",
+      endpoint: process.env.S3_ENDPOINT,
+      credentials: {
+        accessKeyId: process.env.S3_ACCESS_KEY_ID || "",
+        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || "",
+      },
+    });
+  }
+  return s3Client;
+}
+
+async function getBucketObjectBytes(kind, fileName) {
+  if (!hasBucket()) return null;
+  try {
+    const result = await getS3().send(new GetObjectCommand({
+      Bucket: process.env.S3_BUCKET,
+      Key: `${bucketKeyPrefixes[kind]}/${path.basename(fileName)}`,
+    }));
+    const bytes = await result.Body?.transformToByteArray();
+    return bytes ? Buffer.from(bytes) : null;
+  } catch {
+    return null;
+  }
+}
+
 function decodePayload() {
   const raw = process.argv[2];
   if (!raw) throw new Error("Worker payload is required.");
   return JSON.parse(Buffer.from(raw, "base64url").toString("utf8"));
 }
 
-function readPublicImageAsDataUrl(imagePath) {
+async function readPublicImageAsDataUrl(imagePath) {
   if (/^https?:\/\//i.test(imagePath) || imagePath.startsWith("data:")) return imagePath;
 
   const normalized = imagePath.replace(/^\/+/, "");
   let filePath = "";
+  let kind = null;
   if (normalized.startsWith("assets/")) filePath = path.join(assetsRoot, normalized.slice("assets/".length));
-  if (normalized.startsWith("uploads/products/")) filePath = path.join(roots.productUploads, path.basename(normalized));
-  if (normalized.startsWith("model-templates/")) filePath = path.join(roots.modelTemplates, path.basename(normalized));
+  if (normalized.startsWith("uploads/products/")) kind = "productUploads";
+  if (normalized.startsWith("model-templates/")) kind = "modelTemplates";
+  if (kind) filePath = path.join(roots[kind], path.basename(normalized));
+
+  const ext = path.extname(normalized).toLowerCase();
+  const mimeType = contentTypes[ext] || "image/png";
 
   const allowedRoots = [assetsRoot, roots.productUploads, roots.modelTemplates];
-  if (!allowedRoots.some((root) => filePath.startsWith(root)) || !existsSync(filePath)) {
-    throw new Error(`Image not found: ${imagePath}`);
+  if (filePath && allowedRoots.some((root) => filePath.startsWith(root)) && existsSync(filePath)) {
+    return `data:${mimeType};base64,${readFileSync(filePath).toString("base64")}`;
   }
 
-  const ext = path.extname(filePath).toLowerCase();
-  const mimeType = contentTypes[ext] || "image/png";
-  return `data:${mimeType};base64,${readFileSync(filePath).toString("base64")}`;
+  // 볼륨에 없으면 버킷에서 (신규 업로드는 버킷에만 존재)
+  if (kind) {
+    const bytes = await getBucketObjectBytes(kind, path.basename(normalized));
+    if (bytes) return `data:${mimeType};base64,${bytes.toString("base64")}`;
+  }
+
+  throw new Error(`Image not found: ${imagePath}`);
 }
 
-function saveGeneratedPng(fileName, base64Image) {
-  mkdirSync(roots.generatedLooks, { recursive: true });
+async function saveGeneratedPng(fileName, base64Image) {
   const safeFileName = path.basename(fileName).replace(/[^a-z0-9._-]/gi, "-");
-  const filePath = path.join(roots.generatedLooks, safeFileName);
   const bytes = Buffer.from(base64Image, "base64");
-  writeFileSync(filePath, bytes);
+
+  if (hasBucket()) {
+    await getS3().send(new PutObjectCommand({
+      Bucket: process.env.S3_BUCKET,
+      Key: `${bucketKeyPrefixes.generatedLooks}/${safeFileName}`,
+      Body: bytes,
+      ContentType: "image/png",
+      CacheControl: "public, max-age=31536000, immutable",
+    }));
+  } else {
+    mkdirSync(roots.generatedLooks, { recursive: true });
+    writeFileSync(path.join(roots.generatedLooks, safeFileName), bytes);
+  }
   return `/generated-looks/${safeFileName}`;
 }
 
@@ -88,6 +148,9 @@ async function main() {
       input.template.image_url,
       ...input.products.map((product) => product.tryon_image_url || product.image_url),
     ].slice(0, 16);
+    const images = await Promise.all(
+      imageInputs.map(async (image) => ({ image_url: await readPublicImageAsDataUrl(image) })),
+    );
 
     const response = await fetch("https://api.openai.com/v1/images/edits", {
       method: "POST",
@@ -99,7 +162,7 @@ async function main() {
         model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-1.5",
         size: process.env.OPENAI_IMAGE_SIZE || "1024x1536",
         prompt,
-        images: imageInputs.map((image) => ({ image_url: readPublicImageAsDataUrl(image) })),
+        images,
       }),
     });
 
@@ -111,7 +174,7 @@ async function main() {
     const result = await response.json();
     const base64Image = result.data?.[0]?.b64_json;
     const urlImage = result.data?.[0]?.url;
-    const imageUrl = base64Image ? saveGeneratedPng(`look-${input.cacheKey}.png`, base64Image) : urlImage;
+    const imageUrl = base64Image ? await saveGeneratedPng(`look-${input.cacheKey}.png`, base64Image) : urlImage;
     if (!imageUrl) throw new Error("OpenAI image generation completed without an image output.");
 
     await pool.query(

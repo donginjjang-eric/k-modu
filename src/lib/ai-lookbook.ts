@@ -70,6 +70,9 @@ export async function generateOpenAiLookbook(input: {
     input.template.image_url,
     ...input.products.map((product) => product.tryon_image_url || product.image_url),
   ].slice(0, 16);
+  const images = await Promise.all(
+    imageInputs.map(async (image) => ({ image_url: await readPublicImageAsDataUrl(image) })),
+  );
 
   const response = await fetch("https://api.openai.com/v1/images/edits", {
     method: "POST",
@@ -81,7 +84,7 @@ export async function generateOpenAiLookbook(input: {
       model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-1.5",
       size: process.env.OPENAI_IMAGE_SIZE || "1024x1536",
       prompt,
-      images: imageInputs.map((image) => ({ image_url: readPublicImageAsDataUrl(image) })),
+      images,
     }),
   });
 
@@ -95,8 +98,9 @@ export async function generateOpenAiLookbook(input: {
   const urlImage = result.data?.[0]?.url;
 
   if (base64Image) {
+    const saved = await saveGeneratedPng(`look-${input.cacheKey}.png`, base64Image);
     return {
-      imageUrl: saveGeneratedPng(`look-${input.cacheKey}.png`, base64Image).url,
+      imageUrl: saved.url,
       prompt,
     };
   }
