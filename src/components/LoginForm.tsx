@@ -8,6 +8,7 @@ const PARAM_MESSAGES: Record<string, string> = {
   approval_pending: "디자이너 신청이 접수되어 있어요. 관리자 승인이 끝나면 같은 구글 계정으로 바로 이용할 수 있어요.",
   apply_required: "이 구글 계정으로 접수된 디자이너 신청이 없어요. 디자이너 등록 신청을 먼저 완료해주세요.",
   login_required: "디자이너 등록 신청은 구글 로그인 후 진행돼요. 로그인하면 신청 페이지로 바로 이동해요.",
+  designer_required: "디자이너 계정으로 로그인해야 이용할 수 있는 페이지예요.",
   google_failed: "구글 로그인에 실패했어요. 잠시 후 다시 시도해주세요.",
   google_not_configured: "구글 로그인이 아직 설정되지 않았어요. 관리자에게 문의해주세요.",
 };
@@ -28,11 +29,14 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
   const [checked, setChecked] = useState(false);
   // 로그인 후 복귀할 사이트 내 경로 (예: /apply에서 유도된 경우)
   const [nextPath, setNextPath] = useState("");
+  // 관리자 페이지 접근이 차단되어 온 경우: 계정 전환 안내를 최우선으로 보여준다.
+  const [adminRequired, setAdminRequired] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const key = params.get("notice") || params.get("error") || "";
     if (PARAM_MESSAGES[key]) setMessage(PARAM_MESSAGES[key]);
+    if (params.get("error") === "admin_required") setAdminRequired(true);
     const next = params.get("next") || "";
     if (next.startsWith("/") && !next.startsWith("//")) setNextPath(next);
 
@@ -89,7 +93,16 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
       <div className="generate-box login-form-card">
         <p className="login-status-badge">✓ 로그인됨</p>
         <p className="login-status-email">{me.user.email}</p>
-        {isAdmin ? (
+        {adminRequired && !isAdmin ? (
+          <>
+            <p className="login-google-hint">
+              이 계정에는 관리자 권한이 없어요. 관리자 콘솔은 관리자 계정(이메일/비밀번호)으로 로그인해야 해요.
+            </p>
+            <button className="generate-button login-status-cta" type="button" onClick={logout}>
+              로그아웃하고 다른 계정으로 로그인
+            </button>
+          </>
+        ) : isAdmin ? (
           <>
             <p className="login-google-hint">관리자 계정으로 로그인되어 있어요.</p>
             <a className="generate-button login-status-cta" href="/dashboard/admin">관리자 콘솔 열기</a>
