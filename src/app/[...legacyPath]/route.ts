@@ -25,6 +25,7 @@ const legacyFiles = new Set([
   "robots.txt",
 ]);
 
+// admin.html / designer-studio.html / login.html은 삭제된 파일 — 아래 307 리다이렉트의 마커로만 쓰인다 (옛 링크 호환)
 const cleanLegacyRoutes: Record<string, string> = {
   "admin": "admin.html",
   "apply": "apply.html",

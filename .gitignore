@@ -6,3 +6,8 @@ node_modules/
 기타폴더/
 .codex-remote-attachments/
 kmodu-shortform-backup-*.tar.gz
+# 로컬 작업 산출물·민감 데이터 — repo에 들어가면 안 됨
+outputs/
+etc/
+mail_data/
+*.docx
