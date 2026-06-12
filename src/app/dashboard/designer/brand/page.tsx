@@ -11,7 +11,7 @@ export default async function DesignerBrandPage() {
   const lookbookImages = portfolioImages.filter((image) => image.kind === "lookbook");
   const productImages = portfolioImages.filter((image) => image.kind === "product");
   const sampleImages = portfolioImages.filter((image) => image.kind === "sample");
-  // 공개 카드 커버와 동일한 규칙: 대표 프로필 → 룩북 순. 없으면 빈 상태를 정직하게 보여준다.
+  // 공개 카드 커버와 동일한 규칙: 메인 커버(profile) → 룩북 순. 없으면 빈 상태를 정직하게 보여준다.
   const coverImage = approvedImages.find((image) => image.kind === "profile")?.image_url
     || approvedImages.find((image) => image.kind === "lookbook")?.image_url
     || null;
@@ -37,7 +37,7 @@ export default async function DesignerBrandPage() {
         ) : (
           <div className="brand-preview-visual is-empty">
             <span>커버 비어 있음</span>
-            <p>대표 프로필 사진을 올리면<br />이 자리가 메인 카드 커버가 돼요</p>
+            <p>메인 커버 사진을 올리면<br />이 자리가 공개 카드 커버가 돼요</p>
           </div>
         )}
         <div className="brand-preview-copy">
@@ -46,20 +46,20 @@ export default async function DesignerBrandPage() {
           <strong>Representative looks and portfolio mood</strong>
           <p>{designer.description || "브랜드 소개를 입력하면 공개 프로필 첫 화면에 반영됩니다."}</p>
           <div className="brand-preview-tags">
-            <span>대표 프로필 {profileImages.length}</span>
+            <span>메인 커버 {profileImages.length}</span>
             <span>룩북 {lookbookImages.length}</span>
             <span>제품 컷 {productImages.length}</span>
             <span>샘플/소재 {sampleImages.length}</span>
           </div>
           <div className="brand-preview-note">
             <b>{approvedImages.length}</b>
-            <span>공개 중인 사진 — 등록 즉시 메인 카드와 모달에 반영돼요.</span>
+            <span>공개 중인 사진 — 등록한 사진은 공개 페이지 브랜드 카드에 바로 반영돼요.</span>
           </div>
         </div>
       </section>
 
       <div className="brand-profile-divider">
-        <span>1. 프로필/포트폴리오 사진 정리</span>
+        <span>1. 브랜드 사진 관리</span>
         <p>사진을 먼저 정리하면 공개 카드 첫 화면과 포트폴리오 구성이 바로 보입니다.</p>
       </div>
       <PortfolioManager initialImages={portfolioImages} />

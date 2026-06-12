@@ -655,6 +655,16 @@
 }
 
 /* ── 브랜드 프로필 Phase 1+2: 분류 목적지 힌트 + 정직한 빈 커버 ── */
+.portfolio-kind-picker button .desc {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.45;
+  opacity: .78;
+  word-break: keep-all;
+}
+
 .portfolio-kind-picker button .dest {
   display: block;
   margin-top: 4px;
@@ -665,7 +675,24 @@
   word-break: keep-all;
 }
 
+.portfolio-kind-picker button strong span { font-size: 11px; font-weight: 800; opacity: .6; }
+
 .portfolio-kind-picker button.is-active .dest { opacity: .8; }
+.portfolio-kind-picker button.is-active .desc { opacity: .92; }
+
+/* 드롭존: 현재 분류 배지 + 사진 아이콘 */
+.st-dz .dz-kind {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(5, 5, 5, .08);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.st-dz .ic svg { width: 34px; height: 34px; opacity: .5; }
 
 .brand-preview-visual.is-empty {
   display: grid;

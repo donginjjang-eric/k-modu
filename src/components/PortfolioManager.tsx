@@ -4,12 +4,13 @@ import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { DesignerPortfolioImage, PortfolioImageKind } from "@/lib/types";
 
-// 용어 사전: 스튜디오·미리보기·공개 화면이 같은 이름을 쓴다. destination은 공개 모달의 실제 노출 위치.
-const KINDS: Array<{ value: PortfolioImageKind; label: string; destination: string }> = [
-  { value: "profile", label: "대표 프로필", destination: "메인 카드 커버 + 모달 첫 화면" },
-  { value: "lookbook", label: "룩북", destination: "모달 Portfolio Preview" },
-  { value: "product", label: "제품 컷", destination: "모달 Hero Products" },
-  { value: "sample", label: "샘플/소재", destination: "모달 Available Samples" },
+// 용어 사전: 스튜디오·미리보기·공개 화면이 같은 이름을 쓴다. destination은 공개 모달의 실제 섹션명(영문 그대로 노출됨).
+// guide의 비율은 platform.css 실제 렌더링 기준 (커버·룩북 3:4, 제품·샘플 4:3).
+const KINDS: Array<{ value: PortfolioImageKind; label: string; desc: string; guide: string; destination: string }> = [
+  { value: "profile", label: "메인 커버", desc: "공개 카드에서 가장 먼저 보이는 대표 사진", guide: "1장 필수 · 3:4 세로", destination: "카드 커버 + 첫 화면" },
+  { value: "lookbook", label: "룩북", desc: "브랜드 무드와 착장을 보여주는 화보", guide: "3~6장 권장 · 3:4 세로", destination: "Portfolio Preview" },
+  { value: "product", label: "제품 컷", desc: "협찬 가능한 대표 상품 사진", guide: "2~4장 권장 · 4:3 가로", destination: "Hero Products" },
+  { value: "sample", label: "샘플/소재", desc: "원단·디테일·샘플 근접 사진", guide: "자유 · 4:3 가로", destination: "Available Samples" },
 ];
 
 const STATUS_LABELS: Record<DesignerPortfolioImage["status"], string> = {
@@ -41,7 +42,10 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
   const [images, setImages] = useState(initialImages);
   const [activeKind, setActiveKind] = useState<PortfolioImageKind | "all">("all");
   const [title, setTitle] = useState("");
-  const [kind, setKind] = useState<PortfolioImageKind>("lookbook");
+  // 메인 커버가 아직 없으면 커버부터 올리도록 유도
+  const [kind, setKind] = useState<PortfolioImageKind>(() =>
+    initialImages.some((image) => image.kind === "profile") ? "lookbook" : "profile"
+  );
   const [imageUrl, setImageUrl] = useState("");
   const [imageHash, setImageHash] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -93,10 +97,9 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
       if (!response.ok) throw new Error(result.error || "포트폴리오 저장에 실패했습니다.");
       setImages((current) => [result.image, ...current]);
       setTitle("");
-      setKind("lookbook");
       setImageUrl("");
       setImageHash("");
-      setMsg({ text: "등록 완료! 공개 카드와 모달에 바로 반영됐어요.", ok: true });
+      setMsg({ text: "등록 완료! 공개 페이지 브랜드 카드에 바로 반영됐어요.", ok: true });
       // 페이지 상단 미리보기 카드(서버 렌더)도 같이 갱신
       router.refresh();
     } catch (error) {
@@ -147,12 +150,14 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
     ...KINDS.map((item) => ({ value: item.value, label: item.label, count: counts[item.value] })),
   ];
 
+  const kindInfo = KINDS.find((item) => item.value === kind) ?? KINDS[0];
+
   return (
     <section className="portfolio-section">
       <div className="st-sec-head portfolio-head">
         <div>
-          <h2>프로필 / 포트폴리오 사진</h2>
-          <p className="st-sub tight">브랜드 공개 페이지와 매칭 자료에 사용할 대표 사진을 올립니다.</p>
+          <h2>브랜드 사진 관리</h2>
+          <p className="st-sub tight">크리에이터가 브랜드를 판단할 수 있도록 메인 커버, 룩북, 제품 컷, 샘플 사진을 정리해주세요.</p>
         </div>
         <div className="portfolio-summary" aria-label="포트폴리오 상태 요약">
           <span><b>{counts.all}</b> 전체</span>
@@ -165,10 +170,27 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
         <form className="st-card portfolio-upload-card" onSubmit={submit}>
           <div className="portfolio-card-head">
             <div>
-              <div className="st-step"><span className="num">1</span> 이미지 업로드</div>
-              <p>대표 프로필, 룩북, 제품 컷, 소재 샘플을 분류해서 저장합니다.</p>
+              <div className="st-step"><span className="num">1</span> 사진 분류 선택</div>
+              <p>어떤 사진인지 먼저 고르면 다른 위치에 잘못 올라가는 일이 없어요.</p>
             </div>
           </div>
+          <div className="portfolio-kind-picker" role="radiogroup" aria-label="이미지 용도">
+            {KINDS.map((item) => (
+              <button
+                key={item.value}
+                type="button"
+                className={kind === item.value ? "is-active" : ""}
+                onClick={() => setKind(item.value)}
+                aria-pressed={kind === item.value}
+              >
+                <strong>{item.label} <span>{counts[item.value]}장</span></strong>
+                <span className="desc">{item.desc}</span>
+                <em className="dest">{item.guide} · {item.destination}</em>
+              </button>
+            ))}
+          </div>
+
+          <div className="st-step" style={{ marginTop: 24 }}><span className="num">2</span> 사진 업로드</div>
           <div
             className={`st-dz${drag ? " drag" : ""}`}
             onClick={() => fileRef.current?.click()}
@@ -183,9 +205,16 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
               onFiles(event.dataTransfer.files);
             }}
           >
-            <div className="ic">IMG</div>
-            <div className="big">{uploading ? "업로드 중..." : "사진을 선택하거나 끌어오세요"}</div>
-            <div className="small">프로필, 룩북, 제품 컷, 소재 샘플 이미지를 등록할 수 있습니다.</div>
+            <span className="dz-kind">현재 분류: <b>{kindInfo.label}</b> · {kindInfo.guide}</span>
+            <div className="ic" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="3" />
+                <circle cx="8.6" cy="8.8" r="1.9" />
+                <path d="m3 17.2 5.2-5.2 4.1 4.1 2.8-2.8L21 19" />
+              </svg>
+            </div>
+            <div className="big">{uploading ? "업로드 중..." : "사진을 클릭하거나 끌어와서 업로드"}</div>
+            <div className="small">JPG·PNG·WEBP, 8MB 이하</div>
             <input
               ref={fileRef}
               type="file"
@@ -201,24 +230,8 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
             </div>
           ) : null}
 
-          <div className="st-step" style={{ marginTop: 24 }}><span className="num">2</span> 분류</div>
-          <div className="portfolio-kind-picker" role="radiogroup" aria-label="이미지 용도">
-            {KINDS.map((item) => (
-              <button
-                key={item.value}
-                type="button"
-                className={kind === item.value ? "is-active" : ""}
-                onClick={() => setKind(item.value)}
-                aria-pressed={kind === item.value}
-              >
-                <strong>{item.label}</strong>
-                <span>{counts[item.value]}장</span>
-                <em className="dest">→ {item.destination}</em>
-              </button>
-            ))}
-          </div>
+          <div className="st-step" style={{ marginTop: 24 }}><span className="num">3</span> 제목 (선택)</div>
           <div className="st-field">
-            <label>이미지 제목 (선택)</label>
             <input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="예: 2026 SS 대표 룩" />
             <p className="hint">등록 즉시 선택한 분류 위치에 공개돼요. 제목은 비워도 괜찮아요.</p>
           </div>
@@ -266,7 +279,7 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
               ))}
             </div>
           ) : (
-            <div className="st-empty compact"><p>이 분류에 등록된 사진이 없습니다.</p></div>
+            <div className="st-empty compact"><p>아직 등록된 사진이 없어요. 사진을 업로드하면 이곳에 정리돼요.</p></div>
           )}
         </div>
       </div>
