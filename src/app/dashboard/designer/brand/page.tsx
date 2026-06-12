@@ -62,7 +62,7 @@ export default async function DesignerBrandPage() {
         <span>1. 브랜드 사진 관리</span>
         <p>사진을 먼저 정리하면 공개 카드 첫 화면과 포트폴리오 구성이 바로 보입니다.</p>
       </div>
-      <PortfolioManager initialImages={portfolioImages} />
+      <PortfolioManager initialImages={portfolioImages} approved={designer.approval_status === "approved"} />
 
       <section className="brand-profile-workspace">
         <div>

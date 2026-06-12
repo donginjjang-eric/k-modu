@@ -26,6 +26,13 @@ export default async function DesignerStudioLayout({ children }: { children: Rea
         </div>
       </header>
 
+      {designer.approval_status !== "approved" ? (
+        <div className="st-approval-banner" role="status">
+          <span>이 프로필은 아직 공개 승인 전이에요 — 등록한 사진·정보가 공개 보드에 노출되지 않아요.</span>
+          <Link href="/dashboard/admin">관리자 콘솔에서 승인하기</Link>
+        </div>
+      ) : null}
+
       <div className="st-shell">
         <StudioSideNav brandName={designer.brand_name} publicHref={publicHref} />
         <main className="st-main">{children}</main>

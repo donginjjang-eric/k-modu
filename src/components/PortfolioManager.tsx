@@ -41,7 +41,7 @@ async function readJsonResponse(response: Response) {
   return { ok: false, error: `업로드 서버가 정상 응답을 주지 않았습니다. (${response.status})` };
 }
 
-export default function PortfolioManager({ initialImages }: { initialImages: DesignerPortfolioImage[] }) {
+export default function PortfolioManager({ initialImages, approved }: { initialImages: DesignerPortfolioImage[]; approved: boolean }) {
   const [images, setImages] = useState(initialImages);
   const [activeKind, setActiveKind] = useState<PortfolioImageKind | "all">("all");
   const [title, setTitle] = useState("");
@@ -104,7 +104,12 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
       setTitle("");
       setImageUrl("");
       setImageHash("");
-      setMsg({ text: "등록 완료! 공개 페이지 브랜드 카드에 바로 반영됐어요.", ok: true });
+      setMsg({
+        text: approved
+          ? "등록 완료! 공개 페이지 브랜드 카드에 바로 반영됐어요."
+          : "등록 완료! 프로필이 공개 승인되면 이 사진도 함께 공개돼요.",
+        ok: true,
+      });
       // 페이지 상단 미리보기 카드(서버 렌더)도 같이 갱신
       router.refresh();
     } catch (error) {
