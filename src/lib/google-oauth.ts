@@ -46,7 +46,8 @@ export async function exchangeGoogleCode(code: string, redirectUri: string) {
     }),
   });
   if (!response.ok) {
-    throw new Error(`Google token exchange failed: ${response.status}`);
+    const body = await response.text().catch(() => "");
+    throw new Error(`Google token exchange failed: ${response.status} ${body.slice(0, 300)}`);
   }
   return (await response.json()) as { access_token?: string };
 }

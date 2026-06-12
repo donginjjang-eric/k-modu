@@ -21,6 +21,11 @@ export async function GET(request: Request) {
   cookieStore.delete(oauthStateCookieName);
 
   if (!code || !state || !expectedState || state !== expectedState) {
+    console.error("[google-login] state check failed:", {
+      hasCode: Boolean(code),
+      hasState: Boolean(state),
+      hasCookie: Boolean(expectedState),
+    });
     return Response.redirect(`${origin}/login?error=google_failed`, 302);
   }
 
@@ -54,7 +59,8 @@ export async function GET(request: Request) {
     }
     // 신규 가입 또는 승인 대기 중인 디자이너는 안내 메시지와 함께 로그인 페이지로
     return Response.redirect(`${origin}/login?notice=approval_pending`, 302);
-  } catch {
+  } catch (error) {
+    console.error("[google-login] callback failed:", error);
     return Response.redirect(`${origin}/login?error=google_failed`, 302);
   }
 }
