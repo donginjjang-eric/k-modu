@@ -3,7 +3,8 @@ import { updatePortfolioImageForDesigner } from "@/lib/db";
 import type { PortfolioImageKind, PortfolioImageStatus } from "@/lib/types";
 
 const KINDS: PortfolioImageKind[] = ["profile", "lookbook", "product", "sample"];
-const DESIGNER_STATUSES: PortfolioImageStatus[] = ["pending", "hidden"];
+// 등록 시 자동 공개(approved)되는 정책이므로, 비공개 전환 후 본인이 다시 공개하는 것도 허용한다
+const DESIGNER_STATUSES: PortfolioImageStatus[] = ["pending", "approved", "hidden"];
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const auth = await getApprovedDesignerForApi();

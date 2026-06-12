@@ -17,7 +17,7 @@ const STATUS_LABELS: Record<DesignerPortfolioImage["status"], string> = {
   pending: "등록됨",
   approved: "공개 중",
   rejected: "반려",
-  hidden: "숨김",
+  hidden: "비공개",
 };
 
 const KIND_LABELS = Object.fromEntries(KINDS.map((kind) => [kind.value, kind.label])) as Record<PortfolioImageKind, string>;
@@ -149,12 +149,22 @@ export default function PortfolioManager({ initialImages, approved }: { initialI
     setSaving(false);
   };
 
-  const hideImage = async (image: DesignerPortfolioImage) => {
-    if (!window.confirm("이 사진을 비공개로 전환할까요? 공개 페이지에서 바로 내려가요.")) return;
-    const response = await fetch(`/api/designer/portfolio/${image.id}`, { method: "DELETE" });
-    if (response.ok) {
-      setImages((current) => current.filter((item) => item.id !== image.id));
+  // 비공개/재공개 토글 — 목록에서 제거하지 않고 상태만 바꾼다
+  const setImageVisibility = async (image: DesignerPortfolioImage, status: "hidden" | "approved") => {
+    if (status === "hidden" && !window.confirm("이 사진을 비공개로 전환할까요? 공개 페이지에서 바로 내려가요.")) return;
+    const response = status === "hidden"
+      ? await fetch(`/api/designer/portfolio/${image.id}`, { method: "DELETE" })
+      : await fetch(`/api/designer/portfolio/${image.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "approved" }),
+        });
+    const result = await readJsonResponse(response);
+    if (response.ok && result.image) {
+      setImages((current) => current.map((item) => (item.id === result.image.id ? result.image : item)));
       router.refresh();
+    } else {
+      setMsg({ text: result.error || "상태 변경에 실패했어요.", ok: false });
     }
   };
 
@@ -190,7 +200,15 @@ export default function PortfolioManager({ initialImages, approved }: { initialI
   ];
 
   const kindInfo = KINDS.find((item) => item.value === kind) ?? KINDS[0];
-  const achieved = KINDS.reduce((sum, item) => sum + Math.min(counts[item.value], KIND_GOALS[item.value]), 0);
+  // 완성도는 실제 공개 중(approved)인 사진 기준 — 비공개 사진은 진행률에서 제외
+  const approvedByKind = useMemo(() => {
+    const base: Record<PortfolioImageKind, number> = { profile: 0, lookbook: 0, product: 0, sample: 0 };
+    images.forEach((image) => {
+      if (image.status === "approved") base[image.kind] += 1;
+    });
+    return base;
+  }, [images]);
+  const achieved = KINDS.reduce((sum, item) => sum + Math.min(approvedByKind[item.value], KIND_GOALS[item.value]), 0);
   const percent = Math.round((achieved / GOAL_TOTAL) * 100);
 
   return (
@@ -204,7 +222,7 @@ export default function PortfolioManager({ initialImages, approved }: { initialI
           <div className="portfolio-progress" aria-label="프로필 완성도">
             <strong>프로필 완성도 {percent}%</strong>
             <div className="portfolio-progress-bar"><i style={{ width: `${percent}%` }} /></div>
-            <p>{KINDS.map((item) => `${item.label} ${Math.min(counts[item.value], KIND_GOALS[item.value])}/${KIND_GOALS[item.value]}`).join(" · ")}</p>
+            <p>{KINDS.map((item) => `${item.label} ${Math.min(approvedByKind[item.value], KIND_GOALS[item.value])}/${KIND_GOALS[item.value]}`).join(" · ")}</p>
           </div>
           <div className="portfolio-summary" aria-label="포트폴리오 상태 요약">
             <span><b>{counts.all}</b> 전체</span>
@@ -333,7 +351,11 @@ export default function PortfolioManager({ initialImages, approved }: { initialI
                     <div className="c">{KIND_LABELS[image.kind]}</div>
                     {image.title ? <div className="n">{image.title}</div> : null}
                     <div className="row">
-                      <button type="button" onClick={() => hideImage(image)}>비공개로 전환</button>
+                      {image.status === "hidden" ? (
+                        <button type="button" onClick={() => setImageVisibility(image, "approved")}>다시 공개</button>
+                      ) : (
+                        <button type="button" onClick={() => setImageVisibility(image, "hidden")}>비공개로 전환</button>
+                      )}
                     </div>
                   </div>
                 </article>

@@ -7,10 +7,11 @@ export default async function DesignerBrandPage() {
   const { designer } = await requireApprovedDesigner();
   const portfolioImages = await getPortfolioImagesForDesigner(designer.id);
   const approvedImages = portfolioImages.filter((image) => image.status === "approved");
-  const profileImages = portfolioImages.filter((image) => image.kind === "profile");
-  const lookbookImages = portfolioImages.filter((image) => image.kind === "lookbook");
-  const productImages = portfolioImages.filter((image) => image.kind === "product");
-  const sampleImages = portfolioImages.filter((image) => image.kind === "sample");
+  // 미리보기 필 카운트는 "공개 중인 사진 N"과 같은 기준(approved)으로 통일
+  const profileImages = approvedImages.filter((image) => image.kind === "profile");
+  const lookbookImages = approvedImages.filter((image) => image.kind === "lookbook");
+  const productImages = approvedImages.filter((image) => image.kind === "product");
+  const sampleImages = approvedImages.filter((image) => image.kind === "sample");
   // 공개 카드 커버와 동일한 규칙: 메인 커버(profile) → 룩북 순. 없으면 빈 상태를 정직하게 보여준다.
   const coverImage = approvedImages.find((image) => image.kind === "profile")?.image_url
     || approvedImages.find((image) => image.kind === "lookbook")?.image_url

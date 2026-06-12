@@ -358,8 +358,9 @@ export async function getPortfolioImagesForDesigner(designerId: string): Promise
     requireDatabaseForProduction();
     return designerId === phaseDesigner.id ? toDemoPortfolioImages() : [];
   }
+  // 소유자 스튜디오용: 비공개(hidden) 포함 전체 조회 — 비공개 사진을 다시 공개로 되돌릴 수 있어야 한다
   return query<DesignerPortfolioImage>(
-    "SELECT * FROM designer_portfolio_images WHERE designer_id = $1 AND status <> 'hidden' ORDER BY created_at DESC",
+    "SELECT * FROM designer_portfolio_images WHERE designer_id = $1 ORDER BY created_at DESC",
     [designerId],
   );
 }
