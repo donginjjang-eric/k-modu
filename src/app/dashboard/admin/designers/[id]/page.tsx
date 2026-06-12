@@ -63,7 +63,7 @@ export default async function AdminDesignerDetailPage({ params }: { params: Prom
           </div>
           <p className="admin-detail-copy">{designer.description || "브랜드 설명이 아직 입력되지 않았습니다."}</p>
           <p className="admin-detail-copy muted">{designer.mood || "브랜드 무드가 아직 입력되지 않았습니다."}</p>
-          <AdminDesignerActions designerId={designer.id} />
+          <AdminDesignerActions designerId={designer.id} status={designer.approval_status} />
         </section>
 
         <section className="st-card">
