@@ -28,7 +28,7 @@
       </nav>
       <div class="top-actions">
         <a href="/designer-brief">브리프 작성</a>
-        <a class="pill" href="/login.html">로그인</a>
+        <a class="pill" data-auth-link href="/login">로그인</a>
       </div>
       <details class="platform-menu">
         <summary aria-label="메뉴"><span></span></summary>
@@ -38,7 +38,7 @@
           <a href="/creators">크리에이터</a>
           <a href="/#contact">문의</a>
           <a href="/apply">입점 신청</a>
-          <a href="/login.html">로그인</a>
+          <a data-auth-link href="/login">로그인</a>
         </div>
       </details>
     </header>
@@ -2175,5 +2175,6 @@
 
   </script>
   <script src="assets/demo-fab.js" defer></script>
+  <script src="/auth-nav.js" defer></script>
 </body>
 </html>

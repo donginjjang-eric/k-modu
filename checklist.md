@@ -53,4 +53,15 @@
 - [x] `npm run build` 통과
 - [x] 로컬 검증: 미설정 시 /api/auth/google → 302 /login?error=google_not_configured, 로그인 페이지 버튼 숨김 확인
 - [x] 커밋 + Google Cloud Console 설정 가이드 전달 (GOOGLE_CLIENT_ID/SECRET → Railway 환경변수)
-- [ ] (사용자) Google Cloud Console OAuth 클라이언트 생성 → Railway 환경변수 등록 → 배포 → 실계정 로그인 테스트
+- [x] (사용자) Google Cloud Console OAuth 클라이언트 생성 → Railway 환경변수 등록 → 배포 완료
+- [ ] 구글 로그인 실패(google_failed) 원인 추적 — 콜백 에러 로깅 배포함, 재시도 후 로그 확인 필요
+
+## 공개 헤더 인증 메뉴 재정비 체크리스트
+
+- [x] `/api/auth/me`: 디자이너 승인 상태(approvalStatus) 포함
+- [x] 공통 스크립트 `auth-nav.js`: 비로그인=로그인 / admin=관리자 콘솔 / 승인 디자이너=디자이너 스튜디오 / 미승인=승인 대기중 + 로그아웃 버튼 주입
+- [x] index.html 인라인 syncAuthLinks 제거 (승인 여부 무시하던 버그 소스)
+- [x] 9개 공개 페이지: `data-auth-link` 부여, `/login.html` → `/login` 통일, 스크립트 포함
+- [x] `/login.html` 307 → `/login` 리다이렉트 (옛 로그인 페이지 차단)
+- [x] `npm run build` + 로컬 검증 (js 서빙·리다이렉트·me 응답·index 와이어링)
+- [ ] 배포 후 운영에서 로그인/로그아웃/스튜디오 버튼 상태 확인

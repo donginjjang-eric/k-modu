@@ -4,6 +4,7 @@ import path from "node:path";
 const legacyContentTypes: Record<string, string> = {
   ".html": "text/html; charset=utf-8",
   ".css": "text/css; charset=utf-8",
+  ".js": "text/javascript; charset=utf-8",
   ".json": "application/json; charset=utf-8",
 };
 
@@ -11,6 +12,7 @@ const legacyFiles = new Set([
   "admin.html",
   "apply-complete.html",
   "apply.html",
+  "auth-nav.js",
   "brand-detail.html",
   "consumer-products-live-after-zero-filter.json",
   "creator-detail.html",
@@ -48,6 +50,10 @@ export async function GET(_: Request, { params }: { params: Promise<{ legacyPath
   }
   if (legacyName === "admin.html") {
     return new Response(null, { status: 307, headers: { Location: "/dashboard/admin" } });
+  }
+  // 옛 로그인 페이지는 구글 로그인이 있는 새 로그인으로 보낸다.
+  if (legacyName === "login.html") {
+    return new Response(null, { status: 307, headers: { Location: "/login" } });
   }
 
   if (!legacyFiles.has(legacyName)) {

@@ -2314,7 +2314,7 @@
             <a class="locale-opt is-soon" role="menuitem"><img src="assets/flags/jp.svg" alt="" /><strong>日本語</strong><em>준비중</em></a>
           </div>
         </div>
-        <a class="login-btn" data-auth-link href="/login.html">로그인</a>
+        <a class="login-btn" data-auth-link href="/login">로그인</a>
       </div>
       <button class="menu-toggle" type="button" aria-label="메뉴 열기" aria-expanded="false">
         <span></span>
@@ -2330,7 +2330,7 @@
           <img src="assets/flags/cn.svg" alt="中文" style="width:28px;height:28px;border-radius:999px;opacity:.38;" />
           <img src="assets/flags/jp.svg" alt="日本語" style="width:28px;height:28px;border-radius:999px;opacity:.38;" />
         </div>
-        <a class="mobile-login" data-auth-link href="/login.html">로그인</a>
+        <a class="mobile-login" data-auth-link href="/login">로그인</a>
       </div>
     </header>
 
@@ -2759,26 +2759,7 @@
   })();
 
   const nav = document.querySelector('.nav');
-  const syncAuthLinks = async () => {
-    try {
-      const response = await fetch('/api/auth/me', { cache: 'no-store' });
-      if (!response.ok) return;
-      const data = await response.json();
-      const user = data && data.user;
-      if (!user) return;
-      const target = user.role === 'admin'
-        ? { href: '/dashboard/admin', label: '관리자 콘솔' }
-        : { href: '/dashboard/designer', label: '디자이너 스튜디오' };
-      document.querySelectorAll('[data-auth-link]').forEach((link) => {
-        link.href = target.href;
-        link.textContent = target.label;
-        link.setAttribute('aria-label', target.label);
-      });
-    } catch (error) {
-      console.warn('Login state unavailable', error);
-    }
-  };
-  syncAuthLinks();
+  // 헤더 로그인/스튜디오/로그아웃 분기는 공통 스크립트 auth-nav.js가 처리한다.
   const syncNav = () => {
     nav.classList.toggle('is-scrolled', window.scrollY > 12);
   };
@@ -3075,5 +3056,6 @@
   })();
   </script>
   <script src="assets/demo-fab.js" defer></script>
+  <script src="/auth-nav.js" defer></script>
 </body>
 </html>
