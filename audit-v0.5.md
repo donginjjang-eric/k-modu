@@ -57,13 +57,13 @@
 
 ## 재정비 로드맵 (최적 시나리오)
 
-### P0 — 안전벨트 (이번 주, 각 30분~2시간)
-1. 고아 서비스 정리: `web` 삭제, `MySQL` 사용처 최종 확인 후 삭제 *(사용자 승인 필요)*
-2. Postgres 자동 백업 확인/활성 (Railway 대시보드) + 주기적 pg_dump 백업
-3. `/api/applications`에 로그인 요구 (서버측 게이트)
-4. 대시보드 로그아웃을 진짜 로그아웃(POST)으로
-5. `SEED_DEMO_DATA=false` + 공개 보드의 데모 상품 4개 숨김
-6. 볼륨 용량 가드: 저장 전 여유 공간 체크, 85% 초과 시 경고
+### P0 — 안전벨트 ✅ 완료 (2026-06-12)
+1. ~~고아 서비스 정리~~ ✅ `web` 삭제(사용자), `MySQL` 삭제(데이터 확인: 결제 0·셀러 0·데모 계정뿐) + mysql-volume 6/14 자동 삭제 예약
+2. Postgres 자동 백업 — **유일하게 남은 항목**: Railway 대시보드 → Postgres → Backups 활성 확인 (사용자만 가능). 수동 백업 도구는 `scripts/backup-db.mjs` 추가됨 (`railway run --service Postgres node scripts/backup-db.mjs out.json`)
+3. ~~`/api/applications` 로그인 요구~~ ✅ 비로그인 401 확인
+4. ~~진짜 로그아웃~~ ✅ LogoutButton 4곳 교체
+5. ~~SEED_DEMO_DATA=false + 데모 상품 숨김~~ ✅ + 숨김 상품을 되살리던 폴백 병합 코드 제거
+6. ~~볼륨 용량 가드~~ ✅ 여유 300MB 미만 저장 거부, 85% 경고
 
 ### P1 — 체질 개선 (2~3주)
 1. DB 스키마 단일 소스화: db/schema.sql 기준, 요청 경로 ALTER 제거, 인덱스 추가
