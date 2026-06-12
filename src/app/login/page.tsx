@@ -8,11 +8,11 @@ export default function LoginPage() {
     <main className="page login-page">
       <section className="login-hero">
         <div className="login-copy">
-          <p className="kicker">Partner Login</p>
-          <h1>로그인</h1>
+          <p className="kicker">K-MODU</p>
+          <h1>반갑습니다</h1>
           <p className="lead">
-            구글 계정으로 로그인하세요. 디자이너 등록 신청이 승인되면 같은 계정으로
-            상품, AI 룩, 캠페인 운영 상태를 관리할 수 있습니다.
+            한국 디자이너 브랜드와 글로벌 크리에이터를 연결하는 K-MODU입니다.
+            구글 계정으로 간편하게 시작하세요.
           </p>
         </div>
         <LoginForm googleEnabled={isGoogleLoginConfigured()} />
