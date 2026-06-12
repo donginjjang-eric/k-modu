@@ -92,8 +92,8 @@ export async function requireApprovedDesigner() {
 
   const designer = await getDesignerForUser(user.id);
   if (user.role === "admin") {
-    // 관리자인데 연결된 디자이너 프로필이 없으면 콘솔로 보낸다 (스튜디오는 프로필 단위 공간).
-    if (!designer) redirect("/dashboard/admin");
+    // 관리자인데 연결된 디자이너 프로필이 없으면, 조용히 튕기지 말고 이유와 다음 행동을 안내한다.
+    if (!designer) redirect("/login?notice=studio_profile_required");
     return { user, designer };
   }
   if (!designer || designer.approval_status !== "approved") redirect("/login?error=approval_required");

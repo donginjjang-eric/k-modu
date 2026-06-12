@@ -62,5 +62,23 @@
 7. **redirect URI는 요청 헤더(x-forwarded-proto/host)에서 유도.** 운영(k-modu.co.kr)과 로컬(localhost:8010)을 환경변수 없이 모두 지원. Google Console에 두 URI 모두 등록 필요.
 
 ## 필요한 외부 설정 (사용자 작업)
-- Google Cloud Console에서 OAuth 클라이언트 생성 → GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET을 Railway 환경변수로 등록.
+- Google Cloud Console에서 OAuth 클라이언트 생성 → GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET을 Railway 환경변수로 등록. (완료: 마크브릿지 계정, 2026-06-12)
 - 승인된 리디렉션 URI: https://www.k-modu.co.kr/api/auth/google/callback, http://localhost:8010/api/auth/google/callback
+
+## 결정 번복 (2026-06-12, 사용자 피드백)
+- ~~신규 이메일 자동 디자이너 등록~~ → **구글 로그인은 인증 전용.** 디자이너 등록은 기존 신청 페이지(/apply)가 담당.
+  - 이유: 등록 신청 → 관리자 승인 → 로그인이라는 기존 동선이 이미 있고, 구글 로그인이 멋대로 프로필을 만들면 신청 절차가 무의미해짐.
+  - 신청서 이메일(designers.contact_email)과 구글 이메일이 일치하면 user_id 자동 연결 (최초 로그인 또는 이후 로그인 어느 쪽이 먼저든 동작).
+  - 신청 내역 없는 구글 계정 → /login?notice=apply_required 로 /apply 안내. user 행은 생성·유지(나중 신청과 연결용).
+- 로그인 상태 가시화: /login은 로그인돼 있으면 폼 대신 상태 카드(이메일 + 다음 행동 + 로그아웃). 공개 헤더(auth-nav.js)는 비로그인=로그인 / 신청전=디자이너 신청 / 대기=승인 대기중 / 승인=디자이너 스튜디오 / admin=관리자 콘솔 + 로그아웃.
+- ~~부산물: 구버전 자동 등록이 만든 디자이너 프로필 1건이 남아 있음~~ → 로그 확인 결과 오판. 운영 designers 테이블에 contact_email 컬럼이 없어서(지연 마이그레이션이 한 번도 안 돌았음) 자동 등록 INSERT/연결 UPDATE가 모두 실패했었음. 만들어진 것은 users 행 1건뿐.
+- 버그 픽스: `linkDesignerByEmail`도 createDesignerApplication과 같은 ALTER TABLE 지연 마이그레이션을 먼저 실행하도록 수정 (column "contact_email" does not exist 해결).
+
+## 확정된 접속 룰 (2026-06-12, 사용자 합의)
+- 영역: 메인(누구나) / 스튜디오 `/studio`(승인 디자이너 + 프로필 연결된 관리자) / 관리자 `/admin`(admin 역할).
+- 로그인은 구글 단일. 이메일/비밀번호 폼은 UI에서 제거(쓸 수 있는 계정 0개였음). API(/api/auth/login)는 백업용으로 유지.
+- 로그인 후: 기본은 보던 페이지(메인) 복귀 + 환영 토스트(welcome=1). /admin·/studio·/apply 입구로 온 경우만 그 목적지로 (next 파라미터).
+- 권한 불일치는 쫓아내지 않고 로그인 페이지 카드에서 안내 + 계정 전환 버튼.
+- 관리자도 /apply로 본인 디자이너 프로필을 만들 수 있음 (겸직). admin은 연결 프로필 있으면 스튜디오 입장, 없으면 콘솔로 안내.
+- 인앱 브라우저(카톡 등)는 구글 OAuth 차단 → 로그인 페이지가 자동으로 외부 브라우저 탈출 (kakaotalk://web/openExternal, Android intent).
+- 관리자 콘솔 구성: 운영 홈 / 회원 관리(가입자 전체, 신청 전 포함) / 디자이너 승인(대기 우선 정렬, 상태별 액션) / 상품 검수 / AI 검수.

@@ -11,6 +11,7 @@ const PARAM_MESSAGES: Record<string, string> = {
   designer_required: "디자이너 계정으로 로그인해야 이용할 수 있는 페이지예요.",
   admin_login: "관리자 콘솔은 로그인 후 이용할 수 있어요. 관리자 권한이 있는 구글 계정으로 로그인해주세요.",
   designer_login: "디자이너 스튜디오는 로그인 후 이용할 수 있어요. 구글 계정으로 로그인해주세요.",
+  studio_profile_required: "이 계정에는 아직 디자이너 프로필이 없어요. 디자이너 등록 신청을 완료하면 스튜디오가 열려요.",
   google_failed: "구글 로그인에 실패했어요. 잠시 후 다시 시도해주세요.",
   google_not_configured: "구글 로그인이 아직 설정되지 않았어요. 관리자에게 문의해주세요.",
 };
@@ -116,7 +117,9 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
               <a className="generate-button login-status-cta" href="/dashboard/designer/brand">
                 디자이너 스튜디오 열기 ({me.designer.brandName})
               </a>
-            ) : null}
+            ) : (
+              <a className="login-email-toggle" href="/apply">내 브랜드 등록하고 스튜디오 열기</a>
+            )}
           </>
         ) : isApproved ? (
           <>
