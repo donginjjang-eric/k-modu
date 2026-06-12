@@ -490,6 +490,26 @@ p {
   margin-top: 4px;
 }
 
+.login-form-card .google-login-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 0;
+  border: 1px solid #d8d4cb;
+  background: #fff;
+  color: #111;
+  text-decoration: none;
+  box-shadow: 0 10px 22px rgba(5, 5, 5, .08);
+}
+
+.login-divider {
+  margin: 0;
+  color: #8a8478;
+  font-size: 13px;
+  text-align: center;
+}
+
 .login-form-card .notice {
   margin: 0;
   color: #5f5a50;

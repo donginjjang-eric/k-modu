@@ -1,3 +1,4 @@
+import { randomBytes, randomUUID } from "node:crypto";
 import { Pool } from "pg";
 import type { QueryResultRow } from "pg";
 import { designer as phaseDesigner, modelTemplates as phaseTemplates, products as phaseProducts } from "./phase1-data";
@@ -805,6 +806,61 @@ export async function getUserByEmail(email: string): Promise<(User & { password_
     if (!canUseDemoData()) throw error;
     return null;
   }
+}
+
+// 구글 로그인 사용자 조회/자동 등록. 신규 이메일이면 designer 계정을 만들고,
+// 같은 이메일로 제출된 미연결 지원서가 있으면 그 프로필에 연결한다.
+export async function findOrCreateGoogleUser(
+  email: string,
+  displayName: string,
+): Promise<{ user: User; designer: Designer | null }> {
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    const now = new Date().toISOString();
+    return {
+      user: { id: "demo-designer-user", email, role: "designer", created_at: now, updated_at: now },
+      designer: toDemoDesigner(),
+    };
+  }
+
+  const existing = await getUserByEmail(email);
+  if (existing) {
+    const designer = existing.role === "designer" ? await getDesignerForUser(existing.id) : null;
+    return { user: existing, designer };
+  }
+
+  // 구글 전용 계정: 'oauth:' + 랜덤값은 어떤 비밀번호와도 일치하지 않아 비밀번호 로그인이 차단된다.
+  const userId = randomUUID();
+  const user = await one<User>(
+    `INSERT INTO users (id, email, password_hash, role)
+     VALUES ($1, $2, $3, 'designer')
+     RETURNING id, email, role, created_at, updated_at`,
+    [userId, email, `oauth:${randomBytes(32).toString("base64url")}`],
+  );
+  if (!user) throw new Error("Failed to create Google user.");
+
+  const linked = await one<Designer>(
+    `UPDATE designers
+        SET user_id = $1, updated_at = now()
+      WHERE id = (
+        SELECT id FROM designers
+         WHERE lower(contact_email) = $2 AND user_id IS NULL
+         ORDER BY created_at DESC
+         LIMIT 1
+      )
+      RETURNING *`,
+    [userId, email],
+  );
+  if (linked) return { user, designer: linked };
+
+  const designer = await one<Designer>(
+    `INSERT INTO designers
+       (user_id, brand_name, designer_name, contact_email, contact_phone, description, mood, country, approval_status)
+     VALUES ($1, $2, $3, $4, '', '', '', 'South Korea', 'pending')
+     RETURNING *`,
+    [userId, displayName || email.split("@")[0], displayName, email],
+  );
+  return { user, designer };
 }
 
 export async function getDesignerForUser(userId: string): Promise<Designer | null> {

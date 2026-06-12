@@ -41,3 +41,26 @@
 
 ## 주의사항
 - 기존 `generatedLooks`(localStorage)가 디자이너 구분 없이 공유되는 것은 기존 동작이라 이번에 손대지 않음.
+
+---
+
+# 컨텍스트 노트 — 구글 로그인 (디자이너 셀프 온보딩)
+
+날짜: 2026-06-12 / 브랜치: `work/styling-board-2026-06-02`
+
+## 배경
+- 실제 디자이너가 스튜디오에 로그인할 계정을 만드는 경로가 앱에 없음. users 생성은 시드 스크립트(db-setup)뿐. 지원서(/api/applications)는 designers 행만 만들고, 관리자 승인도 상태만 변경.
+- 사용자 결정: 임시 비밀번호 발급 대신 구글 OAuth. 신규 이메일은 자동 디자이너 등록(pending) 방식.
+
+## 결정과 이유
+1. **NextAuth 대신 직접 구현 (라우트 2개 + 헬퍼 1개).** 기존 인증이 자체 HMAC 세션 쿠키(`kmodu_session`)라서, 라이브러리를 들이면 세션 체계가 둘이 됨. Authorization Code Flow는 fetch 두 번이면 충분.
+2. **id_token 디코딩 대신 userinfo 엔드포인트 호출.** JWT 서명 검증(JWKS 캐싱 등) 없이 TLS로 신뢰 가능. email_verified가 false면 거부.
+3. **신규 사용자는 무조건 designer 역할.** admin은 기존 비밀번호 로그인 유지. 신규 user의 password_hash는 랜덤 32바이트를 정식 해시해 저장 → 비밀번호 로그인 사실상 불가, 구글 전용 계정.
+4. **기존 지원서와 자동 연결.** 신규 구글 가입 시 `designers.contact_email`이 일치하고 user_id가 비어 있는 프로필이 있으면 그 프로필에 연결(지원→승인→구글로그인 동선 보존). 없으면 pending 디자이너 자동 생성(브랜드명은 구글 이름으로 임시 설정, 스튜디오에서 수정).
+5. **pending 디자이너도 세션은 발급하되 /login?notice=approval_pending으로 안내.** 기존 requireApprovedDesigner 게이트가 미승인자를 어차피 차단하므로 이중 안전.
+6. **버튼은 서버에서 GOOGLE_CLIENT_ID 존재 여부를 prop으로 내려 미설정 시 숨김.** 자격증명 발급 전에 배포해도 로그인 페이지가 깨지지 않음.
+7. **redirect URI는 요청 헤더(x-forwarded-proto/host)에서 유도.** 운영(k-modu.co.kr)과 로컬(localhost:8010)을 환경변수 없이 모두 지원. Google Console에 두 URI 모두 등록 필요.
+
+## 필요한 외부 설정 (사용자 작업)
+- Google Cloud Console에서 OAuth 클라이언트 생성 → GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET을 Railway 환경변수로 등록.
+- 승인된 리디렉션 URI: https://www.k-modu.co.kr/api/auth/google/callback, http://localhost:8010/api/auth/google/callback

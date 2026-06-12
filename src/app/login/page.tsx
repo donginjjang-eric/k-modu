@@ -1,4 +1,7 @@
 import LoginForm from "@/components/LoginForm";
+import { isGoogleLoginConfigured } from "@/lib/google-oauth";
+
+export const dynamic = "force-dynamic";
 
 export default function LoginPage() {
   return (
@@ -12,7 +15,7 @@ export default function LoginPage() {
             캠페인 운영 상태를 관리할 수 있습니다.
           </p>
         </div>
-        <LoginForm />
+        <LoginForm googleEnabled={isGoogleLoginConfigured()} />
       </section>
     </main>
   );

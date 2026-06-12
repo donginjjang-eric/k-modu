@@ -37,4 +37,20 @@
 - [x] `npm run build` 통과
 - [x] 로컬 데모 모드 런타임 검증 (styling-board API에 `approvedLooks: []` 포함, 페이지 200, 수정 JS 서빙 확인)
 - [x] 의미 단위 커밋 2건 (A: 표시 규칙 / B: 승인 룩 노출)
-- [ ] Railway 배포 후 운영 확인 (수동)
+- [x] Railway 배포 후 운영 확인 — 2026-06-12 배포(c0682d4b): styling-board에 approvedLooks 1건, A+B 스크립트 서빙 확인. 승인 포트폴리오는 아직 0장이라 에셋 섹션 숨김이 정상 동작
+
+## 구글 로그인 (P0: 디자이너 온보딩) 체크리스트
+
+작업 브랜치: `work/styling-board-2026-06-02` (기준 커밋 99ceb47)
+
+배경: 디자이너 계정을 만드는 경로가 앱에 없음 (시드 스크립트뿐). 구글 OAuth로 셀프 온보딩.
+
+- [x] `src/lib/google-oauth.ts`: 인증 URL 생성 / 코드→토큰 교환 / userinfo 조회 헬퍼
+- [x] `GET /api/auth/google`: state 쿠키 발급 후 구글 동의 화면으로 리다이렉트
+- [x] `GET /api/auth/google/callback`: state 검증 → 토큰 교환 → 이메일 확인 → 사용자 조회/자동 등록 → 세션 쿠키 발급
+- [x] db 헬퍼 `findOrCreateGoogleUser`: 기존 user면 로그인, 신규면 user 생성(랜덤 비번) + 지원서(designers.contact_email) 자동 연결, 없으면 pending 디자이너 자동 생성
+- [x] LoginForm: "Google로 계속하기" 버튼 (미설정 시 숨김 — 서버에서 prop 전달) + error/notice 쿼리 파라미터 메시지 표시
+- [x] `npm run build` 통과
+- [x] 로컬 검증: 미설정 시 /api/auth/google → 302 /login?error=google_not_configured, 로그인 페이지 버튼 숨김 확인
+- [x] 커밋 + Google Cloud Console 설정 가이드 전달 (GOOGLE_CLIENT_ID/SECRET → Railway 환경변수)
+- [ ] (사용자) Google Cloud Console OAuth 클라이언트 생성 → Railway 환경변수 등록 → 배포 → 실계정 로그인 테스트
