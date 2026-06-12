@@ -65,12 +65,12 @@
 5. ~~SEED_DEMO_DATA=false + 데모 상품 숨김~~ ✅ + 숨김 상품을 되살리던 폴백 병합 코드 제거
 6. ~~볼륨 용량 가드~~ ✅ 여유 300MB 미만 저장 거부, 85% 경고
 
-### P1 — 체질 개선 (2~3주)
-1. DB 스키마 단일 소스화: db/schema.sql 기준, 요청 경로 ALTER 제거, 인덱스 추가
-2. ~~**Railway Object Storage(버킷) 도입**~~ ✅ 완료 (2026-06-12) — `kmodu-media`(싱가포르). 업로드·AI 생성물 버킷 저장, presigned 302 서빙(egress 무료), 기존 볼륨 파일 127개(146MB) 부팅 시 이관 완료. 볼륨 원본은 이중 보관(검증 후 정리 가능). URL·DB 무변경, 로컬 개발은 볼륨 모드 유지
-3. 배포 체계: master 머지 → GitHub 자동 배포 + 헬스체크(무중단)
-4. 정리 크론: 거부된 룩·고아 파일 주기 삭제, 용량 리포트
-5. 백업 관리자 계정 1개 시드 (구글 장애 대비)
+### P1 — 체질 개선 (2026-06-12: 5개 중 4개 완료)
+1. ~~DB 스키마 단일 소스화~~ ✅ db/schema.sql이 유일 소스, 부팅 시 ensure-schema.mjs로 멱등 적용. 요청 경로 DDL 9곳 제거, 인덱스 4종 추가
+2. ~~Railway Object Storage(버킷) 도입~~ ✅ `kmodu-media`(싱가포르). 업로드·AI 생성물 버킷 저장, presigned 302 서빙(egress 무료), 볼륨 파일 127개(146MB) 이관 완료. 볼륨 원본은 이중 보관. URL·DB 무변경
+3. ~~배포 체계~~ ✅ master를 mainline으로 채택(-s ours 머지), GitHub(donginjjang-eric/k-modu, master) 자동 배포 연결, railway.json 헬스체크(/api/auth/me)로 무중단 전환. 첫 자동 배포 SUCCESS 확인
+4. 정리 크론: 거부된 룩·고아 파일 주기 삭제, 용량 리포트 — **남음 (다음 작업)**
+5. ~~백업 관리자 계정~~ ✅ ceo@markbridge.kr 부팅 시드 (비밀번호는 Railway Variables). 덤: robots.txt 서빙 추가, 도메인이 Cloudflare 프록시 경유임을 확인(CDN 캐싱 무료 옵션 확보)
 
 ### P2 — 정돈·확장 (1개월+, 여유 있을 때 하나씩)
 1. designers.html 모듈화 (샘플 데이터 JSON 분리 → JS 모듈)
