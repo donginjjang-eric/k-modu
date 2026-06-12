@@ -1189,7 +1189,9 @@
         : currentOwnedItems.filter((item) => normalizeStylingCategory(item.category) === ownedCategoryFilter);
       stylingOwnedItems.innerHTML = filtered.length
         ? renderStylingItems(filtered)
-        : '<div class="styling-empty-state">이 종류의 보유 제품이 아직 없습니다.</div>';
+        : currentOwnedItems.length
+          ? '<div class="styling-empty-state">이 종류의 보유 제품이 아직 없습니다.</div>'
+          : '<div class="styling-empty-state">이 브랜드의 스타일링 제품을 준비 중이에요. 곧 보유 룩이 채워질 예정입니다.</div>';
       syncStylingItemStates();
       renderOwnedCategoryTabs();
     };
@@ -1809,12 +1811,16 @@
       fetch(`/api/public/styling-board?designerId=${encodeURIComponent(designerId)}`)
         .then((response) => (response.ok ? response.json() : Promise.reject(new Error(`status ${response.status}`))))
         .then((data) => {
-          if (!data || data.ok === false || !Array.isArray(data.products) || !data.products.length) {
-            throw new Error('no products');
+          if (!data || data.ok === false || !Array.isArray(data.products)) {
+            throw new Error('invalid styling board payload');
           }
+          // 제품 0개여도 실데이터 기준으로 렌더 — DB 카드에 데모 보드를 보여주지 않는다
           renderStylingBoardFromApi(data);
         })
-        .catch(() => { /* keep the hardcoded fallback board already rendered */ });
+        .catch(() => {
+          // API 실패 시에도 데모 폴백 대신 정직한 빈 보드
+          renderStylingBoardFromApi({ products: [], approvedLooks: [] });
+        });
     };
 
     const getProposalGalleryImages = (startIndex) => {
