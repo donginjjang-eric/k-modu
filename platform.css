@@ -5729,3 +5729,25 @@ body.dark-theme .mini-stats strong {
   .designer-portfolio-note p { line-height: 1.5; }
   .designer-portfolio-thumbs { margin-top: 10px; padding-bottom: 14px; }
 }
+
+/* 스타일링 보드: AI 패널 장식 그라데이션 바 제거 — is-sticky(position: static)일 때 패널 상단 줄로 떠오르는 문제 */
+.ai-tryon-panel::before { content: none !important; }
+
+/* PC: 하단 글래스 도크 대신 보유 제품 헤더가 sticky 서브메뉴바 역할 (카테고리 탭 포함) */
+@media (min-width: 961px) {
+  .mobile-ai-quickbar { display: none !important; }
+
+  .styling-board-section-head:has(> .owned-category-tabs) {
+    position: sticky;
+    top: 8px;
+    z-index: 6;
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    border: 1px solid rgba(5, 5, 5, .08);
+    border-radius: 14px;
+    background: rgba(249, 249, 246, .82);
+    -webkit-backdrop-filter: blur(14px) saturate(150%);
+    backdrop-filter: blur(14px) saturate(150%);
+    box-shadow: 0 10px 26px rgba(5, 5, 5, .1);
+  }
+}
