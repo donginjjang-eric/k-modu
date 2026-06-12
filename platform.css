@@ -5632,3 +5632,26 @@ body.dark-theme .mini-stats strong {
     padding: 12px 12px 10px;
   }
 }
+/* 모바일: 천장에 붙은 동안 닫기 버튼·드래그 핸들 아래로 내려앉게 */
+@media (max-width: 900px) {
+  .styling-board-section-head.is-stuck {
+    padding-top: 22px;
+    padding-left: 64px;
+    box-shadow: 0 8px 16px rgba(5, 5, 5, .06);
+  }
+}
+/* 스타일링 보드 머리글 위 실선 제거 (PC) */
+[data-proposal-panel="styling"],
+[data-proposal-panel="styling"] .styling-board-head,
+[data-proposal-panel="styling"] .styling-board-head > span,
+[data-proposal-panel="styling"] .styling-board-head h2 {
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+[data-proposal-panel="styling"]::before,
+[data-proposal-panel="styling"]::after,
+[data-proposal-panel="styling"] .styling-board-head::before,
+[data-proposal-panel="styling"] .styling-board-head::after {
+  content: none !important;
+}
