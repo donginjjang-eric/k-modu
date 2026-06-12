@@ -4869,8 +4869,7 @@ body.dark-theme .mini-stats strong {
     margin-bottom: 18px;
     padding: 4px;
     overflow-x: auto;
-    border-radius: 16px;
-    border-bottom-color: transparent;
+    border-radius: 999px;
     box-shadow: none;
   }
 
