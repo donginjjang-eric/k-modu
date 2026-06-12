@@ -14,7 +14,7 @@
   <title>Designers | K-MODU</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
-  <link rel="stylesheet" href="platform.css?v=20260613d" />
+  <link rel="stylesheet" href="platform.css?v=20260613e" />
 </head>
 <body>
   <main class="platform designer-board">
@@ -1508,16 +1508,41 @@
 
     const saveGeneratedLooks = () => { try { localStorage.setItem(GENERATED_LOOKS_KEY, JSON.stringify(generatedLooks.slice(0, 30))); } catch (e) {} };
 
+    // 생성된 룩 썸네일 클릭 → 좌측 무대 미리보기 + 숏폼 생성 활성화 (스튜디오 승인 룩 재사용 루프)
+    const previewGeneratedLook = (src) => {
+      lookGenerated = true;
+      proposalSheet.classList.add('is-styling');
+      stylingCollage.hidden = false;
+      proposalImage.hidden = true;
+      collageModel.classList.remove('is-switching');
+      collageModel.onerror = () => {
+        collageModel.onerror = null;
+        collageModel.src = baseStageImages[selectedModelTemplate] || FALLBACK_BASE;
+      };
+      collageModel.src = src;
+      collageModel.alt = `${(proposalBrandName.textContent || '').trim()} generated look preview`;
+      stylingCollageCaption.hidden = true;
+      stylingCollageCaption.innerHTML = '';
+      stylingCollage.classList.add('is-generated');
+      aiTryonStatus.textContent = '선택한 룩을 무대에 띄웠어요. 아래에서 숏폼 영상으로 만들 수 있어요.';
+      if (shortformStatus) shortformStatus.textContent = '이제 숏폼 영상을 만들 수 있어요.';
+      updateShortformControls();
+    };
+
     const renderGeneratedLooks = () => {
       // 세션에서 방금 생성한 룩이 앞, 스튜디오 승인 룩이 뒤. 같은 이미지는 한 번만.
       const looks = [...generatedLooks, ...designerApprovedLooks.filter((src) => !generatedLooks.includes(src))];
       if (!looks.length) { generatedLooksEl.hidden = true; generatedLooksRow.innerHTML = ''; return; }
       generatedLooksEl.hidden = false;
       generatedLooksRow.innerHTML = looks.map((src, i) =>
-        `<button class="generated-look-thumb" type="button" aria-label="생성된 룩 ${i + 1} 다시 보기"><img src="${escapeHtml(src)}" alt="" loading="lazy" /></button>`
+        `<button class="generated-look-thumb" type="button" aria-label="생성된 룩 ${i + 1} 무대에서 보기"><img src="${escapeHtml(src)}" alt="" loading="lazy" /></button>`
       ).join('');
       Array.from(generatedLooksRow.children).forEach((btn, i) => {
-        btn.addEventListener('click', () => openLightbox(looks, i));
+        btn.addEventListener('click', () => {
+          Array.from(generatedLooksRow.children).forEach((other) => other.classList.remove('is-active'));
+          btn.classList.add('is-active');
+          previewGeneratedLook(looks[i]);
+        });
       });
     };
 

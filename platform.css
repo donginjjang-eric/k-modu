@@ -5780,3 +5780,9 @@ body.dark-theme .mini-stats strong {
     color: #050505;
   }
 }
+
+/* 생성된 룩 썸네일: 무대에 올라간 룩 표시 */
+.generated-look-thumb.is-active {
+  border-color: #050505;
+  box-shadow: inset 0 0 0 2px #050505;
+}
