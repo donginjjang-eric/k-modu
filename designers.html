@@ -1759,9 +1759,12 @@
     };
 
     const bindStylingItemPreviews = () => {
-      [...stylingOwnedItems.children, ...stylingRecommendedItems.children].forEach((button) => {
-        button.addEventListener('click', () => showStylingItemLook(button));
-      });
+      // 빈 상태 안내 div 등 비아이템 요소에는 선택 핸들러를 달지 않는다
+      [...stylingOwnedItems.children, ...stylingRecommendedItems.children]
+        .filter((element) => element.classList.contains('styling-item-card'))
+        .forEach((button) => {
+          button.addEventListener('click', () => showStylingItemLook(button));
+        });
     };
 
     const renderStylingBoard = (profileIndex) => {
