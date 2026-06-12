@@ -23,6 +23,8 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showEmailLogin, setShowEmailLogin] = useState(!googleEnabled);
   const [me, setMe] = useState<Me>({ user: null, designer: null });
+  // 깜빡임 방지: 로그인 상태 확인이 끝나기 전엔 폼/카드를 그리지 않는다.
+  const [checked, setChecked] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -34,7 +36,8 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
       .then((data) => {
         if (data && data.user) setMe({ user: data.user, designer: data.designer || null });
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setChecked(true));
   }, []);
 
   const logout = async () => {
@@ -64,6 +67,14 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
 
     window.location.href = result.redirectTo || "/";
   };
+
+  if (!checked) {
+    return (
+      <div className="generate-box login-form-card">
+        <p className="login-google-hint">로그인 상태를 확인하는 중…</p>
+      </div>
+    );
+  }
 
   // 이미 로그인된 상태: 로그인 폼 대신 상태 카드
   if (me.user) {
