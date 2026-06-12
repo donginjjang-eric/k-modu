@@ -21,6 +21,9 @@ const STATUS_LABELS: Record<DesignerPortfolioImage["status"], string> = {
 };
 
 const KIND_LABELS = Object.fromEntries(KINDS.map((kind) => [kind.value, kind.label])) as Record<PortfolioImageKind, string>;
+// 온보딩 목표치: KINDS guide의 권장 장수와 일치 (총 7장 = 완성도 100%)
+const KIND_GOALS: Record<PortfolioImageKind, number> = { profile: 1, lookbook: 3, product: 2, sample: 1 };
+const GOAL_TOTAL = Object.values(KIND_GOALS).reduce((sum, goal) => sum + goal, 0);
 const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
@@ -151,6 +154,8 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
   ];
 
   const kindInfo = KINDS.find((item) => item.value === kind) ?? KINDS[0];
+  const achieved = KINDS.reduce((sum, item) => sum + Math.min(counts[item.value], KIND_GOALS[item.value]), 0);
+  const percent = Math.round((achieved / GOAL_TOTAL) * 100);
 
   return (
     <section className="portfolio-section">
@@ -159,10 +164,17 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
           <h2>브랜드 사진 관리</h2>
           <p className="st-sub tight">크리에이터가 브랜드를 판단할 수 있도록 메인 커버, 룩북, 제품 컷, 샘플 사진을 정리해주세요.</p>
         </div>
-        <div className="portfolio-summary" aria-label="포트폴리오 상태 요약">
-          <span><b>{counts.all}</b> 전체</span>
-          <span><b>{counts.approved}</b> 공개 중</span>
-          <span><b>{counts.rejected}</b> 제외됨</span>
+        <div className="portfolio-status">
+          <div className="portfolio-progress" aria-label="프로필 완성도">
+            <strong>프로필 완성도 {percent}%</strong>
+            <div className="portfolio-progress-bar"><i style={{ width: `${percent}%` }} /></div>
+            <p>{KINDS.map((item) => `${item.label} ${Math.min(counts[item.value], KIND_GOALS[item.value])}/${KIND_GOALS[item.value]}`).join(" · ")}</p>
+          </div>
+          <div className="portfolio-summary" aria-label="포트폴리오 상태 요약">
+            <span><b>{counts.all}</b> 전체</span>
+            <span><b>{counts.approved}</b> 공개 중</span>
+            <span><b>{counts.rejected}</b> 제외됨</span>
+          </div>
         </div>
       </div>
 
@@ -238,6 +250,7 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
           <button className="st-btn block" type="submit" disabled={!imageUrl || saving}>
             {saving ? "저장 중..." : "바로 등록하기"}
           </button>
+          {!imageUrl && !msg ? <p className="hint center">사진을 업로드하면 등록할 수 있어요.</p> : null}
           {msg ? <p className={`st-msg ${msg.ok ? "ok" : "err"}`}>{msg.text}</p> : null}
         </form>
 

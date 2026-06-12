@@ -36,8 +36,8 @@ export default async function DesignerBrandPage() {
           </div>
         ) : (
           <div className="brand-preview-visual is-empty">
-            <span>커버 비어 있음</span>
-            <p>메인 커버 사진을 올리면<br />이 자리가 공개 카드 커버가 돼요</p>
+            <span>메인 커버가 비어 있어요</span>
+            <p>브랜드를 대표할 3:4 세로 사진 1장을<br />먼저 등록해주세요</p>
           </div>
         )}
         <div className="brand-preview-copy">
