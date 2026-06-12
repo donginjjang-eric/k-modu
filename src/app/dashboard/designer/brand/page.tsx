@@ -10,8 +10,6 @@ export default async function DesignerBrandPage() {
   // 미리보기 필 카운트는 "공개 중인 사진 N"과 같은 기준(approved)으로 통일
   const profileImages = approvedImages.filter((image) => image.kind === "profile");
   const lookbookImages = approvedImages.filter((image) => image.kind === "lookbook");
-  const productImages = approvedImages.filter((image) => image.kind === "product");
-  const sampleImages = approvedImages.filter((image) => image.kind === "sample");
   // 공개 카드 커버와 동일한 규칙: 메인 커버(profile) → 룩북 순. 없으면 빈 상태를 정직하게 보여준다.
   const coverImage = approvedImages.find((image) => image.kind === "profile")?.image_url
     || approvedImages.find((image) => image.kind === "lookbook")?.image_url
@@ -46,11 +44,10 @@ export default async function DesignerBrandPage() {
           <h2>{designer.brand_name}</h2>
           <strong>Representative looks and portfolio mood</strong>
           <p>{designer.description || "브랜드 소개를 입력하면 공개 프로필 첫 화면에 반영됩니다."}</p>
+          {/* 초기 서비스: 제품 컷·샘플/소재 필은 분류를 되살릴 때 함께 복원 */}
           <div className="brand-preview-tags">
             <span>메인 커버 {profileImages.length}</span>
             <span>룩북 {lookbookImages.length}</span>
-            <span>제품 컷 {productImages.length}</span>
-            <span>샘플/소재 {sampleImages.length}</span>
           </div>
           <div className="brand-preview-note">
             <b>{approvedImages.length}</b>

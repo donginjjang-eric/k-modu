@@ -21,9 +21,12 @@ const STATUS_LABELS: Record<DesignerPortfolioImage["status"], string> = {
 };
 
 const KIND_LABELS = Object.fromEntries(KINDS.map((kind) => [kind.value, kind.label])) as Record<PortfolioImageKind, string>;
-// 온보딩 목표치: KINDS guide의 권장 장수와 일치 (총 7장 = 완성도 100%)
+// 초기 서비스는 메인 커버 + 룩북만 노출. 제품 컷·샘플은 나중에 "product", "sample"을 추가하면 그대로 되살아난다.
+const VISIBLE_KIND_VALUES: PortfolioImageKind[] = ["profile", "lookbook"];
+const VISIBLE_KINDS = KINDS.filter((kind) => VISIBLE_KIND_VALUES.includes(kind.value));
+// 온보딩 목표치: KINDS guide의 권장 장수와 일치 (노출 중인 분류 합계 = 완성도 100%)
 const KIND_GOALS: Record<PortfolioImageKind, number> = { profile: 1, lookbook: 3, product: 2, sample: 1 };
-const GOAL_TOTAL = Object.values(KIND_GOALS).reduce((sum, goal) => sum + goal, 0);
+const GOAL_TOTAL = VISIBLE_KINDS.reduce((sum, kind) => sum + KIND_GOALS[kind.value], 0);
 const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
@@ -196,7 +199,7 @@ export default function PortfolioManager({ initialImages, approved }: { initialI
 
   const tabs: Array<{ value: PortfolioImageKind | "all"; label: string; count: number }> = [
     { value: "all", label: "전체", count: counts.all },
-    ...KINDS.map((item) => ({ value: item.value, label: item.label, count: counts[item.value] })),
+    ...VISIBLE_KINDS.map((item) => ({ value: item.value, label: item.label, count: counts[item.value] })),
   ];
 
   const kindInfo = KINDS.find((item) => item.value === kind) ?? KINDS[0];
@@ -208,7 +211,7 @@ export default function PortfolioManager({ initialImages, approved }: { initialI
     });
     return base;
   }, [images]);
-  const achieved = KINDS.reduce((sum, item) => sum + Math.min(approvedByKind[item.value], KIND_GOALS[item.value]), 0);
+  const achieved = VISIBLE_KINDS.reduce((sum, item) => sum + Math.min(approvedByKind[item.value], KIND_GOALS[item.value]), 0);
   const percent = Math.round((achieved / GOAL_TOTAL) * 100);
 
   return (
@@ -216,13 +219,13 @@ export default function PortfolioManager({ initialImages, approved }: { initialI
       <div className="st-sec-head portfolio-head">
         <div>
           <h2>브랜드 사진 관리</h2>
-          <p className="st-sub tight">크리에이터가 브랜드를 판단할 수 있도록 메인 커버, 룩북, 제품 컷, 샘플 사진을 정리해주세요.</p>
+          <p className="st-sub tight">크리에이터가 브랜드를 판단할 수 있도록 {VISIBLE_KINDS.map((item) => item.label).join(", ")} 사진을 정리해주세요.</p>
         </div>
         <div className="portfolio-status">
           <div className="portfolio-progress" aria-label="프로필 완성도">
             <strong>프로필 완성도 {percent}%</strong>
             <div className="portfolio-progress-bar"><i style={{ width: `${percent}%` }} /></div>
-            <p>{KINDS.map((item) => `${item.label} ${Math.min(approvedByKind[item.value], KIND_GOALS[item.value])}/${KIND_GOALS[item.value]}`).join(" · ")}</p>
+            <p>{VISIBLE_KINDS.map((item) => `${item.label} ${Math.min(approvedByKind[item.value], KIND_GOALS[item.value])}/${KIND_GOALS[item.value]}`).join(" · ")}</p>
           </div>
           <div className="portfolio-summary" aria-label="포트폴리오 상태 요약">
             <span><b>{counts.all}</b> 전체</span>
@@ -241,7 +244,7 @@ export default function PortfolioManager({ initialImages, approved }: { initialI
             </div>
           </div>
           <div className="portfolio-kind-picker" role="radiogroup" aria-label="이미지 용도">
-            {KINDS.map((item) => (
+            {VISIBLE_KINDS.map((item) => (
               <button
                 key={item.value}
                 type="button"
