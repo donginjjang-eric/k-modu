@@ -10,7 +10,6 @@ const legacyContentTypes: Record<string, string> = {
 };
 
 const legacyFiles = new Set([
-  "admin.html",
   "apply-complete.html",
   "apply.html",
   "auth-nav.js",
@@ -20,10 +19,8 @@ const legacyFiles = new Set([
   "creators.html",
   "designer-brief.html",
   "designer-match.html",
-  "designer-studio.html",
   "designers.html",
   "index.html",
-  "login.html",
   "platform.css",
   "robots.txt",
 ]);

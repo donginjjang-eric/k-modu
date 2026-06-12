@@ -65,3 +65,22 @@
 - [x] `/login.html` 307 → `/login` 리다이렉트 (옛 로그인 페이지 차단)
 - [x] `npm run build` + 로컬 검증 (js 서빙·리다이렉트·me 응답·index 와이어링)
 - [ ] 배포 후 운영에서 로그인/로그아웃/스튜디오 버튼 상태 확인
+
+## 크리에이터 루프 + 정리 도구 + P2 일부 (2026-06-12)
+
+### ① 정리 도구
+- [ ] scripts/cleanup-media.mjs — 기본은 리포트(고아 파일·오래된 거부 룩 카운트), --apply로만 실제 삭제
+- [ ] 부팅 체인에 리포트 모드 추가 (배포 때마다 용량 현황 로그)
+
+### ② 크리에이터 루프 (샘플 요청/협업 제안 → 받은 의뢰)
+- [ ] schema.sql: collab_requests 테이블 + 인덱스
+- [ ] types.ts + db.ts 헬퍼 (create/list/updateStatus, 디자이너 스코프)
+- [ ] POST /api/public/collab-requests (승인 디자이너 검증, 길이 제한)
+- [ ] PATCH /api/designer/collab-requests/[id] (본인 의뢰만 상태 변경)
+- [ ] 스튜디오 받은 의뢰 페이지: placeholder → 실목록 + 상태 처리(new/read/done)
+- [ ] designers.html 모달 협업 탭: DB 디자이너에게 제안 폼 표시 (이름/연락처/메시지/유형) → 전송 → 성공 안내
+- [ ] 샘플 카드는 기존 brief 링크 유지
+
+### ③ P2 안전 항목
+- [ ] 죽은 파일 제거: designer-studio.html, admin.html, login.html (+허용목록 정리, 리다이렉트는 유지)
+- [ ] 빌드 + 로컬 검증 + master push(자동배포) + 운영 검증
