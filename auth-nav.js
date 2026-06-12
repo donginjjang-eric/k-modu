@@ -22,7 +22,9 @@
       ? { href: '/dashboard/admin', label: '관리자 콘솔' }
       : isApprovedDesigner
         ? { href: '/dashboard/designer/brand', label: '디자이너 스튜디오' }
-        : { href: '/login?notice=approval_pending', label: '승인 대기중' };
+        : designer
+          ? { href: '/login?notice=approval_pending', label: '승인 대기중' }
+          : { href: '/apply', label: '디자이너 신청' };
 
     links.forEach((link) => {
       link.href = target.href;

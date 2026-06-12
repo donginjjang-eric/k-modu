@@ -1,13 +1,19 @@
 "use client";
 
-// 파트너 로그인 폼: 구글 로그인이 기본, 이메일/비밀번호는 접힌 보조 수단(관리자용)
+// 파트너 로그인: 구글 로그인이 기본. 로그인된 상태면 상태 카드(누구로 로그인됨 + 다음 행동)를 보여준다.
 import { useEffect, useState } from "react";
 
 const PARAM_MESSAGES: Record<string, string> = {
   approval_required: "승인된 디자이너 계정만 사용할 수 있어요. 승인 완료 후 다시 로그인해주세요.",
-  approval_pending: "가입이 접수됐어요. 관리자 승인이 끝나면 같은 구글 계정으로 바로 이용할 수 있어요.",
+  approval_pending: "디자이너 신청이 접수되어 있어요. 관리자 승인이 끝나면 같은 구글 계정으로 바로 이용할 수 있어요.",
+  apply_required: "이 구글 계정으로 접수된 디자이너 신청이 없어요. 디자이너 등록 신청을 먼저 완료해주세요.",
   google_failed: "구글 로그인에 실패했어요. 잠시 후 다시 시도해주세요.",
   google_not_configured: "구글 로그인이 아직 설정되지 않았어요. 관리자에게 문의해주세요.",
+};
+
+type Me = {
+  user: { id: string; email: string; role: string } | null;
+  designer: { id: string; brandName: string; approvalStatus: string } | null;
 };
 
 export default function LoginForm({ googleEnabled = false }: { googleEnabled?: boolean }) {
@@ -16,12 +22,27 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showEmailLogin, setShowEmailLogin] = useState(!googleEnabled);
+  const [me, setMe] = useState<Me>({ user: null, designer: null });
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const key = params.get("notice") || params.get("error") || "";
     if (PARAM_MESSAGES[key]) setMessage(PARAM_MESSAGES[key]);
+
+    fetch("/api/auth/me", { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && data.user) setMe({ user: data.user, designer: data.designer || null });
+      })
+      .catch(() => {});
   }, []);
+
+  const logout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch {}
+    window.location.href = "/login";
+  };
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -44,6 +65,40 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
     window.location.href = result.redirectTo || "/";
   };
 
+  // 이미 로그인된 상태: 로그인 폼 대신 상태 카드
+  if (me.user) {
+    const isAdmin = me.user.role === "admin";
+    const isApproved = me.designer?.approvalStatus === "approved";
+    return (
+      <div className="generate-box login-form-card">
+        <p className="login-status-badge">✓ 로그인됨</p>
+        <p className="login-status-email">{me.user.email}</p>
+        {isAdmin ? (
+          <>
+            <p className="login-google-hint">관리자 계정으로 로그인되어 있어요.</p>
+            <a className="generate-button login-status-cta" href="/dashboard/admin">관리자 콘솔 열기</a>
+          </>
+        ) : isApproved ? (
+          <>
+            <p className="login-google-hint">{me.designer?.brandName || "디자이너"} 계정으로 로그인되어 있어요.</p>
+            <a className="generate-button login-status-cta" href="/dashboard/designer/brand">디자이너 스튜디오 열기</a>
+          </>
+        ) : me.designer ? (
+          <p className="login-google-hint">
+            디자이너 신청이 접수되어 승인 대기 중이에요. 승인이 끝나면 이 화면에서 바로 스튜디오가 열려요.
+          </p>
+        ) : (
+          <>
+            <p className="login-google-hint">아직 디자이너 등록 신청 내역이 없어요. 신청을 완료하면 승인 후 스튜디오를 쓸 수 있어요.</p>
+            <a className="generate-button login-status-cta" href="/apply">디자이너 등록 신청하기</a>
+          </>
+        )}
+        <button className="login-email-toggle" type="button" onClick={logout}>로그아웃</button>
+        {message ? <p className="notice">{message}</p> : null}
+      </div>
+    );
+  }
+
   return (
     <form className="generate-box login-form-card" onSubmit={submit}>
       {googleEnabled ? (
@@ -57,7 +112,7 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
             </svg>
             Google로 시작하기
           </a>
-          <p className="login-google-hint">디자이너는 구글 계정으로 바로 시작할 수 있어요. 승인 즉시 스튜디오가 열립니다.</p>
+          <p className="login-google-hint">디자이너 등록 신청 후 승인되면, 신청서의 이메일과 같은 구글 계정으로 바로 입장할 수 있어요.</p>
         </>
       ) : null}
       {googleEnabled && !showEmailLogin ? (

@@ -808,12 +808,25 @@ export async function getUserByEmail(email: string): Promise<(User & { password_
   }
 }
 
-// 구글 로그인 사용자 조회/자동 등록. 신규 이메일이면 designer 계정을 만들고,
-// 같은 이메일로 제출된 미연결 지원서가 있으면 그 프로필에 연결한다.
-export async function findOrCreateGoogleUser(
-  email: string,
-  displayName: string,
-): Promise<{ user: User; designer: Designer | null }> {
+// 같은 이메일로 제출된 미연결 디자이너 신청서를 이 사용자에 연결한다.
+async function linkDesignerByEmail(userId: string, email: string): Promise<Designer | null> {
+  return one<Designer>(
+    `UPDATE designers
+        SET user_id = $1, updated_at = now()
+      WHERE id = (
+        SELECT id FROM designers
+         WHERE lower(contact_email) = $2 AND user_id IS NULL
+         ORDER BY created_at DESC
+         LIMIT 1
+      )
+      RETURNING *`,
+    [userId, email],
+  );
+}
+
+// 구글 로그인 사용자 조회/생성. 디자이너 등록은 신청 페이지(/apply)의 역할이므로
+// 여기서는 프로필을 만들지 않고, 신청서 이메일이 일치하면 연결만 한다.
+export async function findOrCreateGoogleUser(email: string): Promise<{ user: User; designer: Designer | null }> {
   if (!hasDatabase()) {
     requireDatabaseForProduction();
     const now = new Date().toISOString();
@@ -825,7 +838,11 @@ export async function findOrCreateGoogleUser(
 
   const existing = await getUserByEmail(email);
   if (existing) {
-    const designer = existing.role === "designer" ? await getDesignerForUser(existing.id) : null;
+    let designer = existing.role === "designer" ? await getDesignerForUser(existing.id) : null;
+    // 구글 로그인 후 신청서를 낸 경우: 다음 로그인에서 이메일로 연결
+    if (!designer && existing.role === "designer") {
+      designer = await linkDesignerByEmail(existing.id, email);
+    }
     return { user: existing, designer };
   }
 
@@ -839,27 +856,7 @@ export async function findOrCreateGoogleUser(
   );
   if (!user) throw new Error("Failed to create Google user.");
 
-  const linked = await one<Designer>(
-    `UPDATE designers
-        SET user_id = $1, updated_at = now()
-      WHERE id = (
-        SELECT id FROM designers
-         WHERE lower(contact_email) = $2 AND user_id IS NULL
-         ORDER BY created_at DESC
-         LIMIT 1
-      )
-      RETURNING *`,
-    [userId, email],
-  );
-  if (linked) return { user, designer: linked };
-
-  const designer = await one<Designer>(
-    `INSERT INTO designers
-       (user_id, brand_name, designer_name, contact_email, contact_phone, description, mood, country, approval_status)
-     VALUES ($1, $2, $3, $4, '', '', '', 'South Korea', 'pending')
-     RETURNING *`,
-    [userId, displayName || email.split("@")[0], displayName, email],
-  );
+  const designer = await linkDesignerByEmail(userId, email);
   return { user, designer };
 }
 

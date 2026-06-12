@@ -41,7 +41,7 @@ export async function GET(request: Request) {
       return Response.redirect(`${origin}/login?error=google_failed`, 302);
     }
 
-    const { user, designer } = await findOrCreateGoogleUser(email, String(profile.name || "").trim());
+    const { user, designer } = await findOrCreateGoogleUser(email);
 
     cookieStore.set(sessionCookieName, createSessionToken(user), {
       httpOnly: true,
@@ -57,8 +57,12 @@ export async function GET(request: Request) {
     if (designer?.approval_status === "approved") {
       return Response.redirect(`${origin}/dashboard/designer/brand`, 302);
     }
-    // 신규 가입 또는 승인 대기 중인 디자이너는 안내 메시지와 함께 로그인 페이지로
-    return Response.redirect(`${origin}/login?notice=approval_pending`, 302);
+    if (designer) {
+      // 신청서는 있으나 아직 승인 전
+      return Response.redirect(`${origin}/login?notice=approval_pending`, 302);
+    }
+    // 신청 내역이 없는 구글 계정: 디자이너 등록 신청 페이지로 안내
+    return Response.redirect(`${origin}/login?notice=apply_required`, 302);
   } catch (error) {
     console.error("[google-login] callback failed:", error);
     return Response.redirect(`${origin}/login?error=google_failed`, 302);

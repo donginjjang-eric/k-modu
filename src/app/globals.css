@@ -537,6 +537,34 @@ p {
   text-align: center;
 }
 
+.login-status-badge {
+  margin: 0;
+  justify-self: start;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #102a16;
+  color: #9ee2af;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .06em;
+}
+
+.login-status-email {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 900;
+  color: #111;
+  word-break: break-all;
+}
+
+.login-form-card .login-status-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 54px;
+  text-decoration: none;
+}
+
 .login-form-card .notice {
   margin: 0;
   color: #5f5a50;

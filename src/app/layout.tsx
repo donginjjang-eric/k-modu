@@ -16,11 +16,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Link className="brand" href="/">K-MODU</Link>
             <nav className="nav-links" aria-label="Main navigation">
               <Link href="/designers">디자이너</Link>
-              <Link className="pill" href="/login">로그인</Link>
+              {/* auth-nav.js가 로그인 상태에 따라 바꿔치기하므로 일반 앵커를 사용 */}
+              <a className="pill" data-auth-link href="/login">로그인</a>
             </nav>
           </header>
           {children}
         </div>
+        <script src="/auth-nav.js" defer />
       </body>
     </html>
   );
