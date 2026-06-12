@@ -6,6 +6,7 @@ import {
   getRedirectUri,
   getRequestOrigin,
   isGoogleLoginConfigured,
+  oauthNextCookieName,
   oauthStateCookieName,
 } from "@/lib/google-oauth";
 
@@ -24,6 +25,18 @@ export async function GET(request: Request) {
     path: "/",
     maxAge: 600,
   });
+
+  // 로그인 후 복귀할 사이트 내 경로 (예: /apply). 외부 URL은 거부한다.
+  const next = new URL(request.url).searchParams.get("next") || "";
+  if (next.startsWith("/") && !next.startsWith("//")) {
+    cookieStore.set(oauthNextCookieName, next, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 600,
+    });
+  }
 
   return Response.redirect(buildGoogleAuthUrl(getRedirectUri(request), state), 302);
 }

@@ -4,6 +4,7 @@ const TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token";
 const USERINFO_ENDPOINT = "https://www.googleapis.com/oauth2/v3/userinfo";
 
 export const oauthStateCookieName = "kmodu_oauth_state";
+export const oauthNextCookieName = "kmodu_oauth_next";
 
 export function isGoogleLoginConfigured() {
   return Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);

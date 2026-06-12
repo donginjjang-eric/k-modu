@@ -305,8 +305,7 @@
         <a href="/#contact">문의</a>
       </nav>
       <div class="top-actions">
-        <button id="themeToggleBtn" aria-label="테마 전환" style="background:none; border:none; color:var(--ink); font-size:var(--fs-label-sm); font-weight:var(--fw-extrabold); cursor:pointer; letter-spacing:.08em; padding:0; text-transform:uppercase; margin-right:12px; display:inline-flex; align-items:center;">다크</button>
-        <a class="pill" href="/apply">입점 신청</a>
+        <a class="pill" data-auth-link href="/login">로그인</a>
       </div>
       <details class="platform-menu">
         <summary aria-label="메뉴"><span></span></summary>
@@ -458,6 +457,23 @@
   </main>
 
   <script>
+    // --- 0. 로그인 게이트: 신청은 구글 로그인 후 진행. 비로그인이면 로그인으로 보내고 완료 후 이 페이지로 복귀한다. ---
+    fetch('/api/auth/me', { cache: 'no-store' })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        const user = data && data.user;
+        if (!user) {
+          window.location.replace('/login?notice=login_required&next=%2Fapply');
+          return;
+        }
+        // 로그인 계정 이메일을 연락용 이메일에 미리 채워 신청서-계정 연결이 어긋나지 않게 한다.
+        const emailInput = document.getElementById('email');
+        if (emailInput && !emailInput.value && String(user.email || '').includes('@')) {
+          emailInput.value = user.email;
+        }
+      })
+      .catch(() => { /* 상태 확인 실패 시 신청은 막지 않는다 */ });
+
     // --- 1. GLOBAL THEME MANAGER ---
     const themeToggleBtn = document.getElementById('themeToggleBtn');
 
@@ -471,7 +487,7 @@
       }
     }
 
-    const savedTheme = localStorage.getItem('k_modu_theme') || 'light';
+    const savedTheme = 'light'; // 다크 테마는 부분 미적용 버그가 있어 토글을 내리고 라이트로 고정
     applyTheme(savedTheme);
 
     if (themeToggleBtn) {

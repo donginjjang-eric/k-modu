@@ -7,6 +7,7 @@ const PARAM_MESSAGES: Record<string, string> = {
   approval_required: "승인된 디자이너 계정만 사용할 수 있어요. 승인 완료 후 다시 로그인해주세요.",
   approval_pending: "디자이너 신청이 접수되어 있어요. 관리자 승인이 끝나면 같은 구글 계정으로 바로 이용할 수 있어요.",
   apply_required: "이 구글 계정으로 접수된 디자이너 신청이 없어요. 디자이너 등록 신청을 먼저 완료해주세요.",
+  login_required: "디자이너 등록 신청은 구글 로그인 후 진행돼요. 로그인하면 신청 페이지로 바로 이동해요.",
   google_failed: "구글 로그인에 실패했어요. 잠시 후 다시 시도해주세요.",
   google_not_configured: "구글 로그인이 아직 설정되지 않았어요. 관리자에게 문의해주세요.",
 };
@@ -25,11 +26,15 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
   const [me, setMe] = useState<Me>({ user: null, designer: null });
   // 깜빡임 방지: 로그인 상태 확인이 끝나기 전엔 폼/카드를 그리지 않는다.
   const [checked, setChecked] = useState(false);
+  // 로그인 후 복귀할 사이트 내 경로 (예: /apply에서 유도된 경우)
+  const [nextPath, setNextPath] = useState("");
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const key = params.get("notice") || params.get("error") || "";
     if (PARAM_MESSAGES[key]) setMessage(PARAM_MESSAGES[key]);
+    const next = params.get("next") || "";
+    if (next.startsWith("/") && !next.startsWith("//")) setNextPath(next);
 
     fetch("/api/auth/me", { cache: "no-store" })
       .then((res) => (res.ok ? res.json() : null))
@@ -114,7 +119,7 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
     <form className="generate-box login-form-card" onSubmit={submit}>
       {googleEnabled ? (
         <>
-          <a className="google-login-button" href="/api/auth/google">
+          <a className="google-login-button" href={`/api/auth/google${nextPath ? `?next=${encodeURIComponent(nextPath)}` : ""}`}>
             <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
               <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
               <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />

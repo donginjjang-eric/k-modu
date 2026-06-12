@@ -27,7 +27,6 @@
         <a href="/#contact">문의</a>
       </nav>
       <div class="top-actions">
-        <button id="themeToggleBtn" aria-label="테마 전환" style="background:none; border:none; color:var(--ink); font-size:11px; font-weight:800; cursor:pointer; letter-spacing:.08em; padding:0; text-transform:uppercase; margin-right:12px; display:inline-flex; align-items:center;">다크</button>
         <a href="/designer-match">뒤로</a>
         <a class="pill" href="/designer-brief">매칭 요청</a>
       </div>
@@ -95,7 +94,7 @@
       }
     }
 
-    const savedTheme = localStorage.getItem('k_modu_theme') || 'light';
+    const savedTheme = 'light'; // 다크 테마는 부분 미적용 버그가 있어 토글을 내리고 라이트로 고정
     applyTheme(savedTheme);
 
     if (themeToggleBtn) {

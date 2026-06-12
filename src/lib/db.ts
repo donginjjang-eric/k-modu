@@ -168,6 +168,7 @@ export async function createDesignerApplication(input: {
   description?: string;
   mood?: string;
   country?: string;
+  user_id?: string;
 }) {
   if (!hasDatabase()) {
     requireDatabaseForProduction();
@@ -182,8 +183,8 @@ export async function createDesignerApplication(input: {
 
   return one<Designer>(
     `INSERT INTO designers
-       (brand_name, designer_name, contact_email, contact_phone, description, mood, country, approval_status)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, 'pending')
+       (brand_name, designer_name, contact_email, contact_phone, description, mood, country, approval_status, user_id)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, 'pending', $8)
      RETURNING *`,
     [
       input.brand_name,
@@ -193,6 +194,7 @@ export async function createDesignerApplication(input: {
       input.description ?? "",
       input.mood ?? "",
       input.country ?? "South Korea",
+      input.user_id ?? null,
     ],
   );
 }

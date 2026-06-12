@@ -7,6 +7,7 @@ import {
   fetchGoogleProfile,
   getRedirectUri,
   getRequestOrigin,
+  oauthNextCookieName,
   oauthStateCookieName,
 } from "@/lib/google-oauth";
 
@@ -19,6 +20,8 @@ export async function GET(request: Request) {
   const state = url.searchParams.get("state");
   const expectedState = cookieStore.get(oauthStateCookieName)?.value;
   cookieStore.delete(oauthStateCookieName);
+  const nextPath = cookieStore.get(oauthNextCookieName)?.value || "";
+  cookieStore.delete(oauthNextCookieName);
 
   if (!code || !state || !expectedState || state !== expectedState) {
     console.error("[google-login] state check failed:", {
@@ -60,6 +63,10 @@ export async function GET(request: Request) {
     if (designer) {
       // 신청서는 있으나 아직 승인 전
       return Response.redirect(`${origin}/login?notice=approval_pending`, 302);
+    }
+    if (nextPath.startsWith("/") && !nextPath.startsWith("//")) {
+      // 신청 페이지에서 로그인으로 유도된 경우: 바로 신청으로 복귀
+      return Response.redirect(`${origin}${nextPath}`, 302);
     }
     // 신청 내역이 없는 구글 계정: 디자이너 등록 신청 페이지로 안내
     return Response.redirect(`${origin}/login?notice=apply_required`, 302);
