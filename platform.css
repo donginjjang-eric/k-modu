@@ -5715,3 +5715,18 @@ body.dark-theme .mini-stats strong {
     scrollbar-width: none;
   }
 }
+/* 모달 프로필 탭 PC 압축: 한 화면에 스크롤 없이 들어가도록 수직 밀도 조정 */
+@media (min-width: 961px) {
+  .designer-proposal-content { padding: 34px 46px 30px; }
+  .designer-proposal-kicker { min-height: 30px; margin-bottom: 14px; }
+  .designer-modal-tabs { margin-bottom: 18px; }
+  .designer-proposal-content h2 { margin-bottom: 12px; font-size: clamp(40px, 4.2vw, 58px); }
+  .designer-proposal-content strong { margin-bottom: 12px; }
+  .designer-modal-panel > span { line-height: 1.6; }
+  .designer-proposal-tags { margin: 14px 0; }
+  .designer-profile-meta { margin-bottom: 14px; padding-top: 12px; }
+  .designer-profile-meta div { padding-bottom: 10px; }
+  .designer-portfolio-note { margin-top: 10px; }
+  .designer-portfolio-note p { line-height: 1.5; }
+  .designer-portfolio-thumbs { margin-top: 10px; padding-bottom: 14px; }
+}
