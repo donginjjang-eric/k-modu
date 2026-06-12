@@ -545,6 +545,18 @@
         designer.id];
     };
 
+    // 딥링크: /designers?open=<id>(&tab=styling|collab) → 해당 디자이너 모달 자동 오픈 (스튜디오 "공개 화면 보기" 진입점)
+    const openDeepLinkedCard = () => {
+      const params = new URLSearchParams(window.location.search);
+      const openId = params.get('open');
+      if (!openId) return;
+      const card = board.querySelector(`.work-pin[data-designer-id="${CSS.escape(openId)}"]`);
+      if (!card) return;
+      openProposalSheet(card);
+      const tab = params.get('tab');
+      if (tab === 'styling' || tab === 'collab') setProposalTab(tab);
+    };
+
     // 공개 보드는 DB의 승인된 디자이너 목록으로 자동 생성. 실패/빈 목록일 때만 샘플 카드 폴백.
     const initDesignerBoard = async () => {
       try {
@@ -557,11 +569,13 @@
         designerProfiles = data.designers.map(designerToProfile);
         isSampleBoard = false;
         renderDesignerBoard();
+        openDeepLinkedCard();
       } catch (error) {
         designerProfiles = sampleDesignerProfiles;
         isSampleBoard = true;
         renderDesignerBoard();
         applyLiveDesignerCardCover(DEFAULT_PUBLIC_DESIGNER_ID);
+        openDeepLinkedCard();
       }
     };
 

@@ -26,7 +26,7 @@ export default async function DesignerBrandPage() {
             공개 페이지에서 디자이너 카드를 눌렀을 때 가장 먼저 보이는 프로필 화면을 관리합니다.
           </p>
         </div>
-        <a className="st-btn light" href={`/designers/${designer.id}`} target="_blank" rel="noreferrer">공개 화면 보기</a>
+        <a className="st-btn light" href={`/designers?open=${designer.id}`} target="_blank" rel="noreferrer">공개 화면 보기</a>
       </div>
 
       <section className="brand-public-preview">

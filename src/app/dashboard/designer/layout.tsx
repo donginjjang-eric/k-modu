@@ -6,7 +6,8 @@ import LogoutButton from "@/components/LogoutButton";
 
 export default async function DesignerStudioLayout({ children }: { children: React.ReactNode }) {
   const { designer } = await requireApprovedDesigner();
-  const publicHref = `/designers/${designer.id}`;
+  // 공개 화면 = 크리에이터가 보는 보드 모달 (딥링크로 자동 오픈)
+  const publicHref = `/designers?open=${designer.id}`;
 
   return (
     <div className="studio designer-studio">
