@@ -5615,3 +5615,20 @@ body.dark-theme .mini-stats strong {
 /* hidden 속성이 위 display 선언에 밀리지 않게 보장 */
 .collab-request-box[hidden],
 #proposalBriefActions[hidden] { display: none !important; }
+/* ── 스타일링 보드: 카테고리 탭 줄을 스크롤 시 상단에 고정 ── */
+.styling-board-section-head {
+  position: sticky;
+  top: -1px;
+  z-index: 6;
+  background: #f9f9f6;
+  margin: -16px -16px 14px;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid rgba(5, 5, 5, .08);
+}
+
+@media (max-width: 900px) {
+  .styling-board-section-head {
+    margin: -12px -12px 12px;
+    padding: 12px 12px 10px;
+  }
+}
