@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev -H 0.0.0.0 -p 8010",
     "build": "next build",
-    "start": "node scripts/migrate-volume-to-bucket.mjs && next start -H 0.0.0.0 -p ${PORT:-8010}",
+    "start": "node scripts/ensure-schema.mjs && node scripts/migrate-volume-to-bucket.mjs && next start -H 0.0.0.0 -p ${PORT:-8010}",
     "legacy:start": "node local-static-server.mjs",
     "db:setup": "node scripts/db-setup.mjs",
     "optimize:images": "node scripts/optimize-images.mjs"

@@ -175,12 +175,6 @@ export async function createDesignerApplication(input: {
     return toDemoDesigner();
   }
 
-  await query(`
-    ALTER TABLE designers ADD COLUMN IF NOT EXISTS designer_name text NOT NULL DEFAULT '';
-    ALTER TABLE designers ADD COLUMN IF NOT EXISTS contact_email text NOT NULL DEFAULT '';
-    ALTER TABLE designers ADD COLUMN IF NOT EXISTS contact_phone text NOT NULL DEFAULT '';
-  `);
-
   return one<Designer>(
     `INSERT INTO designers
        (brand_name, designer_name, contact_email, contact_phone, description, mood, country, approval_status, user_id)
@@ -309,35 +303,11 @@ export async function getOwnedProductsForGeneration(designerId: string, productI
   );
 }
 
-async function ensurePortfolioImagesTable() {
-  await query(`
-    CREATE TABLE IF NOT EXISTS designer_portfolio_images (
-      id text PRIMARY KEY DEFAULT gen_random_uuid()::text,
-      designer_id text NOT NULL REFERENCES designers(id) ON DELETE CASCADE,
-      title text NOT NULL DEFAULT '',
-      kind text NOT NULL DEFAULT 'lookbook' CHECK (kind IN ('profile', 'lookbook', 'product', 'sample')),
-      image_url text NOT NULL,
-      image_hash text,
-      status text NOT NULL DEFAULT 'approved' CHECK (status IN ('pending', 'approved', 'rejected', 'hidden')),
-      created_at timestamptz NOT NULL DEFAULT now(),
-      updated_at timestamptz NOT NULL DEFAULT now()
-    );
-    CREATE INDEX IF NOT EXISTS designer_portfolio_images_designer_status_idx
-      ON designer_portfolio_images(designer_id, status, kind);
-    ALTER TABLE designer_portfolio_images
-      ALTER COLUMN status SET DEFAULT 'approved';
-    UPDATE designer_portfolio_images
-      SET status = 'approved', updated_at = now()
-      WHERE status = 'pending';
-  `);
-}
-
 export async function getPortfolioImagesForDesigner(designerId: string): Promise<DesignerPortfolioImage[]> {
   if (!hasDatabase()) {
     requireDatabaseForProduction();
     return designerId === phaseDesigner.id ? toDemoPortfolioImages() : [];
   }
-  await ensurePortfolioImagesTable();
   return query<DesignerPortfolioImage>(
     "SELECT * FROM designer_portfolio_images WHERE designer_id = $1 AND status <> 'hidden' ORDER BY created_at DESC",
     [designerId],
@@ -349,7 +319,6 @@ export async function getApprovedPortfolioImagesForDesigner(designerId: string):
     requireDatabaseForProduction();
     return designerId === phaseDesigner.id ? toDemoPortfolioImages().filter((image) => image.status === "approved") : [];
   }
-  await ensurePortfolioImagesTable();
   return query<DesignerPortfolioImage>(
     "SELECT * FROM designer_portfolio_images WHERE designer_id = $1 AND status = 'approved' ORDER BY updated_at DESC, created_at DESC",
     [designerId],
@@ -364,7 +333,6 @@ export async function getApprovedPortfolioImagesForDesigners(designerIds: string
       ? toDemoPortfolioImages().filter((image) => image.status === "approved")
       : [];
   }
-  await ensurePortfolioImagesTable();
   return query<DesignerPortfolioImage>(
     `SELECT * FROM designer_portfolio_images
       WHERE designer_id = ANY($1::text[]) AND status = 'approved'
@@ -381,7 +349,6 @@ export async function createPortfolioImageForDesigner(input: {
   imageHash?: string | null;
 }) {
   if (!hasDatabase()) throw new Error("DATABASE_URL is required for portfolio image creation.");
-  await ensurePortfolioImagesTable();
   return one<DesignerPortfolioImage>(
     `INSERT INTO designer_portfolio_images (designer_id, title, kind, image_url, image_hash, status)
      VALUES ($1, $2, $3, $4, $5, 'approved')
@@ -396,7 +363,6 @@ export async function updatePortfolioImageForDesigner(designerId: string, imageI
   status: PortfolioImageStatus;
 }>) {
   if (!hasDatabase()) throw new Error("DATABASE_URL is required for portfolio image updates.");
-  await ensurePortfolioImagesTable();
   return one<DesignerPortfolioImage>(
     `UPDATE designer_portfolio_images
         SET title = COALESCE($3, title),
@@ -411,7 +377,6 @@ export async function updatePortfolioImageForDesigner(designerId: string, imageI
 
 export async function updatePortfolioImageForAdmin(imageId: string, status: PortfolioImageStatus) {
   if (!hasDatabase()) throw new Error("DATABASE_URL is required for portfolio image updates.");
-  await ensurePortfolioImagesTable();
   return one<DesignerPortfolioImage>(
     `UPDATE designer_portfolio_images
         SET status = $2,
@@ -830,13 +795,8 @@ export async function getUserByEmail(email: string): Promise<(User & { password_
 }
 
 // 같은 이메일로 제출된 미연결 디자이너 신청서를 이 사용자에 연결한다.
+// (스키마는 부팅 시 scripts/ensure-schema.mjs가 보장한다)
 async function linkDesignerByEmail(userId: string, email: string): Promise<Designer | null> {
-  // 신청서가 한 번도 제출되지 않은 DB에는 연락처 컬럼이 없을 수 있다 (createDesignerApplication과 같은 지연 마이그레이션).
-  await query(`
-    ALTER TABLE designers ADD COLUMN IF NOT EXISTS designer_name text NOT NULL DEFAULT '';
-    ALTER TABLE designers ADD COLUMN IF NOT EXISTS contact_email text NOT NULL DEFAULT '';
-    ALTER TABLE designers ADD COLUMN IF NOT EXISTS contact_phone text NOT NULL DEFAULT '';
-  `);
   return one<Designer>(
     `UPDATE designers
         SET user_id = $1, updated_at = now()

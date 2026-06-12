@@ -114,3 +114,18 @@ CREATE INDEX IF NOT EXISTS designer_portfolio_images_designer_status_idx
 
 ALTER TABLE designer_portfolio_images
   ALTER COLUMN status SET DEFAULT 'approved';
+
+-- 포트폴리오 즉시 공개 정책: 과거 pending 데이터 승격 (멱등)
+UPDATE designer_portfolio_images
+  SET status = 'approved', updated_at = now()
+  WHERE status = 'pending';
+
+-- 조회 성능 인덱스 (데이터가 쌓이기 전에 미리)
+CREATE INDEX IF NOT EXISTS generated_looks_designer_status_idx
+  ON generated_looks(designer_id, status);
+
+CREATE INDEX IF NOT EXISTS designers_user_id_idx
+  ON designers(user_id);
+
+CREATE INDEX IF NOT EXISTS designers_contact_email_lower_idx
+  ON designers(lower(contact_email));
