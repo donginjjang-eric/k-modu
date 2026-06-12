@@ -49,8 +49,8 @@ export default function PortfolioManager({ initialImages, approved }: { initialI
   const [kind, setKind] = useState<PortfolioImageKind>(() =>
     initialImages.some((image) => image.kind === "profile") ? "lookbook" : "profile"
   );
-  const [imageUrl, setImageUrl] = useState("");
-  const [imageHash, setImageHash] = useState("");
+  // 업로드만 되고 아직 등록 전인 사진들 (여러 장 한번에 선택 가능)
+  const [pendingImages, setPendingImages] = useState<Array<{ url: string; hash: string }>>([]);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [drag, setDrag] = useState(false);
@@ -59,64 +59,94 @@ export default function PortfolioManager({ initialImages, approved }: { initialI
   const submitRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
 
-  const upload = async (file: File) => {
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-      setMsg({ text: "JPG, PNG, WEBP 이미지만 업로드할 수 있습니다.", ok: false });
-      return;
+  const uploadFiles = async (files: File[]) => {
+    const valid: File[] = [];
+    const skipped: string[] = [];
+    for (const file of files) {
+      if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+        skipped.push(`${file.name} (JPG·PNG·WEBP만 가능)`);
+        continue;
+      }
+      if (file.size > MAX_UPLOAD_BYTES) {
+        skipped.push(`${file.name} (8MB 초과)`);
+        continue;
+      }
+      valid.push(file);
     }
-    if (file.size > MAX_UPLOAD_BYTES) {
-      setMsg({ text: "이미지 용량이 너무 큽니다. 8MB 이하로 줄여서 다시 올려주세요.", ok: false });
+    if (!valid.length) {
+      setMsg({ text: `업로드할 수 없는 파일이에요: ${skipped.join(", ")}`, ok: false });
       return;
     }
 
     setUploading(true);
     setMsg(null);
-    try {
-      const body = new FormData();
-      body.append("image", file);
-      const response = await fetch("/api/uploads/portfolio-image", { method: "POST", body });
-      const result = await readJsonResponse(response);
-      if (!response.ok) throw new Error(result.error || "이미지 업로드에 실패했습니다.");
-      setImageUrl(result.imageUrl);
-      setImageHash(result.imageHash);
-      setMsg({ text: `사진이 선택됐어요. 아래 [${KIND_LABELS[kind]} 등록하기]를 누르면 공개 화면에 반영돼요.`, ok: true });
-      submitRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    } catch (error) {
-      setMsg({ text: error instanceof Error ? error.message : "이미지 업로드에 실패했습니다.", ok: false });
-    } finally {
-      setUploading(false);
+    const uploaded: Array<{ url: string; hash: string }> = [];
+    for (const file of valid) {
+      try {
+        const body = new FormData();
+        body.append("image", file);
+        const response = await fetch("/api/uploads/portfolio-image", { method: "POST", body });
+        const result = await readJsonResponse(response);
+        if (!response.ok) throw new Error(result.error || "이미지 업로드에 실패했습니다.");
+        uploaded.push({ url: result.imageUrl, hash: result.imageHash });
+      } catch (error) {
+        skipped.push(`${file.name} (${error instanceof Error ? error.message : "업로드 실패"})`);
+      }
     }
+    setUploading(false);
+    if (uploaded.length) setPendingImages((current) => [...current, ...uploaded]);
+
+    if (skipped.length) {
+      setMsg({ text: `${uploaded.length}장 선택 완료. 제외된 파일: ${skipped.join(", ")}`, ok: uploaded.length > 0 });
+    } else {
+      setMsg({ text: `사진 ${uploaded.length}장이 선택됐어요. 아래 [${KIND_LABELS[kind]} 등록하기]를 누르면 공개 화면에 반영돼요.`, ok: true });
+    }
+    if (uploaded.length) submitRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   };
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!pendingImages.length) return;
     setSaving(true);
     setMsg(null);
-    try {
-      const response = await fetch("/api/designer/portfolio", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, kind, imageUrl, imageHash }),
-      });
-      const result = await readJsonResponse(response);
-      if (!response.ok) throw new Error(result.error || "포트폴리오 저장에 실패했습니다.");
-      setImages((current) => [result.image, ...current]);
+
+    // 순서대로 등록하다 실패하면 거기서 멈추고, 성공분만 대기 목록에서 제거
+    const registered: DesignerPortfolioImage[] = [];
+    let failureText: string | null = null;
+    for (const pending of pendingImages) {
+      try {
+        const response = await fetch("/api/designer/portfolio", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title, kind, imageUrl: pending.url, imageHash: pending.hash }),
+        });
+        const result = await readJsonResponse(response);
+        if (!response.ok) throw new Error(result.error || "포트폴리오 저장에 실패했습니다.");
+        registered.push(result.image);
+      } catch (error) {
+        failureText = error instanceof Error ? error.message : "포트폴리오 저장에 실패했습니다.";
+        break;
+      }
+    }
+
+    if (registered.length) {
+      setImages((current) => [...registered, ...current]);
+      setPendingImages((current) => current.slice(registered.length));
       setTitle("");
-      setImageUrl("");
-      setImageHash("");
-      setMsg({
-        text: approved
-          ? "등록 완료! 공개 페이지 브랜드 카드에 바로 반영됐어요."
-          : "등록 완료! 프로필이 공개 승인되면 이 사진도 함께 공개돼요.",
-        ok: true,
-      });
       // 페이지 상단 미리보기 카드(서버 렌더)도 같이 갱신
       router.refresh();
-    } catch (error) {
-      setMsg({ text: error instanceof Error ? error.message : "포트폴리오 저장에 실패했습니다.", ok: false });
-    } finally {
-      setSaving(false);
     }
+    setMsg(
+      failureText
+        ? { text: `${registered.length}장 등록 후 중단됐어요: ${failureText}`, ok: false }
+        : {
+            text: approved
+              ? `${registered.length}장 등록 완료! 공개 페이지 브랜드 카드에 바로 반영됐어요.`
+              : `${registered.length}장 등록 완료! 프로필이 공개 승인되면 함께 공개돼요.`,
+            ok: true,
+          }
+    );
+    setSaving(false);
   };
 
   const hideImage = async (image: DesignerPortfolioImage) => {
@@ -129,8 +159,7 @@ export default function PortfolioManager({ initialImages, approved }: { initialI
   };
 
   const onFiles = (files: FileList | null) => {
-    const file = files?.[0];
-    if (file) upload(file);
+    if (files?.length) uploadFiles(Array.from(files));
   };
 
   const visibleImages = useMemo(() => (
@@ -211,7 +240,7 @@ export default function PortfolioManager({ initialImages, approved }: { initialI
 
           <div className="st-step" style={{ marginTop: 24 }}><span className="num">2</span> 사진 업로드</div>
           <div
-            className={`st-dz${drag ? " drag" : ""}${imageUrl ? " has-file" : ""}`}
+            className={`st-dz${drag ? " drag" : ""}${pendingImages.length ? " has-file" : ""}`}
             onClick={() => fileRef.current?.click()}
             onDragOver={(event) => {
               event.preventDefault();
@@ -232,21 +261,29 @@ export default function PortfolioManager({ initialImages, approved }: { initialI
                 <path d="m3 17.2 5.2-5.2 4.1 4.1 2.8-2.8L21 19" />
               </svg>
             </div>
-            <div className="big">{uploading ? "업로드 중..." : imageUrl ? "사진이 선택되었습니다" : "사진을 클릭하거나 끌어와서 업로드"}</div>
-            <div className="small">{imageUrl ? "다른 사진으로 바꾸려면 다시 클릭하거나 끌어오세요" : "JPG·PNG·WEBP, 8MB 이하"}</div>
+            <div className="big">{uploading ? "업로드 중..." : pendingImages.length ? `사진 ${pendingImages.length}장이 선택되었습니다` : "사진을 클릭하거나 끌어와서 업로드"}</div>
+            <div className="small">{pendingImages.length ? "사진을 더 추가하거나, 아래에서 등록을 완료하세요" : "JPG·PNG·WEBP, 8MB 이하 · 여러 장 한번에 선택 가능"}</div>
             <input
               ref={fileRef}
               type="file"
               accept="image/jpeg,image/png,image/webp"
+              multiple
               hidden
-              onChange={(event) => onFiles(event.target.files)}
+              onChange={(event) => {
+                onFiles(event.target.files);
+                event.target.value = "";
+              }}
             />
           </div>
 
-          {imageUrl ? (
-            <div className="portfolio-preview" style={{ backgroundImage: `url('${imageUrl}')` }}>
-              <span className="pending-chip">등록 대기 · 공개 전</span>
-              <button type="button" onClick={() => { setImageUrl(""); setImageHash(""); }}>X</button>
+          {pendingImages.length ? (
+            <div className="portfolio-pending-grid">
+              {pendingImages.map((item) => (
+                <div className="portfolio-preview" key={item.url} style={{ backgroundImage: `url('${item.url}')` }}>
+                  <span className="pending-chip">등록 대기</span>
+                  <button type="button" onClick={() => setPendingImages((current) => current.filter((p) => p.url !== item.url))}>X</button>
+                </div>
+              ))}
             </div>
           ) : null}
 
@@ -255,8 +292,12 @@ export default function PortfolioManager({ initialImages, approved }: { initialI
             <input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="예: 2026 SS 대표 룩" />
             <p className="hint">등록 즉시 선택한 분류 위치에 공개돼요. 제목은 비워도 괜찮아요.</p>
           </div>
-          <button ref={submitRef} className="st-btn block" type="submit" disabled={!imageUrl || saving}>
-            {saving ? "저장 중..." : imageUrl ? `${kindInfo.label} 등록하기` : "사진을 선택하면 등록할 수 있어요"}
+          <button ref={submitRef} className="st-btn block" type="submit" disabled={!pendingImages.length || saving}>
+            {saving
+              ? "저장 중..."
+              : pendingImages.length
+                ? `${kindInfo.label} ${pendingImages.length}장 등록하기`
+                : "사진을 선택하면 등록할 수 있어요"}
           </button>
           {msg ? <p className={`st-msg ${msg.ok ? "ok" : "err"}`}>{msg.text}</p> : null}
         </form>
