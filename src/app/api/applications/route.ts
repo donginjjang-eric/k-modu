@@ -6,6 +6,12 @@ function requiredText(value: unknown) {
 }
 
 export async function POST(request: Request) {
+  // 신청은 구글 로그인 후에만 가능 (화면 게이트와 동일한 규칙을 서버에서도 강제 — 스팸 차단)
+  const sessionUser = await getCurrentUser();
+  if (!sessionUser) {
+    return Response.json({ ok: false, error: "로그인 후 신청할 수 있어요." }, { status: 401 });
+  }
+
   const body = await request.json().catch(() => null);
   if (!body || typeof body !== "object") {
     return Response.json({ ok: false, error: "Invalid application payload." }, { status: 400 });
@@ -24,8 +30,7 @@ export async function POST(request: Request) {
 
   // 로그인 계정에 아직 디자이너 프로필이 없으면 신청서를 그 계정에 바로 연결한다 (관리자도 디자이너가 될 수 있다).
   let linkUserId: string | undefined;
-  const sessionUser = await getCurrentUser();
-  if (sessionUser?.role === "designer" || sessionUser?.role === "admin") {
+  if (sessionUser.role === "designer" || sessionUser.role === "admin") {
     const existing = await getDesignerForUser(sessionUser.id).catch(() => null);
     if (!existing) linkUserId = sessionUser.id;
   }

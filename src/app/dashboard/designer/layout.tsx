@@ -2,6 +2,7 @@ import "./studio.css";
 import Link from "next/link";
 import { requireApprovedDesigner } from "@/lib/auth";
 import { StudioSideNav, StudioTabBar } from "@/components/StudioNav";
+import LogoutButton from "@/components/LogoutButton";
 
 export default async function DesignerStudioLayout({ children }: { children: React.ReactNode }) {
   const { designer } = await requireApprovedDesigner();
@@ -31,7 +32,7 @@ export default async function DesignerStudioLayout({ children }: { children: Rea
 
       <div className="st-mobile-account">
         <span>{designer.brand_name}</span>
-        <Link href="/login">로그아웃</Link>
+        <LogoutButton />
       </div>
       <StudioTabBar />
     </div>

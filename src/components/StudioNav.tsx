@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import NavIcon from "@/components/NavIcons";
+import LogoutButton from "@/components/LogoutButton";
 
 export type NavItem = {
   href: string;
@@ -91,7 +92,7 @@ export function StudioSideNav({ brandName, publicHref }: { brandName: string; pu
         </div>
         <div className="st-account-actions">
           <Link href={publicHref}>공개 페이지</Link>
-          <Link href="/login">로그아웃</Link>
+          <LogoutButton />
         </div>
       </div>
     </aside>

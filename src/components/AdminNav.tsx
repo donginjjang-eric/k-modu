@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import NavIcon from "@/components/NavIcons";
+import LogoutButton from "@/components/LogoutButton";
 
 type NavItem = {
   href: string;
@@ -47,7 +48,7 @@ export function AdminSideNav({ email }: { email: string }) {
         </div>
         <div className="st-account-actions">
           <Link href="/dashboard/designer">디자이너 화면</Link>
-          <Link href="/login">로그아웃</Link>
+          <LogoutButton />
         </div>
       </div>
     </aside>

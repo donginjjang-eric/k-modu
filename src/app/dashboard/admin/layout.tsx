@@ -2,6 +2,7 @@ import "../designer/studio.css";
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { AdminSideNav, AdminTabBar } from "@/components/AdminNav";
+import LogoutButton from "@/components/LogoutButton";
 
 export default async function AdminStudioLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser("admin");
@@ -29,7 +30,7 @@ export default async function AdminStudioLayout({ children }: { children: React.
 
       <div className="st-mobile-account">
         <span>{user.email}</span>
-        <Link href="/login">로그아웃</Link>
+        <LogoutButton />
       </div>
       <AdminTabBar />
     </div>

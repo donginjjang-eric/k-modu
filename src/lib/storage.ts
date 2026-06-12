@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
-import { createReadStream, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { createReadStream, existsSync, mkdirSync, readFileSync, statfsSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import sharp from "sharp";
 
@@ -70,10 +70,32 @@ export function validateImageUpload(input: { mimeType: string; byteLength: numbe
   return ext;
 }
 
+// 볼륨 용량 가드: 가득 찬 디스크에 쓰다 서비스가 통째로 죽는 것을 막는다.
+// 여유 공간이 예약량(기본 300MB) 미만이면 저장을 거부하고, 85% 사용 시 경고 로그를 남긴다.
+const STORAGE_RESERVE_BYTES = Number(process.env.STORAGE_RESERVE_BYTES || 300 * 1024 * 1024);
+
+function assertStorageSpace(requiredBytes: number) {
+  try {
+    const stats = statfsSync(dataRoot);
+    const freeBytes = stats.bavail * stats.bsize;
+    const totalBytes = stats.blocks * stats.bsize;
+    if (totalBytes > 0 && freeBytes / totalBytes < 0.15) {
+      console.warn(`[storage] volume usage above 85% (free ${(freeBytes / 1024 / 1024).toFixed(0)}MB)`);
+    }
+    if (freeBytes < requiredBytes + STORAGE_RESERVE_BYTES) {
+      throw new Error("저장 공간이 부족합니다. 관리자에게 문의해주세요.");
+    }
+  } catch (error) {
+    // statfs 미지원 환경(일부 로컬)에서는 가드를 건너뛴다. 부족 에러는 그대로 전달.
+    if (error instanceof Error && error.message.includes("저장 공간")) throw error;
+  }
+}
+
 export async function saveStorageImage(kind: StorageKind, bytes: Buffer, mimeType: string) {
   ensureStorage();
   const ext = validateImageUpload({ mimeType, byteLength: bytes.length });
   const optimized = await optimizeImage(bytes, ext);
+  assertStorageSpace(optimized.length);
   const fileName = `${randomUUID()}${ext}`;
   const filePath = path.join(/* turbopackIgnore: true */ roots[kind], fileName);
   writeFileSync(filePath, optimized);
@@ -90,6 +112,7 @@ export function saveGeneratedPng(fileName: string, base64Image: string) {
   const safeFileName = path.basename(fileName).replace(/[^a-z0-9._-]/gi, "-");
   const filePath = path.join(/* turbopackIgnore: true */ roots.generatedLooks, safeFileName);
   const bytes = Buffer.from(base64Image, "base64");
+  assertStorageSpace(bytes.length);
   writeFileSync(filePath, bytes);
   return {
     url: `/generated-looks/${safeFileName}`,
