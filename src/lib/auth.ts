@@ -78,20 +78,35 @@ export async function requireUser(role?: Role) {
   return user;
 }
 
+// 관리자는 모든 영역에 입장 가능. 스튜디오는 계정에 연결된 디자이너 프로필로 동작한다.
 export async function requireApprovedDesigner() {
-  const user = await requireUser("designer");
+  const user = await getCurrentUser();
+  if (!user) redirect("/login?notice=designer_login");
+  if (user.role !== "designer" && user.role !== "admin") redirect("/login?error=designer_required");
+
   const designer = await getDesignerForUser(user.id);
+  if (user.role === "admin") {
+    // 관리자인데 연결된 디자이너 프로필이 없으면 콘솔로 보낸다 (스튜디오는 프로필 단위 공간).
+    if (!designer) redirect("/dashboard/admin");
+    return { user, designer };
+  }
   if (!designer || designer.approval_status !== "approved") redirect("/login?error=approval_required");
   return { user, designer };
 }
 
 export async function getApprovedDesignerForApi() {
   const user = await getCurrentUser();
-  if (!user || user.role !== "designer") {
+  if (!user || (user.role !== "designer" && user.role !== "admin")) {
     return { ok: false as const, status: 401, error: "로그인이 만료되었습니다. 다시 로그인해주세요." };
   }
 
   const designer = await getDesignerForUser(user.id);
+  if (user.role === "admin") {
+    if (!designer) {
+      return { ok: false as const, status: 403, error: "이 관리자 계정에 연결된 디자이너 프로필이 없습니다." };
+    }
+    return { ok: true as const, user, designer };
+  }
   if (!designer || designer.approval_status !== "approved") {
     return { ok: false as const, status: 403, error: "승인된 디자이너 계정만 사용할 수 있습니다." };
   }

@@ -110,6 +110,11 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
           <>
             <p className="login-google-hint">관리자 계정으로 로그인되어 있어요.</p>
             <a className="generate-button login-status-cta" href="/dashboard/admin">관리자 콘솔 열기</a>
+            {me.designer ? (
+              <a className="generate-button login-status-cta" href="/dashboard/designer/brand">
+                디자이너 스튜디오 열기 ({me.designer.brandName})
+              </a>
+            ) : null}
           </>
         ) : isApproved ? (
           <>
