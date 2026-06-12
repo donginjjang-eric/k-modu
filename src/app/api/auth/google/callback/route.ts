@@ -54,22 +54,21 @@ export async function GET(request: Request) {
       maxAge: sessionMaxAgeSeconds,
     });
 
+    // 로그인은 원래 보던 곳으로 돌아가는 게 기본. 입구(/admin, /studio, /apply)로 들어온 경우만 그 목적지로 보낸다.
+    const dest = nextPath.startsWith("/") && !nextPath.startsWith("//") ? nextPath : "";
+
     if (user.role === "admin") {
-      return Response.redirect(`${origin}/dashboard/admin`, 302);
+      return Response.redirect(`${origin}${dest || "/"}`, 302);
     }
     if (designer?.approval_status === "approved") {
-      return Response.redirect(`${origin}/dashboard/designer/brand`, 302);
+      return Response.redirect(`${origin}${dest || "/"}`, 302);
     }
     if (designer) {
       // 신청서는 있으나 아직 승인 전
       return Response.redirect(`${origin}/login?notice=approval_pending`, 302);
     }
-    if (nextPath.startsWith("/") && !nextPath.startsWith("//")) {
-      // 신청 페이지에서 로그인으로 유도된 경우: 바로 신청으로 복귀
-      return Response.redirect(`${origin}${nextPath}`, 302);
-    }
-    // 신청 내역이 없는 구글 계정: 디자이너 등록 신청 페이지로 안내
-    return Response.redirect(`${origin}/login?notice=apply_required`, 302);
+    // 신청 내역이 없는 구글 계정: 신청 페이지로 가던 길이면 그대로, 아니면 신청 안내
+    return Response.redirect(`${origin}${dest || "/login?notice=apply_required"}`, 302);
   } catch (error) {
     console.error("[google-login] callback failed:", error);
     return Response.redirect(`${origin}/login?error=google_failed`, 302);

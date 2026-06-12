@@ -68,7 +68,7 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
     const response = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: email.trim(), password }),
+      body: JSON.stringify({ email: email.trim(), password, next: nextPath }),
     });
     const result = await response.json().catch(() => ({}));
     setIsSubmitting(false);

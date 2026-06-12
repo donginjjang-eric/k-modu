@@ -69,10 +69,16 @@ export async function getCurrentUser() {
   return parseSessionToken(cookieStore.get(sessionCookieName)?.value);
 }
 
+// 입구별 로그인 후 복귀 목적지. 로그인 자체는 메인으로 돌아가고, 입구로 들어온 경우만 그 목적지로 보낸다.
+function loginEntryUrl(role: Role) {
+  const next = role === "admin" ? "/dashboard/admin" : "/dashboard/designer/brand";
+  return `/login?notice=${role}_login&next=${encodeURIComponent(next)}`;
+}
+
 export async function requireUser(role?: Role) {
   const user = await getCurrentUser();
-  // 비로그인: 어떤 입구(관리자/디자이너)로 들어왔는지 로그인 페이지에 알려준다.
-  if (!user) redirect(role ? `/login?notice=${role}_login` : "/login");
+  // 비로그인: 어떤 입구(관리자/디자이너)로 들어왔는지 알리고, 로그인 후 그 입구의 목적지로 복귀시킨다.
+  if (!user) redirect(role ? loginEntryUrl(role) : "/login");
   // 로그인은 했지만 권한이 다른 경우: 어떤 계정이 필요한지 로그인 페이지에서 안내한다.
   if (role && user.role !== role) redirect(`/login?error=${role}_required`);
   return user;
@@ -81,7 +87,7 @@ export async function requireUser(role?: Role) {
 // 관리자는 모든 영역에 입장 가능. 스튜디오는 계정에 연결된 디자이너 프로필로 동작한다.
 export async function requireApprovedDesigner() {
   const user = await getCurrentUser();
-  if (!user) redirect("/login?notice=designer_login");
+  if (!user) redirect(loginEntryUrl("designer"));
   if (user.role !== "designer" && user.role !== "admin") redirect("/login?error=designer_required");
 
   const designer = await getDesignerForUser(user.id);

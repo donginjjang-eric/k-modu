@@ -24,6 +24,10 @@ export async function POST(request: Request) {
     maxAge: sessionMaxAgeSeconds,
   });
 
+  // 로그인은 원래 보던 곳(기본: 메인)으로. 입구로 들어온 경우만 next 목적지로 보낸다.
+  const next = String(body.next || "");
+  const safeNext = next.startsWith("/") && !next.startsWith("//") ? next : "";
+
   return Response.json({
     ok: true,
     user: {
@@ -31,6 +35,6 @@ export async function POST(request: Request) {
       email: user.email,
       role: user.role,
     },
-    redirectTo: user.role === "admin" ? "/dashboard/admin" : "/dashboard/designer/brand",
+    redirectTo: safeNext || "/",
   });
 }
