@@ -33,6 +33,23 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
   const [nextPath, setNextPath] = useState("");
   // 관리자 페이지 접근이 차단되어 온 경우: 계정 전환 안내를 최우선으로 보여준다.
   const [adminRequired, setAdminRequired] = useState(false);
+  // 카카오톡 등 인앱 브라우저: 구글이 OAuth를 차단하므로 외부 브라우저로 탈출시킨다.
+  const [inAppBrowser, setInAppBrowser] = useState(false);
+
+  useEffect(() => {
+    const ua = navigator.userAgent.toLowerCase();
+    const isKakao = ua.includes("kakaotalk");
+    const isOtherInApp = /instagram|fbav|fban|line\/|naver\(inapp|daumapps|everytimeapp/.test(ua);
+    if (isKakao) {
+      setInAppBrowser(true);
+      window.location.href = `kakaotalk://web/openExternal?url=${encodeURIComponent(window.location.href)}`;
+    } else if (isOtherInApp) {
+      setInAppBrowser(true);
+      if (ua.includes("android")) {
+        window.location.href = `intent://${window.location.host}${window.location.pathname}${window.location.search}#Intent;scheme=https;package=com.android.chrome;end`;
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -80,6 +97,18 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
 
     window.location.href = result.redirectTo || "/";
   };
+
+  if (inAppBrowser) {
+    return (
+      <div className="generate-box login-form-card">
+        <p className="login-status-email">외부 브라우저로 열어주세요</p>
+        <p className="login-google-hint">
+          카카오톡 등 앱 안의 브라우저에서는 구글 로그인이 차단돼요. 외부 브라우저로 자동 전환 중이에요.
+          화면이 바뀌지 않으면 우측 메뉴(⋮ 또는 공유 버튼)에서 &ldquo;다른 브라우저로 열기&rdquo;를 눌러주세요.
+        </p>
+      </div>
+    );
+  }
 
   if (!checked) {
     return (
