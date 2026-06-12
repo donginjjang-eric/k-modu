@@ -14,7 +14,7 @@
   <title>Designers | K-MODU</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
-  <link rel="stylesheet" href="platform.css?v=20260613c" />
+  <link rel="stylesheet" href="platform.css?v=20260613d" />
 </head>
 <body>
   <main class="platform designer-board">
@@ -2165,8 +2165,26 @@
         }
       };
       placeOwnedCategoryTabs();
+
+      // PC: 서브바가 실제로 따라붙은(stuck) 동안 블랙 반전 강조
+      const proposalContentEl = document.querySelector('.designer-proposal-content');
+      const updateOwnedTabsStuck = () => {
+        if (!ownedTabsHome || !proposalContentEl) return;
+        if (dockMedia.matches || !ownedTabsHome.offsetParent) {
+          ownedTabsHome.classList.remove('is-stuck');
+          return;
+        }
+        const stuck = ownedTabsHome.getBoundingClientRect().top <= proposalContentEl.getBoundingClientRect().top + 9;
+        ownedTabsHome.classList.toggle('is-stuck', stuck);
+      };
+      if (proposalContentEl) {
+        proposalContentEl.addEventListener('scroll', updateOwnedTabsStuck, { passive: true });
+      }
       if (typeof dockMedia.addEventListener === 'function') {
-        dockMedia.addEventListener('change', placeOwnedCategoryTabs);
+        dockMedia.addEventListener('change', () => {
+          placeOwnedCategoryTabs();
+          updateOwnedTabsStuck();
+        });
       }
     }
 

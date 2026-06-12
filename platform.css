@@ -5751,3 +5751,32 @@ body.dark-theme .mini-stats strong {
     box-shadow: 0 10px 26px rgba(5, 5, 5, .1);
   }
 }
+
+/* PC 서브바: 따라붙은(stuck) 동안 블랙 반전으로 현재 위치 강조 */
+@media (min-width: 961px) {
+  .styling-board-section-head:has(> .owned-category-tabs) {
+    transition: background .22s ease, border-color .22s ease, box-shadow .22s ease;
+  }
+  .styling-board-section-head:has(> .owned-category-tabs) h3,
+  .styling-board-section-head:has(> .owned-category-tabs) > span,
+  .styling-board-section-head:has(> .owned-category-tabs) .owned-category-tabs button {
+    transition: background .22s ease, border-color .22s ease, color .22s ease;
+  }
+  .styling-board-section-head.is-stuck {
+    border-color: rgba(255, 255, 255, .12);
+    background: rgba(12, 12, 12, .88);
+    box-shadow: 0 16px 34px rgba(5, 5, 5, .34);
+  }
+  .styling-board-section-head.is-stuck h3 { color: #fff; }
+  .styling-board-section-head.is-stuck > span { color: rgba(255, 255, 255, .62); }
+  .styling-board-section-head.is-stuck .owned-category-tabs button {
+    border-color: rgba(255, 255, 255, .34);
+    background: transparent;
+    color: #fff;
+  }
+  .styling-board-section-head.is-stuck .owned-category-tabs button.is-active {
+    border-color: #fff;
+    background: #fff;
+    color: #050505;
+  }
+}
