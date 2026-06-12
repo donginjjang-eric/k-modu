@@ -221,18 +221,12 @@ export async function getPublicProductsForDesigner(designerId: string): Promise<
     return designerId === phaseDesigner.id ? toDemoProducts().filter((product) => product.status === "active") : [];
   }
   try {
-    const products = await query<Product>(
+    // DB가 정상이면 DB가 유일한 진실. (과거에는 데모 상품을 합쳐 넣었지만,
+    // 숨김 처리한 상품이 폴백으로 되살아나는 문제가 있어 제거 — 2026-06-12)
+    return await query<Product>(
       "SELECT * FROM products WHERE designer_id = $1 AND status = 'active' ORDER BY created_at DESC",
       [designerId],
     );
-    if (designerId === phaseDesigner.id) {
-      const existingIds = new Set(products.map((product) => product.id));
-      const fallbackProducts = toDemoProducts().filter((product) => (
-        product.status === "active" && !existingIds.has(product.id)
-      ));
-      return [...products, ...fallbackProducts];
-    }
-    return products;
   } catch (error) {
     if (!canUseDemoData()) throw error;
     return designerId === phaseDesigner.id ? toDemoProducts().filter((product) => product.status === "active") : [];
