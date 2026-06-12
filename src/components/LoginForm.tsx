@@ -1,6 +1,6 @@
 "use client";
 
-// 파트너 로그인: 구글 로그인이 기본. 로그인된 상태면 상태 카드(누구로 로그인됨 + 다음 행동)를 보여준다.
+// 파트너 로그인: 구글 로그인 단일 방식. 로그인된 상태면 상태 카드(누구로 로그인됨 + 다음 행동)를 보여준다.
 import { useEffect, useState } from "react";
 
 const PARAM_MESSAGES: Record<string, string> = {
@@ -9,7 +9,7 @@ const PARAM_MESSAGES: Record<string, string> = {
   apply_required: "이 구글 계정으로 접수된 디자이너 신청이 없어요. 디자이너 등록 신청을 먼저 완료해주세요.",
   login_required: "디자이너 등록 신청은 구글 로그인 후 진행돼요. 로그인하면 신청 페이지로 바로 이동해요.",
   designer_required: "디자이너 계정으로 로그인해야 이용할 수 있는 페이지예요.",
-  admin_login: "관리자 콘솔은 로그인 후 이용할 수 있어요. 관리자 계정으로 로그인해주세요.",
+  admin_login: "관리자 콘솔은 로그인 후 이용할 수 있어요. 관리자 권한이 있는 구글 계정으로 로그인해주세요.",
   designer_login: "디자이너 스튜디오는 로그인 후 이용할 수 있어요. 구글 계정으로 로그인해주세요.",
   google_failed: "구글 로그인에 실패했어요. 잠시 후 다시 시도해주세요.",
   google_not_configured: "구글 로그인이 아직 설정되지 않았어요. 관리자에게 문의해주세요.",
@@ -21,11 +21,7 @@ type Me = {
 };
 
 export default function LoginForm({ googleEnabled = false }: { googleEnabled?: boolean }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showEmailLogin, setShowEmailLogin] = useState(!googleEnabled);
   const [me, setMe] = useState<Me>({ user: null, designer: null });
   // 깜빡임 방지: 로그인 상태 확인이 끝나기 전엔 폼/카드를 그리지 않는다.
   const [checked, setChecked] = useState(false);
@@ -56,8 +52,6 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
     const key = params.get("notice") || params.get("error") || "";
     if (PARAM_MESSAGES[key]) setMessage(PARAM_MESSAGES[key]);
     if (params.get("error") === "admin_required") setAdminRequired(true);
-    // 관리자 입구로 온 경우 이메일/비밀번호 폼도 바로 펼쳐서 두 로그인 수단을 모두 보여준다.
-    if (key === "admin_login") setShowEmailLogin(true);
     const next = params.get("next") || "";
     if (next.startsWith("/") && !next.startsWith("//")) setNextPath(next);
 
@@ -75,27 +69,6 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
       await fetch("/api/auth/logout", { method: "POST" });
     } catch {}
     window.location.href = "/login";
-  };
-
-  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setIsSubmitting(true);
-    setMessage("");
-
-    const response = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: email.trim(), password, next: nextPath }),
-    });
-    const result = await response.json().catch(() => ({}));
-    setIsSubmitting(false);
-
-    if (!response.ok || !result.ok) {
-      setMessage(result.error || "로그인에 실패했습니다.");
-      return;
-    }
-
-    window.location.href = result.redirectTo || "/";
   };
 
   if (inAppBrowser) {
@@ -129,7 +102,7 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
         {adminRequired && !isAdmin ? (
           <>
             <p className="login-google-hint">
-              이 계정에는 관리자 권한이 없어요. 관리자 콘솔은 관리자 계정(이메일/비밀번호)으로 로그인해야 해요.
+              이 계정에는 관리자 권한이 없어요. 관리자 권한이 있는 계정으로 다시 로그인해주세요.
             </p>
             <button className="generate-button login-status-cta" type="button" onClick={logout}>
               로그아웃하고 다른 계정으로 로그인
@@ -167,7 +140,7 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
   }
 
   return (
-    <form className="generate-box login-form-card" onSubmit={submit}>
+    <div className="generate-box login-form-card">
       {googleEnabled ? (
         <>
           <a className="google-login-button" href={`/api/auth/google${nextPath ? `?next=${encodeURIComponent(nextPath)}` : ""}`}>
@@ -179,49 +152,14 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
             </svg>
             Google로 시작하기
           </a>
-          <p className="login-google-hint">디자이너 등록 신청 후 승인되면, 신청서의 이메일과 같은 구글 계정으로 바로 입장할 수 있어요.</p>
+          <p className="login-google-hint">
+            처음이라면 디자이너 등록 신청 후 승인되는 즉시, 같은 구글 계정으로 바로 입장할 수 있어요.
+          </p>
         </>
-      ) : null}
-      {googleEnabled && !showEmailLogin ? (
-        <button
-          className="login-email-toggle"
-          type="button"
-          onClick={() => setShowEmailLogin(true)}
-        >
-          파트너 이메일로 로그인
-        </button>
-      ) : null}
-      {showEmailLogin ? (
-        <>
-          {googleEnabled ? <p className="login-divider">파트너 이메일 로그인</p> : null}
-          <label className="login-field">
-            <p className="kicker">ID / Email</p>
-            <input
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              autoComplete="username"
-              placeholder="파트너 계정 이메일"
-              required
-            />
-          </label>
-          <label className="login-field">
-            <p className="kicker">Password</p>
-            <input
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              autoComplete="current-password"
-              placeholder="비밀번호"
-              required
-            />
-          </label>
-          <button className="generate-button" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "확인 중..." : "로그인"}
-          </button>
-        </>
-      ) : null}
+      ) : (
+        <p className="login-google-hint">구글 로그인이 아직 설정되지 않았어요. 관리자에게 문의해주세요.</p>
+      )}
       {message ? <p className="notice">{message}</p> : null}
-      <p className="notice">승인된 파트너 계정으로만 로그인할 수 있습니다.</p>
-    </form>
+    </div>
   );
 }
