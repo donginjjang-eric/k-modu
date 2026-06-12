@@ -11,7 +11,10 @@ export default async function DesignerBrandPage() {
   const lookbookImages = portfolioImages.filter((image) => image.kind === "lookbook");
   const productImages = portfolioImages.filter((image) => image.kind === "product");
   const sampleImages = portfolioImages.filter((image) => image.kind === "sample");
-  const heroImage = approvedImages[0]?.image_url || portfolioImages[0]?.image_url || "/assets/designer-samples/model_1.png";
+  // 공개 카드 커버와 동일한 규칙: 대표 프로필 → 룩북 순. 없으면 빈 상태를 정직하게 보여준다.
+  const coverImage = approvedImages.find((image) => image.kind === "profile")?.image_url
+    || approvedImages.find((image) => image.kind === "lookbook")?.image_url
+    || null;
 
   return (
     <>
@@ -27,23 +30,30 @@ export default async function DesignerBrandPage() {
       </div>
 
       <section className="brand-public-preview">
-        <div className="brand-preview-visual" style={{ backgroundImage: `url('${heroImage}')` }}>
-          <span>첫 이미지</span>
-        </div>
+        {coverImage ? (
+          <div className="brand-preview-visual" style={{ backgroundImage: `url('${coverImage}')` }}>
+            <span>메인 카드 커버</span>
+          </div>
+        ) : (
+          <div className="brand-preview-visual is-empty">
+            <span>커버 비어 있음</span>
+            <p>대표 프로필 사진을 올리면<br />이 자리가 메인 카드 커버가 돼요</p>
+          </div>
+        )}
         <div className="brand-preview-copy">
           <p className="kicker">Designer Profile / Portfolio</p>
           <h2>{designer.brand_name}</h2>
           <strong>Representative looks and portfolio mood</strong>
           <p>{designer.description || "브랜드 소개를 입력하면 공개 프로필 첫 화면에 반영됩니다."}</p>
           <div className="brand-preview-tags">
-            <span>Profile {profileImages.length}</span>
-            <span>Lookbook {lookbookImages.length}</span>
-            <span>Product {productImages.length}</span>
-            <span>Sample {sampleImages.length}</span>
+            <span>대표 프로필 {profileImages.length}</span>
+            <span>룩북 {lookbookImages.length}</span>
+            <span>제품 컷 {productImages.length}</span>
+            <span>샘플/소재 {sampleImages.length}</span>
           </div>
           <div className="brand-preview-note">
             <b>{approvedImages.length}</b>
-            <span>이 계정의 공개 카드와 프로필 모달에 바로 노출됩니다.</span>
+            <span>공개 중인 사진 — 등록 즉시 메인 카드와 모달에 반영돼요.</span>
           </div>
         </div>
       </section>

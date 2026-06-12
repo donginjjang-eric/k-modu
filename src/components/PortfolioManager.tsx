@@ -1,13 +1,15 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { DesignerPortfolioImage, PortfolioImageKind } from "@/lib/types";
 
-const KINDS: Array<{ value: PortfolioImageKind; label: string }> = [
-  { value: "profile", label: "프로필" },
-  { value: "lookbook", label: "포트폴리오" },
-  { value: "product", label: "제품 컷" },
-  { value: "sample", label: "샘플/소재" },
+// 용어 사전: 스튜디오·미리보기·공개 화면이 같은 이름을 쓴다. destination은 공개 모달의 실제 노출 위치.
+const KINDS: Array<{ value: PortfolioImageKind; label: string; destination: string }> = [
+  { value: "profile", label: "대표 프로필", destination: "메인 카드 커버 + 모달 첫 화면" },
+  { value: "lookbook", label: "룩북", destination: "모달 Portfolio Preview" },
+  { value: "product", label: "제품 컷", destination: "모달 Hero Products" },
+  { value: "sample", label: "샘플/소재", destination: "모달 Available Samples" },
 ];
 
 const STATUS_LABELS: Record<DesignerPortfolioImage["status"], string> = {
@@ -47,6 +49,7 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
   const [drag, setDrag] = useState(false);
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
   const upload = async (file: File) => {
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
@@ -93,7 +96,9 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
       setKind("lookbook");
       setImageUrl("");
       setImageHash("");
-      setMsg({ text: "포트폴리오 이미지가 바로 등록되었습니다.", ok: true });
+      setMsg({ text: "등록 완료! 공개 카드와 모달에 바로 반영됐어요.", ok: true });
+      // 페이지 상단 미리보기 카드(서버 렌더)도 같이 갱신
+      router.refresh();
     } catch (error) {
       setMsg({ text: error instanceof Error ? error.message : "포트폴리오 저장에 실패했습니다.", ok: false });
     } finally {
@@ -104,7 +109,10 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
   const hideImage = async (image: DesignerPortfolioImage) => {
     if (!window.confirm("이 이미지를 숨길까요?")) return;
     const response = await fetch(`/api/designer/portfolio/${image.id}`, { method: "DELETE" });
-    if (response.ok) setImages((current) => current.filter((item) => item.id !== image.id));
+    if (response.ok) {
+      setImages((current) => current.filter((item) => item.id !== image.id));
+      router.refresh();
+    }
   };
 
   const onFiles = (files: FileList | null) => {
@@ -205,13 +213,14 @@ export default function PortfolioManager({ initialImages }: { initialImages: Des
               >
                 <strong>{item.label}</strong>
                 <span>{counts[item.value]}장</span>
+                <em className="dest">→ {item.destination}</em>
               </button>
             ))}
           </div>
           <div className="st-field">
-            <label>이미지 제목</label>
+            <label>이미지 제목 (선택)</label>
             <input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="예: 2026 SS 대표 룩" />
-            <p className="hint">등록하면 바로 공개 프로필과 포트폴리오 분류에 반영됩니다.</p>
+            <p className="hint">등록 즉시 선택한 분류 위치에 공개돼요. 제목은 비워도 괜찮아요.</p>
           </div>
           <button className="st-btn block" type="submit" disabled={!imageUrl || saving}>
             {saving ? "저장 중..." : "바로 등록하기"}

@@ -653,3 +653,33 @@
   .admin-look-grid { grid-template-columns: repeat(2,1fr); }
   .admin-gallery { grid-template-columns: 1fr 1fr; gap: 12px; }
 }
+
+/* ── 브랜드 프로필 Phase 1+2: 분류 목적지 힌트 + 정직한 빈 커버 ── */
+.portfolio-kind-picker button .dest {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  font-style: normal;
+  line-height: 1.45;
+  opacity: .56;
+  word-break: keep-all;
+}
+
+.portfolio-kind-picker button.is-active .dest { opacity: .8; }
+
+.brand-preview-visual.is-empty {
+  display: grid;
+  place-content: center;
+  text-align: center;
+  background: #efece4;
+  border: 1px dashed rgba(5, 5, 5, .22);
+}
+
+.brand-preview-visual.is-empty span { position: static; justify-self: center; }
+
+.brand-preview-visual.is-empty p {
+  margin: 12px 0 0;
+  font-size: 13px;
+  line-height: 1.65;
+  opacity: .6;
+}
