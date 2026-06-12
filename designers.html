@@ -66,14 +66,14 @@
         <button class="designer-proposal-close" type="button" aria-label="닫기">‹</button>
         <div class="designer-proposal-scroll">
         <div class="designer-proposal-visual">
-          <img id="proposalImage" src="assets/designer-samples/model_1.png" alt="" />
+          <img id="proposalImage" src="assets/designer-samples/model_kfashion_base2.jpg" alt="" />
           <div class="tryon-loading-overlay" id="tryonLoadingOverlay" hidden>
             <strong>AI 룩 생성 중</strong>
             <span>선택한 제품으로 스타일링하는 중…</span>
           </div>
           <div class="styling-collage" id="stylingCollage" aria-label="Selected styling collage" hidden>
             <div class="styling-stage" id="stylingStage">
-              <img id="collageModel" src="assets/designer-samples/model_1.png" alt="Styling model preview" />
+              <img id="collageModel" src="assets/designer-samples/model_kfashion_base2.jpg" alt="Styling model preview" />
               <div class="styling-collage-caption" id="stylingCollageCaption" hidden></div>
               <button class="stage-generate" id="stageGenerate" type="button" disabled>
                 <span class="stage-generate-spark" aria-hidden="true">✨</span> AI 룩 생성
@@ -523,7 +523,7 @@
       revealItems.forEach((item) => observer.observe(item));
     };
 
-    const FALLBACK_CARD_IMAGE = 'assets/designer-samples/model_1.png';
+    const FALLBACK_CARD_IMAGE = 'assets/designer-samples/model_kfashion_base2.jpg';
 
     // DB 디자이너를 샘플과 같은 카드 튜플 포맷으로 변환해 하위 로직(index 기반 헬퍼)을 그대로 쓴다.
     const designerToProfile = (designer) => {
@@ -899,19 +899,19 @@
     let currentOwnedItems = [];
     let ownedCategoryFilter = 'top';
     let modelTemplateImages = {
-      'fixed-female-minimal': 'assets/designer-samples/model_1.png',
-      'fixed-street': 'assets/designer-samples/model_1.png'
+      'fixed-female-minimal': 'assets/designer-samples/model_kfashion_base2.jpg',
+      'fixed-street': 'assets/designer-samples/model_street_base2.jpg'
     };
     let generatedLookImages = {
-      'fixed-female-minimal': 'assets/designer-samples/model_1.png',
+      'fixed-female-minimal': 'assets/designer-samples/model_kfashion_base2.jpg',
       'fixed-street': 'assets/generated-looks/maison-lune-street-full-look.png'
     };
     // Fixed 9:16 TikTok base models (user-provided). Falls back if the asset is missing.
     let baseStageImages = {
-      'fixed-female-minimal': 'assets/designer-samples/model_1.png',
-      'fixed-street': 'assets/designer-samples/model_1.png'
+      'fixed-female-minimal': 'assets/designer-samples/model_kfashion_base2.jpg',
+      'fixed-street': 'assets/designer-samples/model_street_base2.jpg'
     };
-    const FALLBACK_BASE = 'assets/designer-samples/model_1.png';
+    const FALLBACK_BASE = 'assets/designer-samples/model_kfashion_base2.jpg';
     // Pre-generated AI looks shown on "Generate AI Look" in demo mode (random for realism).
     const demoLookPool = [
       'assets/designer-samples/card_1_potfolio/1card_ai_endimage/1.png',

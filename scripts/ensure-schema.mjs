@@ -42,6 +42,19 @@ try {
     console.log(`[schema] backup admin ensured: ${email}`);
   }
 
+  // 모델 템플릿 베이스 이미지는 코드가 소유하는 플랫폼 설정 — 부팅 시 동기화 (2026-06-13 신규 모델로 교체)
+  const templateImages = [
+    ["k_fashion_female", "assets/designer-samples/model_kfashion_base2.jpg"],
+    ["street", "assets/designer-samples/model_street_base2.jpg"],
+  ];
+  for (const [type, imageUrl] of templateImages) {
+    const result = await pool.query(
+      "UPDATE model_templates SET image_url = $2, updated_at = now() WHERE type = $1 AND image_url <> $2",
+      [type, imageUrl],
+    );
+    if (result.rowCount) console.log(`[schema] model template image synced: ${type}`);
+  }
+
   await pool.end();
 } catch (error) {
   console.error("[schema] failed (app will still start):", error?.message || error);
