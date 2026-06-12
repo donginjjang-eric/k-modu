@@ -59,6 +59,21 @@ export type DesignerPortfolioImage = {
   updated_at: string;
 };
 
+export type CollabRequestType = "sample" | "collab";
+export type CollabRequestStatus = "new" | "read" | "done";
+
+export type CollabRequest = {
+  id: string;
+  designer_id: string;
+  request_type: CollabRequestType;
+  creator_name: string;
+  creator_contact: string;
+  message: string;
+  status: CollabRequestStatus;
+  created_at: string;
+  updated_at: string;
+};
+
 export type ModelTemplate = {
   id: string;
   name: string;

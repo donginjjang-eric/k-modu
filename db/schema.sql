@@ -120,6 +120,22 @@ UPDATE designer_portfolio_images
   SET status = 'approved', updated_at = now()
   WHERE status = 'pending';
 
+-- 크리에이터 → 디자이너 의뢰 (샘플 요청 / 협업 제안)
+CREATE TABLE IF NOT EXISTS collab_requests (
+  id text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  designer_id text NOT NULL REFERENCES designers(id) ON DELETE CASCADE,
+  request_type text NOT NULL CHECK (request_type IN ('sample', 'collab')),
+  creator_name text NOT NULL,
+  creator_contact text NOT NULL,
+  message text NOT NULL DEFAULT '',
+  status text NOT NULL DEFAULT 'new' CHECK (status IN ('new', 'read', 'done')),
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS collab_requests_designer_idx
+  ON collab_requests(designer_id, status, created_at DESC);
+
 -- 조회 성능 인덱스 (데이터가 쌓이기 전에 미리)
 CREATE INDEX IF NOT EXISTS generated_looks_designer_status_idx
   ON generated_looks(designer_id, status);

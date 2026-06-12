@@ -2,7 +2,7 @@ import { randomBytes, randomUUID } from "node:crypto";
 import { Pool } from "pg";
 import type { QueryResultRow } from "pg";
 import { designer as phaseDesigner, modelTemplates as phaseTemplates, products as phaseProducts } from "./phase1-data";
-import type { ApprovalStatus, Designer, DesignerPortfolioImage, GeneratedLook, ModelTemplate, PortfolioImageStatus, Product, User } from "./types";
+import type { ApprovalStatus, CollabRequest, CollabRequestStatus, CollabRequestType, Designer, DesignerPortfolioImage, GeneratedLook, ModelTemplate, PortfolioImageStatus, Product, User } from "./types";
 
 let pool: Pool | null = null;
 
@@ -190,6 +190,56 @@ export async function createDesignerApplication(input: {
       input.country ?? "South Korea",
       input.user_id ?? null,
     ],
+  );
+}
+
+// ── 크리에이터 의뢰 (샘플 요청 / 협업 제안) ──
+export async function createCollabRequest(input: {
+  designer_id: string;
+  request_type: CollabRequestType;
+  creator_name: string;
+  creator_contact: string;
+  message: string;
+}): Promise<CollabRequest | null> {
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    const now = new Date().toISOString();
+    return { id: "demo-collab-request", status: "new", created_at: now, updated_at: now, ...input };
+  }
+  return one<CollabRequest>(
+    `INSERT INTO collab_requests (designer_id, request_type, creator_name, creator_contact, message)
+     VALUES ($1, $2, $3, $4, $5)
+     RETURNING *`,
+    [input.designer_id, input.request_type, input.creator_name, input.creator_contact, input.message],
+  );
+}
+
+export async function getCollabRequestsForDesigner(designerId: string): Promise<CollabRequest[]> {
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    return [];
+  }
+  return query<CollabRequest>(
+    "SELECT * FROM collab_requests WHERE designer_id = $1 ORDER BY created_at DESC",
+    [designerId],
+  );
+}
+
+export async function updateCollabRequestStatus(
+  id: string,
+  designerId: string,
+  status: CollabRequestStatus,
+): Promise<CollabRequest | null> {
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    return null;
+  }
+  // designer_id 조건으로 본인 의뢰만 변경 가능
+  return one<CollabRequest>(
+    `UPDATE collab_requests SET status = $3, updated_at = now()
+      WHERE id = $1 AND designer_id = $2
+      RETURNING *`,
+    [id, designerId, status],
   );
 }
 

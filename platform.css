@@ -5583,3 +5583,32 @@ body.dark-theme .mini-stats strong {
     display: none;
   }
 }
+
+/* ── 크리에이터 의뢰 폼 (디자이너 모달 협업 탭) ── */
+.collab-request-box {
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid var(--line, #d8d4cb);
+  border-radius: 16px;
+  display: grid;
+  gap: 10px;
+  background: rgba(255, 253, 248, .6);
+}
+.collab-request-box h3 { margin: 0; font-size: 15px; }
+.collab-request-hint { margin: 0; font-size: 12px; opacity: .65; line-height: 1.5; }
+.collab-type-tabs { display: flex; gap: 8px; }
+.collab-type-tabs button {
+  flex: 1; min-height: 38px; border: 1px solid var(--line, #d8d4cb); border-radius: 999px;
+  background: #fff; font-weight: 700; font-size: 13px; cursor: pointer;
+}
+.collab-type-tabs button.is-active { background: #111; color: #fff; border-color: #111; }
+.collab-request-box input, .collab-request-box textarea {
+  width: 100%; border: 1px solid var(--line, #d8d4cb); border-radius: 10px;
+  padding: 10px 12px; font: inherit; font-size: 14px; background: #fff; resize: vertical;
+}
+.collab-submit {
+  min-height: 44px; border: 0; border-radius: 999px; background: #111; color: #fff;
+  font-weight: 800; font-size: 14px; cursor: pointer;
+}
+.collab-submit:disabled { opacity: .45; cursor: not-allowed; }
+.collab-status { margin: 0; font-size: 13px; line-height: 1.5; }
