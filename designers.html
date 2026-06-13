@@ -1902,6 +1902,11 @@
         }));
       }
 
+      // 실제 디자이너(DB 카드, index 7=designerId)는 다른 디자이너 이미지를 빌려오지 않는다 — 본인 커버(없으면 플레이스홀더)만.
+      if (profile && profile[7]) {
+        return [{ image: profile[1], name: profile[2] }];
+      }
+
       if (startIndex === 0 && isSampleBoard) {
         return [
         'assets/designer-profile-real-01.png',
