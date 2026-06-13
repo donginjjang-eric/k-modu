@@ -139,7 +139,7 @@ export default function ProductManager({ initialProducts }: { initialProducts: P
       <p className="st-sub">사진을 올리고 기본 정보를 입력하면 디자이너 스튜디오에 저장됩니다.</p>
 
       <div className="st-grid2col">
-        <form className="st-card" onSubmit={submit}>
+        <form className="st-card" id="product-upload" onSubmit={submit}>
           <div className="st-step"><span className="num">1</span> 사진 올리기</div>
           <div
             className={`st-dz${drag ? " drag" : ""}`}
@@ -221,7 +221,7 @@ export default function ProductManager({ initialProducts }: { initialProducts: P
           {msg ? <p className={`st-msg ${msg.ok ? "ok" : "err"}`}>{msg.text}</p> : null}
         </form>
 
-        <div>
+        <div id="my-products">
           <div className="st-sec-head product-manager-head">
             <h2>내 상품 ({visibleProducts.length}/{products.length})</h2>
             <DraggableTabs

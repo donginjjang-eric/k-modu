@@ -21,7 +21,7 @@ const PRODUCT_SUBNAV = [
 
 export const STUDIO_NAV: NavItem[] = [
   { href: "/dashboard/designer/brand", icon: "badge", label: "브랜드 프로필", short: "프로필" },
-  { href: "/dashboard/designer/products", icon: "shirt", label: "상품 작업", short: "상품" },
+  { href: "/dashboard/designer/products", icon: "shirt", label: "상품 등록", short: "상품" },
   { href: "/dashboard/designer/generated-looks", icon: "sparkles", label: "AI 룩 제작", short: "AI" },
   { href: "/dashboard/designer/short", icon: "video", label: "숏폼 제작", short: "숏폼" },
   { href: "/dashboard/designer/orders", icon: "inbox", label: "받은 의뢰", short: "의뢰" },
@@ -58,10 +58,14 @@ export function StudioSideNav({ brandName, publicHref }: { brandName: string; pu
                   <span className="st-chevron" aria-hidden="true">{productOpen ? "−" : "+"}</span>
                 </button>
                 {productOpen ? (
-                  <div className="st-subnav" aria-label="상품 작업 하위 메뉴">
-                    <Link className={active ? "st-subitem is-active" : "st-subitem"} href={item.href}>
+                  <div className="st-subnav" aria-label="상품 등록 하위 메뉴">
+                    <Link className={active ? "st-subitem is-active" : "st-subitem"} href={`${item.href}#product-upload`}>
                       <span className="ic"><NavIcon name="shirt" /></span>
-                      내 상품
+                      상품 올리기
+                    </Link>
+                    <Link className="st-subitem" href={`${item.href}#my-products`}>
+                      <span className="ic"><NavIcon name="file" /></span>
+                      내 상품 관리
                     </Link>
                     {PRODUCT_SUBNAV.map((subitem) => (
                       <span className="st-subitem is-soon" key={subitem.label}>
