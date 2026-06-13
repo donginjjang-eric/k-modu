@@ -549,6 +549,21 @@
 .admin-table-row:last-child { border-bottom: 0; }
 .admin-table-row b { display: block; font-size: 15px; }
 .admin-table-row p { margin: 3px 0 0; color: var(--muted); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* 회원 관리 표 전용 그리드 (디자이너 승인 표의 버튼 칸 기준 폭에서 분리) */
+.members-table .admin-table-head,
+.members-table .admin-table-row { grid-template-columns: minmax(0, 2.4fr) 96px minmax(0, 1.9fr) 110px; }
+.members-table .acct-cell b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.members-table .role-tag { display: inline-flex; align-items: center; min-height: 25px; padding: 0 11px; border-radius: 999px; background: var(--soft); color: var(--ink); font-size: 12px; font-weight: 800; font-style: normal; }
+.members-table .role-tag.is-admin { background: #1f1b14; color: #fff; }
+.members-table .brand-cell { display: flex; align-items: center; gap: 8px; min-width: 0; flex-wrap: wrap; }
+.members-table .brand-cell .admin-title-link { font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.members-table .brand-empty { color: var(--muted); font-style: normal; }
+.members-table .col-date { text-align: right; color: var(--muted); font-weight: 700; font-size: 13px; }
+@media (max-width: 760px) {
+  .members-table .admin-table-row { grid-template-columns: 1fr; gap: 7px; }
+  .members-table .col-date { text-align: left; }
+}
+
 .admin-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap: 16px; }
 .admin-products .st-pcard .row,
 .admin-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }

@@ -34,36 +34,36 @@ export default async function AdminUsersPage() {
         </div>
 
         {users.length ? (
-          <div className="admin-table">
+          <div className="admin-table members-table">
             <div className="admin-table-head">
               <span>계정</span>
               <span>역할</span>
               <span>브랜드 / 상태</span>
-              <span>가입일</span>
+              <span className="col-date">가입일</span>
             </div>
             {users.map((user) => (
               <article className="admin-table-row" key={user.id}>
-                <div>
+                <div className="acct-cell">
                   <b>{user.email}</b>
                 </div>
-                <span>{user.role === "admin" ? "관리자" : "디자이너"}</span>
-                <span>
+                <span><em className={`role-tag ${user.role === "admin" ? "is-admin" : ""}`}>{user.role === "admin" ? "관리자" : "디자이너"}</em></span>
+                <span className="brand-cell">
                   {user.designer_id ? (
                     <>
                       <Link className="admin-title-link" href={`/dashboard/admin/designers/${user.designer_id}`}>
                         {user.brand_name || "브랜드명 미입력"}
-                      </Link>{" "}
+                      </Link>
                       <em className={`status-badge ${statusClass(user.approval_status || "pending")}`}>
                         {getApprovalStatusLabel(user.approval_status || "pending")}
                       </em>
                     </>
                   ) : user.role === "admin" ? (
-                    "-"
+                    <em className="brand-empty">-</em>
                   ) : (
                     <em className="status-badge pending">신청 전</em>
                   )}
                 </span>
-                <span>{formatDate(user.created_at)}</span>
+                <span className="col-date">{formatDate(user.created_at)}</span>
               </article>
             ))}
           </div>
