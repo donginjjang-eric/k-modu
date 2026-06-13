@@ -5830,3 +5830,27 @@ body.dark-theme .mini-stats strong {
     object-position: center;
   }
 }
+
+/* PC 호버 미리보기: 보유/추천 제품 카드에 마우스를 올리면 큰 이미지를 띄운다 */
+.styling-hover-preview {
+  position: fixed;
+  z-index: 3000;
+  width: 300px;
+  padding: 8px;
+  border-radius: 16px;
+  background: #f6f4ef;
+  box-shadow: 0 24px 60px rgba(5, 5, 5, .32);
+  opacity: 0;
+  transform: scale(.96);
+  transition: opacity .16s ease, transform .16s ease;
+  pointer-events: none;
+}
+.styling-hover-preview.is-visible { opacity: 1; transform: scale(1); }
+.styling-hover-preview img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: 10px;
+  background: #e7e5df;
+}

@@ -14,7 +14,7 @@
   <title>Designers | K-MODU</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
-  <link rel="stylesheet" href="platform.css?v=20260613g" />
+  <link rel="stylesheet" href="platform.css?v=20260614a" />
 </head>
 <body>
   <main class="platform designer-board">
@@ -1779,12 +1779,44 @@
       toggleStylingItemSelection(button);
     };
 
+    // PC 호버 미리보기: 보유/추천 제품에 마우스를 올리면 큰 이미지를 카드 옆에 띄운다 (터치 기기 제외)
+    const hoverPreviewMedia = window.matchMedia('(min-width: 961px) and (hover: hover)');
+    let stylingHoverPreview = null;
+    const PREVIEW_W = 300;
+    const PREVIEW_H = 400;
+    const ensureHoverPreview = () => {
+      if (stylingHoverPreview) return stylingHoverPreview;
+      const el = document.createElement('div');
+      el.className = 'styling-hover-preview';
+      el.innerHTML = '<img alt="" />';
+      document.body.appendChild(el);
+      stylingHoverPreview = el;
+      return el;
+    };
+    const showHoverPreview = (button) => {
+      if (!hoverPreviewMedia.matches) return;
+      const src = button.dataset.itemImage;
+      if (!src) return;
+      const el = ensureHoverPreview();
+      el.querySelector('img').src = src;
+      const rect = button.getBoundingClientRect();
+      let left = rect.left - PREVIEW_W - 16;
+      if (left < 12) left = Math.min(rect.right + 16, window.innerWidth - PREVIEW_W - 12);
+      const top = Math.max(12, Math.min(rect.top, window.innerHeight - PREVIEW_H - 12));
+      el.style.left = left + 'px';
+      el.style.top = top + 'px';
+      el.classList.add('is-visible');
+    };
+    const hideHoverPreview = () => { if (stylingHoverPreview) stylingHoverPreview.classList.remove('is-visible'); };
+
     const bindStylingItemPreviews = () => {
       // 빈 상태 안내 div 등 비아이템 요소에는 선택 핸들러를 달지 않는다
       [...stylingOwnedItems.children, ...stylingRecommendedItems.children]
         .filter((element) => element.classList.contains('styling-item-card'))
         .forEach((button) => {
           button.addEventListener('click', () => showStylingItemLook(button));
+          button.addEventListener('mouseenter', () => showHoverPreview(button));
+          button.addEventListener('mouseleave', hideHoverPreview);
         });
     };
 
@@ -2162,6 +2194,7 @@
 
     const closeProposalSheet = () => {
       stopProposalGallery();
+      hideHoverPreview();
       resetTryOnStage();
       stylingCollage.hidden = true;
       proposalImage.hidden = false;
@@ -2209,6 +2242,7 @@
       };
       if (proposalContentEl) {
         proposalContentEl.addEventListener('scroll', updateOwnedTabsStuck, { passive: true });
+        proposalContentEl.addEventListener('scroll', hideHoverPreview, { passive: true });
       }
       if (typeof dockMedia.addEventListener === 'function') {
         dockMedia.addEventListener('change', () => {
