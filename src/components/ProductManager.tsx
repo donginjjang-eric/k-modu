@@ -119,7 +119,8 @@ export default function ProductManager({ initialProducts }: { initialProducts: P
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || "상품 저장에 실패했습니다.");
       setProducts((current) => [result.product, ...current]);
-      setForm(EMPTY);
+      // 같은 분류를 연달아 올리기 쉽게, 방금 등록한 분류는 유지하고 나머지 입력만 비운다
+      setForm({ ...EMPTY, category: form.category });
       setImageUrl("");
       setImageHash("");
       setMsg({ text: "등록 완료! 내 상품 목록과 스타일링 보드에 바로 반영됐어요.", ok: true });
