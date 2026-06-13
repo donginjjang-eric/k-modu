@@ -525,12 +525,25 @@
 
     const FALLBACK_CARD_IMAGE = 'assets/designer-samples/model_kfashion_base2.jpg';
 
+    // 커버 사진이 없는 실제 디자이너용 정직한 플레이스홀더 (AI 모델 대신 브랜드 이니셜 + 안내). 카드·모달 공용.
+    const placeholderCover = (brand) => {
+      const initial = ((brand || 'K').trim().charAt(0) || 'K').toUpperCase();
+      const svg = "<svg xmlns='http://www.w3.org/2000/svg' width='600' height='800'>"
+        + "<defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>"
+        + "<stop offset='0' stop-color='#efeae0'/><stop offset='1' stop-color='#d6cebf'/></linearGradient></defs>"
+        + "<rect width='600' height='800' fill='url(#g)'/>"
+        + "<text x='300' y='400' font-family='sans-serif' font-size='220' font-weight='800' fill='#b3aa99' text-anchor='middle'>" + initial + "</text>"
+        + "<text x='300' y='486' font-family='sans-serif' font-size='30' font-weight='700' fill='#9d9483' text-anchor='middle'>사진 준비 중</text>"
+        + "</svg>";
+      return "data:image/svg+xml," + encodeURIComponent(svg);
+    };
+
     // DB 디자이너를 샘플과 같은 카드 튜플 포맷으로 변환해 하위 로직(index 기반 헬퍼)을 그대로 쓴다.
     const designerToProfile = (designer) => {
       const brand = designer.brandName || 'Designer Brand';
       const grouped = groupLivePortfolioImages(designer.images || [], brand);
       const galleryImages = grouped.gallery.map((item) => item.image);
-      const cover = galleryImages[0] || designer.logo || FALLBACK_CARD_IMAGE;
+      const cover = galleryImages[0] || designer.logo || placeholderCover(brand);
       const moodParts = String(designer.mood || '').split(/[,/·|]/).map((part) => part.trim()).filter(Boolean);
       const tags = moodParts.length ? moodParts.slice(0, 3) : ['Designer', 'K-Fashion', 'Full Look'];
       const kicker = `${moodParts[0] || 'Designer Brand'} / ${designer.country || 'Seoul'}`;
