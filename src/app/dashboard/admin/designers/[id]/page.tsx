@@ -2,7 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import AdminDesignerActions from "@/components/AdminDesignerActions";
 import AdminPortfolioImageActions from "@/components/AdminPortfolioImageActions";
+import GenerationLimitControl from "@/components/GenerationLimitControl";
 import {
+  countDailyLiveGenerations,
   getDesigner,
   getGeneratedLooksForDesigner,
   getPortfolioImagesForDesigner,
@@ -29,11 +31,15 @@ export default async function AdminDesignerDetailPage({ params }: { params: Prom
   const designer = await getDesigner(id);
   if (!designer) notFound();
 
-  const [products, looks, portfolioImages] = await Promise.all([
+  const [products, looks, portfolioImages, todayGenerations] = await Promise.all([
     getProductsForDesignerForAdmin(designer.id),
     getGeneratedLooksForDesigner(designer.id),
     getPortfolioImagesForDesigner(designer.id),
+    countDailyLiveGenerations(designer.id),
   ]);
+  const usageRatio = designer.daily_generation_limit
+    ? Math.min(100, Math.round((todayGenerations / designer.daily_generation_limit) * 100))
+    : 0;
 
   return (
     <>
@@ -63,6 +69,19 @@ export default async function AdminDesignerDetailPage({ params }: { params: Prom
           </div>
           <p className="admin-detail-copy">{designer.description || "브랜드 설명이 아직 입력되지 않았습니다."}</p>
           <p className="admin-detail-copy muted">{designer.mood || "브랜드 무드가 아직 입력되지 않았습니다."}</p>
+
+          <div className="gen-limit-card">
+            <div className="gen-limit-card-head">
+              <div>
+                <span className="gen-limit-kicker">AI 생성 한도</span>
+                <strong>오늘 {todayGenerations}건 / 하루 {designer.daily_generation_limit}건</strong>
+              </div>
+              <GenerationLimitControl designerId={designer.id} initialLimit={designer.daily_generation_limit} />
+            </div>
+            <div className="gen-usage-bar wide"><i style={{ width: `${usageRatio}%` }} /></div>
+            <p className="hint">공개 화면의 실제 AI 생성(비용)만 카운트해요. 같은 조합 재사용(캐시)은 비용이 없어요.</p>
+          </div>
+
           <AdminDesignerActions designerId={designer.id} status={designer.approval_status} />
         </section>
 
