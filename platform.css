@@ -5817,3 +5817,16 @@ body.dark-theme .mini-stats strong {
 
 /* 우측 아이콘 스택 제거에 따른 캡션 폭 확장 */
 .shortform-reel-bottom { right: 16px; }
+
+/* 디자이너 보드 PC: 히어로 ↔ 카드 간격 축소 */
+@media (min-width: 961px) {
+  .designer-board .page-hero { padding-bottom: 40px; }
+}
+
+/* 크리에이터 모달 PC: 우측 프리뷰 이미지가 라벨/도트와 겹치지 않게 중앙 정렬 + 여백 확보 */
+@media (min-width: 961px) {
+  .creator-sheet-visual img {
+    padding: 64px 44px 62px;
+    object-position: center;
+  }
+}
