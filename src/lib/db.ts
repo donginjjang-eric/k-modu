@@ -723,6 +723,13 @@ export async function updateGeneratedLookForDesigner(designerId: string, id: str
   );
 }
 
+export async function deleteGeneratedLook(id: string): Promise<boolean> {
+  if (!hasDatabase()) throw new Error("DATABASE_URL is required for generated look deletion.");
+  // DB 행만 삭제 — 버킷 이미지는 부팅 정리 스크립트가 고아 객체로 회수한다
+  const deleted = await one<{ id: string }>("DELETE FROM generated_looks WHERE id = $1 RETURNING id", [id]);
+  return Boolean(deleted);
+}
+
 export async function updateGeneratedLookForAdmin(id: string, input: { status: GeneratedLook["status"] }) {
   if (!hasDatabase()) throw new Error("DATABASE_URL is required for generated look updates.");
   return one<AdminGeneratedLook>(

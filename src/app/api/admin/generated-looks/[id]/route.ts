@@ -1,5 +1,5 @@
 import { requireUser } from "@/lib/auth";
-import { updateGeneratedLookForAdmin } from "@/lib/db";
+import { deleteGeneratedLook, updateGeneratedLookForAdmin } from "@/lib/db";
 import type { GeneratedLookStatus } from "@/lib/types";
 
 const validStatuses: GeneratedLookStatus[] = ["generated", "approved", "rejected", "hidden"];
@@ -17,4 +17,12 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const generatedLook = await updateGeneratedLookForAdmin(id, { status });
   if (!generatedLook) return Response.json({ ok: false, error: "Generated look not found." }, { status: 404 });
   return Response.json({ ok: true, generatedLook });
+}
+
+export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+  await requireUser("admin");
+  const { id } = await params;
+  const deleted = await deleteGeneratedLook(id);
+  if (!deleted) return Response.json({ ok: false, error: "Generated look not found." }, { status: 404 });
+  return Response.json({ ok: true });
 }
