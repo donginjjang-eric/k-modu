@@ -33,6 +33,7 @@
 .st-side nav { display: flex; flex-direction: column; gap: 4px; }
 .st-side a,
 .st-nav-toggle { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 14px; border: 0; border-radius: 12px; background: transparent; font: inherit; font-weight: 700; font-size: 15px; color: #2a271f; text-align: left; cursor: pointer; }
+.st-nav-toggle { font-weight: 800; }
 .st-side a .ic,
 .st-nav-toggle .ic { width: 22px; min-width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; color: var(--muted); }
 .nav-svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }

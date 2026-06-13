@@ -14,10 +14,11 @@ export type NavItem = {
   tag?: string;
 };
 
-const PRODUCT_SUBNAV = [
-  { icon: "file" as const, label: "상세페이지", tag: "예정" },
-  { icon: "book" as const, label: "룩북 제작", tag: "예정" },
-];
+// 초기 서비스에서는 숨김 — 추후 기능 추가 시 아래 배열과 렌더 블록을 함께 복원
+// const PRODUCT_SUBNAV = [
+//   { icon: "file" as const, label: "상세페이지", tag: "예정" },
+//   { icon: "book" as const, label: "룩북 제작", tag: "예정" },
+// ];
 
 export const STUDIO_NAV: NavItem[] = [
   { href: "/dashboard/designer/brand", icon: "badge", label: "브랜드 프로필", short: "프로필" },
@@ -67,13 +68,14 @@ export function StudioSideNav({ brandName, publicHref }: { brandName: string; pu
                       <span className="ic"><NavIcon name="file" /></span>
                       내 상품 관리
                     </Link>
+                    {/* 상세페이지·룩북 제작(예정)은 초기 서비스에서 숨김 — PRODUCT_SUBNAV와 함께 복원
                     {PRODUCT_SUBNAV.map((subitem) => (
                       <span className="st-subitem is-soon" key={subitem.label}>
                         <span className="ic"><NavIcon name={subitem.icon} /></span>
                         {subitem.label}
                         <span className="tag">{subitem.tag}</span>
                       </span>
-                    ))}
+                    ))} */}
                   </div>
                 ) : null}
               </div>
