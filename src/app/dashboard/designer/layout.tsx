@@ -3,6 +3,7 @@ import Link from "next/link";
 import { requireApprovedDesigner } from "@/lib/auth";
 import { StudioSideNav, StudioTabBar } from "@/components/StudioNav";
 import LogoutButton from "@/components/LogoutButton";
+import ScrollResetOnLoad from "@/components/ScrollResetOnLoad";
 
 export default async function DesignerStudioLayout({ children }: { children: React.ReactNode }) {
   const { designer } = await requireApprovedDesigner();
@@ -11,6 +12,7 @@ export default async function DesignerStudioLayout({ children }: { children: Rea
 
   return (
     <div className="studio designer-studio">
+      <ScrollResetOnLoad />
       <header className="st-top">
         <Link className="brand" href="/dashboard/designer/brand">
           <b>K-MODU</b>

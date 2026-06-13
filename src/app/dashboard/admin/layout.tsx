@@ -3,12 +3,14 @@ import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { AdminSideNav, AdminTabBar } from "@/components/AdminNav";
 import LogoutButton from "@/components/LogoutButton";
+import ScrollResetOnLoad from "@/components/ScrollResetOnLoad";
 
 export default async function AdminStudioLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser("admin");
 
   return (
     <div className="studio admin-studio">
+      <ScrollResetOnLoad />
       <header className="st-top">
         <Link className="brand" href="/dashboard/admin">
           <b>K-MODU</b>
