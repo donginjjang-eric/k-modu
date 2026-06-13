@@ -2,6 +2,7 @@ import { spawn } from "node:child_process";
 import path from "node:path";
 import {
   countDailyLiveGenerations,
+  countDailyLiveGenerationsAll,
   createGenerationLog,
   getDesigner,
   getGeneratedLookByCacheKeyForDesigner,
@@ -14,6 +15,8 @@ import { applyDesignerDefaultModelTemplate } from "@/lib/designer-defaults";
 import { validateStylingProductSelection } from "@/lib/product-selection-rules";
 
 const DEFAULT_PUBLIC_DESIGNER_ID = "maison-lune-seoul";
+// 공개 생성은 프롬프트를 고정해 캐시 우회(비용 폭탄)를 막는다. 같은 제품 조합이면 항상 캐시 히트.
+const PUBLIC_STYLING_PROMPT = "minimal editorial K-fashion look";
 
 function startGenerationWorker(input: unknown) {
   const payload = Buffer.from(JSON.stringify(input), "utf8").toString("base64url");
@@ -61,7 +64,8 @@ export async function POST(request: Request) {
   const designerId = String(body.designerId || DEFAULT_PUBLIC_DESIGNER_ID).trim();
   const productIds = Array.isArray(body.productIds) ? body.productIds.map(String).filter(Boolean) : [];
   const modelTemplateId = String(body.modelTemplateId || body.modelTemplate || "");
-  const stylingPrompt = String(body.stylingPrompt || "minimal editorial K-fashion look");
+  // 공개 경로는 클라이언트 프롬프트를 무시하고 고정값 사용 (캐시 우회 차단)
+  const stylingPrompt = PUBLIC_STYLING_PROMPT;
   const provider = "openai" as const;
 
   if (productIds.length < 1) {
@@ -130,12 +134,24 @@ export async function POST(request: Request) {
     });
   }
 
-  const dailyLimit = Number(process.env.PUBLIC_DAILY_GENERATION_LIMIT || process.env.DAILY_GENERATION_LIMIT || 20);
+  // 1) 디자이너별 일일 한도 — 관리자가 디자이너별로 조정 (DB 값 우선, 없으면 env/기본)
+  const envDefault = Number(process.env.PUBLIC_DAILY_GENERATION_LIMIT || process.env.DAILY_GENERATION_LIMIT || 20);
+  const dailyLimit = Number.isFinite(designer.daily_generation_limit) ? designer.daily_generation_limit : envDefault;
   const dailyCount = await countDailyLiveGenerations(designer.id);
   if (dailyCount >= dailyLimit) {
     return Response.json({
       ok: false,
-      error: `Daily generation limit reached (${dailyLimit}). Cached looks are still available.`,
+      error: `오늘 이 브랜드의 AI 생성 한도(${dailyLimit}건)에 도달했어요. 이미 만든 룩은 계속 볼 수 있어요.`,
+    }, { status: 429 });
+  }
+
+  // 2) 전역 일일 상한 — 전체 비용 안전망 (악용·폭주 대비)
+  const globalLimit = Number(process.env.GLOBAL_DAILY_GENERATION_LIMIT || 200);
+  const globalCount = await countDailyLiveGenerationsAll();
+  if (globalCount >= globalLimit) {
+    return Response.json({
+      ok: false,
+      error: "현재 AI 생성 요청이 많아요. 잠시 후 다시 시도해주세요.",
     }, { status: 429 });
   }
 

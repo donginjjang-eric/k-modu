@@ -60,6 +60,7 @@ export function toDemoDesigner(): Designer {
     country: phaseDesigner.country,
     logo_url: null,
     approval_status: "approved",
+    daily_generation_limit: 20,
     created_at: now,
     updated_at: now,
   };
@@ -793,6 +794,60 @@ export async function countDailyLiveGenerations(designerId: string) {
     [designerId],
   );
   return Number(row?.count || 0);
+}
+
+// 전역 일일 실제 생성 합계 (비용 안전망용 — 모든 디자이너 합산)
+export async function countDailyLiveGenerationsAll() {
+  if (!hasDatabase()) return 0;
+  const row = await one<{ count: string }>(
+    `SELECT COUNT(*)::text AS count
+     FROM generation_logs
+     WHERE cache_hit = false
+       AND status = 'generated'
+       AND created_at >= date_trunc('day', now())`,
+  );
+  return Number(row?.count || 0);
+}
+
+// 관리자: 승인 디자이너별 오늘 실제 생성수 + 일일 한도 (생성 비용 모니터링/조정용)
+export async function getDesignerGenerationUsage(): Promise<Array<{
+  id: string;
+  brand_name: string;
+  approval_status: ApprovalStatus;
+  daily_generation_limit: number;
+  today_count: number;
+}>> {
+  if (!hasDatabase()) return [];
+  const rows = await query<{
+    id: string;
+    brand_name: string;
+    approval_status: ApprovalStatus;
+    daily_generation_limit: number;
+    today_count: string;
+  }>(
+    `SELECT d.id, d.brand_name, d.approval_status, d.daily_generation_limit,
+            COALESCE(g.cnt, 0)::text AS today_count
+       FROM designers d
+       LEFT JOIN (
+         SELECT designer_id, COUNT(*) AS cnt
+           FROM generation_logs
+          WHERE cache_hit = false AND status = 'generated'
+            AND created_at >= date_trunc('day', now())
+          GROUP BY designer_id
+       ) g ON g.designer_id = d.id
+      WHERE d.approval_status = 'approved'
+      ORDER BY COALESCE(g.cnt, 0) DESC, d.brand_name ASC`,
+  );
+  return rows.map((r) => ({ ...r, today_count: Number(r.today_count || 0) }));
+}
+
+export async function setDesignerDailyLimit(designerId: string, limit: number): Promise<Designer | null> {
+  if (!hasDatabase()) throw new Error("DATABASE_URL is required to update generation limit.");
+  const safe = Math.max(0, Math.min(1000, Math.round(limit)));
+  return one<Designer>(
+    "UPDATE designers SET daily_generation_limit = $2, updated_at = now() WHERE id = $1 RETURNING *",
+    [designerId, safe],
+  );
 }
 
 export async function createGenerationLog(input: {

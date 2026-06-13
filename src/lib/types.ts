@@ -25,6 +25,7 @@ export type Designer = {
   country: string;
   logo_url: string | null;
   approval_status: ApprovalStatus;
+  daily_generation_limit: number;
   created_at: string;
   updated_at: string;
 };

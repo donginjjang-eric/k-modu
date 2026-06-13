@@ -710,6 +710,16 @@
 /* 스텝 보조 설명 (상품 등록 분류 선택 안내) */
 .st-substep { margin: -4px 0 12px; color: var(--muted); font-size: 13px; line-height: 1.5; }
 
+/* 관리자: AI 생성 사용량 / 일일 한도 컨트롤 */
+.gen-usage-bar { height: 5px; margin-top: 6px; border-radius: 999px; background: var(--line2); overflow: hidden; max-width: 160px; }
+.gen-usage-bar i { display: block; height: 100%; border-radius: 999px; background: var(--ink); }
+.gen-limit-control { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.gen-limit-control button { width: 32px; min-height: 32px; border: 1px solid var(--line2); border-radius: 9px; background: #fff; font-weight: 900; font-size: 15px; color: var(--ink); cursor: pointer; }
+.gen-limit-control button:disabled { opacity: .38; cursor: not-allowed; }
+.gen-limit-control input { width: 64px; min-height: 32px; padding: 0 8px; border: 1px solid var(--line2); border-radius: 9px; text-align: center; font: inherit; font-weight: 800; }
+.gen-limit-control small.ok { color: var(--good); font-weight: 800; }
+.gen-limit-control small.err { color: #b3261e; font-weight: 800; }
+
 /* 승인 전 프로필 안내 배너 (관리자 우회 입장 시) */
 .st-approval-banner {
   display: flex;
