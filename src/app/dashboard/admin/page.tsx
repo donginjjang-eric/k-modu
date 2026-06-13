@@ -1,14 +1,30 @@
 import Link from "next/link";
-import { getAdminDashboardStats, getAllDesigners, getGeneratedLooksForAdmin } from "@/lib/db";
+import {
+  getAdminDashboardStats,
+  getAllDesigners,
+  getDesignerGenerationUsage,
+  getGeneratedLooksForAdmin,
+  getGenerationUsageOverview,
+} from "@/lib/db";
+import GenerationLimitControl from "@/components/GenerationLimitControl";
 import { getApprovalStatusLabel } from "@/lib/status-labels";
 
+function weekdayLabel(dateStr: string) {
+  const days = ["일", "월", "화", "수", "목", "금", "토"];
+  const day = new Date(`${dateStr}T00:00:00`).getDay();
+  return days[day] ?? "";
+}
+
 export default async function AdminDashboardPage() {
-  const [stats, designers, looks] = await Promise.all([
+  const [stats, designers, looks, usageOverview, designerUsage] = await Promise.all([
     getAdminDashboardStats(),
     getAllDesigners(),
     getGeneratedLooksForAdmin(8),
+    getGenerationUsageOverview(),
+    getDesignerGenerationUsage(),
   ]);
   const pending = designers.filter((designer) => designer.approval_status === "pending").slice(0, 4);
+  const peakDaily = Math.max(1, ...usageOverview.daily.map((d) => d.count));
 
   return (
     <>
@@ -41,6 +57,52 @@ export default async function AdminDashboardPage() {
           <div className="go">→</div>
         </Link>
       </div>
+
+      <section className="st-card gen-overview">
+        <div className="st-sec-head">
+          <div>
+            <h2>AI 생성 사용량</h2>
+            <p className="st-sub tight">공개 화면의 실제 생성(비용)만 집계해요. 캐시 재사용은 비용이 없어요.</p>
+          </div>
+          <div className="gen-overview-totals">
+            <span><b>{usageOverview.today}</b> 오늘</span>
+            <span><b>{usageOverview.week}</b> 최근 7일</span>
+          </div>
+        </div>
+
+        <div className="gen-trend" aria-label="최근 7일 일별 생성">
+          {usageOverview.daily.map((d) => (
+            <div className="gen-trend-col" key={d.date} title={`${d.date} · ${d.count}건`}>
+              <div className="gen-trend-bar">
+                <i style={{ height: `${Math.round((d.count / peakDaily) * 100)}%` }} />
+                <span className="gen-trend-val">{d.count}</span>
+              </div>
+              <span className="gen-trend-day">{weekdayLabel(d.date)}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="gen-overview-list">
+          <div className="gen-overview-list-head">
+            <span>브랜드</span>
+            <span>오늘 / 한도</span>
+            <span>조정</span>
+          </div>
+          {designerUsage.length ? designerUsage.map((u) => {
+            const ratio = u.daily_generation_limit ? Math.min(100, Math.round((u.today_count / u.daily_generation_limit) * 100)) : 0;
+            return (
+              <div className="gen-overview-row" key={u.id}>
+                <Link className="admin-title-link" href={`/dashboard/admin/designers/${u.id}`}>{u.brand_name}</Link>
+                <span>
+                  <b>{u.today_count}</b> / {u.daily_generation_limit}
+                  <div className="gen-usage-bar"><i style={{ width: `${ratio}%` }} /></div>
+                </span>
+                <GenerationLimitControl designerId={u.id} initialLimit={u.daily_generation_limit} />
+              </div>
+            );
+          }) : <div className="st-empty compact"><p>승인된 디자이너가 없습니다.</p></div>}
+        </div>
+      </section>
 
       <div className="st-grid2col">
         <section className="st-card">

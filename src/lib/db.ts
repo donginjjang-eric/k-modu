@@ -841,6 +841,37 @@ export async function getDesignerGenerationUsage(): Promise<Array<{
   return rows.map((r) => ({ ...r, today_count: Number(r.today_count || 0) }));
 }
 
+// 관리자 대시보드: 일별/주별 AI 생성 사용량 개요 (최근 7일 추세 포함)
+export async function getGenerationUsageOverview(): Promise<{
+  today: number;
+  week: number;
+  daily: Array<{ date: string; count: number }>;
+}> {
+  if (!hasDatabase()) return { today: 0, week: 0, daily: [] };
+  const rows = await query<{ day: string; count: string }>(
+    `SELECT to_char(date_trunc('day', created_at), 'YYYY-MM-DD') AS day, COUNT(*) AS count
+       FROM generation_logs
+      WHERE cache_hit = false AND status = 'generated'
+        AND created_at >= date_trunc('day', now()) - interval '6 days'
+      GROUP BY 1
+      ORDER BY 1`,
+  );
+  const counts = new Map(rows.map((r) => [r.day, Number(r.count || 0)]));
+  // 오늘 기준 최근 7일을 빠짐없이 채운다 (생성 0인 날도 막대로 보이게)
+  const daily: Array<{ date: string; count: number }> = [];
+  for (let offset = 6; offset >= 0; offset -= 1) {
+    const dayRow = await one<{ day: string }>(
+      `SELECT to_char(date_trunc('day', now()) - ($1 || ' days')::interval, 'YYYY-MM-DD') AS day`,
+      [offset],
+    );
+    const date = dayRow?.day || "";
+    daily.push({ date, count: counts.get(date) || 0 });
+  }
+  const week = daily.reduce((sum, d) => sum + d.count, 0);
+  const today = daily.length ? daily[daily.length - 1].count : 0;
+  return { today, week, daily };
+}
+
 export async function setDesignerDailyLimit(designerId: string, limit: number): Promise<Designer | null> {
   if (!hasDatabase()) throw new Error("DATABASE_URL is required to update generation limit.");
   const safe = Math.max(0, Math.min(1000, Math.round(limit)));
