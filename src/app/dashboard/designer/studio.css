@@ -705,6 +705,9 @@
 .portfolio-progress p { margin: 0; color: var(--muted); font-size: 12px; font-weight: 700; word-break: keep-all; text-align: right; }
 .st-field .hint.char-count { text-align: right; }
 
+/* 스텝 보조 설명 (상품 등록 분류 선택 안내) */
+.st-substep { margin: -4px 0 12px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+
 /* 승인 전 프로필 안내 배너 (관리자 우회 입장 시) */
 .st-approval-banner {
   display: flex;
