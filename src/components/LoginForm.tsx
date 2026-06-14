@@ -96,10 +96,15 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
   if (me.user) {
     const isAdmin = me.user.role === "admin";
     const isApproved = me.designer?.approvalStatus === "approved";
+    const isPending = !isApproved && Boolean(me.designer);
+    const notApplied = !isAdmin && !isApproved && !me.designer;
     return (
       <div className="generate-box login-form-card">
-        <p className="login-status-badge">✓ 로그인됨</p>
-        <p className="login-status-email">{me.user.email}</p>
+        <div className="login-status-head">
+          <p className="login-status-badge">✓ 로그인됨</p>
+          <p className="login-status-email">{me.user.email}</p>
+        </div>
+
         {adminRequired && !isAdmin ? (
           <>
             <p className="login-google-hint">
@@ -126,18 +131,33 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
             <p className="login-google-hint">{me.designer?.brandName || "디자이너"} 계정으로 로그인되어 있어요.</p>
             <a className="generate-button login-status-cta" href="/dashboard/designer/brand">디자이너 스튜디오 열기</a>
           </>
-        ) : me.designer ? (
-          <p className="login-google-hint">
-            디자이너 신청이 접수되어 승인 대기 중이에요. 승인이 끝나면 이 화면에서 바로 스튜디오가 열려요.
-          </p>
+        ) : isPending ? (
+          <div className="login-onboard">
+            <p className="login-onboard-title">신청이 접수됐어요 — 승인을 기다리는 중이에요</p>
+            <p className="login-google-hint">
+              <b>{me.designer?.brandName || "브랜드"}</b> 신청을 검토하고 있어요. 승인이 끝나면 이 화면에서 바로 스튜디오가 열려요. 같은 구글 계정으로 다시 들어오면 돼요.
+            </p>
+            <ol className="login-steps">
+              <li className="is-done"><span>✓</span><div><b>브랜드 등록 신청</b><small>접수 완료</small></div></li>
+              <li className="is-active"><span>2</span><div><b>관리자 승인</b><small>검토 중 · 승인되면 알려드려요</small></div></li>
+              <li><span>3</span><div><b>스튜디오 오픈</b><small>룩북·상품 등록, 크리에이터 매칭</small></div></li>
+            </ol>
+          </div>
         ) : (
-          <>
-            <p className="login-google-hint">아직 디자이너 등록 신청 내역이 없어요. 신청을 완료하면 승인 후 스튜디오를 쓸 수 있어요.</p>
+          <div className="login-onboard">
+            <p className="login-onboard-title">환영해요! K&#8209;MODU 디자이너로 시작해볼까요?</p>
+            <p className="login-google-hint">브랜드를 등록하면 AI 룩북·숏폼을 만들고 글로벌 크리에이터와 매칭돼요. 신청은 1분이면 끝나요.</p>
+            <ol className="login-steps">
+              <li className="is-active"><span>1</span><div><b>브랜드 등록 신청</b><small>브랜드명·소개만 입력 (1분)</small></div></li>
+              <li><span>2</span><div><b>관리자 승인</b><small>검토 후 승인되면 알려드려요</small></div></li>
+              <li><span>3</span><div><b>스튜디오 오픈</b><small>룩북·상품 등록, 크리에이터 매칭 시작</small></div></li>
+            </ol>
             <a className="generate-button login-status-cta" href="/apply">디자이너 등록 신청하기</a>
-          </>
+          </div>
         )}
+
         <button className="login-email-toggle" type="button" onClick={logout}>로그아웃</button>
-        {message ? <p className="notice">{message}</p> : null}
+        {message && !notApplied ? <p className="notice">{message}</p> : null}
       </div>
     );
   }
