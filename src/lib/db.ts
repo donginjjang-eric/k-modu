@@ -744,6 +744,28 @@ export async function updateGeneratedLookForAdmin(id: string, input: { status: G
   );
 }
 
+export async function getGeneratedLookById(id: string): Promise<GeneratedLook | null> {
+  if (!hasDatabase()) return null;
+  return one<GeneratedLook>("SELECT * FROM generated_looks WHERE id = $1", [id]);
+}
+
+// Veo 영상 생성 상태/URL 갱신 (워커는 자체 pg로 직접 쓰고, API는 queued 진입 시 이걸로 표시)
+export async function setGeneratedLookVideo(
+  id: string,
+  input: { status: GeneratedLook["video_status"]; url?: string | null },
+): Promise<GeneratedLook | null> {
+  if (!hasDatabase()) throw new Error("DATABASE_URL is required for video updates.");
+  return one<GeneratedLook>(
+    `UPDATE generated_looks
+        SET video_status = $2,
+            video_url = COALESCE($3, video_url),
+            updated_at = now()
+      WHERE id = $1
+      RETURNING *`,
+    [id, input.status, input.url ?? null],
+  );
+}
+
 export async function createGeneratedLook(input: {
   designerId: string;
   modelTemplateId: string;

@@ -1513,6 +1513,8 @@
     // (예전엔 브라우저 전역 localStorage에 저장해 디자이너 간 누수가 있었음 — 제거함.)
     let generatedLooks = [];
     let designerApprovedLooks = [];
+    // 승인 룩 이미지 → Veo 숏폼 MP4. 해당 룩으로 숏폼을 만들면 샘플 대신 실제 영상을 재생한다.
+    let lookVideoByImage = {};
 
     // 생성된 룩 썸네일 클릭 → 좌측 무대 미리보기 + 숏폼 생성 활성화 (스튜디오 승인 룩 재사용 루프)
     const previewGeneratedLook = (src) => {
@@ -1754,7 +1756,9 @@
       ];
 
       // 생성 느낌의 ~5초 대기 동안: 실제 영상 로드 시도 + 폴백용 멀티컷 이미지 디코드를 병행
-      const videoSrc = pickShortformVideo();
+      // 이 룩이 Veo로 변환된 실제 숏폼 MP4를 가지고 있으면 샘플 대신 그걸 재생한다.
+      const matchedVideo = Object.keys(lookVideoByImage).find((img) => lookImage.indexOf(img) !== -1);
+      const videoSrc = matchedVideo ? lookVideoByImage[matchedVideo] : pickShortformVideo();
       const [, videoOk] = await Promise.all([
         new Promise((resolve) => setTimeout(resolve, 5000)),
         loadShortformVideo(videoSrc),
@@ -1841,6 +1845,7 @@
       // 정적/샘플 보드에는 승인 룩이 없으므로 이전 디자이너의 룩(승인분+세션 생성분)을 모두 비운다.
       designerApprovedLooks = [];
       generatedLooks = [];
+      lookVideoByImage = {};
       renderGeneratedLooks();
       resetTryOnStage();
       bindStylingItemPreviews();
@@ -1868,6 +1873,10 @@
       // 디자이너 전환 시 이전 디자이너의 세션 생성분을 비우고, 이 디자이너의 DB 승인 룩만 채운다.
       generatedLooks = [];
       designerApprovedLooks = (data.approvedLooks || []).map((look) => look.image).filter(Boolean);
+      lookVideoByImage = {};
+      (data.approvedLooks || []).forEach((look) => {
+        if (look.image && look.video) lookVideoByImage[look.image] = look.video;
+      });
       renderGeneratedLooks();
       resetTryOnStage();
       bindStylingItemPreviews();

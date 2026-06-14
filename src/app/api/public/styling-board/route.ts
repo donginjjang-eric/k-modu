@@ -33,9 +33,11 @@ export async function GET(request: Request) {
       status: "보유",
     })),
     // 스튜디오에서 승인된 AI 룩. 모달 스타일링 보드 탭의 "생성된 룩" 줄에 미리 채워진다.
+    // video는 Veo로 변환된 숏폼 MP4 (있으면 릴에서 실제 영상 재생).
     approvedLooks: approvedLooks.map((look) => ({
       id: look.id,
       image: look.image_url,
+      video: look.video_status === "completed" ? look.video_url : null,
     })),
   });
 }

@@ -11,6 +11,7 @@ const critical = [
 // 없어도 부팅은 되지만 기능이 조용히 죽는 항목 — 크게 경고
 const recommended = [
   ["OPENAI_API_KEY", () => Boolean(process.env.OPENAI_API_KEY)],
+  ["GEMINI_API_KEY (Veo 숏폼 영상 생성)", () => Boolean(process.env.GEMINI_API_KEY)],
   ["GOOGLE_CLIENT_ID", () => Boolean(process.env.GOOGLE_CLIENT_ID)],
   ["GOOGLE_CLIENT_SECRET", () => Boolean(process.env.GOOGLE_CLIENT_SECRET)],
   ["S3_BUCKET / 버킷 자격증명", () => Boolean(process.env.S3_BUCKET && process.env.S3_ACCESS_KEY_ID && process.env.S3_SECRET_ACCESS_KEY)],

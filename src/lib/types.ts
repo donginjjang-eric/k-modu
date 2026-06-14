@@ -2,6 +2,7 @@ export type Role = "admin" | "designer";
 export type ApprovalStatus = "pending" | "approved" | "rejected" | "disabled";
 export type ProductStatus = "draft" | "active" | "hidden";
 export type GeneratedLookStatus = "generated" | "approved" | "rejected" | "hidden";
+export type GeneratedLookVideoStatus = "none" | "queued" | "processing" | "completed" | "failed";
 export type PortfolioImageStatus = "pending" | "approved" | "rejected" | "hidden";
 export type PortfolioImageKind = "profile" | "lookbook" | "product" | "sample";
 
@@ -96,6 +97,8 @@ export type GeneratedLook = {
   provider: "openai";
   cache_hit: boolean;
   status: GeneratedLookStatus;
+  video_url: string | null;
+  video_status: GeneratedLookVideoStatus;
   created_at: string;
   updated_at: string;
 };

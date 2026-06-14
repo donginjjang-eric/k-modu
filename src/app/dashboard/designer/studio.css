@@ -576,6 +576,9 @@
 .admin-actions button.danger { border-color: #e3d6c6; background: #fff8ee; color: #6f3f00; }
 .admin-actions button:disabled { opacity: .38; cursor: not-allowed; }
 .admin-actions small { width: 100%; color: var(--muted); font-weight: 800; font-size: 12px; }
+.look-video { width: 100%; margin-top: 8px; padding-top: 10px; border-top: 1px dashed var(--line); display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.look-video small { width: auto; }
+.look-video-preview { width: 100%; margin-top: 6px; border-radius: 10px; background: #000; aspect-ratio: 9 / 16; max-height: 320px; object-fit: contain; }
 .st-empty.compact { padding: 24px 16px; }
 .st-empty.compact p { margin: 0; }
 

@@ -38,7 +38,7 @@ export default async function AdminGeneratedLooksPage() {
                   <span className="supply">{formatDate(look.created_at)}</span>
                   <span className="retail">{look.provider}</span>
                 </div>
-                <AdminGeneratedLookActions lookId={look.id} status={look.status} />
+                <AdminGeneratedLookActions lookId={look.id} status={look.status} videoStatus={look.video_status} videoUrl={look.video_url} />
               </div>
             </article>
           ))}

@@ -81,6 +81,11 @@ CREATE UNIQUE INDEX IF NOT EXISTS generated_looks_cache_key_idx
   ON generated_looks(cache_key)
   WHERE status <> 'hidden';
 
+-- 승인 룩을 Veo image-to-video로 변환한 숏폼 MP4 (멱등 마이그레이션)
+-- video_status: none(미생성) | queued | processing | completed | failed
+ALTER TABLE generated_looks ADD COLUMN IF NOT EXISTS video_url text;
+ALTER TABLE generated_looks ADD COLUMN IF NOT EXISTS video_status text NOT NULL DEFAULT 'none';
+
 CREATE TABLE IF NOT EXISTS generation_logs (
   id text PRIMARY KEY DEFAULT gen_random_uuid()::text,
   user_id text REFERENCES users(id) ON DELETE SET NULL,

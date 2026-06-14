@@ -12,6 +12,7 @@ export async function GET(request: Request) {
       designerId: look.designer_id,
       designerName: look.designer_brand_name,
       imageUrl: look.image_url,
+      videoUrl: look.video_status === "completed" ? look.video_url : null,
       createdAt: look.created_at,
     })),
   });
