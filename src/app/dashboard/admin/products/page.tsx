@@ -1,43 +1,17 @@
-import Link from "next/link";
-import AdminProductActions from "@/components/AdminProductActions";
+// 관리자: 디자이너 상품 전체 검수 — 필터·검색·일괄전환은 AdminProductsManager가 담당
+import AdminProductsManager from "@/components/AdminProductsManager";
 import { getProductsForAdmin } from "@/lib/db";
 
 export default async function AdminProductsPage() {
   const products = await getProductsForAdmin();
-  const getStatusLabel = (status: string) => status === "active" ? "공개" : status === "hidden" ? "숨김" : "비공개";
 
   return (
     <>
       <h1 className="st-title">상품 전체 관리</h1>
-      <p className="st-sub">디자이너가 올린 상품을 브랜드별로 확인하고 공개 상태를 조정합니다.</p>
+      <p className="st-sub">디자이너가 올린 상품을 브랜드·상태별로 찾고, 한 번에 공개 상태를 조정합니다.</p>
 
       {products.length ? (
-        <div className="admin-gallery admin-products">
-          {products.map((product) => (
-            <article className="st-pcard" key={product.id}>
-              <div className="img" style={{ backgroundImage: `url('${product.image_url}')` }}>
-                <span className={`badge ${product.status === "active" ? "pub" : "priv"}`}>{getStatusLabel(product.status)}</span>
-              </div>
-              <div className="b">
-                <div className="c">
-                  {product.designer_id ? (
-                    <Link href={`/dashboard/admin/designers/${product.designer_id}`}>
-                      {product.designer_brand_name || "Unknown designer"}
-                    </Link>
-                  ) : (
-                    product.designer_brand_name || "Unknown designer"
-                  )}
-                </div>
-                <div className="n">{product.name}</div>
-                <div className="st-prices">
-                  <span className="supply">{product.category}</span>
-                  {product.price ? <span className="retail">{product.price}</span> : null}
-                </div>
-                <AdminProductActions productId={product.id} status={product.status} />
-              </div>
-            </article>
-          ))}
-        </div>
+        <AdminProductsManager products={products} />
       ) : (
         <div className="st-empty">
           <div className="ic">PR</div>
