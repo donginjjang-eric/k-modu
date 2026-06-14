@@ -552,7 +552,11 @@
 /* 회원 관리 표 전용 그리드 (디자이너 승인 표의 버튼 칸 기준 폭에서 분리) */
 .members-table .admin-table-head,
 .members-table .admin-table-row { grid-template-columns: minmax(0, 2.4fr) 96px minmax(0, 1.9fr) 110px; }
+.members-table .acct-cell { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .members-table .acct-cell b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.members-table .acct-avatar { flex: 0 0 auto; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 999px; background: var(--soft); color: var(--ink); font-size: 13px; font-weight: 900; text-transform: uppercase; }
+.members-table .admin-table-row { transition: background .12s ease; }
+.members-table .admin-table-row:hover { background: rgba(0,0,0,.02); }
 .members-table .role-tag { display: inline-flex; align-items: center; min-height: 25px; padding: 0 11px; border-radius: 999px; background: var(--soft); color: var(--ink); font-size: 12px; font-weight: 800; font-style: normal; }
 .members-table .role-tag.is-admin { background: #1f1b14; color: #fff; }
 .members-table .brand-cell { display: flex; align-items: center; gap: 8px; min-width: 0; flex-wrap: wrap; }
@@ -758,9 +762,9 @@
 .apm-group-head { margin: 6px 0 12px; font-size: 15px; font-weight: 900; }
 .apm-group-head span { color: var(--muted); font-size: 13px; font-weight: 800; }
 
-/* 카드 위 체크박스 */
+/* 카드 위 체크박스 (배지는 좌상단이므로 우상단에 배치) */
 .apm-card { position: relative; }
-.apm-check { position: absolute; top: 10px; left: 10px; z-index: 3; }
+.apm-card .apm-check { position: absolute; top: 9px; right: 9px; z-index: 3; display: flex; padding: 3px; border-radius: 8px; background: rgba(255,255,255,.92); box-shadow: 0 2px 8px rgba(5,5,5,.16); }
 .apm-check input { width: 20px; height: 20px; cursor: pointer; accent-color: #111; }
 .apm-card.is-checked, .apm-row.is-checked { outline: 2px solid var(--ink); outline-offset: 1px; border-radius: 12px; }
 .apm-action { width: 100%; min-height: 34px; margin-top: 4px; border-radius: 9px; border: 1px solid var(--line2); background: #fff; font-weight: 800; font-size: 12px; color: var(--ink); cursor: pointer; }
@@ -771,6 +775,7 @@
 /* 목록(컴팩트) 뷰 */
 .apm-list { display: grid; gap: 8px; }
 .apm-row { display: grid; grid-template-columns: 28px 48px minmax(0,2fr) minmax(0,1.4fr) 70px 88px 92px; gap: 12px; align-items: center; padding: 8px 12px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+.apm-row .apm-check { position: static; display: flex; justify-content: center; align-items: center; padding: 0; background: none; box-shadow: none; }
 .apm-row-thumb { width: 48px; height: 48px; border-radius: 8px; background: #e7e5df center/cover; }
 .apm-row-name { font-weight: 800; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .apm-row-brand, .apm-row-cat { color: var(--muted); font-size: 13px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
