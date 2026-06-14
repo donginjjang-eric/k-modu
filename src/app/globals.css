@@ -93,6 +93,9 @@ input {
   padding: 70px 0 120px;
 }
 
+/* 로그인 화면은 카드가 인증 허브 — 상단 nav 링크(로그인/관리자콘솔/로그아웃)는 중복이라 숨김 */
+.site-shell:has(.login-page) .top-nav .nav-links { display: none; }
+
 .login-hero {
   min-height: calc(100vh - 260px);
   display: grid;
