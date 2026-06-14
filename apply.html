@@ -364,31 +364,10 @@
           </div>
         </div>
 
-        <!-- STEP 3: Signature Product -->
+        <!-- STEP 3: Campaign Fit & Mood (마지막 단계) -->
         <div class="step-card" data-step="3">
-          <h2 class="toss-title">크리에이터에게 협찬할<br>브랜드 대표 상품은 무엇인가요?</h2>
-          <p class="toss-subtitle">브랜드의 색깔을 가장 잘 보여주는 대표 상품의 정보를 알려주세요.</p>
-
-          <div class="toss-field">
-            <label for="product">대표 상품명</label>
-            <input type="text" id="product" name="product" class="toss-input" placeholder="예: Lune Oversized Linen Blazer" required />
-          </div>
-
-          <div class="toss-field">
-            <label for="category">대표 상품 카테고리</label>
-            <input type="text" id="category" name="category" class="toss-input" placeholder="예: Outer / Dress / Denim" required />
-          </div>
-
-          <div class="toss-field">
-            <label for="productPrice">대표 상품 가격대 ($)</label>
-            <input type="text" id="productPrice" name="productPrice" class="toss-input" placeholder="예: $240" required />
-          </div>
-        </div>
-
-        <!-- STEP 4: Campaign Fit & Mood -->
-        <div class="step-card" data-step="4">
-          <h2 class="toss-title">글로벌 캠페인의 목표와<br>원하는 크리에이터 무드는 무엇인가요?</h2>
-          <p class="toss-subtitle">가장 집중하고 싶으신 목표와 선호하는 매칭 스타일을 선택해 주세요. (중복 선택 가능)</p>
+          <h2 class="toss-title">마지막이에요! 캠페인 목표와<br>원하는 크리에이터 무드를 골라주세요.</h2>
+          <p class="toss-subtitle">관심 목표와 선호 스타일을 선택하면 신청이 완료돼요. (중복 선택 가능) · 승인되면 같은 구글 계정으로 스튜디오가 바로 열려요. 상품·룩북 사진은 승인 후 스튜디오에서 편하게 등록하면 돼요.</p>
 
           <div class="toss-field">
             <label>캠페인 최종 목표</label>
@@ -413,23 +392,6 @@
               <span class="toss-tag-pill" data-value="TIKTOK_TRYON">TikTok Try-on</span>
               <span class="toss-tag-pill" data-value="RUNWAY_MOOD">Runway Mood</span>
             </div>
-          </div>
-        </div>
-
-        <!-- STEP 5: Visual Uploads -->
-        <div class="step-card" data-step="5">
-          <h2 class="toss-title">마지막으로 브랜드의 비주얼을<br>대표하는 파일들을 등록해 주세요.</h2>
-          <p class="toss-subtitle">브랜드 룩북 이미지 또는 대표 상품의 사진을 업로드해 주세요.</p>
-
-          <div class="toss-field">
-            <label>룩북 및 제품 이미지 업로드</label>
-            <div class="toss-upload-box" id="uploadBox">
-              <span class="toss-upload-icon">📁</span>
-              <p class="toss-upload-text">클릭하여 이미지 추가하기</p>
-              <p class="toss-upload-subtext">룩북, 대표 상품 컷 (최대 10MB)</p>
-              <input type="file" id="fileInput" multiple style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;" />
-            </div>
-            <div id="fileList" style="margin-top: 14px; font-size: var(--fs-label); color: var(--muted); text-align: left; line-height: 1.6;"></div>
           </div>
         </div>
 
@@ -500,7 +462,7 @@
 
     // --- 2. TOSS-STYLE STEP-BY-STEP WIZARD PROCESSOR ---
     let currentStep = 1;
-    const totalSteps = 5;
+    const totalSteps = 3;
 
     const steps = document.querySelectorAll('.step-card');
     const progressBar = document.getElementById('progressBar');
@@ -627,9 +589,6 @@
           email: document.getElementById('email').value,
           phone: document.getElementById('phone').value,
           headline: document.getElementById('headline').value,
-          product: document.getElementById('product').value,
-          category: document.getElementById('category').value,
-          productPrice: document.getElementById('productPrice').value,
           goals: selectedGoals,
           creatorTypes: selectedCreatorTypes
         }
@@ -648,7 +607,7 @@
 
           // Verify draft data is actually filled before prompting
           const d = draft.data;
-          if (d.brand || d.designer || d.email || d.headline || d.product) {
+          if (d.brand || d.designer || d.email || d.headline) {
             const overlay = document.getElementById('draftModal');
             overlay.classList.add('active');
 
@@ -680,9 +639,6 @@
       document.getElementById('email').value = d.email || '';
       document.getElementById('phone').value = d.phone || '';
       document.getElementById('headline').value = d.headline || '';
-      document.getElementById('product').value = d.product || '';
-      document.getElementById('category').value = d.category || '';
-      document.getElementById('productPrice').value = d.productPrice || '';
 
       // Populate tags
       if (d.goals) {
@@ -710,7 +666,10 @@
       const email = document.getElementById('email').value;
       const phone = document.getElementById('phone').value;
       const headline = document.getElementById('headline').value;
-      const category = document.getElementById('category').value || document.getElementById('headline').value || 'Minimal Fashion';
+      // 무드(category)는 마지막 단계의 선호 크리에이터 타입 선택값으로 구성 (없으면 한 줄 소개)
+      const creatorTypeLabels = Array.from(document.querySelectorAll('#creatorTypesGrid .toss-tag-pill.selected'))
+        .map((el) => el.textContent.trim());
+      const category = creatorTypeLabels.join(' / ') || headline || 'Minimal Fashion';
       const country = 'South Korea';
 
       const today = new Date();
