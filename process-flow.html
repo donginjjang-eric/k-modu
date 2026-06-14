@@ -1,0 +1,156 @@
+<!doctype html>
+<!-- K-MODU 전체 서비스 프로세스 정의 다이어그램 (열어서 보거나 캡처용) -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>K-MODU 서비스 프로세스</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Pretendard", system-ui, -apple-system, sans-serif; background: #f4f1ea; color: #14110b; padding: 40px 28px 64px; line-height: 1.5; }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+  h1 { font-size: 34px; font-weight: 900; letter-spacing: -.03em; }
+  .sub { color: #6f6b62; font-weight: 700; margin: 6px 0 34px; }
+  h2 { font-size: 13px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: #8a8273; margin: 38px 0 16px; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 8px; font-size: 12px; font-weight: 800; }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .dot { width: 12px; height: 12px; border-radius: 4px; }
+  .d-designer { background: #2f6f4f; } .d-creator { background: #7a5cc0; } .d-admin { background: #0a0a0a; } .d-system { background: #b9863a; }
+
+  /* 핵심 루프 */
+  .loop { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; align-items: stretch; }
+  .loop .step { position: relative; background: #fff; border: 1px solid rgba(10,10,10,.1); border-radius: 16px; padding: 16px 14px; box-shadow: 0 12px 26px rgba(10,10,10,.05); }
+  .loop .step .n { font-size: 11px; font-weight: 900; color: #b9863a; letter-spacing: .1em; }
+  .loop .step h3 { font-size: 16px; font-weight: 900; margin: 4px 0 6px; }
+  .loop .step p { font-size: 12.5px; color: #5d594f; font-weight: 600; }
+  .loop .step .by { display: inline-block; margin-top: 9px; font-size: 11px; font-weight: 900; padding: 2px 9px; border-radius: 999px; color: #fff; }
+  .loop .step:not(:last-child)::after { content: "→"; position: absolute; right: -11px; top: 50%; transform: translateY(-50%); font-size: 18px; font-weight: 900; color: #b3aa99; z-index: 2; }
+  .loop-back { margin-top: 10px; text-align: center; font-size: 12px; font-weight: 800; color: #8a8273; }
+
+  /* 스윔레인 */
+  .lanes { display: grid; gap: 14px; }
+  .lane { display: grid; grid-template-columns: 150px 1fr; gap: 14px; align-items: stretch; }
+  .lane-head { border-radius: 14px; color: #fff; padding: 16px; display: flex; flex-direction: column; justify-content: center; }
+  .lane-head b { font-size: 17px; font-weight: 900; }
+  .lane-head small { font-size: 11.5px; opacity: .85; font-weight: 700; margin-top: 3px; }
+  .lane-steps { display: flex; gap: 10px; flex-wrap: wrap; }
+  .chip { background: #fff; border: 1px solid rgba(10,10,10,.1); border-radius: 12px; padding: 11px 13px; font-size: 13px; font-weight: 800; min-width: 130px; }
+  .chip small { display: block; font-size: 11px; color: #6f6b62; font-weight: 600; margin-top: 3px; }
+  .lane-designer .lane-head { background: #2f6f4f; }
+  .lane-creator .lane-head { background: #7a5cc0; }
+  .lane-admin .lane-head { background: #0a0a0a; }
+
+  /* 게이트 / 규칙 */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .card { background: #fff; border: 1px solid rgba(10,10,10,.1); border-radius: 16px; padding: 20px; }
+  .card h3 { font-size: 15px; font-weight: 900; margin-bottom: 12px; }
+  .rule { display: flex; gap: 10px; padding: 9px 0; border-bottom: 1px solid rgba(10,10,10,.07); font-size: 13px; font-weight: 600; color: #4a463c; }
+  .rule:last-child { border-bottom: 0; }
+  .rule b { color: #0a0a0a; }
+  .gate { display: inline-block; font-size: 11px; font-weight: 900; padding: 2px 9px; border-radius: 999px; background: #fdf3d8; color: #6b5413; border: 1px solid #e7d8a8; }
+
+  .flow { background: #fff; border: 1px solid rgba(10,10,10,.1); border-radius: 16px; padding: 20px; }
+  .flow .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; font-weight: 800; margin: 8px 0; }
+  .flow .b { background: #efeae0; border-radius: 9px; padding: 7px 11px; }
+  .flow .b.hot { background: #1f1b14; color: #fff; }
+  .flow .b.cache { background: #2f6f4f; color: #fff; }
+  .flow .arrow { color: #b3aa99; font-weight: 900; }
+  .foot { margin-top: 30px; font-size: 12px; color: #8a8273; font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>K-MODU 서비스 프로세스</h1>
+  <p class="sub">한국 디자이너 브랜드 × 글로벌 크리에이터 매칭 — 등록부터 협업까지의 전체 흐름</p>
+
+  <div class="legend">
+    <span><i class="dot d-designer"></i>디자이너(브랜드)</span>
+    <span><i class="dot d-creator"></i>크리에이터(인플루언서)</span>
+    <span><i class="dot d-admin"></i>관리자(운영)</span>
+    <span><i class="dot d-system"></i>시스템(AI·DB)</span>
+  </div>
+
+  <h2>핵심 서비스 루프</h2>
+  <div class="loop">
+    <div class="step"><div class="n">STEP 1</div><h3>브랜드 등록</h3><p>구글 로그인 → 신청 → 브랜드 프로필·상품·룩북 등록</p><span class="by" style="background:#2f6f4f">디자이너</span></div>
+    <div class="step"><div class="n">STEP 2</div><h3>승인 게이트</h3><p>관리자가 검수·승인해야 공개에 노출 (승인된 것만)</p><span class="by" style="background:#0a0a0a">관리자</span></div>
+    <div class="step"><div class="n">STEP 3</div><h3>공개 카드</h3><p>디자이너 보드에 카드 노출 → 모달(프로필·스타일링·협업)</p><span class="by" style="background:#b9863a">시스템</span></div>
+    <div class="step"><div class="n">STEP 4</div><h3>발견·생성</h3><p>크리에이터가 AI 룩 미리보기 + 협업/샘플 제안</p><span class="by" style="background:#7a5cc0">크리에이터</span></div>
+    <div class="step"><div class="n">STEP 5</div><h3>받은 의뢰</h3><p>디자이너 인박스로 도착 → 협업 성사</p><span class="by" style="background:#2f6f4f">디자이너</span></div>
+  </div>
+  <p class="loop-back">↺ 협업·반응 데이터가 다시 브랜드 콘텐츠/노출을 키우는 선순환</p>
+
+  <h2>주체별 역할</h2>
+  <div class="lanes">
+    <div class="lane lane-designer">
+      <div class="lane-head"><b>디자이너</b><small>브랜드 운영자</small></div>
+      <div class="lane-steps">
+        <div class="chip">구글 로그인 → 신청<small>/apply</small></div>
+        <div class="chip">브랜드 프로필<small>메인 커버 · 룩북</small></div>
+        <div class="chip">상품 등록<small>상의·하의·악세서리</small></div>
+        <div class="chip">AI 룩 제작<small>모델+상품 → 생성</small></div>
+        <div class="chip">숏폼 제작<small>룩 → 릴</small></div>
+        <div class="chip">받은 의뢰함<small>샘플·협업 제안</small></div>
+      </div>
+    </div>
+    <div class="lane lane-creator">
+      <div class="lane-head"><b>크리에이터</b><small>글로벌 인플루언서</small></div>
+      <div class="lane-steps">
+        <div class="chip">보드 탐색<small>/designers</small></div>
+        <div class="chip">카드 모달<small>프로필 보기</small></div>
+        <div class="chip">스타일링 보드<small>제품 선택 → AI 룩</small></div>
+        <div class="chip">숏폼 미리보기<small>풀룩 릴</small></div>
+        <div class="chip">협업/샘플 제안<small>의뢰 폼 전송</small></div>
+      </div>
+    </div>
+    <div class="lane lane-admin">
+      <div class="lane-head"><b>관리자</b><small>운영 콘솔</small></div>
+      <div class="lane-steps">
+        <div class="chip">디자이너 승인<small>승인/비활성</small></div>
+        <div class="chip">회원 관리<small>가입 계정 전체</small></div>
+        <div class="chip">상품 검수<small>공개/비공개</small></div>
+        <div class="chip">AI 결과 검수<small>승인/반려/숨김/삭제</small></div>
+        <div class="chip">생성 사용량<small>일별·디자이너별 한도</small></div>
+      </div>
+    </div>
+  </div>
+
+  <h2>데이터 게이트 · 무결성 규칙</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>공개 노출은 “승인된 것”만 <span class="gate">GATE</span></h3>
+      <div class="rule"><b>디자이너</b> approval_status = approved 만 보드에 노출</div>
+      <div class="rule"><b>포트폴리오 사진</b> status = approved 만 (등록 시 자동 공개)</div>
+      <div class="rule"><b>상품</b> status = active 만 스타일링 보드에 노출</div>
+      <div class="rule"><b>AI 룩</b> status = approved 만 “생성된 룩”에 공개</div>
+      <div class="rule"><b>디자이너 독립</b> 카드별로 자기 데이터만 — 남의 사진·룩 안 빌림</div>
+      <div class="rule"><b>커버 없으면</b> AI 모델 대신 “사진 준비 중” 플레이스홀더</div>
+    </div>
+    <div class="card">
+      <h3>AI 생성 비용 흐름 <span class="gate">COST GUARD</span></h3>
+      <div class="flow">
+        <div class="row"><span class="b">제품 1~4개 선택</span><span class="arrow">→</span><span class="b">cacheKey 계산</span></div>
+        <div class="row"><span class="b cache">캐시 히트</span><span class="arrow">→</span><span class="b">즉시 반환 · 비용 0</span></div>
+        <div class="row"><span class="b">캐시 미스</span><span class="arrow">→</span><span class="b hot">OpenAI 생성(비용)</span><span class="arrow">→</span><span class="b">버킷 저장 · 캐시</span></div>
+      </div>
+      <div class="rule" style="margin-top:6px"><b>가드 1</b> 공개 프롬프트 고정 → 캐시 우회 차단</div>
+      <div class="rule"><b>가드 2</b> 디자이너별 일일 한도 (관리자 조정)</div>
+      <div class="rule"><b>가드 3</b> 전역 일일 상한 + 협업폼 IP 제한</div>
+    </div>
+  </div>
+
+  <h2>데이터 저장</h2>
+  <div class="card">
+    <div class="flow">
+      <div class="row"><span class="b">Postgres</span><span class="arrow">·</span>
+        <span class="b">users</span><span class="b">designers</span><span class="b">products</span>
+        <span class="b">designer_portfolio_images</span><span class="b">generated_looks</span><span class="b">collab_requests</span>
+      </div>
+      <div class="row"><span class="b">Railway Bucket(S3)</span><span class="arrow">→</span><span class="b">업로드·AI 생성 이미지</span><span class="arrow">→</span><span class="b">/uploads/* presigned 302 서빙</span></div>
+    </div>
+  </div>
+
+  <p class="foot">생성: 2026-06-14 · K-MODU v0.6 · 공개 도메인 www.k-modu.co.kr (Railway + Cloudflare)</p>
+</div>
+</body>
+</html>
