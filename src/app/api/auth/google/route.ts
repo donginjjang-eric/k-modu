@@ -12,6 +12,18 @@ import {
 
 export async function GET(request: Request) {
   const origin = getRequestOrigin(request);
+
+  // 정식 도메인이 아닌 곳(예: raw Railway URL k-modu-production.up.railway.app)에서 로그인을 시작하면
+  // 그 도메인 콜백이 구글에 미등록이라 redirect_uri_mismatch가 난다. 로그인 흐름 전체(state 쿠키·redirect_uri·콜백)를
+  // 정식 도메인으로 넘겨 항상 같은 도메인에서 일어나게 한다. (dev/localhost는 건드리지 않도록 production에서만)
+  const canonical = (process.env.PUBLIC_BASE_URL || "https://www.k-modu.co.kr").replace(/\/+$/, "");
+  if (process.env.NODE_ENV === "production" && canonical && origin !== canonical) {
+    const target = new URL(`${canonical}/api/auth/google`);
+    const forwardNext = new URL(request.url).searchParams.get("next");
+    if (forwardNext) target.searchParams.set("next", forwardNext);
+    return Response.redirect(target.toString(), 302);
+  }
+
   if (!isGoogleLoginConfigured()) {
     return Response.redirect(`${origin}/login?error=google_not_configured`, 302);
   }
