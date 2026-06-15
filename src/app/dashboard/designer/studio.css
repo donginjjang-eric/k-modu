@@ -200,11 +200,13 @@
 .brand-preview-copy h2 {
   max-width: 620px;
   margin: 0;
-  font-size: clamp(42px, 5vw, 72px);
-  line-height: .94;
+  font-size: clamp(26px, 3.4vw, 50px);
+  line-height: 1.02;
   font-weight: 950;
-  letter-spacing: -.04em;
+  letter-spacing: -.03em;
   text-transform: uppercase;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 .brand-preview-copy strong {
   display: block;
@@ -633,7 +635,7 @@
   .brand-profile-intro { display: grid; align-items: start; }
   .brand-public-preview { grid-template-columns: 1fr; padding: 14px; }
   .brand-preview-visual { min-height: 420px; }
-  .brand-preview-copy h2 { font-size: 42px; }
+  .brand-preview-copy h2 { font-size: clamp(22px, 6.4vw, 34px); }
   .brand-profile-divider { display: grid; gap: 4px; }
   .st-actions { grid-template-columns: 1fr; }
   .admin-actions-grid { grid-template-columns: 1fr; }
@@ -912,8 +914,8 @@
 .onboard-step-copy { flex: 1 1 auto; min-width: 0; }
 .onboard-step-copy b { display: block; font-size: 14px; font-weight: 800; }
 .onboard-step-copy small { color: var(--muted); font-size: 12px; }
-.onboard-step-go { flex: 0 0 auto; min-height: 32px; display: inline-flex; align-items: center; padding: 0 13px; border-radius: 9px; background: var(--ink); color: #fff; font-weight: 800; font-size: 12px; white-space: nowrap; }
-.onboard-step-tag { flex: 0 0 auto; color: #1f7a4d; font-weight: 800; font-size: 12px; }
+.onboard-steps .onboard-step-go { flex: 0 0 auto; min-height: 32px; display: inline-flex; align-items: center; padding: 0 13px; border-radius: 9px; background: var(--ink); color: #fff !important; font-weight: 800; font-size: 12px; white-space: nowrap; }
+.onboard-steps .onboard-step-tag { flex: 0 0 auto; color: #1f7a4d; font-weight: 800; font-size: 12px; }
 @media (max-width: 760px) {
   .onboard-head { flex-direction: column; gap: 6px; }
 }

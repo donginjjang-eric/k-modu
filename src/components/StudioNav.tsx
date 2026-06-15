@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
 import NavIcon from "@/components/NavIcons";
 import LogoutButton from "@/components/LogoutButton";
 
@@ -36,52 +35,14 @@ function isActive(pathname: string, href: string) {
 
 export function StudioSideNav({ brandName, publicHref }: { brandName: string; publicHref: string }) {
   const pathname = usePathname();
-  const productActive = isActive(pathname, "/dashboard/designer/products");
-  const [productOpen, setProductOpen] = useState(productActive);
   const initial = (brandName || "K").trim().charAt(0).toUpperCase();
 
   return (
     <aside className="st-side">
       <nav>
+        {/* 초기 서비스: 상품 등록은 하위 메뉴 없이 단일 메뉴로 통합 (페이지에 업로드+관리가 함께 있음) */}
         {STUDIO_NAV.map((item) => {
           const active = isActive(pathname, item.href);
-          if (item.href === "/dashboard/designer/products") {
-            return (
-              <div className={`st-nav-group${productOpen ? " is-open" : ""}`} key={item.href}>
-                <button
-                  type="button"
-                  className={`st-nav-toggle ${active ? "is-active" : ""}`}
-                  onClick={() => setProductOpen((current) => !current)}
-                  aria-expanded={productOpen}
-                >
-                  <span className="ic"><NavIcon name={item.icon} /></span>
-                  {item.label}
-                  <span className="st-chevron" aria-hidden="true">{productOpen ? "−" : "+"}</span>
-                </button>
-                {productOpen ? (
-                  <div className="st-subnav" aria-label="상품 등록 하위 메뉴">
-                    <Link className={active ? "st-subitem is-active" : "st-subitem"} href={`${item.href}#product-upload`}>
-                      <span className="ic"><NavIcon name="shirt" /></span>
-                      상품 올리기
-                    </Link>
-                    <Link className="st-subitem" href={`${item.href}#my-products`}>
-                      <span className="ic"><NavIcon name="file" /></span>
-                      내 상품 관리
-                    </Link>
-                    {/* 상세페이지·룩북 제작(예정)은 초기 서비스에서 숨김 — PRODUCT_SUBNAV와 함께 복원
-                    {PRODUCT_SUBNAV.map((subitem) => (
-                      <span className="st-subitem is-soon" key={subitem.label}>
-                        <span className="ic"><NavIcon name={subitem.icon} /></span>
-                        {subitem.label}
-                        <span className="tag">{subitem.tag}</span>
-                      </span>
-                    ))} */}
-                  </div>
-                ) : null}
-              </div>
-            );
-          }
-
           return (
             <Link key={item.href} href={item.href} className={active ? "is-active" : ""}>
               <span className="ic"><NavIcon name={item.icon} /></span> {item.label}
