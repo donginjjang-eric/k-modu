@@ -36,6 +36,14 @@ export default function AdminUsersManager({ users }: { users: AdminUserRow[] }) 
 
   const withSeg = useMemo(() => users.map((u) => ({ u, seg: segmentOf(u) })), [users]);
 
+  // 안정 회원번호: 가입 순서대로 1번(가장 먼저 가입)부터. 정렬·필터와 무관하게 회원마다 고정.
+  const numberById = useMemo(() => {
+    const ordered = [...users].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+    const map: Record<string, number> = {};
+    ordered.forEach((u, i) => { map[u.id] = i + 1; });
+    return map;
+  }, [users]);
+
   const counts = useMemo(() => {
     const c = { all: users.length, approved: 0, pending: 0, not_applied: 0, admin: 0, disabled: 0 };
     withSeg.forEach(({ seg }) => { c[seg] += 1; });
@@ -100,9 +108,9 @@ export default function AdminUsersManager({ users }: { users: AdminUserRow[] }) 
               <span>브랜드 / 상태</span>
               <span className="col-date">가입일</span>
             </div>
-            {visible.map(({ u }, i) => (
+            {visible.map(({ u }) => (
               <article className="admin-table-row" key={u.id}>
-                <span className="col-no">{i + 1}</span>
+                <span className="col-no">{numberById[u.id]}</span>
                 {u.designer_id ? (
                   <Link className="acct-cell acct-link" href={`/dashboard/admin/designers/${u.designer_id}`} title="디자이너 상세 보기">
                     <span className="acct-avatar" aria-hidden="true">{(u.email[0] || "?").toUpperCase()}</span>
