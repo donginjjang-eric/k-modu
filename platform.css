@@ -4936,22 +4936,21 @@ body.dark-theme .mini-stats strong {
     margin-bottom: 12px;
   }
 
-  /* 모바일: 보유 제품 헤더(카테고리 탭)를 상단 sticky 서브바로 — 위에 있다가 스크롤하면 따라붙음 */
+  /* 모바일: 보유 제품 헤더(카테고리 탭)를 상단 sticky 메뉴바로. 모달 드래그 핸들(top 9px) 아래로 내려 겹침 방지 */
   .styling-board-section-head:has(> .owned-category-tabs) {
     position: sticky;
-    top: 0;
+    top: 22px;
     z-index: 6;
     display: flex;
     align-items: center;
     gap: 10px;
-    margin: 0 0 12px;
-    padding: 8px 10px;
-    border: 1px solid rgba(5, 5, 5, .08);
-    border-radius: 12px;
-    background: rgba(249, 249, 246, .94);
-    -webkit-backdrop-filter: blur(12px) saturate(150%);
-    backdrop-filter: blur(12px) saturate(150%);
-    box-shadow: 0 8px 22px rgba(5, 5, 5, .1);
+    margin: 0 0 14px;
+    padding: 9px 12px;
+    border: 1px solid rgba(5, 5, 5, .12);
+    border-radius: 14px;
+    /* 메뉴바라는 게 분명하도록 솔리드 배경 + 또렷한 그림자 */
+    background: #ffffff;
+    box-shadow: 0 10px 26px rgba(5, 5, 5, .16);
   }
   .styling-board-section-head:has(> .owned-category-tabs) > span { display: none; }
   .styling-board-section-head:has(> .owned-category-tabs) h3 { flex: 0 0 auto; }
@@ -5203,11 +5202,12 @@ body.dark-theme .mini-stats strong {
     grid-template-columns: minmax(0, 1fr) auto auto;
     gap: 6px;
     align-items: center;
-    padding: 8px 9px;
-    border: 1px solid rgba(5, 5, 5, .14);
+    padding: 9px 10px;
+    border: 1px solid rgba(5, 5, 5, .16);
     border-radius: 16px;
-    background: rgba(255, 255, 255, .96);
-    box-shadow: 0 14px 38px rgba(5, 5, 5, .2);
+    /* 상단 sticky 메뉴바와 동일한 솔리드 정의 (하단 메뉴바) */
+    background: #ffffff;
+    box-shadow: 0 16px 40px rgba(5, 5, 5, .24);
     opacity: 0;
     pointer-events: none;
     transform: translateY(18px);
