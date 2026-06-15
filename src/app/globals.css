@@ -632,10 +632,8 @@ p {
   content: "";
 }
 
+/* 생성 박스를 sticky로 띄우면 상품 리스트를 가려서, 일반 흐름으로 상품 아래에 둔다 */
 .styling-panel .generate-box.is-sticky {
-  position: sticky;
-  bottom: 18px;
-  z-index: 6;
   box-shadow: 0 18px 38px rgba(15, 13, 10, 0.13);
 }
 
