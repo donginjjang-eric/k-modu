@@ -36,17 +36,29 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
   useEffect(() => {
     const ua = navigator.userAgent.toLowerCase();
     const isKakao = ua.includes("kakaotalk");
-    const isOtherInApp = /instagram|fbav|fban|line\/|naver\(inapp|daumapps|everytimeapp/.test(ua);
+    // 구글이 OAuth를 막는 주요 인앱 웹뷰. K-MODU 타깃(틱톡 크리에이터·말레이시아)을 고려해
+    // 틱톡(musical_ly/bytedance/trill)·위챗(micromessenger)·스레드(barcelona)까지 포함.
+    const isOtherInApp = /instagram|fbav|fban|fb_iab|micromessenger|line\/|naver\(inapp|daumapps|everytimeapp|musical_ly|bytedancewebview|tiktok|trill|threads|barcelona|snapchat|kakaostory/.test(ua);
     if (isKakao) {
       setInAppBrowser(true);
       window.location.href = `kakaotalk://web/openExternal?url=${encodeURIComponent(window.location.href)}`;
     } else if (isOtherInApp) {
       setInAppBrowser(true);
+      // Android는 크롬으로 강제 전환 시도. iOS는 강제 전환 수단이 없어 안내 화면(수동 복사)으로 처리.
       if (ua.includes("android")) {
         window.location.href = `intent://${window.location.host}${window.location.pathname}${window.location.search}#Intent;scheme=https;package=com.android.chrome;end`;
       }
     }
   }, []);
+
+  const copyCurrentUrl = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setMessage("링크를 복사했어요. Safari·Chrome 등 기본 브라우저에 붙여넣어 열어주세요.");
+    } catch {
+      setMessage("링크 복사가 안 됐어요. 주소창의 URL을 길게 눌러 복사한 뒤 기본 브라우저에서 열어주세요.");
+    }
+  };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -77,9 +89,14 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
       <div className="generate-box login-form-card">
         <p className="login-status-email">외부 브라우저로 열어주세요</p>
         <p className="login-google-hint">
-          카카오톡 등 앱 안의 브라우저에서는 구글 로그인이 차단돼요. 외부 브라우저로 자동 전환 중이에요.
-          화면이 바뀌지 않으면 우측 메뉴(⋮ 또는 공유 버튼)에서 &ldquo;다른 브라우저로 열기&rdquo;를 눌러주세요.
+          카카오톡·인스타그램·틱톡 등 앱 안의 브라우저에서는 구글 정책상 로그인이 차단돼요.
+          자동 전환되지 않으면 아래 버튼으로 링크를 복사해 Safari·Chrome 등 기본 브라우저에 붙여넣거나,
+          우측 메뉴(⋮ 또는 공유 버튼)에서 &ldquo;다른 브라우저로 열기&rdquo;를 눌러주세요.
         </p>
+        <button className="generate-button login-status-cta" type="button" onClick={copyCurrentUrl}>
+          링크 복사하기
+        </button>
+        {message ? <p className="notice">{message}</p> : null}
       </div>
     );
   }
