@@ -1,7 +1,8 @@
+// 테스트용 제한 해제: 카테고리별 개수 제한 없음(사실상 무제한). 다시 제한하려면 값을 낮추면 된다.
 export const STYLING_PRODUCT_CATEGORY_LIMITS = {
-  "상의": 1,
-  "하의": 1,
-  "악세서리": 2,
+  "상의": 999,
+  "하의": 999,
+  "악세서리": 999,
 } as const;
 
 export type StylingProductCategory = keyof typeof STYLING_PRODUCT_CATEGORY_LIMITS;

@@ -72,9 +72,7 @@ export async function POST(request: Request) {
   if (productIds.length < 1) {
     return Response.json({ ok: false, error: "Select at least one product." }, { status: 400 });
   }
-  if (productIds.length > 4) {
-    return Response.json({ ok: false, error: "Real-time AI generation supports up to four products." }, { status: 400 });
-  }
+  // 테스트용 제한 해제: 한 룩당 상품 총합 제한 없음.
   if (new Set(productIds).size !== productIds.length) {
     return Response.json({ ok: false, error: "Duplicate products are not allowed." }, { status: 400 });
   }

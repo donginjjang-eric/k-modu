@@ -34,7 +34,8 @@ export default function StylingBoard({
   modelTemplates: ModelTemplate[];
 }) {
   const minAiProducts = 1;
-  const maxAiProducts = 4;
+  // 테스트용 제한 해제: 총합 상한 사실상 없음 (카테고리 제한도 STYLING_PRODUCT_CATEGORY_LIMITS=999로 해제)
+  const maxAiProducts = 999;
   const visibleModelTemplates = useMemo(
     () => modelTemplates.filter((template) => !`${template.id} ${template.label}`.toLowerCase().includes("male")),
     [modelTemplates],

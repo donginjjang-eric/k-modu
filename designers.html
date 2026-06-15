@@ -1303,11 +1303,12 @@
       }
     };
 
-    const MAX_PUBLIC_AI_ITEMS = 4;
+    // 테스트용 제한 해제: 총합·카테고리 제한 사실상 없음. 다시 제한하려면 값을 낮추면 된다.
+    const MAX_PUBLIC_AI_ITEMS = 999;
     const STYLING_SLOT_LIMITS = {
-      top: 1,
-      bottom: 1,
-      accessory: 2
+      top: 999,
+      bottom: 999,
+      accessory: 999
     };
     const getStylingButtonKey = (button) => button.dataset.productId || `${button.dataset.category || 'Item'}:${button.dataset.itemName || ''}`;
 
