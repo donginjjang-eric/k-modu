@@ -849,6 +849,37 @@ export async function countDailyLiveGenerationsAll() {
   return Number(row?.count || 0);
 }
 
+// 디자이너별 오늘 Veo 숏폼 생성수 (완료 + 진행중) — 1일 한도 산정용. 실패는 재시도 가능하도록 미포함.
+export async function countDailyVeoForDesigner(designerId: string) {
+  if (!hasDatabase()) return 0;
+  const row = await one<{ count: string }>(
+    `SELECT (
+        (SELECT COUNT(*) FROM generation_logs
+           WHERE designer_id = $1 AND provider = 'google-veo' AND status = 'generated'
+             AND created_at >= date_trunc('day', now()))
+      + (SELECT COUNT(*) FROM generated_looks
+           WHERE designer_id = $1 AND video_status IN ('queued', 'processing'))
+     )::text AS count`,
+    [designerId],
+  );
+  return Number(row?.count || 0);
+}
+
+// 전역 오늘 Veo 숏폼 생성수 (비용 안전망 — 모든 디자이너 합산, 완료 + 진행중)
+export async function countDailyVeoAll() {
+  if (!hasDatabase()) return 0;
+  const row = await one<{ count: string }>(
+    `SELECT (
+        (SELECT COUNT(*) FROM generation_logs
+           WHERE provider = 'google-veo' AND status = 'generated'
+             AND created_at >= date_trunc('day', now()))
+      + (SELECT COUNT(*) FROM generated_looks
+           WHERE video_status IN ('queued', 'processing'))
+     )::text AS count`,
+  );
+  return Number(row?.count || 0);
+}
+
 // 관리자: 승인 디자이너별 오늘 실제 생성수 + 일일 한도 (생성 비용 모니터링/조정용)
 export async function getDesignerGenerationUsage(): Promise<Array<{
   id: string;

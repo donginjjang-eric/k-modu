@@ -652,11 +652,9 @@
     const SF_SCENE_MS = 2400;
     const sfProgressSpan = shortformReel ? shortformReel.querySelector('.shortform-reel-progress span') : null;
     const sfLayers = { a: shortformReelMedia, b: shortformReelMediaB };
-    // 실제 숏폼 영상 풀 (생성할 때마다 랜덤). 없거나 로드 실패 시 멀티컷 이미지로 폴백.
-    const SHORTFORM_VIDEO_POOL = [
-      'assets/video_sample/model1_sample_video.mp4',
-      'assets/video_sample/model2_sample_video.mp4'
-    ];
+    // 샘플(가짜) 영상은 제거 — 실제 숏폼 영상은 디자이너 스튜디오에서 생성한다.
+    // 풀이 비어 있으면 자동으로 멀티컷 이미지 프리뷰로 폴백한다.
+    const SHORTFORM_VIDEO_POOL = [];
     let lastShortformVideoIndex = -1;
     const pickShortformVideo = () => {
       if (!SHORTFORM_VIDEO_POOL.length) return '';
