@@ -4779,6 +4779,14 @@ body.dark-theme .mini-stats strong {
     display: block;
     border: 0;
     border-radius: 24px 24px 0 0;
+    /* 드래그로 닫을 때 스냅백을 부드럽게 */
+    transition: transform .26s cubic-bezier(.2, .8, .2, 1);
+    will-change: transform;
+  }
+
+  /* 모바일은 좌상단 닫기 버튼 제거 — 아래로 드래그 또는 배경 탭으로 닫는다 */
+  .designer-proposal-close {
+    display: none;
   }
 
   .designer-proposal-scroll {
@@ -4788,16 +4796,17 @@ body.dark-theme .mini-stats strong {
     -webkit-overflow-scrolling: touch;
   }
 
+  /* 드래그 핸들: 잡기 쉽게 더 또렷하고 큰 영역 */
   .designer-proposal-card::before {
     content: "";
     position: absolute;
     z-index: 4;
-    top: 10px;
+    top: 9px;
     left: 50%;
-    width: 44px;
-    height: 5px;
+    width: 52px;
+    height: 6px;
     border-radius: 999px;
-    background: rgba(5, 5, 5, .18);
+    background: rgba(5, 5, 5, .28);
     transform: translateX(-50%);
     pointer-events: none;
   }

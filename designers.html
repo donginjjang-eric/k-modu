@@ -2376,6 +2376,49 @@
     proposalSheet.addEventListener('click', (event) => {
       if (event.target === proposalSheet) closeProposalSheet();
     });
+
+    // 모바일: 바텀시트를 아래로 드래그하면 닫기 (감도 넉넉히). 콘텐츠 최상단에서만 작동해 스크롤과 충돌 없음.
+    (function setupSheetDrag() {
+      const card = proposalSheet.querySelector('.designer-proposal-card');
+      const scroller = proposalSheet.querySelector('.designer-proposal-scroll');
+      if (!card || !scroller) return;
+      const isMobile = () => window.matchMedia('(max-width: 900px)').matches;
+      let startY = 0, startT = 0, delta = 0, dragging = false, fromTop = false;
+
+      card.addEventListener('touchstart', (e) => {
+        if (!isMobile() || !e.touches[0]) return;
+        startY = e.touches[0].clientY;
+        startT = Date.now();
+        delta = 0;
+        fromTop = scroller.scrollTop <= 0;
+        dragging = true;
+        card.style.transition = 'none';
+      }, { passive: true });
+
+      card.addEventListener('touchmove', (e) => {
+        if (!dragging || !isMobile() || !e.touches[0]) return;
+        const d = e.touches[0].clientY - startY;
+        if (d > 0 && fromTop) {
+          delta = d;
+          card.style.transform = 'translateY(' + d + 'px)';
+          if (e.cancelable) e.preventDefault();
+        } else {
+          delta = 0;
+        }
+      }, { passive: false });
+
+      const endDrag = () => {
+        if (!dragging) return;
+        dragging = false;
+        card.style.transition = '';
+        const velocity = delta / Math.max(Date.now() - startT, 1); // px/ms
+        card.style.transform = '';
+        // 넉넉한 감도: 90px 이상 내리거나 빠르게 튕기면 닫기
+        if (delta > 90 || (delta > 40 && velocity > 0.5)) closeProposalSheet();
+      };
+      card.addEventListener('touchend', endDrag);
+      card.addEventListener('touchcancel', endDrag);
+    })();
     window.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && proposalSheet.classList.contains('is-open')) closeProposalSheet();
       if (event.key === 'Escape' && designerBetaLaunchModal?.classList.contains('is-open')) closeDesignerBetaLaunchModal();
