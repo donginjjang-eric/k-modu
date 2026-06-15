@@ -309,8 +309,10 @@
 .st-prices { display: grid; gap: 1px; margin-top: 5px; }
 .st-prices .supply { font-size: 12px; color: var(--muted); font-weight: 600; }
 .st-prices .retail { font-size: 14px; font-weight: 800; }
-.st-pcard .row { display: flex; gap: 8px; margin-top: 10px; }
-.st-pcard .row button { flex: 1; min-height: 34px; border-radius: 9px; border: 1px solid var(--line2); background: #fff; font-weight: 700; font-size: 12px; }
+.st-pcard .row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.st-pcard .row button { flex: 1 1 auto; min-width: 56px; min-height: 34px; border-radius: 9px; border: 1px solid var(--line2); background: #fff; font-weight: 700; font-size: 12px; cursor: pointer; }
+.st-edit-banner { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; padding: 10px 14px; border-radius: 10px; background: var(--soft); font-size: 13px; font-weight: 700; color: var(--ink); }
+.st-edit-banner button { flex: 0 0 auto; min-height: 30px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--line2); background: #fff; font-weight: 800; font-size: 12px; cursor: pointer; }
 .product-manager-head { align-items: flex-start; gap: 14px; }
 .product-tabs.compact { max-width: min(100%, 520px); justify-content: flex-start; }
 

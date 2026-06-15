@@ -53,6 +53,8 @@ export default function ProductManager({ initialProducts }: { initialProducts: P
   const [saving, setSaving] = useState(false);
   const [drag, setDrag] = useState(false);
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
+  // 수정 중인 상품 id (null이면 신규 등록 모드). 같은 폼을 등록/수정에 재사용한다.
+  const [editingId, setEditingId] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const productCategories = useMemo(() => {
@@ -97,36 +99,76 @@ export default function ProductManager({ initialProducts }: { initialProducts: P
     if (file) upload(file);
   };
 
+  const startEdit = (product: Product) => {
+    setEditingId(product.id);
+    setForm({
+      name: product.name || "",
+      category: groupProductCategory(product.category),
+      supplyPrice: product.supply_price || "",
+      price: product.price || "",
+      color: product.color || "",
+      description: product.description || "",
+      visibility: product.status === "draft" ? "draft" : "active",
+    });
+    setImageUrl(product.image_url || "");
+    setImageHash(product.image_hash || "");
+    setMsg(null);
+    if (typeof document !== "undefined") {
+      document.getElementById("product-upload")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setForm(EMPTY);
+    setImageUrl("");
+    setImageHash("");
+    setMsg(null);
+  };
+
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSaving(true);
     setMsg(null);
+    const payload = {
+      name: form.name,
+      category: form.category,
+      supplyPrice: form.supplyPrice,
+      price: form.price,
+      color: form.color,
+      description: form.description,
+      imageUrl,
+      imageHash,
+      status: form.visibility,
+    };
     try {
-      const res = await fetch("/api/products", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: form.name,
-          category: form.category,
-          supplyPrice: form.supplyPrice,
-          price: form.price,
-          color: form.color,
-          description: form.description,
-          imageUrl,
-          imageHash,
-          status: form.visibility,
-        }),
-      });
+      const res = editingId
+        ? await fetch(`/api/products/${editingId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          })
+        : await fetch("/api/products", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
       const result = await res.json();
-      if (!res.ok) throw new Error(result.error || "상품 저장에 실패했습니다.");
-      setProducts((current) => [result.product, ...current]);
-      // 같은 분류를 연달아 올리기 쉽게, 방금 등록한 분류는 유지하고 나머지 입력만 비운다
+      if (!res.ok) throw new Error(result.error || (editingId ? "상품 수정에 실패했습니다." : "상품 저장에 실패했습니다."));
+      if (editingId) {
+        setProducts((current) => current.map((item) => (item.id === editingId ? result.product : item)));
+        setMsg({ text: "수정 완료! 변경 사항이 바로 반영됐어요.", ok: true });
+      } else {
+        setProducts((current) => [result.product, ...current]);
+        setMsg({ text: "등록 완료! 내 상품 목록과 스타일링 보드에 바로 반영됐어요.", ok: true });
+      }
+      // 같은 분류를 연달아 올리기 쉽게, 방금 쓴 분류는 유지하고 나머지 입력만 비운다
+      setEditingId(null);
       setForm({ ...EMPTY, category: form.category });
       setImageUrl("");
       setImageHash("");
-      setMsg({ text: "등록 완료! 내 상품 목록과 스타일링 보드에 바로 반영됐어요.", ok: true });
     } catch (error) {
-      setMsg({ text: error instanceof Error ? error.message : "상품 저장에 실패했습니다.", ok: false });
+      setMsg({ text: error instanceof Error ? error.message : "저장에 실패했습니다.", ok: false });
     } finally {
       setSaving(false);
     }
@@ -161,7 +203,9 @@ export default function ProductManager({ initialProducts }: { initialProducts: P
       ? "사진을 선택하면 등록할 수 있어요"
       : !form.name.trim()
         ? "상품 이름을 입력해주세요"
-        : "상품 등록하기";
+        : editingId
+          ? "수정 저장하기"
+          : "상품 등록하기";
 
   return (
     <>
@@ -170,6 +214,12 @@ export default function ProductManager({ initialProducts }: { initialProducts: P
 
       <div className="st-grid2col">
         <form className="st-card" id="product-upload" onSubmit={submit}>
+          {editingId ? (
+            <div className="st-edit-banner">
+              <span>✎ <b>{form.name || "상품"}</b> 수정 중 — 값을 고치고 저장하세요</span>
+              <button type="button" onClick={cancelEdit}>취소</button>
+            </div>
+          ) : null}
           <div className="st-step"><span className="num">1</span> 상품 분류 선택</div>
           <p className="st-substep">어떤 상품인지 먼저 고르면 분류별로 깔끔하게 정리돼요.</p>
           <div className="portfolio-kind-picker" role="radiogroup" aria-label="상품 분류">
@@ -293,6 +343,7 @@ export default function ProductManager({ initialProducts }: { initialProducts: P
                         {product.price ? <span className="retail">판매가 {product.price}</span> : null}
                       </div>
                       <div className="row">
+                        <button type="button" onClick={() => startEdit(product)}>수정</button>
                         <button type="button" onClick={() => toggleVisibility(product)}>{isPublic ? "비공개로 전환" : "다시 공개"}</button>
                         <button type="button" onClick={() => remove(product)}>삭제</button>
                       </div>
