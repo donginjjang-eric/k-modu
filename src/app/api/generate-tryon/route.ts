@@ -1,11 +1,10 @@
 import { spawn } from "node:child_process";
 import path from "node:path";
-import { getCurrentUser } from "@/lib/auth";
+import { getApprovedDesignerForApi } from "@/lib/auth";
 import {
   countDailyLiveGenerations,
   createGenerationLog,
   getGeneratedLookByCacheKeyForDesigner,
-  getDesignerForUser,
   getLatestGenerationLogForDesigner,
   getModelTemplate,
   getOwnedProductsForGeneration,
@@ -27,15 +26,10 @@ function startGenerationWorker(input: unknown) {
 }
 
 export async function GET(request: Request) {
-  const user = await getCurrentUser();
-  if (!user || user.role !== "designer") {
-    return Response.json({ ok: false, error: "Login as a designer before checking AI generation." }, { status: 401 });
-  }
-
-  const designer = await getDesignerForUser(user.id);
-  if (!designer || designer.approval_status !== "approved") {
-    return Response.json({ ok: false, error: "Designer account approval is required." }, { status: 403 });
-  }
+  // 관리자 겸 디자이너도 생성 가능하도록 통일 (스튜디오 페이지 접근 정책과 동일)
+  const auth = await getApprovedDesignerForApi();
+  if (!auth.ok) return Response.json({ ok: false, error: auth.error }, { status: auth.status });
+  const { designer } = auth;
 
   const cacheKey = new URL(request.url).searchParams.get("cacheKey")?.trim() || "";
   if (!cacheKey) {
@@ -63,15 +57,10 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const user = await getCurrentUser();
-  if (!user || user.role !== "designer") {
-    return Response.json({ ok: false, error: "Login as a designer before generating AI looks." }, { status: 401 });
-  }
-
-  const designer = await getDesignerForUser(user.id);
-  if (!designer || designer.approval_status !== "approved") {
-    return Response.json({ ok: false, error: "Designer account approval is required." }, { status: 403 });
-  }
+  // 관리자 겸 디자이너도 생성 가능하도록 통일 (스튜디오 페이지 접근 정책과 동일)
+  const auth = await getApprovedDesignerForApi();
+  if (!auth.ok) return Response.json({ ok: false, error: auth.error }, { status: auth.status });
+  const { user, designer } = auth;
 
   const body = await request.json().catch(() => ({}));
   const productIds = Array.isArray(body.productIds) ? body.productIds.map(String) : [];
