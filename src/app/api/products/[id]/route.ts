@@ -1,8 +1,10 @@
-import { requireApprovedDesigner } from "@/lib/auth";
+import { getApprovedDesignerForApi } from "@/lib/auth";
 import { getProductForDesigner, updateProductForDesigner } from "@/lib/db";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { designer } = await requireApprovedDesigner();
+  const auth = await getApprovedDesignerForApi();
+  if (!auth.ok) return Response.json({ ok: false, error: auth.error }, { status: auth.status });
+  const { designer } = auth;
   const { id } = await params;
   const product = await getProductForDesigner(designer.id, id);
   if (!product) return Response.json({ ok: false, error: "Product not found." }, { status: 404 });
@@ -10,7 +12,9 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 }
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { designer } = await requireApprovedDesigner();
+  const auth = await getApprovedDesignerForApi();
+  if (!auth.ok) return Response.json({ ok: false, error: auth.error }, { status: auth.status });
+  const { designer } = auth;
   const { id } = await params;
   const body = await request.json().catch(() => ({}));
 
@@ -33,7 +37,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 }
 
 export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { designer } = await requireApprovedDesigner();
+  const auth = await getApprovedDesignerForApi();
+  if (!auth.ok) return Response.json({ ok: false, error: auth.error }, { status: auth.status });
+  const { designer } = auth;
   const { id } = await params;
   const product = await updateProductForDesigner(designer.id, id, { status: "hidden" });
   if (!product) return Response.json({ ok: false, error: "Product not found." }, { status: 404 });

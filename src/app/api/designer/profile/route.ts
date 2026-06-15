@@ -1,8 +1,11 @@
-import { requireApprovedDesigner } from "@/lib/auth";
+import { getApprovedDesignerForApi } from "@/lib/auth";
 import { updateDesignerProfile } from "@/lib/db";
 
 export async function PATCH(request: Request) {
-  const { designer } = await requireApprovedDesigner();
+  // API라 redirect(HTML) 대신 JSON 401/403을 준다 — 세션 만료 시 클라이언트가 깨지지 않도록
+  const auth = await getApprovedDesignerForApi();
+  if (!auth.ok) return Response.json({ ok: false, error: auth.error }, { status: auth.status });
+  const { designer } = auth;
   const body = await request.json().catch(() => ({}));
 
   try {

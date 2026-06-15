@@ -20,8 +20,12 @@ export default function BrandForm({ brandName, description, mood }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-      const r = await res.json();
-      if (!res.ok) throw new Error(r.error || "저장에 실패했어요.");
+      // 세션 만료 등으로 서버가 JSON 대신 HTML(로그인 페이지)을 줄 수 있어 방어적으로 파싱
+      const ct = res.headers.get("content-type") || "";
+      const r = ct.includes("application/json")
+        ? await res.json()
+        : { ok: false, error: "로그인이 만료됐어요. 새로고침 후 다시 로그인해주세요." };
+      if (!res.ok || r.ok === false) throw new Error(r.error || "저장에 실패했어요.");
       setMsg({ text: "저장됐어요 ✓", ok: true });
     } catch (e) {
       setMsg({ text: e instanceof Error ? e.message : "저장에 실패했어요.", ok: false });
