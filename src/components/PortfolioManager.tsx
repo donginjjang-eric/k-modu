@@ -28,7 +28,8 @@ const VISIBLE_KINDS = KINDS.filter((kind) => VISIBLE_KIND_VALUES.includes(kind.v
 const KIND_GOALS: Record<PortfolioImageKind, number> = { profile: 1, lookbook: 3, product: 2, sample: 1 };
 const GOAL_TOTAL = VISIBLE_KINDS.reduce((sum, kind) => sum + KIND_GOALS[kind.value], 0);
 const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
-const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+// 아이폰 HEIC 포함. 브라우저가 HEIC의 type을 비워 보내는 경우가 많아, 빈 type은 서버 판별에 맡긴다.
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"];
 
 async function readJsonResponse(response: Response) {
   const contentType = response.headers.get("content-type") || "";
@@ -66,8 +67,9 @@ export default function PortfolioManager({ initialImages, approved }: { initialI
     const valid: File[] = [];
     const skipped: string[] = [];
     for (const file of files) {
-      if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-        skipped.push(`${file.name} (JPG·PNG·WEBP만 가능)`);
+      // type이 있으면서 허용 목록에 없을 때만 거른다. 빈 type(HEIC 등)은 서버가 실제 바이트로 판별.
+      if (file.type && !ALLOWED_IMAGE_TYPES.includes(file.type)) {
+        skipped.push(`${file.name} (JPG·PNG·WEBP·HEIC만 가능)`);
         continue;
       }
       if (file.size > MAX_UPLOAD_BYTES) {
@@ -283,11 +285,11 @@ export default function PortfolioManager({ initialImages, approved }: { initialI
               </svg>
             </div>
             <div className="big">{uploading ? "업로드 중..." : pendingImages.length ? `사진 ${pendingImages.length}장이 선택되었습니다` : "사진을 클릭하거나 끌어와서 업로드"}</div>
-            <div className="small">{pendingImages.length ? "사진을 더 추가하거나, 아래에서 등록을 완료하세요" : "JPG·PNG·WEBP, 8MB 이하 · 여러 장 한번에 선택 가능"}</div>
+            <div className="small">{pendingImages.length ? "사진을 더 추가하거나, 아래에서 등록을 완료하세요" : "JPG·PNG·WEBP·HEIC(아이폰), 8MB 이하 · 여러 장 한번에 선택 가능"}</div>
             <input
               ref={fileRef}
               type="file"
-              accept="image/jpeg,image/png,image/webp"
+              accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
               multiple
               hidden
               onChange={(event) => {

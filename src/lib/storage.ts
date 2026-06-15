@@ -13,6 +13,7 @@ async function optimizeImage(bytes: Buffer, ext: string): Promise<Buffer> {
   try {
     let img = sharp(bytes, { failOn: "none" }).rotate();
     const meta = await img.metadata();
+    const isHeif = meta.format === "heif"; // HEIC/HEIF는 JPEG로 강제 변환됨
     if ((meta.width || 0) > MAX_EDGE || (meta.height || 0) > MAX_EDGE) {
       img = img.resize({ width: MAX_EDGE, height: MAX_EDGE, fit: "inside", withoutEnlargement: true });
     }
@@ -20,6 +21,8 @@ async function optimizeImage(bytes: Buffer, ext: string): Promise<Buffer> {
     else if (ext === ".webp") img = img.webp({ quality: 82 });
     else img = img.jpeg({ quality: 80, mozjpeg: true });
     const out = await img.toBuffer();
+    // 포맷 변환(HEIC→JPEG) 시엔 원본이 더 작아도 변환본을 써야 한다(HEIC 원본은 웹에서 안 열림)
+    if (isHeif) return out;
     return out.length < bytes.length ? out : bytes;
   } catch {
     return bytes;
@@ -41,6 +44,17 @@ const imageMimeToExt: Record<string, string> = {
   "image/jpeg": ".jpg",
   "image/png": ".png",
   "image/webp": ".webp",
+  // 아이폰 기본 포맷(HEIC/HEIF)은 받아서 JPEG로 변환 저장한다 — 웹에서 바로 열리도록
+  "image/heic": ".jpg",
+  "image/heif": ".jpg",
+};
+
+// sharp 포맷명 → mime (브라우저가 type을 비워 보내는 HEIC 등을 실제 바이트로 판별)
+const sniffFormatToMime: Record<string, string> = {
+  jpeg: "image/jpeg",
+  png: "image/png",
+  webp: "image/webp",
+  heif: "image/heif",
 };
 
 const contentTypes: Record<string, string> = {
@@ -131,7 +145,7 @@ export function getImageHash(bytes: Buffer) {
 export function validateImageUpload(input: { mimeType: string; byteLength: number }) {
   const maxBytes = Number(process.env.MAX_IMAGE_UPLOAD_BYTES || 8 * 1024 * 1024);
   const ext = imageMimeToExt[input.mimeType];
-  if (!ext) throw new Error("Only jpg, jpeg, png, and webp images are allowed.");
+  if (!ext) throw new Error("JPG, PNG, WEBP, HEIC 이미지만 업로드할 수 있습니다.");
   if (input.byteLength > maxBytes) throw new Error(`Image must be ${Math.round(maxBytes / 1024 / 1024)}MB or smaller.`);
   return ext;
 }
@@ -267,6 +281,17 @@ export async function serveStoredMedia(kind: StorageKind, fileName: string) {
   return new Response("Not found", { status: 404 });
 }
 
+// 브라우저가 type을 비우거나 모르는 포맷으로 보낼 때(HEIC가 대표적) 실제 바이트로 포맷을 판별
+async function resolveMimeType(bytes: Buffer, declared: string): Promise<string> {
+  if (imageMimeToExt[declared]) return declared;
+  try {
+    const format = (await sharp(bytes, { failOn: "none" }).metadata()).format || "";
+    return sniffFormatToMime[format] || declared;
+  } catch {
+    return declared;
+  }
+}
+
 export async function readImageFormFile(request: Request, fieldName = "image") {
   const form = await request.formData();
   const file = form.get(fieldName);
@@ -275,10 +300,11 @@ export async function readImageFormFile(request: Request, fieldName = "image") {
   }
 
   const bytes = Buffer.from(await file.arrayBuffer());
-  validateImageUpload({ mimeType: file.type, byteLength: bytes.length });
+  const mimeType = await resolveMimeType(bytes, file.type);
+  validateImageUpload({ mimeType, byteLength: bytes.length });
   return {
     file,
     bytes,
-    mimeType: file.type,
+    mimeType,
   };
 }

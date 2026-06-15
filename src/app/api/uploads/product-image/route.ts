@@ -14,6 +14,7 @@ export async function POST(request: Request) {
       imageHash: saved.imageHash,
     });
   } catch (error) {
+    console.error("[product-image] upload failed:", error instanceof Error ? error.message : error);
     return Response.json({
       ok: false,
       error: error instanceof Error ? error.message : "Unable to upload image.",

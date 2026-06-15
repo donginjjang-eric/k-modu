@@ -14,6 +14,8 @@ export async function POST(request: Request) {
       imageHash: saved.imageHash,
     });
   } catch (error) {
+    // 업로드 실패가 그동안 로그에 안 남아 원인 추적이 어려웠음 — 서버 로그에 남긴다
+    console.error("[portfolio-image] upload failed:", error instanceof Error ? error.message : error);
     return Response.json({
       ok: false,
       error: error instanceof Error ? error.message : "Unable to upload image.",

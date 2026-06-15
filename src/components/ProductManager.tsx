@@ -12,7 +12,8 @@ const PRODUCT_KINDS: Array<{ value: string; label: string; desc: string }> = [
 ];
 const CATEGORIES = PRODUCT_KINDS.map((kind) => kind.value);
 const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
-const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+// 아이폰 HEIC 포함. 빈 type(HEIC)은 서버가 실제 바이트로 판별하므로 통과시킨다.
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"];
 
 const groupProductCategory = (category: string) => {
   const raw = String(category || "").trim();
@@ -65,8 +66,8 @@ export default function ProductManager({ initialProducts }: { initialProducts: P
   const setField = (key: keyof FormState, value: string) => setForm((current) => ({ ...current, [key]: value }));
 
   const upload = async (file: File) => {
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-      setMsg({ text: "JPG, PNG, WEBP 이미지만 업로드할 수 있습니다.", ok: false });
+    if (file.type && !ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setMsg({ text: "JPG, PNG, WEBP, HEIC 이미지만 업로드할 수 있습니다.", ok: false });
       return;
     }
     if (file.size > MAX_UPLOAD_BYTES) {
@@ -210,11 +211,11 @@ export default function ProductManager({ initialProducts }: { initialProducts: P
               </svg>
             </div>
             <div className="big">{uploading ? "업로드 중..." : imageUrl ? "사진이 선택되었습니다" : "사진을 클릭하거나 끌어와서 업로드"}</div>
-            <div className="small">{imageUrl ? "다른 사진으로 바꾸려면 다시 클릭하거나 끌어오세요" : "JPG·PNG·WEBP, 8MB 이하"}</div>
+            <div className="small">{imageUrl ? "다른 사진으로 바꾸려면 다시 클릭하거나 끌어오세요" : "JPG·PNG·WEBP·HEIC(아이폰), 8MB 이하"}</div>
             <input
               ref={fileRef}
               type="file"
-              accept="image/jpeg,image/png,image/webp"
+              accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
               hidden
               onChange={(event) => onFiles(event.target.files)}
             />
