@@ -1611,44 +1611,65 @@
         transform: translateY(1px);
       }
 
+      /* 모바일 히어로: 고정 픽셀 절대배치 → 세로 흐름 스택 (화면 크기와 무관하게 겹침 없음) */
       .hero {
-        min-height: 940px;
-        padding-left: 20px;
-        padding-right: 20px;
+        min-height: 0;
+        padding: 18px 20px 36px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
       }
 
       .hero-title {
-        left: 50%;
-        top: 142px;
-        font-size: 58px;
+        position: static;
+        transform: none;
+        top: auto;
+        left: auto;
+        order: 1;
+        font-size: 52px;
+        line-height: .9;
+        text-align: center;
+        color: rgba(7, 7, 7, .1);
       }
 
       .byline {
-        left: 50%;
-      }
-
-      .byline {
-        top: 202px;
+        position: static;
+        transform: none;
+        top: auto;
+        left: auto;
+        order: 2;
         font-size: var(--fs-label-sm);
+      }
+
+      .models {
+        position: static;
+        transform: none;
+        top: auto;
+        bottom: auto;
+        left: auto;
+        order: 3;
+        width: 100%;
+        height: auto;
+      }
+
+      .hero-person {
+        height: auto;
+        max-height: 58vh;
       }
 
       .hero-copy,
       .hero-copy.right {
+        position: static;
+        transform: none;
         top: auto;
         bottom: auto;
-        left: 24px;
-        right: 24px;
-        width: auto;
+        left: auto;
+        right: auto;
+        order: 4;
+        width: 100%;
         padding: 18px 18px 17px;
         background: rgba(247, 247, 244, .94);
-      }
-
-      .hero-copy.right {
-        top: 650px;
-      }
-
-      .hero-copy:not(.right) {
-        top: 784px;
       }
 
       .hero-copy .kicker {
@@ -1661,16 +1682,9 @@
         line-height: 1.68;
       }
 
-      .models {
-        top: 245px;
-        bottom: auto;
-        width: 112vw;
-        height: 392px;
-      }
-
       .vision {
         min-height: 790px;
-        padding-top: 170px;
+        padding-top: 56px;
       }
 
       .vision::before {
