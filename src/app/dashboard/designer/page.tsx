@@ -1,19 +1,52 @@
 import Link from "next/link";
 import { requireApprovedDesigner } from "@/lib/auth";
-import { getProductsForDesigner, getGeneratedLooksForDesigner } from "@/lib/db";
+import { getProductsForDesigner, getGeneratedLooksForDesigner, getPortfolioImagesForDesigner } from "@/lib/db";
 
 export default async function DesignerHome() {
   const { designer } = await requireApprovedDesigner();
-  const [products, looks] = await Promise.all([
+  const [products, looks, portfolio] = await Promise.all([
     getProductsForDesigner(designer.id),
     getGeneratedLooksForDesigner(designer.id),
+    getPortfolioImagesForDesigner(designer.id),
   ]);
   const recent = products.slice(0, 6);
+
+  // 첫 진입 가이드: 커버 → 상품 → AI 룩. 다 채우면 가이드는 사라진다.
+  const hasCover = portfolio.some((p) => (p.kind === "profile" || p.kind === "lookbook") && p.status === "approved");
+  const setupSteps = [
+    { done: hasCover, label: "메인 커버 사진 올리기", desc: "공개 카드 첫 화면에 보일 대표 사진 1장 (3:4 세로)", href: "/dashboard/designer/brand" },
+    { done: products.length > 0, label: "보유 상품 등록", desc: "협업 가능한 상품 사진을 올려요", href: "/dashboard/designer/products" },
+    { done: looks.length > 0, label: "AI 룩 만들기", desc: "상품을 골라 모델 착장 룩을 생성해요", href: "/dashboard/designer/generated-looks" },
+  ];
+  const setupDone = setupSteps.filter((s) => s.done).length;
+  const setupComplete = setupDone === setupSteps.length;
 
   return (
     <>
       <h1 className="st-title">안녕하세요, {designer.brand_name} 님 👋</h1>
       <p className="st-sub">오늘도 멋진 룩을 올려볼까요?</p>
+
+      {!setupComplete ? (
+        <section className="st-card onboard-card">
+          <div className="onboard-head">
+            <div>
+              <h2>시작 가이드 <span className="onboard-count">{setupDone}/{setupSteps.length}</span></h2>
+              <p>아래 3단계만 채우면 공개 디자이너 카드가 완성돼요.</p>
+            </div>
+            <a className="onboard-preview" href={`/designers?open=${designer.id}`} target="_blank" rel="noreferrer">공개 화면 미리보기 →</a>
+          </div>
+          <div className="onboard-bar"><i style={{ width: `${(setupDone / setupSteps.length) * 100}%` }} /></div>
+          <ol className="onboard-steps">
+            {setupSteps.map((s, i) => (
+              <li key={s.label} className={s.done ? "is-done" : ""}>
+                <span className="ck">{s.done ? "✓" : i + 1}</span>
+                <div className="onboard-step-copy"><b>{s.label}</b><small>{s.desc}</small></div>
+                {s.done ? <span className="onboard-step-tag">완료</span> : <Link className="onboard-step-go" href={s.href}>하러 가기</Link>}
+              </li>
+            ))}
+          </ol>
+        </section>
+      ) : null}
 
       <div className="st-stats">
         <div className="st-stat"><div className="n">{products.length}</div><div className="l">상품</div></div>

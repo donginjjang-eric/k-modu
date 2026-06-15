@@ -894,3 +894,26 @@
   line-height: 1.65;
   opacity: .6;
 }
+
+/* 디자이너 시작 가이드 (첫 진입 온보딩) */
+.onboard-card { margin-bottom: 24px; }
+.onboard-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 14px; }
+.onboard-head h2 { margin: 0; font-size: 18px; font-weight: 900; }
+.onboard-count { color: var(--muted); font-weight: 900; }
+.onboard-head p { margin: 4px 0 0; color: var(--muted); font-size: 13px; font-weight: 700; }
+.onboard-preview { flex: 0 0 auto; font-size: 13px; font-weight: 800; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+.onboard-bar { height: 8px; border-radius: 999px; background: var(--soft); overflow: hidden; margin-bottom: 16px; }
+.onboard-bar i { display: block; height: 100%; background: var(--ink); border-radius: 999px; transition: width .3s ease; }
+.onboard-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.onboard-steps li { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+.onboard-steps li.is-done { background: rgba(0,0,0,.02); }
+.onboard-steps .ck { flex: 0 0 auto; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 999px; background: var(--soft); color: var(--ink); font-weight: 900; font-size: 13px; }
+.onboard-steps li.is-done .ck { background: #1f7a4d; color: #fff; }
+.onboard-step-copy { flex: 1 1 auto; min-width: 0; }
+.onboard-step-copy b { display: block; font-size: 14px; font-weight: 800; }
+.onboard-step-copy small { color: var(--muted); font-size: 12px; }
+.onboard-step-go { flex: 0 0 auto; min-height: 32px; display: inline-flex; align-items: center; padding: 0 13px; border-radius: 9px; background: var(--ink); color: #fff; font-weight: 800; font-size: 12px; white-space: nowrap; }
+.onboard-step-tag { flex: 0 0 auto; color: #1f7a4d; font-weight: 800; font-size: 12px; }
+@media (max-width: 760px) {
+  .onboard-head { flex-direction: column; gap: 6px; }
+}
