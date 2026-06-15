@@ -163,11 +163,10 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
         ) : (
           <div className="login-onboard">
             <p className="login-onboard-title">환영해요! K&#8209;MODU 디자이너로 시작해볼까요?</p>
-            <p className="login-google-hint">브랜드를 등록하면 AI 룩북·숏폼을 만들고 글로벌 크리에이터와 매칭돼요. 신청은 1분이면 끝나요.</p>
+            <p className="login-google-hint">브랜드 등록 신청만 하면 <b>바로 스튜디오가 열려요</b>(승인 대기 없음). 상품·룩북을 올리고 AI 룩·숏폼을 만들어 글로벌 크리에이터와 매칭돼요.</p>
             <ol className="login-steps">
               <li className="is-active"><span>1</span><div><b>브랜드 등록 신청</b><small>브랜드명·소개만 입력 (1분)</small></div></li>
-              <li><span>2</span><div><b>관리자 승인</b><small>검토 후 승인되면 알려드려요</small></div></li>
-              <li><span>3</span><div><b>스튜디오 오픈</b><small>룩북·상품 등록, 크리에이터 매칭 시작</small></div></li>
+              <li><span>2</span><div><b>신청 즉시 스튜디오 오픈</b><small>상품·룩북 등록 · AI 룩 생성 · 크리에이터 매칭</small></div></li>
             </ol>
             <a className="generate-button login-status-cta" href="/apply">디자이너 등록 신청하기</a>
           </div>

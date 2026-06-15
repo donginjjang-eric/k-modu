@@ -235,8 +235,8 @@
       </div>
 
       <!-- Personalized Dynamic Title -->
-      <h1 class="success-title" id="successTitle">브랜드 입점 신청이<br>성공적으로 완료되었습니다.</h1>
-      <p class="success-subtitle">제출해 주신 브랜드 스토리를 기반으로 크리에이터 매칭을 위한 검토가 곧바로 시작됩니다.</p>
+      <h1 class="success-title" id="successTitle">디자이너 스튜디오가<br>바로 열렸습니다.</h1>
+      <p class="success-subtitle">신청 즉시 이용할 수 있어요. 아래 <b>디자이너 스튜디오 입장</b>을 눌러 브랜드 사진과 상품을 등록하고 AI 룩을 만들어보세요.</p>
 
       <!-- Toss-style Receipt Card -->
       <div class="receipt-card">
@@ -263,11 +263,19 @@
         </div>
 
         <div class="receipt-row">
-          <span class="receipt-label">심사 상태</span>
+          <span class="receipt-label">상태</span>
           <span class="receipt-value">
-            <span class="receipt-status-badge">Reviewing</span>
+            <span class="receipt-status-badge">승인 완료 · 이용 가능</span>
           </span>
         </div>
+      </div>
+
+      <!-- 다음 단계 가이드 -->
+      <div class="receipt-card">
+        <h2 class="receipt-title">바로 시작하기</h2>
+        <div class="receipt-row"><span class="receipt-label">1단계</span><span class="receipt-value">메인 커버 사진 올리기</span></div>
+        <div class="receipt-row"><span class="receipt-label">2단계</span><span class="receipt-value">보유 상품 등록</span></div>
+        <div class="receipt-row"><span class="receipt-label">3단계</span><span class="receipt-value">AI 룩·숏폼 만들기</span></div>
       </div>
 
       <!-- Action Buttons -->
@@ -312,7 +320,7 @@
         const latestApp = apps[0];
 
         // Populate personalized title
-        document.getElementById('successTitle').innerHTML = `${latestApp.brand} 브랜드의<br>신청이 완료되었습니다.`;
+        document.getElementById('successTitle').innerHTML = `${latestApp.brand}<br>스튜디오가 열렸습니다.`;
 
         // Populate receipt cards
         document.getElementById('receiptBrand').textContent = latestApp.brand;

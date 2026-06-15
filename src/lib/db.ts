@@ -176,10 +176,13 @@ export async function createDesignerApplication(input: {
     return toDemoDesigner();
   }
 
+  // 오픈 정책: 신청 즉시 자동 승인해 디자이너가 바로 스튜디오를 쓸 수 있게 한다.
+  // 다시 수동 승인으로 돌리려면 AUTO_APPROVE_DESIGNERS=false 로 설정.
+  const initialStatus = process.env.AUTO_APPROVE_DESIGNERS === "false" ? "pending" : "approved";
   return one<Designer>(
     `INSERT INTO designers
        (brand_name, designer_name, contact_email, contact_phone, description, mood, country, approval_status, user_id)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, 'pending', $8)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
      RETURNING *`,
     [
       input.brand_name,
@@ -189,6 +192,7 @@ export async function createDesignerApplication(input: {
       input.description ?? "",
       input.mood ?? "",
       input.country ?? "South Korea",
+      initialStatus,
       input.user_id ?? null,
     ],
   );
