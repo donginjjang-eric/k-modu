@@ -613,6 +613,9 @@ export async function getAdminDashboardStats() {
       productsTotal: toDemoProducts().length,
       generatedLooksTotal: 0,
       liveGenerationsToday: 0,
+      signupsToday: 0,
+      signupsWeek: 0,
+      aiGenerationsWeek: 0,
     };
   }
 
@@ -624,6 +627,9 @@ export async function getAdminDashboardStats() {
     products_total: string;
     generated_looks_total: string;
     live_generations_today: string;
+    signups_today: string;
+    signups_week: string;
+    ai_generations_week: string;
   }>(
     `SELECT
        (SELECT COUNT(*)::text FROM users) AS users_total,
@@ -634,9 +640,14 @@ export async function getAdminDashboardStats() {
        (SELECT COUNT(*)::text FROM generated_looks WHERE status <> 'hidden') AS generated_looks_total,
        (SELECT COUNT(*)::text
           FROM generation_logs
-         WHERE cache_hit = false
-           AND status = 'generated'
-           AND created_at >= date_trunc('day', now())) AS live_generations_today`,
+         WHERE cache_hit = false AND status = 'generated'
+           AND created_at >= date_trunc('day', now())) AS live_generations_today,
+       (SELECT COUNT(*)::text FROM users WHERE created_at >= date_trunc('day', now())) AS signups_today,
+       (SELECT COUNT(*)::text FROM users WHERE created_at >= now() - interval '7 days') AS signups_week,
+       (SELECT COUNT(*)::text
+          FROM generation_logs
+         WHERE cache_hit = false AND status = 'generated'
+           AND created_at >= now() - interval '7 days') AS ai_generations_week`,
   );
 
   return {
@@ -647,6 +658,9 @@ export async function getAdminDashboardStats() {
     productsTotal: Number(row?.products_total || 0),
     generatedLooksTotal: Number(row?.generated_looks_total || 0),
     liveGenerationsToday: Number(row?.live_generations_today || 0),
+    signupsToday: Number(row?.signups_today || 0),
+    signupsWeek: Number(row?.signups_week || 0),
+    aiGenerationsWeek: Number(row?.ai_generations_week || 0),
   };
 }
 
