@@ -947,6 +947,16 @@ export async function getLatestGenerationLogForDesigner(designerId: string, cach
   );
 }
 
+// 세션 토큰은 무상태(쿠키) — 계정이 삭제되면 토큰은 남아도 유저는 없다. 실제 존재 확인용.
+export async function getUserById(id: string): Promise<User | null> {
+  if (!hasDatabase()) return null;
+  try {
+    return await one<User>("SELECT id, email, role, created_at FROM users WHERE id = $1", [id]);
+  } catch {
+    return null;
+  }
+}
+
 export async function getUserByEmail(email: string): Promise<(User & { password_hash: string }) | null> {
   if (!hasDatabase()) {
     requireDatabaseForProduction();
