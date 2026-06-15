@@ -908,6 +908,7 @@
     const DEFAULT_PUBLIC_DESIGNER_ID = 'maison-lune-seoul';
     let selectedModelTemplate = 'fixed-female-minimal';
     let aiTryonPanelVisible = false;
+    let realGenerateVisible = false; // 진짜 'AI 룩 생성' 버튼이 화면에 보이면 하단 도크를 숨긴다(겹침 방지)
     let currentDesignerId = '';
     let currentOwnedItems = [];
     let ownedCategoryFilter = 'top';
@@ -1362,8 +1363,10 @@
       if (mobileAiQuickBar) {
         const isLoading = aiTryonGenerate.dataset.loading === 'true';
         const names = items.map((item) => item.name);
-        // 도크는 스타일링 보드 탭이 열려 있는 동안 항상 표시 (카테고리 전환 + 선택 요약 + 생성을 한 곳에서)
-        const quickBarOpen = proposalSheet.classList.contains('is-open') && proposalSheet.classList.contains('is-styling');
+        // 도크는 스타일링 보드 탭이 열려 있는 동안 표시하되, 진짜 'AI 룩 생성' 버튼이 보이면 겹치지 않게 숨긴다
+        const quickBarOpen = proposalSheet.classList.contains('is-open')
+          && proposalSheet.classList.contains('is-styling')
+          && !realGenerateVisible;
         mobileAiQuickBar.classList.toggle('is-open', quickBarOpen);
         document.body.classList.toggle('has-mobile-ai-quickbar', quickBarOpen);
         document.body.classList.toggle('has-ai-quickbar', quickBarOpen);
@@ -2245,12 +2248,9 @@
     if (mobileAiQuickBar && ownedCategoryTabs) {
       const ownedTabsHome = ownedCategoryTabs.parentElement;
       const dockMedia = window.matchMedia('(max-width: 960px)');
+      // 카테고리 탭은 PC·모바일 모두 보유 제품 헤더에 둔다(헤더가 sticky 서브바). 도크엔 초기화+생성만.
       const placeOwnedCategoryTabs = () => {
-        if (dockMedia.matches) {
-          if (ownedCategoryTabs.parentElement !== mobileAiQuickBar) {
-            mobileAiQuickBar.insertBefore(ownedCategoryTabs, mobileAiQuickBar.firstChild);
-          }
-        } else if (ownedTabsHome && ownedCategoryTabs.parentElement !== ownedTabsHome) {
+        if (ownedTabsHome && ownedCategoryTabs.parentElement !== ownedTabsHome) {
           ownedTabsHome.appendChild(ownedCategoryTabs);
         }
       };
@@ -2436,6 +2436,15 @@
         updateAiTryOnControls();
       }, { threshold: [0, 0.28, 0.6] });
       aiPanelObserver.observe(aiTryonPanel);
+    }
+
+    // 진짜 'AI 룩 생성' 버튼이 화면에 보이면 하단 도크(플로팅 생성 버튼)를 숨겨 겹침 방지
+    if ('IntersectionObserver' in window && aiTryonGenerate) {
+      const realBtnObserver = new IntersectionObserver((entries) => {
+        realGenerateVisible = entries.some((entry) => entry.isIntersecting);
+        updateAiTryOnControls();
+      }, { threshold: 0 });
+      realBtnObserver.observe(aiTryonGenerate);
     }
 
   </script>
