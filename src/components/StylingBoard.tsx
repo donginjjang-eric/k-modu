@@ -53,6 +53,8 @@ export default function StylingBoard({
   const [isGenerating, setIsGenerating] = useState(false);
   const [statusText, setStatusText] = useState("상품 1~4개를 선택하면 AI 룩을 생성할 수 있습니다.");
   const [resultLabel, setResultLabel] = useState("");
+  // 디자이너가 입력하는 스타일링 프롬프트 (비우면 브랜드 무드 기본값)
+  const [prompt, setPrompt] = useState("");
   const [modal, setModal] = useState<{ title: string; message: string; tone?: "success" | "warning" | "error" } | null>(null);
 
   const groupProductCategory = groupStylingProductCategory;
@@ -146,7 +148,10 @@ export default function StylingBoard({
         body: JSON.stringify({
           modelTemplateId: selectedTemplate,
           productIds: selectedProductIds,
-          stylingPrompt: `Brand mood: ${designer.mood}. Minimal K-fashion editorial full look preview.`,
+          // 디자이너가 입력한 프롬프트를 브랜드 무드와 함께 반영. 비우면 기본 무드.
+          stylingPrompt: prompt.trim()
+            ? `Brand mood: ${designer.mood}. ${prompt.trim()}`
+            : `Brand mood: ${designer.mood}. Minimal K-fashion editorial full look preview.`,
           forceRegenerate: false,
         }),
       });
@@ -255,6 +260,21 @@ export default function StylingBoard({
             ) : (
               <p className="notice" style={{ margin: 0 }}>상품 1~4개를 선택해주세요.</p>
             )}
+          </div>
+          <div className="generate-prompt">
+            <label htmlFor="stylingPrompt">프롬프트 <span className="opt">(선택)</span></label>
+            <textarea
+              id="stylingPrompt"
+              rows={2}
+              value={prompt}
+              onChange={(event) => setPrompt(event.target.value)}
+              onKeyDown={(event) => {
+                if ((event.metaKey || event.ctrlKey) && event.key === "Enter") generateLook();
+              }}
+              placeholder="예: 가을 데이트룩, 따뜻한 베이지 톤, 미니멀하게 / 스트릿 무드로 연출"
+              disabled={isGenerating}
+            />
+            <p className="hint">원하는 무드·상황·색감을 적으면 AI가 반영해요. 비우면 브랜드 무드로 생성돼요. (⌘/Ctrl+Enter로 생성)</p>
           </div>
           <div className="generate-actions">
             <button
