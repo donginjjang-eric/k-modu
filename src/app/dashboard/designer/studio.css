@@ -567,6 +567,9 @@
 .members-table .col-no { color: var(--muted); font-weight: 800; font-size: 13px; }
 .members-table .admin-table-row .col-no { font-size: 14px; color: var(--ink); }
 .members-table .acct-cell { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.members-table .acct-link { color: inherit; text-decoration: none; transition: color .12s ease; }
+.members-table .acct-link:hover b { text-decoration: underline; text-underline-offset: 3px; }
+.members-table .acct-link:hover .acct-avatar { background: var(--ink); color: #fff; }
 .members-table .acct-cell b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .members-table .acct-avatar { flex: 0 0 auto; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 999px; background: var(--soft); color: var(--ink); font-size: 13px; font-weight: 900; text-transform: uppercase; }
 .members-table .admin-table-row { transition: background .12s ease; }
