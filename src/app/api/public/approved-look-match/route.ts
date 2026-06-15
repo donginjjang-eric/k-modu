@@ -1,6 +1,6 @@
 import { getApprovedGeneratedLooksForDesigner } from "@/lib/db";
 
-const DEFAULT_PUBLIC_DESIGNER_ID = "maison-lune-seoul";
+const DEFAULT_PUBLIC_DESIGNER_ID = process.env.PUBLIC_DEFAULT_DESIGNER_ID || "fe54a0f0-60f9-4635-98aa-883f0c3a638a";
 const DEMO_PRODUCT_IDS = new Set([
   "top-ivory-lace-bow",
   "skirt-brown-polka-bubble",

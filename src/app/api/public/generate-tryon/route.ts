@@ -14,7 +14,8 @@ import { buildLookCacheKey, buildLookbookPrompt, promptVersion } from "@/lib/ai-
 import { applyDesignerDefaultModelTemplate } from "@/lib/designer-defaults";
 import { validateStylingProductSelection } from "@/lib/product-selection-rules";
 
-const DEFAULT_PUBLIC_DESIGNER_ID = "maison-lune-seoul";
+// 공개 데모 기본 디자이너 — 실계정 KLARA STUDIO로 이전(데모 maison-lune-seoul 폐기). env로 덮어쓰기 가능.
+const DEFAULT_PUBLIC_DESIGNER_ID = process.env.PUBLIC_DEFAULT_DESIGNER_ID || "fe54a0f0-60f9-4635-98aa-883f0c3a638a";
 // 공개 생성은 프롬프트를 고정해 캐시 우회(비용 폭탄)를 막는다. 같은 제품 조합이면 항상 캐시 히트.
 const PUBLIC_STYLING_PROMPT = "minimal editorial K-fashion look";
 
