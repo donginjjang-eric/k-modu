@@ -128,6 +128,8 @@
 .st-btn.light { background: transparent; color: var(--ink); }
 .st-btn.block { width: 100%; min-height: 54px; font-size: 16px; }
 .st-btn:disabled { opacity: .35; cursor: not-allowed; }
+/* .studio a { color: inherit }(0,1,1)가 .st-btn(0,1,0)을 이겨 링크형 버튼 글씨가 안 보이던 문제 방지 (light 제외) */
+.studio a.st-btn:not(.light) { color: #fff; }
 
 /* brand profile */
 .brand-profile-intro {

@@ -41,7 +41,7 @@ export default async function DesignerHome() {
               <li key={s.label} className={s.done ? "is-done" : ""}>
                 <span className="ck">{s.done ? "✓" : i + 1}</span>
                 <div className="onboard-step-copy"><b>{s.label}</b><small>{s.desc}</small></div>
-                {s.done ? <span className="onboard-step-tag">완료</span> : <Link className="onboard-step-go" href={s.href}>하러 가기</Link>}
+                {s.done ? <span className="onboard-step-tag">완료</span> : <Link className="onboard-step-go" href={s.href}>진행하기</Link>}
               </li>
             ))}
           </ol>
