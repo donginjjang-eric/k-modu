@@ -2159,9 +2159,9 @@
     .designer-beta-card {
       position: relative;
       z-index: 1;
-      width: min(760px, calc(100vw - 48px));
+      width: min(880px, calc(100vw - 40px));
       box-sizing: border-box;
-      padding: clamp(36px, 6vw, 64px);
+      padding: clamp(40px, 6.4vw, 72px);
       border: 1px solid rgba(214, 184, 116, .68);
       border-radius: 8px;
       background:
@@ -2265,6 +2265,25 @@
       transform: translateY(-1px);
     }
 
+    .designer-beta-dismiss {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 22px;
+      color: rgba(5, 5, 5, .56);
+      font-size: 13px;
+      font-weight: var(--fw-bold);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .designer-beta-dismiss input {
+      width: 16px;
+      height: 16px;
+      accent-color: #050505;
+      cursor: pointer;
+    }
+
     .designer-beta-close {
       position: absolute;
       top: 18px;
@@ -2312,13 +2331,17 @@
     <button class="designer-beta-backdrop" type="button" aria-label="알림 닫기"></button>
     <div class="designer-beta-card" role="dialog" aria-modal="true" aria-labelledby="designerProductBetaTitle">
       <button class="designer-beta-close" type="button" aria-label="알림 닫기">&times;</button>
-      <span class="designer-beta-eyebrow">K-MODU PRE BETA</span>
-      <h2 id="designerProductBetaTitle">디자이너 상품 등록<br />6월 16일 사전 BETA<br />시작</h2>
-      <p>디자이너분들의 브랜드 상품 등록과 AI 룩 제작 기능이 사전 beta로 순차 오픈됩니다.</p>
-      <span class="designer-beta-date">JUNE 16 · DESIGNER PRE BETA</span>
+      <span class="designer-beta-eyebrow">DESIGNER BRAND BETA</span>
+      <h2 id="designerProductBetaTitle">디자이너 브랜드 입점<br />BETA 오픈</h2>
+      <p>베타 기간 동안 입점하시면 브랜드 상품 등록부터 AI 룩·숏폼 영상 제작까지 자유롭게 사용하실 수 있어요.</p>
+      <span class="designer-beta-date">베타 기간 · 6월 16일 ~ 7월 17일</span>
       <div class="designer-beta-actions">
-        <a class="designer-beta-cta" href="/apply">사전 디자이너 접수신청</a>
+        <a class="designer-beta-cta" href="/apply">디자이너 입점 신청</a>
       </div>
+      <label class="designer-beta-dismiss">
+        <input type="checkbox" id="designerBetaHideToday" />
+        <span>오늘 그만 보기</span>
+      </label>
     </div>
   </div>
   <main class="site">
@@ -2766,24 +2789,48 @@
     const betaModal = document.getElementById('designerProductBetaModal');
     if (!betaModal) return;
     const closeButtons = betaModal.querySelectorAll('.designer-beta-backdrop, .designer-beta-close');
+    const hideToday = betaModal.querySelector('#designerBetaHideToday');
+    const BETA_START = '2026-06-16';
+    const BETA_END = '2026-07-17';
+    const HIDE_KEY = 'kmodu-beta-popup-hide';
+
+    const todayStr = () => {
+      const d = new Date();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      return `${d.getFullYear()}-${mm}-${dd}`;
+    };
 
     const closeDesignerBetaModal = () => {
+      // '오늘 그만 보기' 체크 시 오늘 날짜를 저장해 당일 재노출 막음
+      if (hideToday && hideToday.checked) {
+        try { localStorage.setItem(HIDE_KEY, todayStr()); } catch (e) {}
+      }
       betaModal.classList.remove('is-open');
       betaModal.setAttribute('aria-hidden', 'true');
     };
 
-    // 사전 BETA 팝업은 온보딩 프로세스 정비 동안 잠시 비활성. 다시 켜려면 아래 주석을 해제.
-    // requestAnimationFrame(() => {
-    //   betaModal.classList.add('is-open');
-    //   betaModal.setAttribute('aria-hidden', 'false');
-    // });
+    // 베타 기간(6/16~7/17)에만, 그리고 '오늘 그만 보기'를 누르지 않은 날에만 노출
+    const shouldShowBeta = () => {
+      const t = todayStr();
+      if (t < BETA_START || t > BETA_END) return false;
+      try { if (localStorage.getItem(HIDE_KEY) === t) return false; } catch (e) {}
+      return true;
+    };
+
+    if (shouldShowBeta()) {
+      requestAnimationFrame(() => {
+        betaModal.classList.add('is-open');
+        betaModal.setAttribute('aria-hidden', 'false');
+      });
+    }
 
     closeButtons.forEach((button) => {
       button.addEventListener('click', closeDesignerBetaModal);
     });
 
     window.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') closeDesignerBetaModal();
+      if (event.key === 'Escape' && betaModal.classList.contains('is-open')) closeDesignerBetaModal();
     });
   })();
 
