@@ -1,5 +1,5 @@
 import { getCurrentUser } from "@/lib/auth";
-import { createDesignerApplication, getDesignerForUser, getUserById } from "@/lib/db";
+import { createDesignerApplication, getDesignerLinkUserId, getUserById } from "@/lib/db";
 
 function requiredText(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
@@ -33,12 +33,12 @@ export async function POST(request: Request) {
     return Response.json({ ok: false, error: "Brand, designer, email, and phone are required." }, { status: 400 });
   }
 
-  // 로그인 계정에 아직 디자이너 프로필이 없으면 신청서를 그 계정에 바로 연결한다 (관리자도 디자이너가 될 수 있다).
-  let linkUserId: string | undefined;
-  if (sessionUser.role === "designer" || sessionUser.role === "admin") {
-    const existing = await getDesignerForUser(sessionUser.id).catch(() => null);
-    if (!existing) linkUserId = sessionUser.id;
-  }
+  // 신청 이메일과 같은 회원 계정이 있으면 그 회원에 연결하고, 없으면 같은 로그인 계정일 때만 연결한다.
+  const linkUserId = await getDesignerLinkUserId({
+    sessionUserId: accountUser.id,
+    sessionUserEmail: accountUser.email,
+    contactEmail: email,
+  });
 
   try {
     const designer = await createDesignerApplication({

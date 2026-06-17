@@ -682,9 +682,18 @@ export async function getAllUsersWithDesigner(): Promise<AdminUserRow[]> {
   }
   return query<AdminUserRow>(
     `SELECT users.id, users.email, users.role, users.created_at,
-            designers.id AS designer_id, designers.brand_name, designers.approval_status
+            designer_match.id AS designer_id, designer_match.brand_name, designer_match.approval_status
        FROM users
-       LEFT JOIN designers ON designers.user_id = users.id
+       LEFT JOIN LATERAL (
+         SELECT designers.id, designers.brand_name, designers.approval_status
+           FROM designers
+          WHERE designers.user_id = users.id
+             OR (designers.user_id IS NULL AND lower(designers.contact_email) = lower(users.email))
+          ORDER BY
+            CASE WHEN designers.user_id = users.id THEN 0 ELSE 1 END,
+            designers.created_at DESC
+          LIMIT 1
+       ) designer_match ON true
       ORDER BY users.created_at DESC`,
   );
 }
@@ -1027,13 +1036,38 @@ async function linkDesignerByEmail(userId: string, email: string): Promise<Desig
         SET user_id = $1, updated_at = now()
       WHERE id = (
         SELECT id FROM designers
-         WHERE lower(contact_email) = $2 AND user_id IS NULL
+         WHERE lower(contact_email) = lower($2) AND user_id IS NULL
          ORDER BY created_at DESC
          LIMIT 1
       )
       RETURNING *`,
     [userId, email],
   );
+}
+
+async function getLinkableUserIdByEmail(email: string): Promise<string | null> {
+  const row = await one<{ id: string }>(
+    `SELECT users.id
+       FROM users
+       LEFT JOIN designers ON designers.user_id = users.id
+      WHERE lower(users.email) = lower($1)
+        AND designers.id IS NULL
+      LIMIT 1`,
+    [email],
+  );
+  return row?.id ?? null;
+}
+
+export async function getDesignerLinkUserId(input: { sessionUserId: string; sessionUserEmail: string; contactEmail: string }) {
+  if (!hasDatabase()) return undefined;
+
+  const matchingUserId = await getLinkableUserIdByEmail(input.contactEmail);
+  if (matchingUserId) return matchingUserId;
+
+  if (input.sessionUserEmail.toLowerCase() !== input.contactEmail.toLowerCase()) return undefined;
+
+  const sessionDesigner = await getDesignerForUser(input.sessionUserId).catch(() => null);
+  return sessionDesigner ? undefined : input.sessionUserId;
 }
 
 // 구글 로그인 사용자 조회/생성. 디자이너 등록은 신청 페이지(/apply)의 역할이므로
@@ -1078,7 +1112,11 @@ export async function getDesignerForUser(userId: string): Promise<Designer | nul
     return null;
   }
   try {
-    return await one<Designer>("SELECT * FROM designers WHERE user_id = $1", [userId]);
+    const linked = await one<Designer>("SELECT * FROM designers WHERE user_id = $1", [userId]);
+    if (linked) return linked;
+
+    const user = await one<Pick<User, "email">>("SELECT email FROM users WHERE id = $1", [userId]);
+    return user ? await linkDesignerByEmail(userId, user.email) : null;
   } catch (error) {
     if (!canUseDemoData()) throw error;
     return null;

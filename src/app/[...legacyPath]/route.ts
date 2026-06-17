@@ -7,6 +7,7 @@ const legacyContentTypes: Record<string, string> = {
   ".js": "text/javascript; charset=utf-8",
   ".json": "application/json; charset=utf-8",
   ".txt": "text/plain; charset=utf-8",
+  ".xml": "application/xml; charset=utf-8",
 };
 
 const legacyFiles = new Set([
@@ -22,7 +23,10 @@ const legacyFiles = new Set([
   "designers.html",
   "index.html",
   "platform.css",
+  "privacy-policy.html",
   "robots.txt",
+  "sitemap.xml",
+  "terms.html",
 ]);
 
 // admin.html / designer-studio.html / login.html은 삭제된 파일 — 아래 307 리다이렉트의 마커로만 쓰인다 (옛 링크 호환)
@@ -40,6 +44,8 @@ const cleanLegacyRoutes: Record<string, string> = {
   "studio": "designer-studio.html",
   "designers": "designers.html",
   "legacy-login": "login.html",
+  "privacy-policy": "privacy-policy.html",
+  "terms": "terms.html",
 };
 
 export async function GET(_: Request, { params }: { params: Promise<{ legacyPath: string[] }> }) {
