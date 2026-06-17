@@ -78,7 +78,7 @@ export default function AdminUsersManager({ users }: { users: AdminUserRow[] }) 
           {chip("all", "전체", counts.all)}
           {chip("approved", "승인 디자이너", counts.approved)}
           {chip("pending", "승인 대기", counts.pending)}
-          {chip("not_applied", "신청 전", counts.not_applied)}
+          {chip("not_applied", "계정만 가입", counts.not_applied)}
           {chip("admin", "관리자", counts.admin)}
           {chip("disabled", "비활성", counts.disabled)}
         </div>
@@ -136,7 +136,7 @@ export default function AdminUsersManager({ users }: { users: AdminUserRow[] }) 
                   ) : u.role === "admin" ? (
                     <em className="brand-empty">-</em>
                   ) : (
-                    <em className="status-badge pending">신청 전</em>
+                    <em className="status-badge pending">계정만 가입</em>
                   )}
                 </span>
                 <span className="col-date">{formatDate(u.created_at)}</span>
