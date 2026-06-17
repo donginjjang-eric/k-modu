@@ -2,6 +2,120 @@
 // 새로고침 깜빡임 방지를 위해 마지막 상태를 sessionStorage에 캐시했다가 즉시 적용하고, 서버 응답으로 보정한다.
 (() => {
   const CACHE_KEY = 'kmodu-auth-nav-state';
+  const STUDIO_PATH = '/dashboard/designer';
+
+  const ensureStudioQuickBanner = () => {
+    if (window.location.pathname.startsWith(STUDIO_PATH)) {
+      document.querySelector('.studio-quick-banner')?.remove();
+      return;
+    }
+
+    if (!document.getElementById('studio-quick-banner-style')) {
+      const style = document.createElement('style');
+      style.id = 'studio-quick-banner-style';
+      style.textContent = `
+        .studio-quick-banner {
+          position: fixed;
+          z-index: 9998;
+          right: 24px;
+          top: 50%;
+          transform: translateY(-50%);
+          display: inline-flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          width: 92px;
+          min-height: 116px;
+          padding: 15px 12px 14px;
+          border: 1px solid rgba(17, 24, 39, .16);
+          border-radius: 18px;
+          background: rgba(17, 24, 39, .94);
+          color: #fff;
+          text-decoration: none;
+          box-shadow: 0 18px 44px rgba(17, 24, 39, .22);
+          backdrop-filter: blur(12px);
+          transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+        }
+        .studio-quick-banner:hover {
+          transform: translateY(-50%) translateX(-2px);
+          background: #050505;
+          box-shadow: 0 22px 54px rgba(17, 24, 39, .3);
+        }
+        .studio-quick-banner-mark {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 34px;
+          height: 34px;
+          border-radius: 50%;
+          background: #fff;
+          color: #111827;
+          font-size: 15px;
+          font-weight: 900;
+          line-height: 1;
+        }
+        .studio-quick-banner strong {
+          display: block;
+          color: #fff;
+          font-size: 13px;
+          font-weight: 900;
+          line-height: 1.22;
+          letter-spacing: 0;
+          text-align: center;
+        }
+        .studio-quick-banner span:not(.studio-quick-banner-mark) {
+          display: block;
+          color: rgba(255, 255, 255, .72);
+          font-size: 10px;
+          font-weight: 800;
+          line-height: 1;
+          letter-spacing: .04em;
+          text-transform: uppercase;
+        }
+        @media (max-width: 760px) {
+          .studio-quick-banner {
+            right: 12px;
+            top: auto;
+            bottom: 88px;
+            width: auto;
+            min-height: 54px;
+            padding: 10px 12px;
+            border-radius: 999px;
+            flex-direction: row;
+            gap: 9px;
+            transform: none;
+          }
+          .studio-quick-banner:hover {
+            transform: translateY(-2px);
+          }
+          .studio-quick-banner-mark {
+            width: 30px;
+            height: 30px;
+            font-size: 13px;
+          }
+          .studio-quick-banner strong {
+            max-width: 74px;
+            font-size: 12px;
+            text-align: left;
+          }
+          .studio-quick-banner span:not(.studio-quick-banner-mark) {
+            display: none;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    if (document.querySelector('.studio-quick-banner')) return;
+
+    const banner = document.createElement('a');
+    banner.className = 'studio-quick-banner';
+    banner.href = STUDIO_PATH;
+    banner.setAttribute('aria-label', '디자이너 스튜디오 바로가기');
+    banner.innerHTML = '<span class="studio-quick-banner-mark">K</span><strong>디자이너<br>스튜디오</strong><span>Studio</span>';
+    document.body.appendChild(banner);
+  };
 
   const computeTarget = (user, designer) => {
     if (!user) return null;
@@ -101,8 +215,12 @@
   };
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', sync);
+    document.addEventListener('DOMContentLoaded', () => {
+      ensureStudioQuickBanner();
+      sync();
+    });
   } else {
+    ensureStudioQuickBanner();
     sync();
   }
 })();
