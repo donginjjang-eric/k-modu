@@ -9,12 +9,14 @@ type Props = {
   initialLooks: GeneratedLook[];
   usedToday: number;
   dailyLimit: number;
+  enabled: boolean;
 };
 
-export default function ShortformStudio({ initialLooks, usedToday, dailyLimit }: Props) {
+export default function ShortformStudio({ initialLooks, usedToday, dailyLimit, enabled }: Props) {
   const [looks, setLooks] = useState(initialLooks);
   const [used, setUsed] = useState(usedToday);
   const [notice, setNotice] = useState<GeneratedLook | null>(null);
+  const [comingSoon, setComingSoon] = useState(false);
   const [style, setStyle] = useState<"runway" | "street">("runway");
   const [busyId, setBusyId] = useState("");
   const [error, setError] = useState("");
@@ -96,6 +98,10 @@ export default function ShortformStudio({ initialLooks, usedToday, dailyLimit }:
   };
 
   const openNotice = (look: GeneratedLook) => {
+    if (!enabled) {
+      setComingSoon(true);
+      return;
+    }
     setError("");
     setNotice(look);
   };
@@ -116,11 +122,20 @@ export default function ShortformStudio({ initialLooks, usedToday, dailyLimit }:
       {/* 사용량 + 만드는 법 안내 */}
       <section className="st-card sf-intro">
         <div className="sf-usage">
-          <span className="sf-usage-num">{remaining}</span>
-          <div className="sf-usage-copy">
-            <strong>오늘 {remaining}개 더 만들 수 있어요</strong>
-            <small>숏폼 영상은 하루 최대 {dailyLimit}개까지 (오늘 {used}/{dailyLimit} 사용)</small>
-          </div>
+          {enabled ? (
+            <>
+              <span className="sf-usage-num">{remaining}</span>
+              <div className="sf-usage-copy">
+                <strong>오늘 {remaining}개 더 만들 수 있어요</strong>
+                <small>숏폼 영상은 하루 최대 {dailyLimit}개까지 (오늘 {used}/{dailyLimit} 사용)</small>
+              </div>
+            </>
+          ) : (
+            <div className="sf-usage-copy">
+              <strong>숏폼 영상 생성은 6월 말 오픈 예정이에요 🎬</strong>
+              <small>지금 AI 룩을 만들어 두면, 오픈하자마자 바로 영상으로 만들 수 있어요</small>
+            </div>
+          )}
         </div>
         <ol className="sf-steps">
           <li><span>1</span> 만들 AI 룩을 골라요</li>
@@ -239,6 +254,21 @@ export default function ShortformStudio({ initialLooks, usedToday, dailyLimit }:
               <button type="button" className="primary" disabled={busyId === notice.id} onClick={() => startVideo(notice)}>
                 {busyId === notice.id ? "시작하는 중…" : "영상 만들기"}
               </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {/* 오픈 예정 안내 (FAL_KEY 등 준비 전) */}
+      {comingSoon ? (
+        <div className="look-modal" role="dialog" aria-modal="true" aria-label="숏폼 오픈 안내">
+          <button type="button" className="look-modal-backdrop" onClick={() => setComingSoon(false)} />
+          <div className="look-notice-panel">
+            <h3>🎬 숏폼 영상, 곧 만나요!</h3>
+            <p>숏폼 영상 생성 기능은 <b>6월 말 오픈 예정</b>이에요. 막바지 준비 중이라 조금만 기다려 주세요 🙏</p>
+            <p style={{ marginTop: 10 }}>지금 <b>AI 룩을 미리 만들어 두면</b>, 오픈하자마자 바로 영상으로 만들 수 있어요.</p>
+            <div className="look-notice-actions">
+              <button type="button" className="primary" onClick={() => setComingSoon(false)}>확인</button>
             </div>
           </div>
         </div>

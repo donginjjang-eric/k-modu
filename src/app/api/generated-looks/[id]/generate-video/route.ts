@@ -47,6 +47,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const body = await request.json().catch(() => ({}));
   const motionPrompt = resolveMotionPrompt((body as { style?: string }).style);
 
+  // 오픈 전: 친절 안내 (SHORTFORM_ENABLED=true 로 오픈)
+  if (process.env.SHORTFORM_ENABLED !== "true") {
+    return Response.json(
+      { ok: false, comingSoon: true, error: "숏폼 영상 생성은 6월 말 오픈 예정이에요. 조금만 기다려 주세요!" },
+      { status: 403 },
+    );
+  }
   if (!process.env.FAL_KEY && !process.env.GEMINI_API_KEY) {
     return Response.json({ ok: false, error: "영상 생성이 아직 준비되지 않았어요. 잠시 후 다시 시도해주세요." }, { status: 400 });
   }

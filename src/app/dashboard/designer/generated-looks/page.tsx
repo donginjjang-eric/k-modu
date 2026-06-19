@@ -37,7 +37,7 @@ export default async function DesignerAiLookPage() {
         }))}
       />
 
-      <DesignerGeneratedLooks initialLooks={looks} />
+      <DesignerGeneratedLooks initialLooks={looks} enabled={process.env.SHORTFORM_ENABLED === "true"} />
     </>
   );
 }

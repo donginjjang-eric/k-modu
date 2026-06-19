@@ -10,12 +10,13 @@ export default async function DesignerShortPage() {
     countDailyVeoForDesigner(designer.id),
   ]);
   const dailyLimit = Number(process.env.VEO_DAILY_LIMIT_PER_DESIGNER || 4);
+  const enabled = process.env.SHORTFORM_ENABLED === "true";
 
   return (
     <>
       <h1 className="st-title">🎬 숏폼 제작</h1>
       <p className="st-sub">내 AI 룩을 실제 9:16 숏폼 영상으로 만들어요.</p>
-      <ShortformStudio initialLooks={looks} usedToday={usedToday} dailyLimit={dailyLimit} />
+      <ShortformStudio initialLooks={looks} usedToday={usedToday} dailyLimit={dailyLimit} enabled={enabled} />
     </>
   );
 }

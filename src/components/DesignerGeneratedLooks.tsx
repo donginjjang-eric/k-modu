@@ -11,11 +11,12 @@ function getStatusLabel(status: GeneratedLook["status"]) {
   return "공개 요청";
 }
 
-export default function DesignerGeneratedLooks({ initialLooks }: { initialLooks: GeneratedLook[] }) {
+export default function DesignerGeneratedLooks({ initialLooks, enabled = false }: { initialLooks: GeneratedLook[]; enabled?: boolean }) {
   const [looks, setLooks] = useState(initialLooks);
   const [activeLook, setActiveLook] = useState<GeneratedLook | null>(null);
   const [savingId, setSavingId] = useState("");
   const [notice, setNotice] = useState<GeneratedLook | null>(null);
+  const [comingSoon, setComingSoon] = useState(false);
   const [videoBusyId, setVideoBusyId] = useState("");
   const [videoError, setVideoError] = useState("");
   const pollingRef = useRef<Set<string>>(new Set());
@@ -98,6 +99,10 @@ export default function DesignerGeneratedLooks({ initialLooks }: { initialLooks:
   };
 
   const openNotice = (look: GeneratedLook) => {
+    if (!enabled) {
+      setComingSoon(true);
+      return;
+    }
     setVideoError("");
     setNotice(look);
   };
@@ -201,6 +206,21 @@ export default function DesignerGeneratedLooks({ initialLooks }: { initialLooks:
               <button type="button" className="primary" disabled={videoBusyId === notice.id} onClick={() => startVideo(notice)}>
                 {videoBusyId === notice.id ? "시작하는 중…" : "영상 만들기"}
               </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {/* 오픈 예정 안내 (영상 생성 준비 전) */}
+      {comingSoon ? (
+        <div className="look-modal" role="dialog" aria-modal="true" aria-label="숏폼 오픈 안내">
+          <button type="button" className="look-modal-backdrop" onClick={() => setComingSoon(false)} />
+          <div className="look-notice-panel">
+            <h3>🎬 숏폼 영상, 곧 만나요!</h3>
+            <p>숏폼 영상 생성 기능은 <b>6월 말 오픈 예정</b>이에요. 막바지 준비 중이라 조금만 기다려 주세요 🙏</p>
+            <p style={{ marginTop: 10 }}>지금 만들어 둔 룩은 오픈하자마자 바로 영상으로 만들 수 있어요.</p>
+            <div className="look-notice-actions">
+              <button type="button" className="primary" onClick={() => setComingSoon(false)}>확인</button>
             </div>
           </div>
         </div>
