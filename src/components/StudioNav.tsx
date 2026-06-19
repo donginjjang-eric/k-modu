@@ -47,7 +47,6 @@ export function StudioSideNav({
   googleEmail?: string;
 }) {
   const pathname = usePathname();
-  const initial = (brandName || "K").trim().charAt(0).toUpperCase();
   const googleLabel = googleName || googleEmail;
 
   return (
@@ -66,7 +65,7 @@ export function StudioSideNav({
       </nav>
       <div className="st-account-card">
         <div className="st-account-avatar">
-          {googleAvatar ? <img src={googleAvatar} alt="" referrerPolicy="no-referrer" /> : initial}
+          {googleAvatar ? <img src={googleAvatar} alt="" referrerPolicy="no-referrer" /> : <NavIcon name="user" />}
         </div>
         <div className="st-account-copy">
           <span>디자이너 스튜디오</span>
