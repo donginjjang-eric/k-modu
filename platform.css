@@ -4020,8 +4020,8 @@ body.sheet-open {
      (height:100%+패딩 방식은 포스터 내부 여백 탓에 아래가 도트와 붙어 보였음) */
   width: auto;
   height: auto;
-  max-width: calc(100% - 76px);
-  max-height: calc(100% - 132px);
+  max-width: calc(100% - 72px);
+  max-height: calc(100% - 104px);
   display: block;
   object-fit: contain;
   filter: none;

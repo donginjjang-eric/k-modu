@@ -493,18 +493,13 @@
     }
 
     function getCreatorGallery(card) {
-      const visibleCards = cards.filter((item) => !item.hidden);
-      const sourceCards = visibleCards.length ? visibleCards : cards;
-      const startIndex = Math.max(sourceCards.indexOf(card), 0);
-      const orderedCards = sourceCards.slice(startIndex).concat(sourceCards.slice(0, startIndex));
-      return orderedCards.slice(0, 5).map((item) => {
-        const image = item.querySelector('img');
-        const name = item.querySelector('h3')?.textContent || 'Creator';
-        return {
-          src: image?.getAttribute('src') || 'assets/hero-group.webp',
-          alt: name,
-        };
-      });
+      // 프리뷰는 해당 크리에이터의 사진 한 장만 사용한다.
+      const image = card.querySelector('img');
+      const name = card.querySelector('h3')?.textContent || 'Creator';
+      return [{
+        src: image?.getAttribute('src') || 'assets/hero-group.webp',
+        alt: name,
+      }];
     }
 
     function setCreatorGalleryImage(index) {
@@ -526,6 +521,10 @@
     function setCreatorGallery(card) {
       creatorGalleryImages = getCreatorGallery(card);
       creatorGalleryIndex = 0;
+      // 사진이 한 장이면 도트/카운트(1/1)는 의미 없으니 숨긴다.
+      const single = creatorGalleryImages.length <= 1;
+      creatorSheetDots.style.display = single ? 'none' : '';
+      creatorSheetCount.style.display = single ? 'none' : '';
       creatorSheetDots.innerHTML = creatorGalleryImages.map((_, index) => (
         `<button type="button" aria-label="Show creator image ${index + 1}" class="${index === 0 ? 'is-active' : ''}"></button>`
       )).join('');
