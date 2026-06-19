@@ -197,15 +197,21 @@ export default function ShortformStudio({ initialLooks, usedToday, dailyLimit, e
             {candidates.map((look) => (
               <article className="sf-pick" key={look.id}>
                 <div className="sf-pick-img"><img src={look.image_url} alt="AI 룩" />
-                  {look.video_status === "failed" ? <span className="sf-pick-failed">실패 · 다시 시도</span> : null}
+                  {enabled && look.video_status === "failed" ? <span className="sf-pick-failed">실패 · 다시 시도</span> : null}
                 </div>
                 <button
                   type="button"
                   className="look-video-btn"
-                  disabled={busyId === look.id || remaining <= 0}
+                  disabled={enabled && (busyId === look.id || remaining <= 0)}
                   onClick={() => openNotice(look)}
                 >
-                  {remaining <= 0 ? "오늘 한도 소진" : look.video_status === "failed" ? "↻ 다시 만들기" : "🎬 숏폼 만들기"}
+                  {!enabled
+                    ? "🎬 숏폼 만들기"
+                    : remaining <= 0
+                      ? "오늘 한도 소진"
+                      : look.video_status === "failed"
+                        ? "↻ 다시 만들기"
+                        : "🎬 숏폼 만들기"}
                 </button>
               </article>
             ))}

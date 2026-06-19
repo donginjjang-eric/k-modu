@@ -121,8 +121,8 @@ export default function DesignerGeneratedLooks({ initialLooks, enabled = false }
       return <span className="look-video-btn making">⏳ 영상 만드는 중… (1~3분)</span>;
     }
     return (
-      <button type="button" className="look-video-btn" disabled={videoBusyId === look.id} onClick={() => openNotice(look)}>
-        {look.video_status === "failed" ? "↻ 숏폼 영상 다시 만들기" : "🎬 숏폼 영상 만들기"}
+      <button type="button" className="look-video-btn" disabled={enabled && videoBusyId === look.id} onClick={() => openNotice(look)}>
+        {enabled && look.video_status === "failed" ? "↻ 숏폼 영상 다시 만들기" : "🎬 숏폼 영상 만들기"}
       </button>
     );
   };
