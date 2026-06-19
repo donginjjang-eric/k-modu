@@ -10,7 +10,16 @@ type IconProps = {
     | "package"
     | "image"
     | "file"
-    | "book";
+    | "book"
+    | "play"
+    | "check"
+    | "clock"
+    | "refresh"
+    | "download"
+    | "plus"
+    | "user"
+    | "building";
+  className?: string;
 };
 
 const paths: Record<IconProps["name"], React.ReactNode> = {
@@ -90,11 +99,50 @@ const paths: Record<IconProps["name"], React.ReactNode> = {
       <path d="M8 11h6" />
     </>
   ),
+  play: <path d="M8 5.5v13l11-6.5L8 5.5Z" />,
+  check: <path d="M5 12.5l4.5 4.5L19 7" />,
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 7.5V12l3 2" />
+    </>
+  ),
+  refresh: (
+    <>
+      <path d="M20 11A8 8 0 1 0 19 16" />
+      <path d="M20 5v6h-6" />
+    </>
+  ),
+  download: (
+    <>
+      <path d="M12 4v11" />
+      <path d="m7.5 11 4.5 4 4.5-4" />
+      <path d="M5 20h14" />
+    </>
+  ),
+  plus: (
+    <>
+      <path d="M12 5v14" />
+      <path d="M5 12h14" />
+    </>
+  ),
+  user: (
+    <>
+      <circle cx="12" cy="8" r="3.6" />
+      <path d="M5.5 20a6.5 6.5 0 0 1 13 0" />
+    </>
+  ),
+  building: (
+    <>
+      <rect x="5.5" y="3.5" width="13" height="17" rx="1.5" />
+      <path d="M9 8h2M13 8h2M9 12h2M13 12h2M9 16h2.5" />
+    </>
+  ),
 };
 
-export default function NavIcon({ name }: IconProps) {
+export default function NavIcon({ name, className }: IconProps) {
   return (
-    <svg className="nav-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <svg className={className ?? "nav-svg"} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       {paths[name]}
     </svg>
   );

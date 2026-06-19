@@ -2,6 +2,7 @@
 
 // 디자이너가 만든 AI 룩 목록 — 공개/비공개 전환 + 룩별 Veo 숏폼 영상 생성(1일 한도·안내창·진행 폴링)
 import { useEffect, useRef, useState } from "react";
+import NavIcon from "@/components/NavIcons";
 import type { GeneratedLook } from "@/lib/types";
 
 function getStatusLabel(status: GeneratedLook["status"]) {
@@ -110,19 +111,22 @@ export default function DesignerGeneratedLooks({ initialLooks, enabled = false }
   // 룩의 영상 상태에 따라 카드 하단 버튼/문구를 그린다.
   const videoControl = (look: GeneratedLook, inModal = false) => {
     if (look.video_status === "completed" && look.video_url) {
-      if (inModal) return <span className="look-video-done">✅ 숏폼 영상 완성! 위에서 재생돼요.</span>;
+      if (inModal) return <span className="look-video-done"><NavIcon name="check" className="st-ico" /> 숏폼 영상 완성! 위에서 재생돼요.</span>;
       return (
         <button type="button" className="look-video-btn done" onClick={() => setActiveLook(look)}>
-          ▶ 숏폼 영상 보기
+          <NavIcon name="play" className="st-ico" />
+          <span>숏폼 영상 보기</span>
         </button>
       );
     }
     if (look.video_status === "queued" || look.video_status === "processing") {
-      return <span className="look-video-btn making">⏳ 영상 만드는 중… (1~3분)</span>;
+      return <span className="look-video-btn making"><NavIcon name="clock" className="st-ico" /> 영상 만드는 중… (1~3분)</span>;
     }
+    const isRetry = enabled && look.video_status === "failed";
     return (
       <button type="button" className="look-video-btn" disabled={enabled && videoBusyId === look.id} onClick={() => openNotice(look)}>
-        {enabled && look.video_status === "failed" ? "↻ 숏폼 영상 다시 만들기" : "🎬 숏폼 영상 만들기"}
+        <NavIcon name={isRetry ? "refresh" : "video"} className="st-ico" />
+        <span>{isRetry ? "숏폼 영상 다시 만들기" : "숏폼 영상 만들기"}</span>
       </button>
     );
   };
@@ -140,7 +144,7 @@ export default function DesignerGeneratedLooks({ initialLooks, enabled = false }
             <button type="button" className="look-card-image" onClick={() => setActiveLook(look)}>
               <img src={look.image_url} alt="생성된 AI 룩" />
               <span className={`badge ${look.status === "hidden" ? "priv" : "pub"}`}>{getStatusLabel(look.status)}</span>
-              {look.video_status === "completed" && look.video_url ? <span className="look-card-play">▶ 숏폼</span> : null}
+              {look.video_status === "completed" && look.video_url ? <span className="look-card-play"><NavIcon name="play" className="st-ico" /> 숏폼</span> : null}
             </button>
             <div className="look-card-body">
               <strong>{look.cache_hit ? "저장된 조합" : "AI 생성 조합"}</strong>
@@ -193,7 +197,7 @@ export default function DesignerGeneratedLooks({ initialLooks, enabled = false }
         <div className="look-modal" role="dialog" aria-modal="true" aria-label="숏폼 영상 생성 안내">
           <button type="button" className="look-modal-backdrop" onClick={() => setNotice(null)} />
           <div className="look-notice-panel">
-            <h3>🎬 숏폼 영상 만들기</h3>
+            <h3><NavIcon name="video" className="st-ico" /> 숏폼 영상 만들기</h3>
             <p>선택한 룩으로 약 <b>8초 길이의 세로형(9:16) 숏폼 영상</b>을 AI가 실제로 만들어 드려요.</p>
             <ul className="look-notice-list">
               <li>생성에 보통 <b>1~3분</b> 정도 걸려요. 창을 닫아도 계속 진행돼요.</li>
@@ -216,8 +220,8 @@ export default function DesignerGeneratedLooks({ initialLooks, enabled = false }
         <div className="look-modal" role="dialog" aria-modal="true" aria-label="숏폼 오픈 안내">
           <button type="button" className="look-modal-backdrop" onClick={() => setComingSoon(false)} />
           <div className="look-notice-panel">
-            <h3>🎬 숏폼 영상, 곧 만나요!</h3>
-            <p>숏폼 영상 생성 기능은 <b>6월 말 오픈 예정</b>이에요. 막바지 준비 중이라 조금만 기다려 주세요 🙏</p>
+            <h3><NavIcon name="video" className="st-ico" /> 숏폼 영상, 곧 만나요!</h3>
+            <p>숏폼 영상 생성 기능은 <b>6월 말 오픈 예정</b>이에요. 막바지 준비 중이라 조금만 기다려 주세요</p>
             <p style={{ marginTop: 10 }}>지금 만들어 둔 룩은 오픈하자마자 바로 영상으로 만들 수 있어요.</p>
             <div className="look-notice-actions">
               <button type="button" className="primary" onClick={() => setComingSoon(false)}>확인</button>

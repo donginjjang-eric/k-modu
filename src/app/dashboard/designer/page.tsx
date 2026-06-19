@@ -1,4 +1,5 @@
 import Link from "next/link";
+import NavIcon from "@/components/NavIcons";
 import { requireApprovedDesigner } from "@/lib/auth";
 import { getProductsForDesigner, getGeneratedLooksForDesigner, getPortfolioImagesForDesigner } from "@/lib/db";
 
@@ -23,7 +24,7 @@ export default async function DesignerHome() {
 
   return (
     <>
-      <h1 className="st-title">안녕하세요, {designer.brand_name} 님 👋</h1>
+      <h1 className="st-title">안녕하세요, {designer.brand_name} 님</h1>
       <p className="st-sub">오늘도 멋진 룩을 올려볼까요?</p>
 
       {!setupComplete ? (
@@ -56,11 +57,11 @@ export default async function DesignerHome() {
 
       <div className="st-actions">
         <Link className="st-bigbtn dark" href="/dashboard/designer/products">
-          <div><div className="t">＋ 상품 올리기</div><div className="d">사진만 올리면 끝, 자동으로 정리돼요</div></div>
+          <div><div className="t"><NavIcon name="plus" className="st-ico" /> 상품 올리기</div><div className="d">사진만 올리면 끝, 자동으로 정리돼요</div></div>
           <div className="go">→</div>
         </Link>
         <Link className="st-bigbtn" href="/dashboard/designer/generated-looks">
-          <div><div className="t">✨ AI 룩 만들기</div><div className="d">상품을 골라 모델 착장을 만들어요</div></div>
+          <div><div className="t"><NavIcon name="sparkles" className="st-ico" /> AI 룩 만들기</div><div className="d">상품을 골라 모델 착장을 만들어요</div></div>
           <div className="go">→</div>
         </Link>
       </div>
@@ -77,9 +78,9 @@ export default async function DesignerHome() {
         </div>
       ) : (
         <div className="st-empty">
-          <div className="ic">👕</div>
+          <div className="ic"><NavIcon name="shirt" className="st-ico" /></div>
           <p>아직 올린 상품이 없어요. 첫 상품을 올려볼까요?</p>
-          <Link className="st-btn" href="/dashboard/designer/products">＋ 상품 올리기</Link>
+          <Link className="st-btn" href="/dashboard/designer/products"><NavIcon name="plus" className="st-ico" /> 상품 올리기</Link>
         </div>
       )}
     </>

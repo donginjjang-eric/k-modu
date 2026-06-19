@@ -3,6 +3,7 @@
 // 디자이너 숏폼 스튜디오 — 내 AI 룩을 실제 Veo로 9:16 숏폼 영상으로 만들고 모아보는 화면
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import NavIcon from "@/components/NavIcons";
 import type { GeneratedLook } from "@/lib/types";
 
 type Props = {
@@ -110,9 +111,9 @@ export default function ShortformStudio({ initialLooks, usedToday, dailyLimit, e
   if (!looks.length) {
     return (
       <div className="st-empty">
-        <div className="ic">🎬</div>
+        <div className="ic"><NavIcon name="video" className="st-ico" /></div>
         <p>숏폼 영상은 내 AI 룩으로 만들어요. 먼저 AI 룩을 한 개 만들어 볼까요?</p>
-        <Link className="st-btn" href="/dashboard/designer/generated-looks">✨ AI 룩 만들러 가기</Link>
+        <Link className="st-btn" href="/dashboard/designer/generated-looks"><NavIcon name="sparkles" className="st-ico" /> AI 룩 만들러 가기</Link>
       </div>
     );
   }
@@ -132,7 +133,7 @@ export default function ShortformStudio({ initialLooks, usedToday, dailyLimit, e
             </>
           ) : (
             <div className="sf-usage-copy">
-              <strong>숏폼 영상 생성은 6월 말 오픈 예정이에요 🎬</strong>
+              <strong>숏폼 영상 생성은 6월 말 오픈 예정이에요 <NavIcon name="video" className="st-ico" /></strong>
               <small>지금 AI 룩을 만들어 두면, 오픈하자마자 바로 영상으로 만들 수 있어요</small>
             </div>
           )}
@@ -171,7 +172,7 @@ export default function ShortformStudio({ initialLooks, usedToday, dailyLimit, e
             <article className="sf-reel" key={look.id}>
               <button type="button" className="sf-reel-play" onClick={() => setActiveReel(look)} aria-label="숏폼 영상 재생">
                 <video src={look.video_url ?? undefined} muted loop playsInline preload="metadata" />
-                <span className="sf-reel-badge">▶ 숏폼</span>
+                <span className="sf-reel-badge"><NavIcon name="play" className="st-ico" /> 숏폼</span>
               </button>
               <div className="sf-reel-foot">
                 <span>{look.selected_product_ids.length}개 상품 조합</span>
@@ -205,13 +206,28 @@ export default function ShortformStudio({ initialLooks, usedToday, dailyLimit, e
                   disabled={enabled && (busyId === look.id || remaining <= 0)}
                   onClick={() => openNotice(look)}
                 >
-                  {!enabled
-                    ? "🎬 숏폼 만들기"
-                    : remaining <= 0
-                      ? "오늘 한도 소진"
-                      : look.video_status === "failed"
-                        ? "↻ 다시 만들기"
-                        : "🎬 숏폼 만들기"}
+                  {(() => {
+                    const label = !enabled
+                      ? "숏폼 만들기"
+                      : remaining <= 0
+                        ? "오늘 한도 소진"
+                        : look.video_status === "failed"
+                          ? "다시 만들기"
+                          : "숏폼 만들기";
+                    const icon: "video" | "refresh" | null = !enabled
+                      ? "video"
+                      : remaining <= 0
+                        ? null
+                        : look.video_status === "failed"
+                          ? "refresh"
+                          : "video";
+                    return (
+                      <>
+                        {icon ? <NavIcon name={icon} className="st-ico" /> : null}
+                        <span>{label}</span>
+                      </>
+                    );
+                  })()}
                 </button>
               </article>
             ))}
@@ -226,7 +242,7 @@ export default function ShortformStudio({ initialLooks, usedToday, dailyLimit, e
           <div className="sf-player-panel">
             <button type="button" className="look-modal-close" onClick={() => setActiveReel(null)}>닫기</button>
             <video src={activeReel.video_url} controls autoPlay loop playsInline />
-            <a href={activeReel.video_url} download className="sf-player-dl">⬇ 영상 다운로드</a>
+            <a href={activeReel.video_url} download className="sf-player-dl"><NavIcon name="download" className="st-ico" /> 영상 다운로드</a>
           </div>
         </div>
       ) : null}
@@ -236,16 +252,16 @@ export default function ShortformStudio({ initialLooks, usedToday, dailyLimit, e
         <div className="look-modal" role="dialog" aria-modal="true" aria-label="숏폼 영상 생성 안내">
           <button type="button" className="look-modal-backdrop" onClick={() => setNotice(null)} />
           <div className="look-notice-panel">
-            <h3>🎬 숏폼 영상 만들기</h3>
+            <h3><NavIcon name="video" className="st-ico" /> 숏폼 영상 만들기</h3>
             <p>선택한 룩으로 약 <b>8초 길이의 세로형(9:16) 숏폼 영상</b>을 AI가 실제로 만들어 드려요.</p>
             <div className="sf-style-pick">
               <span className="sf-style-label">모션 스타일</span>
               <div className="sf-style-opts">
                 <button type="button" className={style === "runway" ? "is-sel" : ""} onClick={() => setStyle("runway")}>
-                  <b>🚶‍♀️ 모델 워킹</b><small>런웨이 캣워크로 착장을 또렷이</small>
+                  <b><NavIcon name="user" className="st-ico" /> 모델 워킹</b><small>런웨이 캣워크로 착장을 또렷이</small>
                 </button>
                 <button type="button" className={style === "street" ? "is-sel" : ""} onClick={() => setStyle("street")}>
-                  <b>🏙️ 스트리트 워킹</b><small>거리 무드로 자연스럽게</small>
+                  <b><NavIcon name="building" className="st-ico" /> 스트리트 워킹</b><small>거리 무드로 자연스럽게</small>
                 </button>
               </div>
             </div>
@@ -270,8 +286,8 @@ export default function ShortformStudio({ initialLooks, usedToday, dailyLimit, e
         <div className="look-modal" role="dialog" aria-modal="true" aria-label="숏폼 오픈 안내">
           <button type="button" className="look-modal-backdrop" onClick={() => setComingSoon(false)} />
           <div className="look-notice-panel">
-            <h3>🎬 숏폼 영상, 곧 만나요!</h3>
-            <p>숏폼 영상 생성 기능은 <b>6월 말 오픈 예정</b>이에요. 막바지 준비 중이라 조금만 기다려 주세요 🙏</p>
+            <h3><NavIcon name="video" className="st-ico" /> 숏폼 영상, 곧 만나요!</h3>
+            <p>숏폼 영상 생성 기능은 <b>6월 말 오픈 예정</b>이에요. 막바지 준비 중이라 조금만 기다려 주세요</p>
             <p style={{ marginTop: 10 }}>지금 <b>AI 룩을 미리 만들어 두면</b>, 오픈하자마자 바로 영상으로 만들 수 있어요.</p>
             <div className="look-notice-actions">
               <button type="button" className="primary" onClick={() => setComingSoon(false)}>확인</button>
