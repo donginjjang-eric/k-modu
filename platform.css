@@ -4016,13 +4016,14 @@ body.sheet-open {
 }
 
 .creator-sheet-visual img {
-  width: 100%;
-  height: 100%;
+  /* 패딩 대신 자연 크기 + max 크기 + 부모 place-items:center 로 상하좌우 여백을 균등하게.
+     (height:100%+패딩 방식은 포스터 내부 여백 탓에 아래가 도트와 붙어 보였음) */
+  width: auto;
+  height: auto;
+  max-width: calc(100% - 76px);
+  max-height: calc(100% - 132px);
   display: block;
   object-fit: contain;
-  /* 가운데 정렬 + 하단 도트 공간 확보 — 이미지가 아래에서 잘려 보이지 않게 */
-  object-position: center;
-  padding: 46px 42px 64px;
   filter: none;
   transition: opacity .16s ease, transform .16s ease;
 }
