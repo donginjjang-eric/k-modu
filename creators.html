@@ -228,15 +228,6 @@
             <div class="market-card-body"><div class="badges"><span>Instagram</span><span>NEW</span><span>MY</span></div><h3>ash_rafflynn</h3><p>Malaysia / creator storytelling / @ash_rafflynn</p><div class="mini-stats"><span><strong>50K</strong>Followers</span><span><strong>—</strong>ER</span></div><strong class="reward">89% FIT</strong></div>
           </article>
 
-          <article class="market-card is-muted" data-category="YouTube Review" data-status="closing" data-platform="YouTube" data-type="Daily" data-market="US" data-fit="79" data-followers="210000" data-er="4.8" data-search="morgan lee review haul casual styling">
-            <div class="thumb"><img src="assets/mainmodel_4.webp" alt="Morgan Lee" /><span class="flag">CLOSING</span><button type="button" aria-label="Save Morgan Lee">♡</button></div>
-            <div class="market-card-body"><div class="badges"><span>YouTube</span><span>D-1</span><span>US</span></div><h3>Morgan Lee</h3><p>Review haul / casual styling / conversion test</p><div class="mini-stats"><span><strong>210K</strong>Followers</span><span><strong>4.8%</strong>ER</span></div><strong class="reward">79% FIT</strong></div>
-          </article>
-
-          <article class="market-card is-muted" data-category="Fashion Creator TikTok Styling" data-status="open" data-platform="TikTok" data-type="Daily" data-market="Global" data-fit="82" data-followers="275000" data-er="5.9" data-search="nina cloud daily outfit styling grwm">
-            <div class="thumb"><img src="assets/hero-model.webp" alt="Nina Cloud" /><button type="button" aria-label="Save Nina Cloud">♡</button></div>
-            <div class="market-card-body"><div class="badges"><span>TikTok</span><span>OPEN</span><span>GLOBAL</span></div><h3>Nina Cloud</h3><p>Daily outfit / GRWM / product-led styling</p><div class="mini-stats"><span><strong>275K</strong>Followers</span><span><strong>5.9%</strong>ER</span></div><strong class="reward">82% FIT</strong></div>
-          </article>
         </div>
       </section>
     </section>
@@ -306,36 +297,27 @@
     // K-뷰티 무상 시딩 인플루언서(말레이시아) — 기존 .market-card 폼에 주입. 이미지는 임시 플레이스홀더(추후 교체).
     // [이름, 대표 플랫폼, 대표 팔로워, 카테고리, 타입, 우선순위] — 이메일/전화 등 개인정보는 미포함.
     const seedingCreators = [
-      ['Nora Lunia', 'Instagram', 193000, 'Instagram Editorial', 'Editorial', 'S'],
-      ['Miza Qistina', 'TikTok', 341400, 'TikTok Styling', 'Daily', 'S'],
-      ['Ziafmihat', 'Instagram', 56200, 'Instagram Editorial', 'Editorial', 'S'],
-      ['Ekmal Suhaimi', 'Instagram', 100000, 'Fashion Creator', 'Minimal', 'A'],
-      ['Bebelan Cik Min', 'Instagram', 21300, 'Instagram Editorial', 'Editorial', 'A'],
-      ['Ash Rafflyn', 'Instagram', 50300, 'Fashion Creator', 'Minimal', 'A-'],
-      ['KitKat Nelfei', 'Instagram', 20000, 'Instagram Editorial', 'Editorial', 'A-'],
-      ['alwaniraihan / Yon', 'Instagram', 47500, 'Instagram Editorial', 'Editorial', 'A-'],
-      ['Syazwan Evans', 'TikTok', 157800, 'TikTok Styling', 'Daily', 'A-'],
-      ['Eizzad Jeffry / Dr.EJ', 'Instagram', 161000, 'Fashion Creator', 'Daily', 'B+'],
-      ['Keknanjudge', 'Instagram', 122000, 'TikTok Styling', 'Daily', 'B+'],
-      ['ItsErfan', 'Instagram', 26400, 'Fashion Creator', 'Daily', 'B+'],
-      ['Hans Hanis', 'Instagram', 20700, 'YouTube Review', 'Daily', 'B+'],
-      ['Irwan Shah', 'Instagram', 22000, 'Fashion Creator', 'Minimal', 'B'],
-      ['Khalaf', 'Instagram', 22400, 'Fashion Creator', 'Minimal', 'B'],
-      ['Jenny Lim', 'TikTok', 41400, 'TikTok Styling', 'Daily', 'B'],
-      ['Yaya Rose', 'Instagram', 14200, 'Instagram Editorial', 'Daily', 'B'],
-      ['Alif Haiqal', 'TikTok', 44100, 'TikTok Styling', 'Daily', 'B-'],
-      ['Alam Antido', 'TikTok', 24000, 'TikTok Styling', 'Daily', 'B-'],
-      ['Syeira ms', 'Instagram', 18300, 'Fashion Creator', 'Daily', 'C+'],
+      { no: 2, name: 'Nora Lunia', ig: '193K', tiktok: '139.5K', total: '332.5K', totalValue: 332500, platform: 'TikTok', category: 'TikTok Styling', type: 'Editorial', priority: 'S' },
+      { no: 3, name: 'Irwan Shah', ig: '22K', tiktok: '12.6K', total: '34.6K', totalValue: 34600, platform: 'TikTok', category: 'TikTok Styling', type: 'Daily', priority: 'A' },
+      { no: 7, name: 'Khalaf', ig: '22.4K', tiktok: '—', total: '22.4K', totalValue: 22400, platform: 'Instagram', category: 'Instagram Editorial', type: 'Minimal', priority: 'A' },
+      { no: 9, name: 'KitKat Nelfei', ig: '20K', tiktok: '—', total: '20K', totalValue: 20000, platform: 'Instagram', category: 'Instagram Editorial', type: 'Editorial', priority: 'A-' },
+      { no: 14, name: 'alwaniraihan', ig: '47.5K', tiktok: '—', total: '47.5K', totalValue: 47500, platform: 'Instagram', category: 'Instagram Editorial', type: 'Daily', priority: 'A-' },
+      { no: 15, name: 'Jenny Lim', ig: '25.4K', tiktok: '41.4K', total: '66.8K', totalValue: 66800, platform: 'TikTok', category: 'TikTok Styling', type: 'Daily', priority: 'A-' },
+      { no: 16, name: 'Keknanjudge', ig: '122K', tiktok: '—', total: '122K', totalValue: 122000, platform: 'Instagram', category: 'Fashion Creator', type: 'Daily', priority: 'B+' },
+      { no: 17, name: 'Ekmal Suhaimi', ig: '100K', tiktok: '—', total: '100K', totalValue: 100000, platform: 'Instagram', category: 'Fashion Creator', type: 'Minimal', priority: 'B+' },
+      { no: 18, name: 'Yaya rose', ig: '14.2K', tiktok: '—', total: '14.2K', totalValue: 14200, platform: 'Instagram', category: 'Instagram Editorial', type: 'Daily', priority: 'B' },
+      { no: 19, name: 'Hans Hanis', ig: '20.7K', tiktok: '—', total: '20.7K', totalValue: 20700, platform: 'Instagram', category: 'YouTube Review', type: 'Daily', priority: 'B' },
+      { no: 20, name: 'Syeira ms', ig: '18.3K', tiktok: '—', total: '18.3K', totalValue: 18300, platform: 'Instagram', category: 'Fashion Creator', type: 'Daily', priority: 'B-' },
     ];
     const seedingImgs = ['assets/us-female-01.webp', 'assets/us-female-02.webp', 'assets/us-female-03.webp', 'assets/us-female-04.webp', 'assets/us-female-05.webp', 'assets/us-female-06.webp', 'assets/us-female-07.webp', 'assets/us-female-08.webp', 'assets/mainmodel_2.webp', 'assets/mainmodel_3.webp', 'assets/mainmodel_4.webp', 'assets/hero-model.webp'];
     const fmtSeedK = (n) => (n >= 1e6 ? (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M' : Math.round(n / 1e3) + 'K');
     grid.insertAdjacentHTML('beforeend', seedingCreators.map((c, i) => {
-      const [name, platform, followers, category, type, priority] = c;
+      const { no, name, ig, tiktok, total, totalValue, platform, category, type, priority } = c;
       const img = seedingImgs[i % seedingImgs.length];
       return `
-      <article class="market-card is-seeding" data-category="${category}" data-status="seeding" data-platform="${platform}" data-type="${type}" data-market="Global" data-fit="" data-followers="${followers}" data-er="" data-search="${name.toLowerCase()} ${category.toLowerCase()} malaysia k-beauty seeding" data-priority="${priority}">
+      <article class="market-card is-seeding" data-category="${category}" data-status="seeding" data-platform="${platform}" data-type="${type}" data-market="MY" data-fit="" data-followers="${totalValue}" data-er="" data-search="${name.toLowerCase()} ${category.toLowerCase()} malaysia k-beauty seeding" data-priority="${priority}">
         <div class="thumb"><img src="${img}" alt="${name}" loading="lazy" /><span class="flag">SEEDING</span><button type="button" aria-label="Save ${name}">♡</button></div>
-        <div class="market-card-body"><div class="badges"><span>${platform}</span><span>SEEDING</span><span>MY</span></div><h3>${name}</h3><p>K-Beauty seeding / Malaysia / ${category}</p><div class="mini-stats"><span><strong>${fmtSeedK(followers)}</strong>Followers</span><span><strong>—</strong>ER</span></div><strong class="reward">PRIORITY ${priority}</strong></div>
+        <div class="market-card-body"><div class="badges"><span>${platform}</span><span>NO.${no}</span><span>MY</span></div><h3>${name}</h3><p>K-Beauty seeding / Malaysia / ${category}</p><div class="mini-stats"><span><strong>${total}</strong>Total</span><span><strong>${ig}</strong>IG · TT ${tiktok}</span></div><strong class="reward">PRIORITY ${priority}</strong></div>
       </article>`;
     }).join(''));
 
