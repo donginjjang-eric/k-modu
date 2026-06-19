@@ -1136,6 +1136,7 @@ export async function updateDesignerApprovalStatus(id: string, status: "approved
 
 export async function updateDesignerProfile(id: string, input: Partial<{
   brand_name: string;
+  designer_name: string;
   description: string;
   mood: string;
   country: string;
@@ -1147,9 +1148,10 @@ export async function updateDesignerProfile(id: string, input: Partial<{
          description = COALESCE($3, description),
          mood = COALESCE($4, mood),
          country = COALESCE($5, country),
+         designer_name = COALESCE($6, designer_name),
          updated_at = now()
      WHERE id = $1
      RETURNING *`,
-    [id, input.brand_name ?? null, input.description ?? null, input.mood ?? null, input.country ?? null],
+    [id, input.brand_name ?? null, input.description ?? null, input.mood ?? null, input.country ?? null, input.designer_name ?? null],
   );
 }

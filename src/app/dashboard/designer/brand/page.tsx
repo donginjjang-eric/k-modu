@@ -72,6 +72,7 @@ export default async function DesignerBrandPage() {
           </div>
           <BrandForm
             brandName={designer.brand_name}
+            designerName={designer.designer_name || ""}
             description={designer.description || ""}
             mood={designer.mood || ""}
           />

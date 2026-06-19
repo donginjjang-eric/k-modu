@@ -11,6 +11,7 @@ export async function PATCH(request: Request) {
   try {
     const updated = await updateDesignerProfile(designer.id, {
       brand_name: body.brandName ? String(body.brandName).trim() : undefined,
+      designer_name: body.designerName ? String(body.designerName).trim() : undefined,
       description: body.description !== undefined ? String(body.description) : undefined,
       mood: body.mood !== undefined ? String(body.mood) : undefined,
       country: body.country !== undefined ? String(body.country) : undefined,
