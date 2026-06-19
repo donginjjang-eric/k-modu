@@ -3986,6 +3986,8 @@ body.sheet-open {
 .creator-sheet-visual {
   grid-area: visual;
   position: relative;
+  min-width: 0;
+  min-height: 0;
   overflow: hidden;
   display: grid;
   place-items: center;
@@ -4564,7 +4566,11 @@ body.dark-theme .mini-stats strong {
   }
 
   .creator-sheet-visual img {
-    padding: 38px 22px 56px;
+    width: auto;
+    height: auto;
+    max-width: calc(100% - 44px);
+    max-height: calc(100% - 94px);
+    padding: 0;
   }
 
   .creator-sheet-count {
@@ -5855,8 +5861,16 @@ body.dark-theme .mini-stats strong {
 
 /* 크리에이터 모달 PC: 우측 프리뷰 이미지가 라벨/도트와 겹치지 않게 중앙 정렬 + 여백 확보 */
 @media (min-width: 961px) {
+  .creator-sheet-visual {
+    height: calc(100% - 32px);
+  }
+
   .creator-sheet-visual img {
-    padding: 64px 44px 62px;
+    width: auto;
+    height: auto;
+    max-width: calc(100% - 88px);
+    max-height: calc(100% - 132px);
+    padding: 0;
     object-position: center;
   }
 }
