@@ -290,19 +290,6 @@
   </main>
 
   <script>
-    const featuredDesignerCardProfiles = [
-      ['tall pin-34', 'assets/influencer-sourcing/cards/nora-lunia.webp', 'Nora Lunia', 'Malaysia / Modest Editorial Creator', 'K-MODU creator card for K-beauty seeding and modest fashion editorial matching.', ['Instagram', 'Open', 'MY'], { cta: 'View Card', gallery: [] }],
-      ['tall pin-34', 'assets/influencer-sourcing/cards/keknanjudge.webp', 'Keknanjudge', 'Malaysia / Modest Lifestyle Creator', 'K-MODU creator card for lifestyle, modest fashion, and seeding campaign proposals.', ['Instagram', 'Open', 'MY'], { cta: 'View Card', gallery: [] }],
-      ['tall pin-34', 'assets/influencer-sourcing/cards/ekmal-suhaimi.webp', 'Ekmal Suhaimi', 'Malaysia / Fashion Creator', 'K-MODU creator card for fashion creator collaboration and campaign review.', ['Instagram', 'Open', 'MY'], { cta: 'View Card', gallery: [] }],
-      ['tall pin-34', 'assets/influencer-sourcing/cards/jenny-lim.webp', 'Jenny Lim', 'Malaysia / TikTok Styling Creator', 'K-MODU creator card for TikTok styling, daily outfit, and K-beauty seeding.', ['TikTok', 'Open', 'MY'], { cta: 'View Card', gallery: [] }],
-      ['tall pin-34', 'assets/influencer-sourcing/cards/alwaniraihan.webp', 'alwaniraihan', 'Malaysia / Instagram Editorial Creator', 'K-MODU creator card for beauty editorial and seeding campaign matching.', ['Instagram', 'Open', 'MY'], { cta: 'View Card', gallery: [] }],
-      ['tall pin-34', 'assets/influencer-sourcing/cards/irwan-shah.webp', 'Irwan Shah', 'Malaysia / TikTok Styling Creator', 'K-MODU creator card for short-form styling and creator collaboration.', ['TikTok', 'Open', 'MY'], { cta: 'View Card', gallery: [] }],
-      ['tall pin-34', 'assets/influencer-sourcing/cards/khalaf.webp', 'Khalaf', 'Malaysia / Street Editorial Creator', 'K-MODU creator card for street editorial and visual campaign proposals.', ['Instagram', 'Open', 'MY'], { cta: 'View Card', gallery: [] }],
-      ['tall pin-34', 'assets/influencer-sourcing/cards/hans-hanis.webp', 'Hans Hanis', 'Malaysia / Review Creator', 'K-MODU creator card for review, haul, and creator campaign matching.', ['Instagram', 'Open', 'MY'], { cta: 'View Card', gallery: [] }],
-      ['tall pin-34', 'assets/influencer-sourcing/cards/kitkat-nelfei.webp', 'KitKat Nelfei', 'Malaysia / Instagram Editorial Creator', 'K-MODU creator card for bright editorial and K-beauty seeding.', ['Instagram', 'Open', 'MY'], { cta: 'View Card', gallery: [] }],
-      ['tall pin-34', 'assets/influencer-sourcing/cards/syeira-ms.webp', 'Syeira MS', 'Malaysia / Lifestyle Creator', 'K-MODU creator card for lifestyle storytelling and seeding collaboration.', ['Instagram', 'Open', 'MY'], { cta: 'View Card', gallery: [] }],
-    ];
-
     // 샘플 카드 모음. 승인된 DB 디자이너 목록을 못 불러올 때만 폴백으로 노출된다.
     const sampleDesignerProfiles = [
       ['tall',
@@ -448,7 +435,7 @@
     ];
 
     // 활성 카드 목록. 기본은 DB의 승인된 디자이너이고, 실패 시 샘플로 대체된다.
-    let designerProfiles = featuredDesignerCardProfiles.concat(sampleDesignerProfiles);
+    let designerProfiles = sampleDesignerProfiles;
     let isSampleBoard = true;
 
     const board = document.querySelector('#designerBoard');
@@ -586,12 +573,12 @@
         if (!data || data.ok === false || !Array.isArray(data.designers) || !data.designers.length) {
           throw new Error('no approved designers');
         }
-        designerProfiles = featuredDesignerCardProfiles.concat(data.designers.map(designerToProfile));
+        designerProfiles = data.designers.map(designerToProfile);
         isSampleBoard = false;
         renderDesignerBoard();
         openDeepLinkedCard();
       } catch (error) {
-        designerProfiles = featuredDesignerCardProfiles.concat(sampleDesignerProfiles);
+        designerProfiles = sampleDesignerProfiles;
         isSampleBoard = true;
         renderDesignerBoard();
         applyLiveDesignerCardCover(DEFAULT_PUBLIC_DESIGNER_ID);
