@@ -46,7 +46,11 @@ export async function GET(request: Request) {
 
     const { user, designer } = await findOrCreateGoogleUser(email);
 
-    cookieStore.set(sessionCookieName, createSessionToken(user), {
+    cookieStore.set(sessionCookieName, createSessionToken({
+      ...user,
+      name: profile.name?.trim() || undefined,
+      avatar: profile.picture?.trim() || undefined,
+    }), {
       httpOnly: true,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",

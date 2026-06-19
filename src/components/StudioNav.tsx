@@ -33,9 +33,22 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function StudioSideNav({ brandName, publicHref }: { brandName: string; publicHref: string }) {
+export function StudioSideNav({
+  brandName,
+  publicHref,
+  googleName,
+  googleAvatar,
+  googleEmail,
+}: {
+  brandName: string;
+  publicHref: string;
+  googleName?: string;
+  googleAvatar?: string;
+  googleEmail?: string;
+}) {
   const pathname = usePathname();
   const initial = (brandName || "K").trim().charAt(0).toUpperCase();
+  const googleLabel = googleName || googleEmail;
 
   return (
     <aside className="st-side">
@@ -52,10 +65,13 @@ export function StudioSideNav({ brandName, publicHref }: { brandName: string; pu
         })}
       </nav>
       <div className="st-account-card">
-        <div className="st-account-avatar">{initial}</div>
+        <div className="st-account-avatar">
+          {googleAvatar ? <img src={googleAvatar} alt="" referrerPolicy="no-referrer" /> : initial}
+        </div>
         <div className="st-account-copy">
           <span>디자이너 스튜디오</span>
           <strong>{brandName}</strong>
+          {googleLabel ? <small className="st-account-google" title={googleEmail}>{googleLabel}</small> : null}
         </div>
         <div className="st-account-actions">
           <Link href={publicHref}>공개 페이지</Link>

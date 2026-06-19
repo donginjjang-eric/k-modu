@@ -60,5 +60,5 @@ export async function fetchGoogleProfile(accessToken: string) {
   if (!response.ok) {
     throw new Error(`Google userinfo failed: ${response.status}`);
   }
-  return (await response.json()) as { email?: string; email_verified?: boolean; name?: string };
+  return (await response.json()) as { email?: string; email_verified?: boolean; name?: string; picture?: string };
 }

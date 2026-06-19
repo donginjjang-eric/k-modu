@@ -6,7 +6,7 @@ import LogoutButton from "@/components/LogoutButton";
 import ScrollResetOnLoad from "@/components/ScrollResetOnLoad";
 
 export default async function DesignerStudioLayout({ children }: { children: React.ReactNode }) {
-  const { designer } = await requireApprovedDesigner();
+  const { user, designer } = await requireApprovedDesigner();
   // 공개 화면 = 크리에이터가 보는 보드 모달 (딥링크로 자동 오픈)
   const publicHref = `/designers?open=${designer.id}`;
 
@@ -36,7 +36,13 @@ export default async function DesignerStudioLayout({ children }: { children: Rea
       ) : null}
 
       <div className="st-shell">
-        <StudioSideNav brandName={designer.brand_name} publicHref={publicHref} />
+        <StudioSideNav
+          brandName={designer.brand_name}
+          publicHref={publicHref}
+          googleName={user.name}
+          googleAvatar={user.avatar}
+          googleEmail={user.email}
+        />
         <main className="st-main">{children}</main>
       </div>
 

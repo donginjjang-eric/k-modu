@@ -7,7 +7,7 @@ import type { Role, User } from "./types";
 export const sessionCookieName = "kmodu_session";
 export const sessionMaxAgeSeconds = 60 * 60 * 24 * 30;
 
-type SessionUser = Pick<User, "id" | "email" | "role"> & { exp: number };
+type SessionUser = Pick<User, "id" | "email" | "role"> & { exp: number; name?: string; avatar?: string };
 
 function getAuthSecret() {
   const secret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET;
@@ -40,11 +40,14 @@ export function verifyPassword(password: string, passwordHash: string) {
   return expected.length === actual.length && timingSafeEqual(expected, actual);
 }
 
-export function createSessionToken(user: Pick<User, "id" | "email" | "role">) {
+export function createSessionToken(user: Pick<User, "id" | "email" | "role"> & { name?: string; avatar?: string }) {
   const payload = Buffer.from(JSON.stringify({
     id: user.id,
     email: user.email,
     role: user.role,
+    // 구글 로그인 시 프로필 이름/사진을 함께 담는다 (계정 카드 표시용). 일반 로그인은 없음.
+    ...(user.name ? { name: user.name } : {}),
+    ...(user.avatar ? { avatar: user.avatar } : {}),
     exp: Date.now() + sessionMaxAgeSeconds * 1000,
   })).toString("base64url");
   return `${payload}.${sign(payload)}`;
