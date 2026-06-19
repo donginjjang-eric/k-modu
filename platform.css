@@ -3939,6 +3939,8 @@ body.sheet-open {
   min-height: 0;
   display: grid;
   grid-template-columns: minmax(430px, .86fr) minmax(0, 1.14fr);
+  /* 행을 카드 높이로 고정 — auto면 더 긴 좌측 콘텐츠만큼 늘어나 카드를 넘쳐 아래가 잘림(좌측 스크롤도 안 먹음) */
+  grid-template-rows: minmax(0, 1fr);
   grid-template-areas: "content visual";
   gap: 0;
   overflow: hidden;
