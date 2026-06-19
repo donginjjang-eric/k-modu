@@ -15,6 +15,7 @@ export default function ShortformStudio({ initialLooks, usedToday, dailyLimit }:
   const [looks, setLooks] = useState(initialLooks);
   const [used, setUsed] = useState(usedToday);
   const [notice, setNotice] = useState<GeneratedLook | null>(null);
+  const [style, setStyle] = useState<"runway" | "street">("runway");
   const [busyId, setBusyId] = useState("");
   const [error, setError] = useState("");
   const [activeReel, setActiveReel] = useState<GeneratedLook | null>(null);
@@ -73,7 +74,11 @@ export default function ShortformStudio({ initialLooks, usedToday, dailyLimit }:
     setError("");
     setBusyId(look.id);
     try {
-      const res = await fetch(`/api/generated-looks/${look.id}/generate-video`, { method: "POST" });
+      const res = await fetch(`/api/generated-looks/${look.id}/generate-video`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ style }),
+      });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         setError(data.error || "영상 생성을 시작하지 못했어요. 다시 시도해주세요.");
@@ -212,10 +217,21 @@ export default function ShortformStudio({ initialLooks, usedToday, dailyLimit }:
           <div className="look-notice-panel">
             <h3>🎬 숏폼 영상 만들기</h3>
             <p>선택한 룩으로 약 <b>8초 길이의 세로형(9:16) 숏폼 영상</b>을 AI가 실제로 만들어 드려요.</p>
+            <div className="sf-style-pick">
+              <span className="sf-style-label">모션 스타일</span>
+              <div className="sf-style-opts">
+                <button type="button" className={style === "runway" ? "is-sel" : ""} onClick={() => setStyle("runway")}>
+                  <b>🚶‍♀️ 모델 워킹</b><small>런웨이 캣워크로 착장을 또렷이</small>
+                </button>
+                <button type="button" className={style === "street" ? "is-sel" : ""} onClick={() => setStyle("street")}>
+                  <b>🏙️ 스트리트 워킹</b><small>거리 무드로 자연스럽게</small>
+                </button>
+              </div>
+            </div>
             <ul className="look-notice-list">
               <li>생성에 보통 <b>1~3분</b> 정도 걸려요. 창을 닫아도 계속 진행돼요.</li>
               <li>숏폼 영상은 <b>하루 최대 {dailyLimit}개</b>까지 (오늘 {remaining}개 남음).</li>
-              <li>모델·옷은 그대로 두고 자연스러운 움직임만 더해져요.</li>
+              <li>모델이 <b>걸으면서</b> 착장을 보여주도록 모션을 넣어요.</li>
             </ul>
             {error ? <p className="look-notice-err">{error}</p> : null}
             <div className="look-notice-actions">

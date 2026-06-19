@@ -864,7 +864,7 @@ export async function countDailyVeoForDesigner(designerId: string) {
   const row = await one<{ count: string }>(
     `SELECT (
         (SELECT COUNT(*) FROM generation_logs
-           WHERE designer_id = $1 AND provider = 'google-veo' AND status = 'generated'
+           WHERE designer_id = $1 AND provider IN ('google-veo', 'fal-kling') AND status = 'generated'
              AND created_at >= date_trunc('day', now()))
       + (SELECT COUNT(*) FROM generated_looks
            WHERE designer_id = $1 AND video_status IN ('queued', 'processing'))
@@ -880,7 +880,7 @@ export async function countDailyVeoAll() {
   const row = await one<{ count: string }>(
     `SELECT (
         (SELECT COUNT(*) FROM generation_logs
-           WHERE provider = 'google-veo' AND status = 'generated'
+           WHERE provider IN ('google-veo', 'fal-kling') AND status = 'generated'
              AND created_at >= date_trunc('day', now()))
       + (SELECT COUNT(*) FROM generated_looks
            WHERE video_status IN ('queued', 'processing'))

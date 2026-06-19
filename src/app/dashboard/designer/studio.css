@@ -550,6 +550,14 @@
 .sf-player-panel video { width: min(380px, 86vw); aspect-ratio: 9/16; max-height: 82vh; border-radius: 16px; background: #111; display: block; }
 .sf-player-dl { color: #fff; font-weight: 800; font-size: 14px; }
 
+.sf-style-pick { margin-top: 16px; }
+.sf-style-label { display: block; font-size: 12px; font-weight: 800; color: var(--muted); margin-bottom: 8px; }
+.sf-style-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sf-style-opts button { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 11px 12px; border: 1.5px solid var(--line2); border-radius: 11px; background: #fff; cursor: pointer; text-align: left; }
+.sf-style-opts button b { font-size: 13px; }
+.sf-style-opts button small { color: var(--muted); font-size: 11px; font-weight: 600; }
+.sf-style-opts button.is-sel { border-color: var(--ink); background: #f4f1ea; }
+
 .st-empty { border: 1px dashed var(--line2); border-radius: var(--r); background: var(--panel); padding: 46px 20px; text-align: center; }
 .st-empty .ic { font-size: 40px; }
 .st-empty p { color: var(--muted); margin: 10px 0 16px; }

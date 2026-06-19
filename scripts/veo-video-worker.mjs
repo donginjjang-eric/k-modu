@@ -18,6 +18,10 @@ const VEO_ASPECT_RATIO = process.env.VEO_ASPECT_RATIO || "9:16";
 const POLL_INTERVAL_MS = Number(process.env.VEO_POLL_INTERVAL_MS || 10000);
 const POLL_MAX_TRIES = Number(process.env.VEO_POLL_MAX_TRIES || 42); // 약 7분
 
+// ── fal.ai Kling image-to-video (Veo 대체용). FAL_KEY가 있으면 이걸 우선 사용 ──
+const FAL_MODEL = process.env.FAL_MODEL || "fal-ai/kling-video/v2.1/standard/image-to-video";
+const FAL_DURATION = process.env.FAL_DURATION || "5"; // "5" | "10"
+
 // ── Railway 버킷(S3) 경량 미러 (storage.ts와 동일 규칙) ──
 const bucketKeyPrefixes = { generatedLooks: "generated-looks" };
 const hasBucket = () => Boolean(
@@ -158,6 +162,49 @@ async function generateVeoVideo({ prompt, base64, mimeType }) {
   throw new Error("Veo generation timed out.");
 }
 
+// fal.ai 큐 API: 제출 → 상태 폴링 → 결과(video.url) 다운로드. 입력 이미지는 base64 data URI로 전달.
+async function generateKlingVideo({ prompt, base64, mimeType }) {
+  const key = process.env.FAL_KEY;
+  if (!key) throw new Error("FAL_KEY is not configured.");
+  const headers = { Authorization: `Key ${key}`, "Content-Type": "application/json" };
+  const imageDataUri = `data:${mimeType};base64,${base64}`;
+
+  const submitRes = await fetch(`https://queue.fal.run/${FAL_MODEL}`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ prompt, image_url: imageDataUri, duration: FAL_DURATION }),
+  });
+  if (!submitRes.ok) {
+    throw new Error(`Fal submit failed ${submitRes.status}: ${(await submitRes.text()).slice(0, 280)}`);
+  }
+  const submit = await submitRes.json();
+  const requestId = submit.request_id;
+  if (!requestId) throw new Error("Fal did not return a request_id.");
+  const statusUrl = submit.status_url || `https://queue.fal.run/${FAL_MODEL}/requests/${requestId}/status`;
+  const responseUrl = submit.response_url || `https://queue.fal.run/${FAL_MODEL}/requests/${requestId}`;
+
+  for (let i = 0; i < POLL_MAX_TRIES; i += 1) {
+    await sleep(POLL_INTERVAL_MS);
+    const sres = await fetch(statusUrl, { headers });
+    if (!sres.ok) continue;
+    const s = await sres.json();
+    if (s.status === "COMPLETED") {
+      const rres = await fetch(responseUrl, { headers });
+      if (!rres.ok) throw new Error(`Fal result fetch failed ${rres.status}`);
+      const out = await rres.json();
+      const url = out?.video?.url || extractVideo(out).uri;
+      if (!url) throw new Error("Fal completed but returned no video URL.");
+      const dl = await fetch(url);
+      if (!dl.ok) throw new Error(`Fal video download failed ${dl.status}`);
+      return Buffer.from(await dl.arrayBuffer());
+    }
+    if (s.status === "FAILED" || s.status === "ERROR") {
+      throw new Error(`Fal generation failed: ${JSON.stringify(s).slice(0, 280)}`);
+    }
+  }
+  throw new Error("Fal generation timed out.");
+}
+
 async function main() {
   const input = decodePayload();
   const pool = new Pool({
@@ -167,11 +214,17 @@ async function main() {
       : undefined,
   });
 
+  // FAL_KEY가 있으면 Kling, 없으면 기존 Veo로 폴백
+  const useFal = Boolean(process.env.FAL_KEY);
+  const provider = useFal ? "fal-kling" : "google-veo";
+
   try {
     await pool.query("UPDATE generated_looks SET video_status = 'processing', updated_at = now() WHERE id = $1", [input.lookId]);
 
     const { base64, mimeType } = await loadImageBase64(input.imageUrl);
-    const videoBytes = await generateVeoVideo({ prompt: input.prompt, base64, mimeType });
+    const videoBytes = useFal
+      ? await generateKlingVideo({ prompt: input.prompt, base64, mimeType })
+      : await generateVeoVideo({ prompt: input.prompt, base64, mimeType });
     const videoUrl = await saveGeneratedVideo(`look-${input.lookId}.mp4`, videoBytes);
 
     await pool.query(
@@ -180,18 +233,18 @@ async function main() {
     );
     await pool.query(
       `INSERT INTO generation_logs (user_id, designer_id, provider, cache_key, cache_hit, status, error_message)
-       VALUES ($1, $2, 'google-veo', $3, false, 'generated', null)`,
-      [input.userId || null, input.designerId || null, `veo:${input.lookId}`],
+       VALUES ($1, $2, $4, $3, false, 'generated', null)`,
+      [input.userId || null, input.designerId || null, `veo:${input.lookId}`, provider],
     );
-    console.log(JSON.stringify({ ok: true, lookId: input.lookId, videoUrl }));
+    console.log(JSON.stringify({ ok: true, provider, lookId: input.lookId, videoUrl }));
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown video error";
-    console.error(JSON.stringify({ ok: false, lookId: input.lookId, error: message }));
+    console.error(JSON.stringify({ ok: false, provider, lookId: input.lookId, error: message }));
     await pool.query("UPDATE generated_looks SET video_status = 'failed', updated_at = now() WHERE id = $1", [input.lookId]).catch(() => {});
     await pool.query(
       `INSERT INTO generation_logs (user_id, designer_id, provider, cache_key, cache_hit, status, error_message)
-       VALUES ($1, $2, 'google-veo', $3, false, 'failed', $4)`,
-      [input.userId || null, input.designerId || null, `veo:${input.lookId}`, message],
+       VALUES ($1, $2, $5, $3, false, 'failed', $4)`,
+      [input.userId || null, input.designerId || null, `veo:${input.lookId}`, message, provider],
     ).catch(() => {});
   } finally {
     await pool.end();

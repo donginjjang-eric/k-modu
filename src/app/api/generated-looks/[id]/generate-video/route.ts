@@ -9,9 +9,16 @@ import {
   countDailyVeoAll,
 } from "@/lib/db";
 
-// 룩 이미지에 적용할 영상 모션 디렉션 (이미지 자체는 Veo가 입력으로 받음)
-const MOTION_PROMPT = process.env.VEO_PROMPT
-  || "Cinematic vertical fashion film of this exact model and outfit. Subtle natural movement, flowing fabric, gentle hair motion, slow cinematic camera push-in. Editorial K-fashion lookbook, soft studio lighting, photorealistic. Keep the same person, face, and clothing. No text, no watermark.";
+// 룩 이미지에 적용할 모션 프리셋 — 착장을 최대한 보여주도록 걷는 동작 위주로 튜닝
+const MOTION_PRESETS: Record<string, string> = {
+  runway:
+    "Cinematic vertical fashion film. The same model walks confidently toward the camera like on a runway, full body in frame, smooth catwalk stride, the outfit's fabric and silhouette moving naturally with each step to clearly show off the clothing details. Editorial K-fashion lookbook, slow cinematic dolly, soft studio lighting, photorealistic. Keep the exact same person, face, hair and outfit. No text, no watermark, no logo.",
+  street:
+    "Cinematic vertical fashion film. The same model walks naturally down a stylish city street, full body in frame, relaxed confident street-style stride, the outfit moving with the body to showcase the clothing from a candid angle. Editorial street fashion mood, soft natural daylight, gentle handheld camera follow, photorealistic. Keep the exact same person, face, hair and outfit. No text, no watermark, no logo.",
+};
+const DEFAULT_STYLE = "runway";
+const resolveMotionPrompt = (style: unknown) =>
+  (typeof style === "string" && MOTION_PRESETS[style]) || MOTION_PRESETS[DEFAULT_STYLE];
 
 // 비용 안전망: 디자이너 1인당 1일 한도 + 전역 1일 한도 (둘 다 env로 조정 가능)
 const DAILY_LIMIT = Number(process.env.VEO_DAILY_LIMIT_PER_DESIGNER || 4);
@@ -30,13 +37,17 @@ function startVeoWorker(input: unknown) {
   child.unref();
 }
 
-export async function POST(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const auth = await getApprovedDesignerForApi();
   if (!auth.ok) return Response.json({ ok: false, error: auth.error }, { status: auth.status });
   const { user, designer } = auth;
   const { id } = await params;
 
-  if (!process.env.GEMINI_API_KEY) {
+  // 모션 스타일(모델 워킹 / 스트리트 워킹) 선택값 — body 없으면 기본값
+  const body = await request.json().catch(() => ({}));
+  const motionPrompt = resolveMotionPrompt((body as { style?: string }).style);
+
+  if (!process.env.FAL_KEY && !process.env.GEMINI_API_KEY) {
     return Response.json({ ok: false, error: "영상 생성이 아직 준비되지 않았어요. 잠시 후 다시 시도해주세요." }, { status: 400 });
   }
 
@@ -74,7 +85,7 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
     imageUrl: look.image_url,
     designerId: designer.id,
     userId: user.id,
-    prompt: MOTION_PROMPT,
+    prompt: motionPrompt,
   });
 
   return Response.json(
