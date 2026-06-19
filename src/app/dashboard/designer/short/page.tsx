@@ -1,13 +1,21 @@
-export default function DesignerShortPage() {
+// 디자이너 숏폼 제작 페이지 — 내 AI 룩을 실제 Veo로 9:16 숏폼 영상으로 만들고 모아보는 화면
+import { requireApprovedDesigner } from "@/lib/auth";
+import { getGeneratedLooksForDesigner, countDailyVeoForDesigner } from "@/lib/db";
+import ShortformStudio from "@/components/ShortformStudio";
+
+export default async function DesignerShortPage() {
+  const { designer } = await requireApprovedDesigner();
+  const [looks, usedToday] = await Promise.all([
+    getGeneratedLooksForDesigner(designer.id),
+    countDailyVeoForDesigner(designer.id),
+  ]);
+  const dailyLimit = Number(process.env.VEO_DAILY_LIMIT_PER_DESIGNER || 4);
+
   return (
     <>
-      <h1 className="st-title">🎬 숏폼</h1>
-      <p className="st-sub">AI 룩으로 9:16 숏폼 영상을 만들어요. (현재 데모)</p>
-      <div className="st-placeholder">
-        <div className="ic">🎬</div>
-        <b>숏폼 영상 만들기</b>
-        AI 룩을 고르면 릴스 형태의 숏폼 미리보기를 만들어 드려요. 곧 제공됩니다.
-      </div>
+      <h1 className="st-title">🎬 숏폼 제작</h1>
+      <p className="st-sub">내 AI 룩을 실제 9:16 숏폼 영상으로 만들어요.</p>
+      <ShortformStudio initialLooks={looks} usedToday={usedToday} dailyLimit={dailyLimit} />
     </>
   );
 }

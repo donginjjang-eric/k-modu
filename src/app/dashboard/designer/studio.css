@@ -512,6 +512,44 @@
 .look-notice-actions .primary { border: 1px solid #111; background: #111; color: #fff; }
 .look-notice-actions .primary:disabled { opacity: .55; cursor: not-allowed; }
 
+/* ── 숏폼 스튜디오 ── */
+.sf-intro { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 28px; justify-content: space-between; }
+.sf-usage { display: flex; align-items: center; gap: 16px; }
+.sf-usage-num { font-size: 44px; font-weight: 900; line-height: 1; color: var(--ink); }
+.sf-usage-copy { display: flex; flex-direction: column; gap: 3px; }
+.sf-usage-copy strong { font-size: 15px; }
+.sf-usage-copy small { color: var(--muted); font-size: 12px; font-weight: 700; }
+.sf-steps { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 0; padding: 0; list-style: none; }
+.sf-steps li { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; font-weight: 700; }
+.sf-steps li span { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 12px; font-weight: 900; }
+.sf-error { margin: 14px 0 0; color: #c0392b; font-size: 13px; font-weight: 700; }
+.sf-count { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 7px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 12px; font-weight: 900; vertical-align: middle; }
+
+.sf-reel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 14px; }
+.sf-reel { border-radius: 14px; overflow: hidden; background: var(--panel); border: 1px solid var(--line); }
+.sf-reel-play { position: relative; display: block; width: 100%; padding: 0; border: 0; background: #111; cursor: pointer; aspect-ratio: 9/16; }
+.sf-reel-play video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sf-reel-badge { position: absolute; left: 10px; bottom: 10px; padding: 5px 10px; border-radius: 999px; background: rgba(0,0,0,.6); color: #fff; font-size: 11px; font-weight: 900; backdrop-filter: blur(4px); }
+.sf-reel-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 9px 11px; font-size: 12px; font-weight: 700; color: var(--muted); }
+.sf-reel-dl { color: var(--ink); font-weight: 800; }
+.sf-reel.is-making { position: relative; aspect-ratio: 9/16; display: grid; }
+.sf-reel.is-making img { width: 100%; height: 100%; object-fit: cover; filter: brightness(.5) saturate(.7); grid-area: 1/1; }
+.sf-reel-making { grid-area: 1/1; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center; color: #fff; font-size: 13px; font-weight: 800; padding: 10px; }
+.sf-reel-making small { color: rgba(255,255,255,.78); font-size: 11px; font-weight: 600; }
+.sf-spinner { width: 26px; height: 26px; border-radius: 999px; border: 3px solid rgba(255,255,255,.3); border-top-color: #fff; animation: sf-spin .8s linear infinite; }
+@keyframes sf-spin { to { transform: rotate(360deg); } }
+
+.sf-pick-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+.sf-pick { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.sf-pick-img { position: relative; }
+.sf-pick-img img { width: 100%; aspect-ratio: 3/4; object-fit: cover; object-position: center top; display: block; }
+.sf-pick-failed { position: absolute; top: 8px; left: 8px; padding: 3px 9px; border-radius: 999px; background: rgba(192,57,43,.92); color: #fff; font-size: 11px; font-weight: 800; }
+.sf-pick .look-video-btn { margin: 9px; width: calc(100% - 18px); }
+
+.sf-player-panel { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.sf-player-panel video { width: min(380px, 86vw); aspect-ratio: 9/16; max-height: 82vh; border-radius: 16px; background: #111; display: block; }
+.sf-player-dl { color: #fff; font-weight: 800; font-size: 14px; }
+
 .st-empty { border: 1px dashed var(--line2); border-radius: var(--r); background: var(--panel); padding: 46px 20px; text-align: center; }
 .st-empty .ic { font-size: 40px; }
 .st-empty p { color: var(--muted); margin: 10px 0 16px; }
