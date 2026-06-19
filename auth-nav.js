@@ -3,10 +3,12 @@
 (() => {
   const CACHE_KEY = 'kmodu-auth-nav-state';
   const STUDIO_PATH = '/dashboard/designer';
+  const KAKAO_CHANNEL_URL = '#contact';
 
   const ensureStudioQuickBanner = () => {
     if (window.location.pathname.startsWith(STUDIO_PATH)) {
       document.querySelector('.studio-quick-banner')?.remove();
+      document.querySelector('.kakao-quick-banner')?.remove();
       return;
     }
 
@@ -37,10 +39,21 @@
           backdrop-filter: blur(12px);
           transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
         }
+        .kakao-quick-banner {
+          top: calc(50% + 132px);
+          border-color: rgba(57, 40, 0, .14);
+          background: #fee500;
+          color: #191600;
+          box-shadow: 0 18px 44px rgba(57, 40, 0, .18);
+        }
         .studio-quick-banner:hover {
           transform: translateY(-50%) translateX(-2px);
           background: #050505;
           box-shadow: 0 22px 54px rgba(17, 24, 39, .3);
+        }
+        .kakao-quick-banner:hover {
+          background: #f7dc00;
+          box-shadow: 0 22px 54px rgba(57, 40, 0, .25);
         }
         .studio-quick-banner-mark {
           display: inline-flex;
@@ -55,6 +68,10 @@
           font-weight: 900;
           line-height: 1;
         }
+        .kakao-quick-banner .studio-quick-banner-mark {
+          background: #191600;
+          color: #fee500;
+        }
         .studio-quick-banner strong {
           display: block;
           color: #fff;
@@ -64,6 +81,9 @@
           letter-spacing: 0;
           text-align: center;
         }
+        .kakao-quick-banner strong {
+          color: #191600;
+        }
         .studio-quick-banner span:not(.studio-quick-banner-mark) {
           display: block;
           color: rgba(255, 255, 255, .72);
@@ -72,6 +92,9 @@
           line-height: 1;
           letter-spacing: .04em;
           text-transform: uppercase;
+        }
+        .kakao-quick-banner span:not(.studio-quick-banner-mark) {
+          color: rgba(25, 22, 0, .68);
         }
         @media (max-width: 760px) {
           .studio-quick-banner {
@@ -85,6 +108,9 @@
             flex-direction: row;
             gap: 9px;
             transform: none;
+          }
+          .kakao-quick-banner {
+            bottom: 24px;
           }
           .studio-quick-banner:hover {
             transform: translateY(-2px);
@@ -115,6 +141,17 @@
     banner.setAttribute('aria-label', '디자이너 스튜디오 바로가기');
     banner.innerHTML = '<span class="studio-quick-banner-mark">K</span><strong>디자이너<br>스튜디오</strong><span>Studio</span>';
     document.body.appendChild(banner);
+
+    const kakaoBanner = document.createElement('a');
+    kakaoBanner.className = 'studio-quick-banner kakao-quick-banner';
+    kakaoBanner.href = KAKAO_CHANNEL_URL;
+    kakaoBanner.setAttribute('aria-label', '카카오 문의하기');
+    kakaoBanner.innerHTML = '<span class="studio-quick-banner-mark">K</span><strong>카카오<br>문의</strong><span>Talk</span>';
+    if (/^https?:\/\//.test(KAKAO_CHANNEL_URL)) {
+      kakaoBanner.target = '_blank';
+      kakaoBanner.rel = 'noopener';
+    }
+    document.body.appendChild(kakaoBanner);
   };
 
   const computeTarget = (user, designer) => {
