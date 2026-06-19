@@ -23,7 +23,8 @@ function startVeoWorker(input: unknown) {
   const child = spawn(process.execPath, [workerPath, payload], {
     cwd: process.cwd(),
     detached: true,
-    stdio: "ignore",
+    // 워커의 stdout/stderr를 Railway 로그로 흘려보내 실패 원인을 확인할 수 있게 한다.
+    stdio: ["ignore", "inherit", "inherit"],
     env: process.env,
   });
   child.unref();
