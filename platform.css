@@ -3994,6 +3994,8 @@ body.sheet-open {
   display: grid;
   place-items: center;
   margin: 16px 16px 16px 0;
+  /* 상단보다 하단 여백을 크게 — 포스터 내부 여백이 위에 쏠려 있어 아래 공백을 더 줘야 균형이 맞음 */
+  padding: 48px 32px 96px;
   border: 1px solid rgba(5, 5, 5, .1);
   border-radius: 18px;
   background:
@@ -4016,12 +4018,11 @@ body.sheet-open {
 }
 
 .creator-sheet-visual img {
-  /* 패딩 대신 자연 크기 + max 크기 + 부모 place-items:center 로 상하좌우 여백을 균등하게.
-     (height:100%+패딩 방식은 포스터 내부 여백 탓에 아래가 도트와 붙어 보였음) */
+  /* 여백은 패널 패딩이 담당, 이미지는 그 안에서 자연 비율로 가운데 정렬 */
   width: auto;
   height: auto;
-  max-width: calc(100% - 72px);
-  max-height: calc(100% - 104px);
+  max-width: 100%;
+  max-height: 100%;
   display: block;
   object-fit: contain;
   filter: none;
@@ -4559,6 +4560,7 @@ body.dark-theme .mini-stats strong {
     height: 46dvh;
     min-height: 280px;
     margin: 16px 16px 0;
+    padding: 0;
     border-radius: 18px;
   }
 
