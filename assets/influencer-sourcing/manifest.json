@@ -1,0 +1,61 @@
+{
+  "updated_at": "2026-06-19T13:19:53",
+  "note": "Low-resolution originals are kept in low-res-backup. Source cards from PDF are kept in source-cards.",
+  "items": [
+    {
+      "file": "02-nora-lunia.jpg",
+      "source": "TikTok @noralunia 1080 avatar",
+      "bytes": 243664
+    },
+    {
+      "file": "03-irwan-shah.jpg",
+      "source": "TikTok @irwanshahtasara 1080 avatar",
+      "bytes": 232495
+    },
+    {
+      "file": "07-khalaf.jpg",
+      "source": "Instagram @nurkhalaf.z rendered media 640x1136",
+      "bytes": 38677
+    },
+    {
+      "file": "09-kitkat-nelfei.jpg",
+      "source": "TikTok @kitkat_nelfei 1080 avatar",
+      "bytes": 413793
+    },
+    {
+      "file": "14-alwaniraihan.jpg",
+      "source": "Instagram @alwaniraihan rendered media 640x1136",
+      "bytes": 57181
+    },
+    {
+      "file": "15-jenny-lim.jpg",
+      "source": "TikTok @jennita.zee 1080 avatar",
+      "bytes": 169930
+    },
+    {
+      "file": "16-keknanjudge.jpg",
+      "source": "TikTok @keknanjudge 1080 avatar",
+      "bytes": 156512
+    },
+    {
+      "file": "17-ekmal-suhaimi.jpg",
+      "source": "Instagram/TikTok verified handle media 640x1140",
+      "bytes": 266482
+    },
+    {
+      "file": "18-yaya-rose.jpg",
+      "source": "TikTok @yayaa.rose media 1186x1701",
+      "bytes": 243877
+    },
+    {
+      "file": "19-hans-hanis.jpg",
+      "source": "Instagram @hanshanis rendered media 540x960",
+      "bytes": 112742
+    },
+    {
+      "file": "20-syeira-ms.jpg",
+      "source": "PDF embedded profile crop, upscaled/sharpened; public IG/TikTok unavailable",
+      "bytes": 46171
+    }
+  ]
+}
