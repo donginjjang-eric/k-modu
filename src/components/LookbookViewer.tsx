@@ -27,7 +27,26 @@ type Props = {
   lookCount: number;
   qrDataUrl: string;
   pages: MagazinePage[];
+  lang?: "ko" | "en";
 };
+
+// 영어판 룩북은 화면 문구도 영어로 (해외 크리에이터·바이어용)
+const STRINGS = {
+  ko: {
+    print: "인쇄 · PDF",
+    productsTitle: "상품 인덱스",
+    backCopy: "이 브랜드가 마음에 드셨다면, K-MODU에서 바로 협업을 제안해보세요.",
+    cta: "이 브랜드와 협업 제안하기",
+    qr: "QR을 찍으면 이 룩북이 열려요",
+  },
+  en: {
+    print: "Print · PDF",
+    productsTitle: "Product Index",
+    backCopy: "Love this brand? Send a collaboration proposal right on K-MODU.",
+    cta: "Propose a Collaboration",
+    qr: "Scan to open this lookbook",
+  },
+} as const;
 
 function lookNo(item: MagazineItem) {
   return item.no ? `LOOK ${String(item.no).padStart(2, "0")}` : "";
@@ -41,7 +60,8 @@ function Media({ item, className }: { item: MagazineItem; className?: string }) 
 }
 
 export default function LookbookViewer(props: Props) {
-  const { brand, title, tagline, season, description, mood, designerId, coverImage, lookCount, qrDataUrl, pages } = props;
+  const { brand, title, tagline, season, description, mood, designerId, coverImage, lookCount, qrDataUrl, pages, lang = "ko" } = props;
+  const T = STRINGS[lang] || STRINGS.ko;
   const shellRef = useRef<HTMLDivElement | null>(null);
   const [current, setCurrent] = useState(0);
 
@@ -86,7 +106,7 @@ export default function LookbookViewer(props: Props) {
         <span className="lbm-ui-brand">{brand} — LOOKBOOK</span>
         <div className="lbm-ui-right">
           <span className="lbm-ui-count">{Math.min(current + 1, pages.length)} / {pages.length}</span>
-          <button type="button" onClick={() => window.print()}>인쇄 · PDF</button>
+          <button type="button" onClick={() => window.print()}>{T.print}</button>
         </div>
       </div>
       <div className="lbm-arrows">
@@ -166,7 +186,7 @@ export default function LookbookViewer(props: Props) {
             return (
               <section className="lbm-pg lbm-index" key={index}>
                 <p className="lbm-kicker dark">PRODUCTS</p>
-                <h2>상품 인덱스</h2>
+                <h2>{T.productsTitle}</h2>
                 <div className="lbm-index-grid">
                   {page.items.map((item, i) => (
                     <figure key={i}>
@@ -182,12 +202,12 @@ export default function LookbookViewer(props: Props) {
             <section className="lbm-pg lbm-back" key={index}>
               <p className="lbm-kicker dark">{brand}</p>
               <h2>WORK WITH US</h2>
-              <p className="lbm-back-copy">이 브랜드가 마음에 드셨다면, K-MODU에서 바로 협업을 제안해보세요.</p>
-              <a className="lbm-cta" href={`/designers?open=${designerId}`}>이 브랜드와 협업 제안하기</a>
+              <p className="lbm-back-copy">{T.backCopy}</p>
+              <a className="lbm-cta" href={`/designers?open=${designerId}`}>{T.cta}</a>
               {qrDataUrl ? (
                 <div className="lbm-qr">
                   <img src={qrDataUrl} alt="웹 룩북 QR 코드" />
-                  <span>QR을 찍으면 이 룩북이 열려요</span>
+                  <span>{T.qr}</span>
                 </div>
               ) : null}
               <a className="lbm-home" href="/">K-MODU — K-FASHION CREATOR MATCHING</a>

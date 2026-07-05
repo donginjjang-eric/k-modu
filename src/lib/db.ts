@@ -1189,6 +1189,8 @@ export async function createLookbookForDesigner(input: {
   title: string;
   tagline: string;
   items: LookbookItem[];
+  lang?: "ko" | "en";
+  intro?: string;
 }): Promise<Lookbook | null> {
   if (!hasDatabase()) {
     requireDatabaseForProduction();
@@ -1198,10 +1200,10 @@ export async function createLookbookForDesigner(input: {
   for (let attempt = 0; attempt < 3; attempt += 1) {
     try {
       return await one<Lookbook>(
-        `INSERT INTO lookbooks (designer_id, slug, title, tagline, items)
-         VALUES ($1, $2, $3, $4, $5::jsonb)
+        `INSERT INTO lookbooks (designer_id, slug, title, tagline, items, lang, intro)
+         VALUES ($1, $2, $3, $4, $5::jsonb, $6, $7)
          RETURNING *`,
-        [input.designerId, newLookbookSlug(), input.title, input.tagline, JSON.stringify(input.items)],
+        [input.designerId, newLookbookSlug(), input.title, input.tagline, JSON.stringify(input.items), input.lang || "ko", input.intro || ""],
       );
     } catch (error) {
       const message = error instanceof Error ? error.message : "";
@@ -1209,6 +1211,14 @@ export async function createLookbookForDesigner(input: {
     }
   }
   return null;
+}
+
+export async function getLookbookForDesigner(designerId: string, id: string): Promise<Lookbook | null> {
+  if (!hasDatabase()) return null;
+  return one<Lookbook>(
+    "SELECT * FROM lookbooks WHERE id = $2 AND designer_id = $1",
+    [designerId, id],
+  );
 }
 
 export async function getLookbooksForDesigner(designerId: string): Promise<Lookbook[]> {

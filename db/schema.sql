@@ -168,3 +168,7 @@ CREATE TABLE IF NOT EXISTS lookbooks (
 
 CREATE INDEX IF NOT EXISTS lookbooks_designer_idx
   ON lookbooks(designer_id, created_at DESC);
+
+-- 룩북 다국어: 언어 표시 + 룩북 전용 인트로(영어판 번역본 저장)
+ALTER TABLE lookbooks ADD COLUMN IF NOT EXISTS lang text NOT NULL DEFAULT 'ko';
+ALTER TABLE lookbooks ADD COLUMN IF NOT EXISTS intro text NOT NULL DEFAULT '';

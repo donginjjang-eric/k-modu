@@ -215,6 +215,41 @@ export default function LookbookManager({
     }
   };
 
+  // AI 캡션: 룩 이미지에 짧은 한국어 캡션을 자동으로 채운다
+  const [aiBusyId, setAiBusyId] = useState("");
+  const runAiCaptions = async (lookbook: Lookbook) => {
+    setAiBusyId(`${lookbook.id}:cap`);
+    setMessage(null);
+    try {
+      const response = await fetch(`/api/lookbooks/${lookbook.id}/ai-captions`, { method: "POST" });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.lookbook) throw new Error(result.error || "AI 캡션 생성에 실패했어요.");
+      setLookbooks((current) => current.map((entry) => (entry.id === lookbook.id ? result.lookbook : entry)));
+      setMessage({ text: "AI가 캡션을 채웠어요. '보기'에서 룩 아래 문구를 확인해보세요.", ok: true });
+    } catch (error) {
+      setMessage({ text: error instanceof Error ? error.message : "AI 캡션 생성에 실패했어요.", ok: false });
+    } finally {
+      setAiBusyId("");
+    }
+  };
+
+  // 영어판 만들기: 제목·문구·캡션·브랜드 소개를 번역한 새 영어 룩북 생성
+  const makeEnglish = async (lookbook: Lookbook) => {
+    setAiBusyId(`${lookbook.id}:en`);
+    setMessage(null);
+    try {
+      const response = await fetch(`/api/lookbooks/${lookbook.id}/translate`, { method: "POST" });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.lookbook) throw new Error(result.error || "영어판 생성에 실패했어요.");
+      setLookbooks((current) => [result.lookbook, ...current]);
+      setMessage({ text: "영어판 룩북이 만들어졌어요! 링크를 복사해 해외 크리에이터·바이어에게 보내보세요.", ok: true });
+    } catch (error) {
+      setMessage({ text: error instanceof Error ? error.message : "영어판 생성에 실패했어요.", ok: false });
+    } finally {
+      setAiBusyId("");
+    }
+  };
+
   const remove = async (lookbook: Lookbook) => {
     if (!window.confirm(`'${lookbook.title}' 룩북을 삭제할까요? 공유한 링크도 더 이상 열리지 않아요.`)) return;
     setBusyId(lookbook.id);
@@ -380,12 +415,33 @@ export default function LookbookManager({
                 ))}
               </div>
               <div className="lb-row-body">
-                <strong>{lookbook.title}</strong>
+                <strong>
+                  {lookbook.title}
+                  {lookbook.lang === "en" ? <em className="lb-lang">EN</em> : null}
+                </strong>
                 <p>{lookbook.items.length}장 · {formatDate(lookbook.created_at)}{lookbook.tagline ? ` · ${lookbook.tagline}` : ""}</p>
               </div>
               <div className="lb-row-actions">
                 <button type="button" onClick={() => copyLink(lookbook.slug)}>링크 복사</button>
                 <a href={`/lookbook/${lookbook.slug}`} target="_blank" rel="noreferrer">보기</a>
+                <button
+                  type="button"
+                  className="ai"
+                  disabled={aiBusyId === `${lookbook.id}:cap`}
+                  onClick={() => runAiCaptions(lookbook)}
+                >
+                  {aiBusyId === `${lookbook.id}:cap` ? "생성 중…" : "AI 캡션"}
+                </button>
+                {lookbook.lang !== "en" ? (
+                  <button
+                    type="button"
+                    className="ai"
+                    disabled={aiBusyId === `${lookbook.id}:en`}
+                    onClick={() => makeEnglish(lookbook)}
+                  >
+                    {aiBusyId === `${lookbook.id}:en` ? "번역 중…" : "영어판 만들기"}
+                  </button>
+                ) : null}
                 <button type="button" onClick={() => startEdit(lookbook)}>수정</button>
                 <button type="button" className="danger" disabled={busyId === lookbook.id} onClick={() => remove(lookbook)}>삭제</button>
               </div>

@@ -59,7 +59,8 @@ export default async function PublicLookbookPage({ params }: { params: Promise<{
     ? ""
     : `${created.getFullYear()}.${String(created.getMonth() + 1).padStart(2, "0")}`;
 
-  const description = lookbook.designer_description || "";
+  // 영어판은 룩북에 저장된 번역 인트로를 우선 사용
+  const description = lookbook.intro || lookbook.designer_description || "";
   const mood = lookbook.designer_mood || "";
   const { pages, coverImage, lookCount } = buildPages(lookbook.items, Boolean(description || mood));
 
@@ -84,6 +85,7 @@ export default async function PublicLookbookPage({ params }: { params: Promise<{
       lookCount={lookCount}
       qrDataUrl={qrDataUrl}
       pages={pages}
+      lang={lookbook.lang === "en" ? "en" : "ko"}
     />
   );
 }

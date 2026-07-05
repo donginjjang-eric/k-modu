@@ -119,6 +119,8 @@ export type Lookbook = {
   title: string;
   tagline: string;
   status: "published" | "hidden";
+  lang: "ko" | "en";
+  intro: string;
   items: LookbookItem[];
   created_at: string;
   updated_at: string;
