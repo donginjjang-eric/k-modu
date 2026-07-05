@@ -4,6 +4,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import NavIcon from "@/components/NavIcons";
 import { LAYOUT_COUNT, buildLookbookPages, extractLookLayouts, isLookPage } from "@/lib/lookbook-pages";
+import { isMeaninglessLabel } from "@/lib/lookbooks";
 import type { Lookbook, LookbookItem, LookbookLayout } from "@/lib/types";
 
 const PAGE_LABEL: Record<string, string> = {
@@ -20,6 +21,11 @@ type Assets = {
 type Tab = "look" | "portfolio" | "product";
 
 const TAB_LABEL: Record<Tab, string> = { look: "승인된 AI 룩", portfolio: "포트폴리오", product: "상품" };
+
+// 해시성 파일명은 캡션에서 숨긴다
+function cleanTitle(value: string) {
+  return isMeaninglessLabel(value) ? "" : value;
+}
 
 function formatDate(value: string) {
   const date = new Date(value);
@@ -79,7 +85,7 @@ export default function LookbookManager({
           body: JSON.stringify({
             imageUrl: uploadResult.imageUrl,
             imageHash: uploadResult.imageHash || null,
-            title: file.name.replace(/\.[^.]+$/, "").slice(0, 60),
+            title: cleanTitle(file.name.replace(/\.[^.]+$/, "").slice(0, 60)),
             kind: "lookbook",
           }),
         });
@@ -91,7 +97,7 @@ export default function LookbookManager({
         setItems((current) => (
           current.length >= 40
             ? current
-            : [...current, { type: "portfolio", refId: image.id, imageUrl: image.image_url, videoUrl: null, label: image.title || "", slot: "look" }]
+            : [...current, { type: "portfolio", refId: image.id, imageUrl: image.image_url, videoUrl: null, label: cleanTitle(image.title || ""), slot: "look" }]
         ));
         added += 1;
       } catch (error) {
@@ -121,8 +127,8 @@ export default function LookbookManager({
     if (activeTab === "portfolio") {
       return portfolioAssets.map((image) => ({
         key: `portfolio:${image.id}`,
-        item: { type: "portfolio" as const, refId: image.id, imageUrl: image.imageUrl, videoUrl: null, label: image.title },
-        caption: image.title,
+        item: { type: "portfolio" as const, refId: image.id, imageUrl: image.imageUrl, videoUrl: null, label: cleanTitle(image.title) },
+        caption: cleanTitle(image.title),
       }));
     }
     return assets.products.map((product) => ({

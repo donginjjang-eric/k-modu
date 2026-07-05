@@ -3,6 +3,7 @@
 // 브랜드 프로필 통합 화면: 왼쪽 편집(기본 정보·대표 사진·포트폴리오) ↔ 오른쪽 공개 카드 실시간 미리보기
 import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { isMeaninglessLabel } from "@/lib/lookbooks";
 import type { DesignerPortfolioImage } from "@/lib/types";
 
 const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
@@ -117,7 +118,7 @@ export default function BrandProfileStudio({ designer, initialImages, looksCount
       body: JSON.stringify({
         imageUrl: uploadResult.imageUrl,
         imageHash: uploadResult.imageHash || null,
-        title: file.name.replace(/\.[^.]+$/, "").slice(0, 60),
+        title: (() => { const stem = file.name.replace(/\.[^.]+$/, "").slice(0, 60); return isMeaninglessLabel(stem) ? "" : stem; })(),
         kind,
       }),
     });

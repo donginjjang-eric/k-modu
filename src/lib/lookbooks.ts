@@ -5,6 +5,11 @@ export const MAX_LOOKBOOK_ITEMS = 40;
 
 const SAFE_URL = /^(\/|https?:\/\/)/;
 
+// 해시성 파일명(공백·한글 없이 12자 이상) 판별 — 캡션으로 쓰기엔 의미가 없다
+export function isMeaninglessLabel(value: string) {
+  return Boolean(value) && !/[\s가-힣]/.test(value) && value.length >= 12;
+}
+
 export function sanitizeLookbookItems(raw: unknown): LookbookItem[] | null {
   if (!Array.isArray(raw) || raw.length === 0 || raw.length > MAX_LOOKBOOK_ITEMS) return null;
 
@@ -21,7 +26,8 @@ export function sanitizeLookbookItems(raw: unknown): LookbookItem[] | null {
     const videoUrl = typeof candidate.videoUrl === "string" && SAFE_URL.test(candidate.videoUrl.trim())
       ? candidate.videoUrl.trim()
       : null;
-    const label = typeof candidate.label === "string" ? candidate.label.trim().slice(0, 80) : "";
+    const rawLabel = typeof candidate.label === "string" ? candidate.label.trim().slice(0, 80) : "";
+    const label = isMeaninglessLabel(rawLabel) ? "" : rawLabel;
     const slot = candidate.slot === "look" || candidate.slot === "index" ? candidate.slot : undefined;
     items.push({ type, refId, imageUrl, videoUrl, label, ...(slot ? { slot } : {}) });
   }
