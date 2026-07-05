@@ -485,14 +485,37 @@
 .look-modal-info .row button:disabled { opacity: .45; cursor: not-allowed; }
 .look-modal { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 24px; }
 .look-modal-backdrop { position: absolute; inset: 0; border: 0; background: rgba(0,0,0,.66); }
-.look-modal-panel { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(260px, 520px) minmax(240px, 320px); max-width: min(920px, 94vw); max-height: 92vh; overflow: hidden; border-radius: 16px; background: var(--panel); }
-.look-modal-panel img { width: 100%; height: min(82vh, 720px); object-fit: contain; background: #111; }
+.look-modal-panel { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(340px, 1fr) minmax(280px, 340px); width: min(1240px, 96vw); max-height: 94vh; overflow: hidden; border-radius: 16px; background: var(--panel); }
+.look-modal-panel img { width: 100%; height: min(88vh, 960px); object-fit: contain; background: #111; }
 .look-modal-close { position: absolute; top: 12px; right: 12px; z-index: 2; min-height: 34px; padding: 0 12px; border: 1px solid var(--line2); border-radius: 999px; background: rgba(255,255,255,.92); font-weight: 900; }
-.look-modal-info { padding: 24px; align-self: center; }
+.look-modal-info { padding: 26px 24px; align-self: center; overflow-y: auto; max-height: 94vh; }
 .look-modal-info strong { display: block; font-size: 18px; }
 .look-modal-info p { color: var(--muted); line-height: 1.6; }
-.look-modal-info .row { display: flex; gap: 8px; margin-top: 18px; }
-.look-modal-panel video, .look-modal-media { width: 100%; height: min(82vh, 720px); object-fit: contain; background: #111; display: block; }
+.look-modal-info .row { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; }
+.look-modal-panel video, .look-modal-media { width: 100%; height: min(88vh, 960px); object-fit: contain; background: #111; display: block; }
+
+/* 공개 프로세스 안내 — 상태 칩 */
+.look-status-chip { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 900; font-style: normal; background: #f0ede6; color: #6b6559; }
+.look-status-chip.approved { background: #e7f4ec; color: #176b3d; }
+.look-status-chip.generated { background: #fdf3dd; color: #8a6410; }
+.look-status-chip.rejected { background: #fdeaea; color: #9f1f1f; }
+.look-modal-title { margin-top: 10px; font-size: 19px; line-height: 1.3; }
+
+/* 공개 프로세스 3단계 표시 */
+.look-flow { list-style: none; display: grid; gap: 7px; margin: 14px 0 12px; padding: 12px 14px; border: 1px solid var(--line2); border-radius: 12px; background: rgba(255,255,255,.6); }
+.look-flow li { display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 700; color: var(--muted); }
+.look-flow li .n { display: inline-grid; place-items: center; width: 20px; height: 20px; flex: none; border-radius: 50%; background: #e7e2d8; color: #8a8375; font-size: 11px; font-weight: 900; }
+.look-flow li.is-done { color: var(--ink); }
+.look-flow li.is-done .n { background: #111; color: #fff; }
+.look-flow li.is-active { color: #8a6410; }
+.look-flow li.is-active .n { background: #e7b34a; color: #1a1400; }
+.look-flow li.is-fail { color: #9f1f1f; }
+.look-flow li.is-fail .n { background: #9f1f1f; color: #fff; }
+.look-flow li small { margin-left: auto; font-size: 11px; font-weight: 800; }
+
+.look-modal-info .row .primary { border: 0; background: #111; color: #fff; min-height: 40px; font-size: 13px; }
+.look-public-link { display: flex; align-items: center; justify-content: center; min-height: 40px; border: 1.5px solid #111; border-radius: 10px; background: #111; color: #fff; font-weight: 800; font-size: 13px; text-decoration: none; }
+.look-cache-hint { margin-top: 12px; font-size: 12px !important; color: #a39b8b !important; }
 
 /* 룩별 숏폼 영상 생성 컨트롤 */
 .look-card-play { position: absolute; top: 10px; right: 10px; display: inline-flex; align-items: center; gap: 4px; padding: 4px 9px; border-radius: 999px; font-size: 11px; font-weight: 900; color: #111; background: rgba(255,255,255,.92); box-shadow: 0 6px 16px rgba(0,0,0,.18); }

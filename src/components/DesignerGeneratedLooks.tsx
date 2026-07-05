@@ -6,10 +6,22 @@ import NavIcon from "@/components/NavIcons";
 import type { GeneratedLook } from "@/lib/types";
 
 function getStatusLabel(status: GeneratedLook["status"]) {
-  if (status === "approved") return "관리자 승인";
+  if (status === "approved") return "공개 중";
   if (status === "hidden") return "비공개";
   if (status === "rejected") return "반려";
-  return "공개 요청";
+  return "검수 대기";
+}
+
+// 공개 프로세스 3단계 표시: 상태별로 각 단계의 완료/진행/실패를 계산
+function getFlowSteps(status: GeneratedLook["status"]) {
+  return [
+    { label: "공개 요청", state: status === "hidden" ? "next" : "done" },
+    {
+      label: "관리자 검수",
+      state: status === "generated" ? "active" : status === "approved" ? "done" : status === "rejected" ? "fail" : "todo",
+    },
+    { label: "공개 페이지 노출", state: status === "approved" ? "done" : "todo" },
+  ] as const;
 }
 
 export default function DesignerGeneratedLooks({ initialLooks, enabled = false }: { initialLooks: GeneratedLook[]; enabled?: boolean }) {
@@ -151,7 +163,7 @@ export default function DesignerGeneratedLooks({ initialLooks, enabled = false }
           <article className="look-card" key={look.id}>
             <button type="button" className="look-card-image" onClick={() => setActiveLook(look)}>
               <img src={look.image_url} alt="생성된 AI 룩" />
-              <span className={`badge ${look.status === "hidden" ? "priv" : "pub"}`}>{getStatusLabel(look.status)}</span>
+              <span className={`badge ${look.status === "hidden" || look.status === "rejected" ? "priv" : "pub"}`}>{getStatusLabel(look.status)}</span>
               {look.video_status === "completed" && look.video_url ? <span className="look-card-play"><NavIcon name="play" className="st-ico" /> 숏폼</span> : null}
             </button>
             <div className="look-card-body">
@@ -184,18 +196,64 @@ export default function DesignerGeneratedLooks({ initialLooks, enabled = false }
               <img src={activeLook.image_url} alt="생성된 AI 룩 크게 보기" />
             )}
             <div className="look-modal-info">
-              <strong>{getStatusLabel(activeLook.status)}</strong>
-              <p>이 조합은 같은 상품 선택 시 저장된 룩으로 다시 보여줄 수 있습니다.</p>
+              <em className={`look-status-chip ${activeLook.status}`}>{getStatusLabel(activeLook.status)}</em>
+              <strong className="look-modal-title">
+                {activeLook.status === "approved"
+                  ? "공개 페이지에 노출 중이에요"
+                  : activeLook.status === "generated"
+                    ? "관리자 검수를 기다리고 있어요"
+                    : activeLook.status === "rejected"
+                      ? "이번 룩은 반려됐어요"
+                      : "아직 나만 볼 수 있는 룩이에요"}
+              </strong>
+
+              <ol className="look-flow" aria-label="공개 진행 단계">
+                {getFlowSteps(activeLook.status).map((step, index) => (
+                  <li key={step.label} className={`is-${step.state}`}>
+                    <span className="n">{step.state === "done" ? "✓" : step.state === "fail" ? "!" : index + 1}</span>
+                    {step.label}
+                    {step.state === "active" ? <small>진행 중</small> : null}
+                    {step.state === "fail" ? <small>반려됨</small> : null}
+                  </li>
+                ))}
+              </ol>
+
+              <p>
+                {activeLook.status === "approved"
+                  ? "크리에이터가 보는 공개 페이지에 이 룩이 노출되고 있어요."
+                  : activeLook.status === "generated"
+                    ? "승인이 끝나면 자동으로 공개 페이지에 올라가요. 따로 하실 일은 없어요."
+                    : activeLook.status === "rejected"
+                      ? "관리자 검수에서 반려됐어요. 다른 상품 조합이나 프롬프트로 새 룩을 만들어 다시 요청해보세요."
+                      : "공개 요청을 누르면 관리자 검수 후, 크리에이터가 보는 공개 페이지에 노출돼요."}
+              </p>
+
               <div className="look-video-cta">{videoControl(activeLook, true)}</div>
               {videoError ? <p className="look-video-err">{videoError}</p> : null}
+
               <div className="row">
-                <button type="button" disabled={savingId === activeLook.id} onClick={() => updateStatus(activeLook, "generated")}>
-                  공개 요청
-                </button>
-                <button type="button" disabled={savingId === activeLook.id} onClick={() => updateStatus(activeLook, "hidden")}>
-                  비공개
-                </button>
+                {activeLook.status === "hidden" || activeLook.status === "rejected" ? (
+                  <button type="button" className="primary" disabled={savingId === activeLook.id} onClick={() => updateStatus(activeLook, "generated")}>
+                    {activeLook.status === "rejected" ? "다시 공개 요청하기" : "공개 요청하기"}
+                  </button>
+                ) : null}
+                {activeLook.status === "generated" ? (
+                  <button type="button" disabled={savingId === activeLook.id} onClick={() => updateStatus(activeLook, "hidden")}>
+                    요청 취소 (비공개로)
+                  </button>
+                ) : null}
+                {activeLook.status === "approved" ? (
+                  <>
+                    <a className="look-public-link" href={`/designers?open=${activeLook.designer_id}`} target="_blank" rel="noreferrer">
+                      공개 페이지에서 보기
+                    </a>
+                    <button type="button" disabled={savingId === activeLook.id} onClick={() => updateStatus(activeLook, "hidden")}>
+                      비공개로 전환
+                    </button>
+                  </>
+                ) : null}
               </div>
+              <p className="look-cache-hint">같은 상품 조합을 다시 선택하면 이 룩을 재사용해요.</p>
             </div>
           </div>
         </div>
