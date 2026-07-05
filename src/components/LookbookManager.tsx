@@ -116,6 +116,25 @@ export default function LookbookManager({
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  // 포트폴리오 사진 삭제: 올린 자리에서 바로 지운다 (브랜드 프로필·공개 화면에서도 내려감)
+  const [deletingAssetId, setDeletingAssetId] = useState("");
+  const deletePortfolioAsset = async (id: string) => {
+    if (!window.confirm("이 사진을 포트폴리오에서 지울까요? 브랜드 프로필·공개 화면에서도 내려가요.\n(이미 게시한 룩북 속 사진은 그대로 유지돼요)")) return;
+    setDeletingAssetId(id);
+    try {
+      const response = await fetch(`/api/designer/portfolio/${id}`, { method: "DELETE" });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || result.ok === false) throw new Error(result.error || "삭제에 실패했어요.");
+      setPortfolioAssets((current) => current.filter((image) => image.id !== id));
+      setItems((current) => current.filter((item) => !(item.type === "portfolio" && item.refId === id)));
+      setMessage({ text: "사진을 지웠어요.", ok: true });
+    } catch (error) {
+      setMessage({ text: error instanceof Error ? error.message : "삭제에 실패했어요.", ok: false });
+    } finally {
+      setDeletingAssetId("");
+    }
+  };
+
   const tabAssets = useMemo(() => {
     if (activeTab === "look") {
       return assets.looks.map((look) => ({
@@ -407,17 +426,29 @@ export default function LookbookManager({
               {tabAssets.map(({ key, item, caption }) => {
                 const order = selectedOrder[key];
                 return (
-                  <button
-                    key={key}
-                    type="button"
-                    className={`lb-asset${order ? " is-selected" : ""}`}
-                    onClick={() => toggleItem(item)}
-                    aria-pressed={Boolean(order)}
-                  >
-                    <img src={item.imageUrl} alt={caption || "자산 이미지"} loading="lazy" />
-                    {order ? <span className="lb-order">{order}</span> : null}
-                    {caption ? <small>{caption}</small> : null}
-                  </button>
+                  <div key={key} className={`lb-asset${order ? " is-selected" : ""}`}>
+                    <button
+                      type="button"
+                      className="lb-asset-main"
+                      onClick={() => toggleItem(item)}
+                      aria-pressed={Boolean(order)}
+                    >
+                      <img src={item.imageUrl} alt={caption || "자산 이미지"} loading="lazy" />
+                      {order ? <span className="lb-order">{order}</span> : null}
+                      {caption ? <small>{caption}</small> : null}
+                    </button>
+                    {activeTab === "portfolio" ? (
+                      <button
+                        type="button"
+                        className="lb-asset-del"
+                        aria-label="포트폴리오에서 이 사진 삭제"
+                        disabled={deletingAssetId === item.refId}
+                        onClick={() => deletePortfolioAsset(item.refId)}
+                      >
+                        ✕
+                      </button>
+                    ) : null}
+                  </div>
                 );
               })}
             </div>
