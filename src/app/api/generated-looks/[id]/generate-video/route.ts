@@ -50,7 +50,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   // 오픈 전: 친절 안내 (SHORTFORM_ENABLED=true 로 오픈)
   if (process.env.SHORTFORM_ENABLED !== "true") {
     return Response.json(
-      { ok: false, comingSoon: true, error: "숏폼 영상 생성은 6월 말 오픈 예정이에요. 조금만 기다려 주세요!" },
+      { ok: false, comingSoon: true, error: "숏폼 영상 생성은 7월 말 오픈 예정이에요. 조금만 기다려 주세요!" },
       { status: 403 },
     );
   }

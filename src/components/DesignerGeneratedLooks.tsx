@@ -229,7 +229,7 @@ export default function DesignerGeneratedLooks({ initialLooks, enabled = false }
           <button type="button" className="look-modal-backdrop" onClick={() => setComingSoon(false)} />
           <div className="look-notice-panel">
             <h3><NavIcon name="video" className="st-ico" /> 숏폼 영상, 곧 만나요!</h3>
-            <p>숏폼 영상 생성 기능은 <b>6월 말 오픈 예정</b>이에요. 막바지 준비 중이라 조금만 기다려 주세요</p>
+            <p>숏폼 영상 생성 기능은 <b>7월 말 오픈 예정</b>이에요. 막바지 준비 중이라 조금만 기다려 주세요</p>
             <p style={{ marginTop: 10 }}>지금 만들어 둔 룩은 오픈하자마자 바로 영상으로 만들 수 있어요.</p>
             <div className="look-notice-actions">
               <button type="button" className="primary" onClick={() => setComingSoon(false)}>확인</button>
