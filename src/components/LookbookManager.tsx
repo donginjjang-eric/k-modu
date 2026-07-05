@@ -91,7 +91,7 @@ export default function LookbookManager({
         setItems((current) => (
           current.length >= 40
             ? current
-            : [...current, { type: "portfolio", refId: image.id, imageUrl: image.image_url, videoUrl: null, label: image.title || "" }]
+            : [...current, { type: "portfolio", refId: image.id, imageUrl: image.image_url, videoUrl: null, label: image.title || "", slot: "look" }]
         ));
         added += 1;
       } catch (error) {
@@ -160,6 +160,11 @@ export default function LookbookManager({
     current[lookPageOrder] = kind;
     setLayouts(current);
     setPickSlotIdx(null);
+    // 페이지가 합쳐지거나 늘어나도 지금 편집하던 룩 페이지가 계속 선택되게 보정
+    const preview = buildLookbookPages(items, { hasIntro, layouts: current });
+    let lookSeen = -1;
+    const nextIndex = preview.pages.findIndex((page) => (isLookPage(page.kind) ? ++lookSeen === lookPageOrder : false));
+    setSelectedPageIdx(nextIndex >= 0 ? nextIndex : null);
   };
 
   const removeAt = (globalIndex: number) => {
@@ -168,19 +173,19 @@ export default function LookbookManager({
   };
 
   const toggleItem = (item: LookbookItem) => {
-    // 슬롯 교체 모드: 자산을 누르면 그 자리에 사진이 들어간다 (이미 담긴 사진이면 자리 맞교환)
+    // 슬롯 교체 모드: 어떤 종류의 사진이든 그 자리(역할)를 물려받아 들어간다 — 상품 사진도 룩 페이지 배치 가능
     if (pickSlotIdx !== null) {
       setItems((current) => {
         if (pickSlotIdx >= current.length) return current;
-        const next = [...current];
-        const existing = next.findIndex((entry) => itemKey(entry) === itemKey(item));
-        if (existing === pickSlotIdx) return current;
-        if (existing >= 0) {
-          [next[pickSlotIdx], next[existing]] = [next[existing], next[pickSlotIdx]];
-        } else {
-          next[pickSlotIdx] = item;
-        }
-        return next;
+        const target = current[pickSlotIdx];
+        if (itemKey(target) === itemKey(item)) return current;
+        const targetRole: "look" | "index" = target.slot === "look" || target.slot === "index"
+          ? target.slot
+          : target.type === "product" ? "index" : "look";
+        const placed: LookbookItem = { ...item, slot: targetRole };
+        const next = current.map((entry, index) => (index === pickSlotIdx ? placed : entry));
+        // 같은 사진이 다른 자리에도 있으면 그 자리는 비운다 (한 룩북에 같은 사진 1번)
+        return next.filter((entry, index) => index === pickSlotIdx || itemKey(entry) !== itemKey(placed));
       });
       setPickSlotIdx(null);
       setMessage({ text: "사진을 바꿨어요. 페이지 미리보기에서 확인해보세요.", ok: true });
@@ -193,7 +198,8 @@ export default function LookbookManager({
         setMessage({ text: "룩북에는 최대 40장까지 넣을 수 있어요.", ok: false });
         return current;
       }
-      return [...current, item];
+      // 담을 때 기본 자리: 상품은 상품 인덱스, 나머지는 룩 페이지
+      return [...current, { ...item, slot: item.type === "product" ? "index" as const : "look" as const }];
     });
   };
 
@@ -446,24 +452,44 @@ export default function LookbookManager({
                   {isLookPage(selectedPage.kind) ? (
                     <>
                       <p className="lbpe-head">레이아웃 고르기</p>
-                      <div className="lbpe-presets">
-                        {(Object.keys(LAYOUT_LABEL) as LookbookLayout[]).map((kind) => {
-                          const lookOrder = built.pages.slice(0, selectedPageIdx!).filter((page) => isLookPage(page.kind)).length;
-                          return (
-                            <button
-                              key={kind}
-                              type="button"
-                              className={selectedPage.kind === kind ? "is-active" : ""}
-                              onClick={() => changeLayout(lookOrder, kind)}
-                            >
-                              <span className={`lbpe-glyph g-${kind}`} aria-hidden="true">
-                                {Array.from({ length: LAYOUT_COUNT[kind] }).map((_, i) => <i key={i} />)}
-                              </span>
-                              {LAYOUT_LABEL[kind]}
-                            </button>
-                          );
-                        })}
-                      </div>
+                      {(() => {
+                        const lookOrder = built.pages.slice(0, selectedPageIdx!).filter((page) => isLookPage(page.kind)).length;
+                        // 이 페이지부터 끝까지 남은 룩 사진 수 — 그보다 큰 배치는 비활성
+                        const remainingPhotos = built.pages
+                          .filter((page) => isLookPage(page.kind))
+                          .slice(lookOrder)
+                          .reduce((sum, page) => sum + page.itemIndexes.length, 0);
+                        return (
+                          <>
+                            <div className="lbpe-presets">
+                              {(Object.keys(LAYOUT_LABEL) as LookbookLayout[]).map((kind) => {
+                                const disabled = LAYOUT_COUNT[kind] > remainingPhotos;
+                                return (
+                                  <button
+                                    key={kind}
+                                    type="button"
+                                    className={selectedPage.kind === kind ? "is-active" : ""}
+                                    disabled={disabled}
+                                    title={disabled ? `사진이 ${LAYOUT_COUNT[kind]}장 이상 필요해요` : undefined}
+                                    onClick={() => changeLayout(lookOrder, kind)}
+                                  >
+                                    <span className={`lbpe-glyph g-${kind}`} aria-hidden="true">
+                                      {Array.from({ length: LAYOUT_COUNT[kind] }).map((_, i) => <i key={i} />)}
+                                    </span>
+                                    {LAYOUT_LABEL[kind]}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                            {remainingPhotos < 4 ? (
+                              <p className="lbpe-note" style={{ marginBottom: 14 }}>
+                                이 페이지부터 쓸 수 있는 룩 사진이 {remainingPhotos}장이라 큰 배치는 잠겨 있어요.
+                                사진을 더 담거나, 상품 사진을 슬롯에 지정하면 룩 페이지에도 쓸 수 있어요.
+                              </p>
+                            ) : null}
+                          </>
+                        );
+                      })()}
                       <p className="lbpe-head">사진 바꾸기 — 자리를 누른 뒤, 아래 사진 목록에서 넣을 사진을 누르세요</p>
                       <div className="lbpe-slots">
                         {selectedPage.itemIndexes.map((globalIndex) => (

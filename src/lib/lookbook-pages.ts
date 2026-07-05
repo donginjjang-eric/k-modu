@@ -26,7 +26,11 @@ export function buildLookbookPages(
   const visualIndexes: number[] = [];
   const productIndexes: number[] = [];
   items.forEach((item, index) => {
-    if (item.type === "product") productIndexes.push(index);
+    // 디자이너가 놓은 자리(slot)가 우선 — 상품 사진도 룩 페이지에 배치할 수 있다
+    const role = item.slot === "look" || item.slot === "index"
+      ? item.slot
+      : item.type === "product" ? "index" : "look";
+    if (role === "index") productIndexes.push(index);
     else visualIndexes.push(index);
   });
 

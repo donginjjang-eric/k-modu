@@ -22,7 +22,8 @@ export function sanitizeLookbookItems(raw: unknown): LookbookItem[] | null {
       ? candidate.videoUrl.trim()
       : null;
     const label = typeof candidate.label === "string" ? candidate.label.trim().slice(0, 80) : "";
-    items.push({ type, refId, imageUrl, videoUrl, label });
+    const slot = candidate.slot === "look" || candidate.slot === "index" ? candidate.slot : undefined;
+    items.push({ type, refId, imageUrl, videoUrl, label, ...(slot ? { slot } : {}) });
   }
   return items;
 }

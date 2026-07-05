@@ -113,6 +113,8 @@ export type LookbookItem = {
   imageUrl: string;
   videoUrl?: string | null;
   label?: string;
+  // 배치 역할 — 디자이너가 놓은 자리 기준 (없으면 type으로 추정: product→index, 그 외→look)
+  slot?: "look" | "index";
 };
 
 export type Lookbook = {
