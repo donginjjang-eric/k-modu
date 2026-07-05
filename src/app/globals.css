@@ -237,6 +237,30 @@ p {
   font-weight: 700;
 }
 
+/* 생성 대기 진행 바 — 시간 기준으로 차오르며 완료를 기다리는 동안 93%에서 멈춘다 */
+.tryon-progress {
+  width: min(260px, 72%);
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  overflow: hidden;
+}
+
+.tryon-progress i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: #fff;
+  transition: width 1s linear;
+}
+
+.tryon-free-hint {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.78);
+}
+
 @keyframes tryon-spin {
   to {
     transform: rotate(360deg);

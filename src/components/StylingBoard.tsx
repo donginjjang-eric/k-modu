@@ -1,8 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import DraggableTabs from "./DraggableTabs";
 import { STYLING_PRODUCT_CATEGORY_LIMITS, groupStylingProductCategory } from "@/lib/product-selection-rules";
+
+// 페이지를 벗어나도 생성을 이어 확인할 수 있게 진행 중 생성 키를 탭 세션에 기억
+const PENDING_TRYON_KEY = "kmodu-tryon-pending";
+// 보통 1~3분 걸리므로 진행 바는 150초 기준으로 차오르게 하고 93%에서 완료를 기다린다
+const TYPICAL_SECONDS = 150;
 
 type Designer = {
   brandName: string;
@@ -56,6 +61,69 @@ export default function StylingBoard({
   // 디자이너가 입력하는 스타일링 프롬프트 (비우면 브랜드 무드 기본값)
   const [prompt, setPrompt] = useState("");
   const [modal, setModal] = useState<{ title: string; message: string; tone?: "success" | "warning" | "error" } | null>(null);
+  // 생성 대기 UX: 경과 시간(초) 카운트 + 완료 시 원래 탭 제목 복원용
+  const [elapsed, setElapsed] = useState(0);
+  const titleRef = useRef("");
+
+  // 생성 중에만 1초 간격으로 경과 시간 증가 (진행 바·경과 표시)
+  useEffect(() => {
+    if (!isGenerating) return;
+    const timer = window.setInterval(() => setElapsed((s) => s + 1), 1000);
+    return () => window.clearInterval(timer);
+  }, [isGenerating]);
+
+  const formatElapsed = (s: number) => (s < 60 ? `${s}초` : `${Math.floor(s / 60)}분 ${String(s % 60).padStart(2, "0")}초`);
+  const progressPct = Math.min(93, Math.round((elapsed / TYPICAL_SECONDS) * 100));
+
+  // 생성 시작 시: 경과 초기화 + 탭 제목 변경 + 완료 알림 권한 요청(한 번만)
+  const beginWaitUx = () => {
+    setElapsed(0);
+    titleRef.current = document.title;
+    document.title = "⏳ AI 룩 생성 중 — K-MODU";
+    try {
+      if (typeof Notification !== "undefined" && Notification.permission === "default") {
+        Notification.requestPermission().catch(() => {});
+      }
+    } catch { /* 알림 미지원 브라우저는 무시 */ }
+  };
+
+  // 완료 차임: 파일 없이 브라우저 오디오로 짧은 딩동
+  const playChime = () => {
+    try {
+      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const ctx = new AudioCtx();
+      [[660, 0], [880, 0.18]].forEach(([freq, delay]) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.001, ctx.currentTime + delay);
+        gain.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + delay + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.5);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(ctx.currentTime + delay);
+        osc.stop(ctx.currentTime + delay + 0.55);
+      });
+    } catch { /* 소리 재생이 막혀 있어도 기능에는 지장 없음 */ }
+  };
+
+  // 완료 처리(직접 생성·이어보기 공용): 결과 표시 + 소리·탭 제목·브라우저 알림
+  const finishSuccess = (finalResult: { imageUrl: string; cacheHit?: boolean }) => {
+    try { sessionStorage.removeItem(PENDING_TRYON_KEY); } catch { /* 무시 */ }
+    setPreviewImage(finalResult.imageUrl);
+    setResultLabel(finalResult.cacheHit ? "저장된 룩" : "새 AI 룩");
+    const doneMessage = finalResult.cacheHit ? "저장된 AI 룩을 불러왔습니다." : "AI 룩 이미지가 생성되었습니다.";
+    setStatusText(doneMessage);
+    setModal({ title: "AI 룩 준비 완료", message: doneMessage, tone: "success" });
+    document.title = "✅ AI 룩 완성 — K-MODU";
+    window.setTimeout(() => { document.title = titleRef.current || "K-MODU"; }, 10000);
+    playChime();
+    try {
+      if (typeof Notification !== "undefined" && Notification.permission === "granted" && document.hidden) {
+        new Notification("AI 룩이 완성됐어요!", { body: "탭을 열어 결과를 확인해보세요." });
+      }
+    } catch { /* 알림 실패는 무시 */ }
+  };
 
   const groupProductCategory = groupStylingProductCategory;
 
@@ -126,17 +194,58 @@ export default function StylingBoard({
       }
       if (result?.status === "completed" && result.imageUrl) return result;
 
-      setStatusText(`AI 룩 생성 중입니다. 완료되면 자동으로 표시됩니다. (${attempt + 1}/48)`);
+      setStatusText("AI 룩 생성 중 — 완료되면 자동으로 표시돼요. 다른 탭을 보고 계셔도 소리와 알림으로 알려드려요.");
     }
 
     throw new Error("AI 생성이 오래 걸리고 있습니다. 잠시 후 내가 만든 룩 목록을 새로고침해 확인해주세요.");
   };
 
+  // 생성 도중 페이지를 떠났다가 돌아온 경우: 진행 중이던 생성을 이어서 확인
+  useEffect(() => {
+    let cancelled = false;
+    let pendingKey = "";
+    try {
+      const raw = sessionStorage.getItem(PENDING_TRYON_KEY);
+      if (!raw) return;
+      const pending = JSON.parse(raw) as { cacheKey?: string; startedAt?: number };
+      if (!pending.cacheKey || !pending.startedAt || Date.now() - pending.startedAt > 15 * 60 * 1000) {
+        sessionStorage.removeItem(PENDING_TRYON_KEY);
+        return;
+      }
+      pendingKey = pending.cacheKey;
+      setIsGenerating(true);
+      beginWaitUx();
+      setElapsed(Math.max(0, Math.floor((Date.now() - pending.startedAt) / 1000)));
+      setStatusText("진행 중이던 AI 룩 생성을 이어서 확인하고 있어요.");
+    } catch {
+      return;
+    }
+
+    pollGeneratedLook(pendingKey)
+      .then((finalResult) => {
+        if (!cancelled && finalResult?.imageUrl) finishSuccess(finalResult);
+      })
+      .catch((error) => {
+        if (cancelled) return;
+        try { sessionStorage.removeItem(PENDING_TRYON_KEY); } catch { /* 무시 */ }
+        const errorMessage = error instanceof Error ? error.message : "AI 룩 생성 확인에 실패했습니다.";
+        setStatusText(errorMessage);
+        document.title = titleRef.current || document.title;
+      })
+      .finally(() => {
+        if (!cancelled) setIsGenerating(false);
+      });
+
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const generateLook = async () => {
     if (selectedProductIds.length < minAiProducts || selectedProductIds.length > maxAiProducts || isGenerating) return;
 
     setIsGenerating(true);
-    const startMessage = "AI 룩 생성 중입니다. 보통 1~3분 정도 걸립니다.";
+    beginWaitUx();
+    const startMessage = "AI 룩 생성 중입니다. 보통 1~3분 정도 걸려요. 기다리는 동안 다른 탭을 보셔도 완료되면 알려드려요.";
     setStatusText(startMessage);
     setModal({ title: "AI 룩 생성을 시작했습니다", message: startMessage, tone: "success" });
     setResultLabel("");
@@ -161,18 +270,20 @@ export default function StylingBoard({
       if (!response.ok) {
         throw new Error(result?.error || `AI 생성 서버 응답 오류 (${response.status}). 잠시 후 상품 1~4개로 다시 시도해주세요.`);
       }
-      const finalResult = result?.status === "processing" && result.cacheKey
-        ? await pollGeneratedLook(result.cacheKey)
-        : result;
+      let finalResult = result;
+      if (result?.status === "processing" && result.cacheKey) {
+        // 페이지를 떠났다 돌아와도 이어서 확인할 수 있게 진행 키 저장
+        try {
+          sessionStorage.setItem(PENDING_TRYON_KEY, JSON.stringify({ cacheKey: result.cacheKey, startedAt: Date.now() }));
+        } catch { /* 저장 실패해도 생성에는 지장 없음 */ }
+        finalResult = await pollGeneratedLook(result.cacheKey);
+      }
 
       if (!finalResult?.imageUrl) throw new Error("AI 생성 결과 이미지가 없습니다.");
-
-      setPreviewImage(finalResult.imageUrl);
-      setResultLabel(finalResult.cacheHit ? "저장된 룩" : "새 AI 룩");
-      const doneMessage = finalResult.cacheHit ? "저장된 AI 룩을 불러왔습니다." : "AI 룩 이미지가 생성되었습니다.";
-      setStatusText(doneMessage);
-      setModal({ title: "AI 룩 준비 완료", message: doneMessage, tone: "success" });
+      finishSuccess(finalResult);
     } catch (error) {
+      try { sessionStorage.removeItem(PENDING_TRYON_KEY); } catch { /* 무시 */ }
+      document.title = titleRef.current || document.title;
       const errorMessage = error instanceof Error ? error.message : "AI 룩 생성에 실패했습니다.";
       setStatusText(errorMessage);
       setModal({ title: "AI 생성 실패", message: errorMessage, tone: "error" });
@@ -187,8 +298,14 @@ export default function StylingBoard({
         <img src={previewImage} alt={`${designer.brandName} AI 룩 미리보기`} />
         {isGenerating ? (
           <div className="tryon-loading-overlay">
-            <strong>AI 룩 생성</strong>
-            <span>AI 룩을 생성 중입니다. 보통 1~3분 정도 걸립니다.</span>
+            <strong>AI 룩 생성 중</strong>
+            <span>보통 1~3분 · {formatElapsed(elapsed)} 경과</span>
+            <div className="tryon-progress" aria-hidden="true"><i style={{ width: `${progressPct}%` }} /></div>
+            <span className="tryon-free-hint">
+              기다리지 않으셔도 돼요 — 다른 탭을 보고 계셔도<br />
+              완료되면 소리와 알림으로 알려드려요.<br />
+              이 화면을 벗어나도 생성은 계속되고, 돌아오면 이어서 표시됩니다.
+            </span>
           </div>
         ) : null}
       </div>
