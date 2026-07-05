@@ -1,7 +1,7 @@
 "use client";
 
-// 룩북 편집기: 승인 자산 선택 → 순서 조정 → 게시(공개 링크 발급) + 내 룩북 목록 관리
-import { useMemo, useState } from "react";
+// 룩북 편집기: 사진 업로드/승인 자산 선택 → 순서 조정 → 게시(공개 링크 발급) + 내 룩북 목록 관리
+import { useMemo, useRef, useState } from "react";
 import NavIcon from "@/components/NavIcons";
 import type { Lookbook, LookbookItem } from "@/lib/types";
 
@@ -40,6 +40,67 @@ export default function LookbookManager({
   const [busyId, setBusyId] = useState("");
   const [message, setMessage] = useState<{ text: string; ok: boolean } | null>(null);
   const [publishedSlug, setPublishedSlug] = useState<string | null>(null);
+  // 내 사진 올리기: 업로드한 사진은 포트폴리오 자산으로 저장되고 구성에 바로 추가된다
+  const [portfolioAssets, setPortfolioAssets] = useState(assets.portfolio);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const uploadPhotos = async (files: FileList | null) => {
+    if (!files || !files.length) return;
+    const imageFiles = Array.from(files).filter((file) => file.type.startsWith("image/")).slice(0, 12);
+    if (!imageFiles.length) {
+      setMessage({ text: "이미지 파일만 올릴 수 있어요. (JPG·PNG·WEBP)", ok: false });
+      return;
+    }
+    setUploading(true);
+    setMessage(null);
+    let added = 0;
+    const failed: string[] = [];
+    for (const file of imageFiles) {
+      try {
+        // 1) 파일 업로드 → 2) 포트폴리오(룩북 종류)로 등록 → 3) 구성에 자동 추가
+        const body = new FormData();
+        body.append("image", file);
+        const uploadRes = await fetch("/api/uploads/portfolio-image", { method: "POST", body });
+        const uploadResult = await uploadRes.json().catch(() => ({}));
+        if (!uploadRes.ok || !uploadResult.imageUrl) throw new Error(uploadResult.error || "업로드 실패");
+
+        const registerRes = await fetch("/api/designer/portfolio", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            imageUrl: uploadResult.imageUrl,
+            imageHash: uploadResult.imageHash || null,
+            title: file.name.replace(/\.[^.]+$/, "").slice(0, 60),
+            kind: "lookbook",
+          }),
+        });
+        const registerResult = await registerRes.json().catch(() => ({}));
+        if (!registerRes.ok || !registerResult.image) throw new Error(registerResult.error || "등록 실패");
+
+        const image = registerResult.image as { id: string; image_url: string; title: string | null };
+        setPortfolioAssets((current) => [{ id: image.id, imageUrl: image.image_url, title: image.title || "" }, ...current]);
+        setItems((current) => (
+          current.length >= 40
+            ? current
+            : [...current, { type: "portfolio", refId: image.id, imageUrl: image.image_url, videoUrl: null, label: image.title || "" }]
+        ));
+        added += 1;
+      } catch (error) {
+        failed.push(`${file.name}${error instanceof Error ? ` (${error.message})` : ""}`);
+      }
+    }
+    setUploading(false);
+    setActiveTab("portfolio");
+    if (added && !failed.length) {
+      setMessage({ text: `사진 ${added}장이 올라가고 구성에 바로 담겼어요. 순서만 정하고 게시하면 끝!`, ok: true });
+    } else if (added) {
+      setMessage({ text: `${added}장 추가 완료. 실패: ${failed.join(", ")}`, ok: true });
+    } else {
+      setMessage({ text: `업로드에 실패했어요: ${failed.join(", ")}`, ok: false });
+    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   const tabAssets = useMemo(() => {
     if (activeTab === "look") {
@@ -50,7 +111,7 @@ export default function LookbookManager({
       }));
     }
     if (activeTab === "portfolio") {
-      return assets.portfolio.map((image) => ({
+      return portfolioAssets.map((image) => ({
         key: `portfolio:${image.id}`,
         item: { type: "portfolio" as const, refId: image.id, imageUrl: image.imageUrl, videoUrl: null, label: image.title },
         caption: image.title,
@@ -61,7 +122,7 @@ export default function LookbookManager({
       item: { type: "product" as const, refId: product.id, imageUrl: product.imageUrl, videoUrl: null, label: product.name },
       caption: product.name,
     }));
-  }, [activeTab, assets]);
+  }, [activeTab, assets, portfolioAssets]);
 
   const itemKey = (item: LookbookItem) => `${item.type}:${item.refId}`;
   const selectedOrder = useMemo(() => {
@@ -172,7 +233,7 @@ export default function LookbookManager({
     }
   };
 
-  const totalAssets = assets.looks.length + assets.portfolio.length + assets.products.length;
+  const totalAssets = assets.looks.length + portfolioAssets.length + assets.products.length;
 
   return (
     <>
@@ -211,7 +272,7 @@ export default function LookbookManager({
 
           <div className="lb-tabs" role="tablist" aria-label="자산 종류">
             {(Object.keys(TAB_LABEL) as Tab[]).map((tab) => {
-              const count = tab === "look" ? assets.looks.length : tab === "portfolio" ? assets.portfolio.length : assets.products.length;
+              const count = tab === "look" ? assets.looks.length : tab === "portfolio" ? portfolioAssets.length : assets.products.length;
               return (
                 <button
                   key={tab}
@@ -225,7 +286,24 @@ export default function LookbookManager({
                 </button>
               );
             })}
+            <button
+              type="button"
+              className="lb-upload-btn"
+              disabled={uploading}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {uploading ? "올리는 중…" : "＋ 내 사진 올리기"}
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              hidden
+              onChange={(event) => uploadPhotos(event.target.files)}
+            />
           </div>
+          <p className="lb-upload-hint">컴퓨터·폰의 사진을 올리면 구성에 바로 담겨요. 올린 사진은 포트폴리오에도 저장됩니다.</p>
 
           {tabAssets.length ? (
             <div className="lb-asset-grid">

@@ -1086,3 +1086,13 @@ a.st-stat:hover { border-color: #94a3b8; transform: translateY(-2px); box-shadow
   .lb-row-actions { width: 100%; }
   .lb-row-actions button, .lb-row-actions a { flex: 1; justify-content: center; }
 }
+
+/* 룩북 편집기 — 내 사진 올리기 */
+.lb-upload-btn { margin-left: auto; min-height: 34px; padding: 0 15px; border: 1.5px dashed #111; border-radius: 999px; background: #fff; color: #111; font-weight: 900; font-size: 12.5px; cursor: pointer; }
+.lb-upload-btn:hover:not(:disabled) { background: #111; color: #fff; }
+.lb-upload-btn:disabled { opacity: .5; cursor: default; }
+.lb-upload-hint { margin: -8px 0 0; color: var(--muted); font-size: 12px; }
+@media (max-width: 700px) {
+  .lb-tabs { flex-wrap: wrap; }
+  .lb-upload-btn { margin-left: 0; width: 100%; min-height: 42px; }
+}

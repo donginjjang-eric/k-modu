@@ -999,20 +999,100 @@ p {
   }
 }
 
-/* ─── 공개 룩북 페이지 (/lookbook/slug) — 세로 스크롤 매거진 ─── */
-.lookbook-page { max-width: 760px; margin: 0 auto; padding: 64px 20px 80px; }
-.lb-cover { text-align: center; margin-bottom: 52px; }
-.lb-brand { margin: 0 0 14px; font-size: 13px; font-weight: 900; letter-spacing: .34em; text-transform: uppercase; color: #6b6559; }
-.lb-cover h1 { margin: 0; font-size: clamp(34px, 7vw, 56px); line-height: 1.08; letter-spacing: -.03em; }
-.lb-tagline { margin: 14px 0 0; font-size: 16px; color: #5f5a51; line-height: 1.6; }
-.lb-meta { margin: 18px 0 0; font-size: 11px; font-weight: 800; letter-spacing: .22em; color: #a39b8b; }
-.lb-stream { display: grid; gap: 44px; }
-.lb-stream figure { margin: 0; }
-.lb-stream img, .lb-stream video { display: block; width: 100%; border-radius: 4px; background: #f1ede4; }
-.lb-stream figcaption { display: flex; gap: 10px; align-items: baseline; margin-top: 10px; font-size: 12.5px; font-weight: 700; color: #6b6559; }
-.lb-no { font-size: 11px; font-weight: 900; letter-spacing: .14em; color: #a39b8b; }
-.lb-footer { margin-top: 64px; padding-top: 36px; border-top: 1px solid rgba(0,0,0,.12); text-align: center; }
-.lb-footer p { margin: 0 0 20px; color: #5f5a51; line-height: 1.7; }
-.lb-cta { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 0 30px; border-radius: 999px; background: #111; color: #fff; font-weight: 900; font-size: 15px; text-decoration: none; }
-.lb-cta:hover { background: #000; }
-.lb-home { display: block; margin-top: 22px; font-size: 11px; font-weight: 800; letter-spacing: .2em; color: #a39b8b; text-decoration: none; text-transform: uppercase; }
+/* ─── 공개 룩북 매거진 (/lookbook/slug) — 페이지 스냅 + 인쇄(A4) ─── */
+/* 매거진은 풀스크린 경험: 상단 공용 내비와 플로팅 배너를 숨긴다 */
+.site-shell:has(.lbm-root) > .top-nav { display: none; }
+body:has(.lbm-root) .studio-quick-banner { display: none; }
+
+.lbm-root { position: relative; }
+.lbm { height: 100dvh; overflow-y: auto; scroll-snap-type: y mandatory; background: #f6f3ed; }
+.lbm-pg { position: relative; height: 100dvh; scroll-snap-align: start; scroll-snap-stop: always; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: clamp(20px, 4vw, 52px); overflow: hidden; }
+.lbm-kicker { margin: 0 0 12px; font-size: 12px; font-weight: 900; letter-spacing: .32em; text-transform: uppercase; color: rgba(255,255,255,.85); }
+.lbm-kicker.dark { color: #a39b8b; }
+
+/* 화면 전용 UI */
+.lbm-ui { position: fixed; top: 0; left: 0; right: 0; z-index: 30; display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; pointer-events: none; }
+.lbm-ui-brand { font-size: 11px; font-weight: 900; letter-spacing: .2em; color: #6b6559; text-transform: uppercase; }
+.lbm-ui-right { display: flex; align-items: center; gap: 10px; pointer-events: auto; }
+.lbm-ui-count { font-size: 12px; font-weight: 900; color: #6b6559; letter-spacing: .08em; }
+.lbm-ui-right button { min-height: 34px; padding: 0 14px; border: 1px solid rgba(17,17,17,.3); border-radius: 999px; background: rgba(255,255,255,.9); font-weight: 800; font-size: 12px; cursor: pointer; }
+.lbm-arrows { position: fixed; right: 18px; top: 50%; z-index: 30; display: grid; gap: 8px; transform: translateY(-50%); }
+.lbm-arrows button { width: 42px; height: 42px; border: 1px solid rgba(17,17,17,.22); border-radius: 50%; background: rgba(255,255,255,.92); font-size: 16px; font-weight: 900; cursor: pointer; }
+.lbm-arrows button:disabled { opacity: .3; cursor: default; }
+
+/* ① 커버 */
+.lbm-cover { padding: 0; }
+.lbm-cover-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+.lbm-cover::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(0,0,0,.18), rgba(0,0,0,.44)); }
+.lbm-cover-copy { position: relative; z-index: 1; text-align: center; color: #fff; padding: 0 24px; }
+.lbm-cover-copy h1 { margin: 0; font-size: clamp(40px, 8vw, 84px); line-height: 1.02; letter-spacing: -.02em; text-shadow: 0 4px 30px rgba(0,0,0,.35); }
+.lbm-tagline { margin: 16px 0 0; font-size: clamp(14px, 2.2vw, 18px); font-weight: 600; color: rgba(255,255,255,.92); }
+.lbm-meta { margin: 22px 0 0; font-size: 11px; font-weight: 800; letter-spacing: .26em; color: rgba(255,255,255,.75); }
+
+/* ② 브랜드 인트로 */
+.lbm-intro { text-align: center; }
+.lbm-intro-copy { max-width: 640px; margin: 0; font-size: clamp(18px, 2.6vw, 26px); line-height: 1.65; color: #33302a; font-weight: 600; }
+.lbm-intro-mood { margin: 26px 0 0; font-size: 12px; font-weight: 900; letter-spacing: .22em; text-transform: uppercase; color: #a39b8b; }
+
+/* 룩 페이지 공통 캡션 */
+.lbm-cap { display: flex; gap: 10px; align-items: baseline; margin-top: 10px; font-size: 12px; font-weight: 700; color: #6b6559; }
+.lbm-cap b { font-size: 10.5px; font-weight: 900; letter-spacing: .16em; color: #a39b8b; }
+.lbm-pg figure { margin: 0; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+.lbm-pg figure img, .lbm-pg figure video, .lbm-full-media { display: block; background: #eae5da; object-fit: cover; object-position: center top; border-radius: 3px; }
+
+/* ③ 풀페이지 */
+.lbm-full .lbm-full-media { max-width: min(92vw, 620px); max-height: 82dvh; width: auto; height: auto; object-fit: contain; }
+
+/* ④ 듀오 */
+.lbm-duo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px, 2vw, 24px); width: min(94vw, 900px); }
+.lbm-duo-grid figure img, .lbm-duo-grid figure video { width: 100%; height: min(72dvh, 640px); }
+
+/* ⑤ 히어로+서브 */
+.lbm-hero-grid { display: grid; grid-template-columns: 1.65fr 1fr; gap: clamp(12px, 2vw, 22px); width: min(94vw, 940px); }
+.lbm-hero-big img, .lbm-hero-big video { width: 100%; height: min(76dvh, 680px); }
+.lbm-hero-side { display: grid; grid-template-rows: 1fr 1fr; gap: clamp(12px, 2vw, 22px); }
+.lbm-hero-side figure img, .lbm-hero-side figure video { width: 100%; height: 100%; min-height: 0; }
+.lbm-hero-side figure { min-height: 0; }
+
+/* ⑥ 상품 인덱스 */
+.lbm-index h2 { margin: 0 0 26px; font-size: clamp(24px, 3.4vw, 34px); }
+.lbm-index-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(12px, 2vw, 22px); width: min(94vw, 860px); }
+.lbm-index-grid figure img { width: 100%; aspect-ratio: 3 / 4; }
+.lbm-index-grid figcaption { margin-top: 8px; font-size: 12px; font-weight: 800; color: #33302a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ⑦ 백커버 */
+.lbm-back { text-align: center; }
+.lbm-back h2 { margin: 0; font-size: clamp(34px, 6vw, 58px); letter-spacing: -.02em; }
+.lbm-back-copy { margin: 16px 0 26px; color: #5f5a51; font-size: 15px; line-height: 1.7; }
+.lbm-cta { display: inline-flex; align-items: center; justify-content: center; min-height: 54px; padding: 0 32px; border-radius: 999px; background: #111; color: #fff; font-weight: 900; font-size: 15px; text-decoration: none; }
+.lbm-cta:hover { background: #000; }
+.lbm-qr { display: grid; justify-items: center; gap: 8px; margin-top: 30px; }
+.lbm-qr img { width: 108px; height: 108px; border: 1px solid rgba(0,0,0,.1); border-radius: 10px; background: #fff; padding: 6px; }
+.lbm-qr span { font-size: 11.5px; font-weight: 700; color: #a39b8b; }
+.lbm-home { display: block; margin-top: 30px; font-size: 10.5px; font-weight: 800; letter-spacing: .22em; color: #a39b8b; text-decoration: none; text-transform: uppercase; }
+
+@media (max-width: 700px) {
+  .lbm-arrows { display: none; }
+  .lbm-duo-grid { grid-template-columns: 1fr 1fr; }
+  .lbm-duo-grid figure img, .lbm-duo-grid figure video { height: min(62dvh, 480px); }
+  .lbm-hero-grid { grid-template-columns: 1fr; }
+  .lbm-hero-side { grid-template-rows: none; grid-template-columns: 1fr 1fr; }
+  .lbm-hero-big img, .lbm-hero-big video { height: min(56dvh, 480px); }
+  .lbm-hero-side figure img, .lbm-hero-side figure video { height: 24dvh; }
+  .lbm-index-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* 인쇄: 페이지당 A4 한 장 → 브라우저 인쇄에서 그대로 PDF 저장 */
+@media print {
+  @page { size: A4 portrait; margin: 0; }
+  body { background: #fff; }
+  .lbm-ui, .lbm-arrows, .studio-quick-banner, .kakao-quick-banner { display: none !important; }
+  .lbm { height: auto; overflow: visible; scroll-snap-type: none; background: #fff; }
+  .lbm-pg { height: 296mm; break-after: page; page-break-after: always; padding: 14mm; }
+  .lbm-cover { padding: 0; }
+  .lbm-pg:last-child { break-after: auto; page-break-after: auto; }
+  .lbm-full .lbm-full-media { max-height: 240mm; }
+  .lbm-duo-grid figure img, .lbm-duo-grid figure video { height: 200mm; }
+  .lbm-hero-big img, .lbm-hero-big video { height: 220mm; }
+  .lbm-cta { border: 2px solid #111; }
+}
