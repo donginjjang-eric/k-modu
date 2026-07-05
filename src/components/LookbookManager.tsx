@@ -394,7 +394,7 @@ export default function LookbookManager({
               onChange={(event) => uploadPhotos(event.target.files)}
             />
           </div>
-          <p className="lb-upload-hint">컴퓨터·폰의 사진을 올리면 구성에 바로 담겨요. 올린 사진은 포트폴리오에도 저장됩니다.</p>
+          <p className="lb-upload-hint">아래 <b>사진을 누르면 번호 순서대로 룩북에 담겨요.</b> 컴퓨터·폰 사진을 올리면 바로 담기고, 포트폴리오에도 저장됩니다.</p>
 
           {tabAssets.length ? (
             <div className="lb-asset-grid">
@@ -416,7 +416,18 @@ export default function LookbookManager({
               })}
             </div>
           ) : (
-            <p className="lb-empty-tab">이 종류의 자산이 아직 없어요.</p>
+            activeTab === "look" ? (
+              <p className="lb-empty-tab">
+                아직 <b>승인된</b> AI 룩이 없어요. AI 룩을 만들고 공개 요청 → 관리자 승인이 끝나야 여기에 떠요.{" "}
+                <a href="/dashboard/designer/generated-looks">AI 룩 제작에서 상태 확인하기 →</a>
+              </p>
+            ) : activeTab === "portfolio" ? (
+              <p className="lb-empty-tab">아직 포트폴리오 사진이 없어요. 오른쪽 위 [＋ 내 사진 올리기]로 지금 바로 올릴 수 있어요.</p>
+            ) : (
+              <p className="lb-empty-tab">
+                공개 중인 상품이 없어요. <a href="/dashboard/designer/products">상품 등록으로 가기 →</a>
+              </p>
+            )
           )}
 
           {items.length ? (
@@ -536,11 +547,16 @@ export default function LookbookManager({
           ) : null}
 
           <div className="lb-save-row">
-            <button className="st-btn" type="button" disabled={saving} onClick={save}>
+            <button className="st-btn" type="button" disabled={saving || !items.length || !title.trim()} onClick={save}>
               {saving ? "저장 중…" : editingId ? "수정 저장하기" : "룩북 게시하기"}
             </button>
             {editingId ? (
               <button className="st-btn light" type="button" onClick={resetEditor}>수정 취소</button>
+            ) : null}
+            {!title.trim() ? (
+              <span className="lb-save-why">제목을 입력하면 게시할 수 있어요</span>
+            ) : !items.length ? (
+              <span className="lb-save-why">사진을 1장 이상 담아주세요 — 위 목록에서 사진을 누르면 담겨요</span>
             ) : null}
           </div>
           {message ? <p className={`lb-msg ${message.ok ? "ok" : "err"}`}>{message.text}</p> : null}
