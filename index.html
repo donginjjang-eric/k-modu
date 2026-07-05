@@ -1187,12 +1187,30 @@
       overflow: hidden;
     }
 
-    .modal-card img {
+    .modal-media {
+      position: relative;
+      min-height: 360px;
+      overflow: hidden;
+      background: #101010;
+    }
+
+    .modal-media .modal-media-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: blur(22px) saturate(1.05) brightness(.5);
+      transform: scale(1.15);
+    }
+
+    .modal-media #modalImg {
+      position: relative;
+      z-index: 1;
       width: 100%;
       height: 100%;
       min-height: 360px;
-      object-fit: cover;
-      object-position: center top;
+      object-fit: contain;
     }
 
     .modal-content {
@@ -1904,7 +1922,11 @@
         pointer-events: none;
       }
 
-      .modal-card img {
+      .modal-media {
+        min-height: 260px;
+      }
+
+      .modal-media #modalImg {
         height: 100%;
         min-height: 260px;
         max-height: none;
@@ -2407,6 +2429,10 @@
         <input type="checkbox" id="designerBetaHideToday" />
         <span>오늘 그만 보기</span>
       </label>
+      <label class="designer-beta-dismiss">
+        <input type="checkbox" id="designerBetaHideWeek" />
+        <span>1주일 그만 보기</span>
+      </label>
     </div>
   </div>
   <main class="site">
@@ -2747,7 +2773,10 @@
 
     <div class="modal" id="influencerModal" aria-hidden="true">
       <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalName">
-        <img loading="lazy" decoding="async" id="modalImg" src="assets/mainmodel_2.webp" alt="" />
+        <div class="modal-media">
+          <img class="modal-media-bg" id="modalImgBg" src="assets/mainmodel_2.webp" alt="" aria-hidden="true" />
+          <img loading="lazy" decoding="async" id="modalImg" src="assets/mainmodel_2.webp" alt="" />
+        </div>
         <div class="modal-content">
           <span class="platform-tag">TikTok Creator</span>
           <h3 id="modalName">MIA HARPER</h3>
@@ -2859,31 +2888,43 @@
     if (!betaModal) return;
     const closeButtons = betaModal.querySelectorAll('.designer-beta-backdrop, .designer-beta-close');
     const hideToday = betaModal.querySelector('#designerBetaHideToday');
+    const hideWeek = betaModal.querySelector('#designerBetaHideWeek');
     const BETA_START = '2026-06-16';
     const BETA_END = '2026-07-17';
     const HIDE_KEY = 'kmodu-beta-popup-hide';
 
-    const todayStr = () => {
-      const d = new Date();
+    const dateStr = (d) => {
       const mm = String(d.getMonth() + 1).padStart(2, '0');
       const dd = String(d.getDate()).padStart(2, '0');
       return `${d.getFullYear()}-${mm}-${dd}`;
     };
+    const todayStr = () => dateStr(new Date());
 
     const closeDesignerBetaModal = () => {
-      // '오늘 그만 보기' 체크 시 오늘 날짜를 저장해 당일 재노출 막음
-      if (hideToday && hideToday.checked) {
-        try { localStorage.setItem(HIDE_KEY, todayStr()); } catch (e) {}
+      // 체크 상태에 따라 숨김 만료일을 저장 — 1주일이 오늘보다 우선
+      let hideUntil = null;
+      if (hideWeek && hideWeek.checked) {
+        const d = new Date();
+        d.setDate(d.getDate() + 6); // 오늘 포함 7일간 숨김
+        hideUntil = dateStr(d);
+      } else if (hideToday && hideToday.checked) {
+        hideUntil = todayStr();
+      }
+      if (hideUntil) {
+        try { localStorage.setItem(HIDE_KEY, hideUntil); } catch (e) {}
       }
       betaModal.classList.remove('is-open');
       betaModal.setAttribute('aria-hidden', 'true');
     };
 
-    // 베타 기간(6/16~7/17)에만, 그리고 '오늘 그만 보기'를 누르지 않은 날에만 노출
+    // 베타 기간(6/16~7/17)에만, 저장된 숨김 만료일이 지나지 않았으면 미노출
     const shouldShowBeta = () => {
       const t = todayStr();
       if (t < BETA_START || t > BETA_END) return false;
-      try { if (localStorage.getItem(HIDE_KEY) === t) return false; } catch (e) {}
+      try {
+        const hideUntil = localStorage.getItem(HIDE_KEY);
+        if (hideUntil && t <= hideUntil) return false;
+      } catch (e) {}
       return true;
     };
 
@@ -3051,13 +3092,15 @@
     modal.classList.remove('is-open');
     modal.setAttribute('aria-hidden', 'true');
   };
-  document.querySelectorAll('.campaign[data-name]').forEach((card) => {
+  const bindInfluencerCard = (card) => {
     card.addEventListener('click', () => {
       const detail = influencerDetails[card.dataset.name] || {};
       document.querySelector('#modalImg').src = card.dataset.img;
+      const modalImgBg = document.querySelector('#modalImgBg');
+      if (modalImgBg) modalImgBg.src = card.dataset.img;
       document.querySelector('#modalName').textContent = card.dataset.name;
       document.querySelector('#modalMarket').textContent = card.dataset.market;
-      document.querySelector('#modalScore').textContent = detail.score || '88%';
+      document.querySelector('#modalScore').textContent = detail.score || card.dataset.score || '88%';
       document.querySelector('#modalFollowers').textContent = card.dataset.followers;
       document.querySelector('#modalViews').textContent = card.dataset.views;
       document.querySelector('#modalEr').textContent = card.dataset.er;
@@ -3068,7 +3111,72 @@
       modal.classList.add('is-open');
       modal.setAttribute('aria-hidden', 'false');
     });
-  });
+  };
+  document.querySelectorAll('.campaign[data-name]').forEach(bindInfluencerCard);
+
+  // 메인 크리에이터 영역 — /creators 카테고리의 실제 크리에이터 카드를 가져와 메인 카드 스타일로 렌더
+  (async () => {
+    const row = document.querySelector('#influencers .campaign-row');
+    if (!row) return;
+    try {
+      let res = await fetch('/creators', { cache: 'no-cache' });
+      if (!res.ok) res = await fetch('/creators.html', { cache: 'no-cache' });
+      if (!res.ok) return;
+      const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
+      const source = Array.from(doc.querySelectorAll('#creatorGrid .market-card'));
+      if (!source.length) return;
+
+      const fmtFollowers = (v) => {
+        const n = Number(v) || 0;
+        if (n >= 1e6) return (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+        if (n >= 1e3) return Math.round(n / 1e3) + 'K';
+        return n ? String(n) : '—';
+      };
+      const fitTags = {
+        TikTok: 'Styling Reel / GRWM / Product Seeding',
+        Instagram: 'Editorial Try-on / Feed Set / Product Seeding',
+        YouTube: 'Review · Haul / Product Seeding',
+      };
+      const fitDesc = {
+        TikTok: 'TikTok 숏폼 스타일링과 착장 전환 콘텐츠에 강점이 있는 크리에이터입니다.',
+        Instagram: '에디토리얼 피드와 착장 연출 콘텐츠에 강점이 있는 크리에이터입니다.',
+        YouTube: '리뷰·하울 형식의 상품 스토리텔링에 강점이 있는 크리에이터입니다.',
+      };
+      const marketCodes = { Malaysia: 'MY', Vietnam: 'VN', Thailand: 'TH' };
+
+      const cards = source.map((el) => {
+        const name = (el.querySelector('h3')?.textContent || '').trim();
+        const img = el.querySelector('.thumb img')?.getAttribute('src') || '';
+        const platform = (el.querySelector('.badges span')?.textContent || 'TikTok').trim();
+        const parts = (el.querySelector('.market-card-body p')?.textContent || '').split('/').map((s) => s.trim());
+        return {
+          name,
+          img,
+          platform,
+          marketName: parts[0] || 'Malaysia',
+          specialty: parts[1] || 'K-Fashion Styling',
+          handle: parts[2] || '',
+          fit: Number(el.dataset.fit) || 0,
+          followers: fmtFollowers(el.dataset.followers),
+        };
+      }).filter((c) => c.name && c.img).sort((a, b) => b.fit - a.fit).slice(0, 8);
+      if (!cards.length) return;
+
+      row.innerHTML = cards.map((c) => `
+        <button class="campaign" type="button" data-name="${c.name}" data-market="${c.marketName} / ${c.specialty}" data-followers="${c.followers}" data-views="—" data-er="—" data-score="${c.fit}%" data-fit="${fitDesc[c.platform] || fitDesc.TikTok}" data-img="${c.img}">
+          <div class="image"><img loading="lazy" decoding="async" src="${c.img}" alt="${c.name} profile" /></div>
+          <span class="platform-tag">${c.platform}</span>
+          <h3>${c.name.toUpperCase()}</h3>
+          <p>${c.marketName} 기반 크리에이터 · ${c.specialty}${c.handle ? ' · ' + c.handle : ''}</p>
+          <div class="match-fit"><span>추천 핏</span><strong>${fitTags[c.platform] || fitTags.TikTok}</strong></div>
+          <div class="influencer-stats"><span><strong>${c.followers}</strong>팔로워</span><span><strong>${c.fit}%</strong>매칭 적합도</span><span><strong>${marketCodes[c.marketName] || c.marketName}</strong>마켓</span></div>
+        </button>`).join('');
+      row.querySelectorAll('.campaign[data-name]').forEach(bindInfluencerCard);
+    } catch (e) {
+      // 네트워크 실패 시 기존 하드코딩 카드를 그대로 유지
+    }
+  })();
+
   document.querySelector('.modal-close').addEventListener('click', closeModal);
   document.querySelector('.modal-request').addEventListener('click', closeModal);
   modal.addEventListener('click', (event) => {
