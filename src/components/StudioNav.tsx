@@ -7,7 +7,7 @@ import LogoutButton from "@/components/LogoutButton";
 
 export type NavItem = {
   href: string;
-  icon: "home" | "shirt" | "sparkles" | "video" | "inbox" | "badge";
+  icon: "home" | "shirt" | "sparkles" | "video" | "inbox" | "badge" | "book";
   label: string;
   short?: string;
   tag?: string;
@@ -23,6 +23,7 @@ export const STUDIO_NAV: NavItem[] = [
   { href: "/dashboard/designer/brand", icon: "badge", label: "브랜드 프로필", short: "프로필" },
   { href: "/dashboard/designer/products", icon: "shirt", label: "상품 등록", short: "상품" },
   { href: "/dashboard/designer/generated-looks", icon: "sparkles", label: "AI 룩 제작", short: "AI" },
+  { href: "/dashboard/designer/lookbooks", icon: "book", label: "룩북 만들기", short: "룩북", tag: "NEW" },
   { href: "/dashboard/designer/short", icon: "video", label: "숏폼 제작", short: "숏폼" },
   { href: "/dashboard/designer/orders", icon: "inbox", label: "받은 의뢰", short: "의뢰" },
   { href: "/dashboard/designer", icon: "home", label: "대시보드", short: "홈" },

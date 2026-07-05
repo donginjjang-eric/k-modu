@@ -102,3 +102,24 @@ export type GeneratedLook = {
   created_at: string;
   updated_at: string;
 };
+
+// 룩북 구성 항목 — 선택 시점의 이미지 스냅샷을 저장해 원본 변경과 무관하게 유지
+export type LookbookItem = {
+  type: "look" | "portfolio" | "product";
+  refId: string;
+  imageUrl: string;
+  videoUrl?: string | null;
+  label?: string;
+};
+
+export type Lookbook = {
+  id: string;
+  designer_id: string;
+  slug: string;
+  title: string;
+  tagline: string;
+  status: "published" | "hidden";
+  items: LookbookItem[];
+  created_at: string;
+  updated_at: string;
+};

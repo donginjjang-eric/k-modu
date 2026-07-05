@@ -152,3 +152,19 @@ CREATE INDEX IF NOT EXISTS designers_user_id_idx
 
 CREATE INDEX IF NOT EXISTS designers_contact_email_lower_idx
   ON designers(lower(contact_email));
+
+-- 디자이너 룩북: 승인된 룩·포트폴리오·상품 이미지를 묶어 공개 링크(/lookbook/slug)로 공유
+CREATE TABLE IF NOT EXISTS lookbooks (
+  id text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  designer_id text NOT NULL REFERENCES designers(id) ON DELETE CASCADE,
+  slug text NOT NULL UNIQUE,
+  title text NOT NULL,
+  tagline text NOT NULL DEFAULT '',
+  status text NOT NULL DEFAULT 'published' CHECK (status IN ('published', 'hidden')),
+  items jsonb NOT NULL DEFAULT '[]',
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS lookbooks_designer_idx
+  ON lookbooks(designer_id, created_at DESC);

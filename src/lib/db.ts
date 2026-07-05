@@ -2,7 +2,7 @@ import { randomBytes, randomUUID } from "node:crypto";
 import { Pool } from "pg";
 import type { QueryResultRow } from "pg";
 import { designer as phaseDesigner, modelTemplates as phaseTemplates, products as phaseProducts } from "./phase1-data";
-import type { ApprovalStatus, CollabRequest, CollabRequestStatus, CollabRequestType, Designer, DesignerPortfolioImage, GeneratedLook, ModelTemplate, PortfolioImageStatus, Product, User } from "./types";
+import type { ApprovalStatus, CollabRequest, CollabRequestStatus, CollabRequestType, Designer, DesignerPortfolioImage, GeneratedLook, Lookbook, LookbookItem, ModelTemplate, PortfolioImageStatus, Product, User } from "./types";
 
 let pool: Pool | null = null;
 
@@ -1170,4 +1170,106 @@ export async function updateDesignerProfile(id: string, input: Partial<{
      RETURNING *`,
     [id, input.brand_name ?? null, input.description ?? null, input.mood ?? null, input.country ?? null, input.designer_name ?? null],
   );
+}
+
+// ─── 룩북: 승인 자산을 묶어 공개 링크로 공유 ─────────────────────────────
+
+export type PublicLookbook = Lookbook & {
+  designer_brand_name: string;
+  designer_description: string;
+  designer_mood: string;
+};
+
+function newLookbookSlug() {
+  return randomBytes(4).toString("hex");
+}
+
+export async function createLookbookForDesigner(input: {
+  designerId: string;
+  title: string;
+  tagline: string;
+  items: LookbookItem[];
+}): Promise<Lookbook | null> {
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    return null;
+  }
+  // 슬러그 충돌(희박) 시 3회까지 재시도
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      return await one<Lookbook>(
+        `INSERT INTO lookbooks (designer_id, slug, title, tagline, items)
+         VALUES ($1, $2, $3, $4, $5::jsonb)
+         RETURNING *`,
+        [input.designerId, newLookbookSlug(), input.title, input.tagline, JSON.stringify(input.items)],
+      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "";
+      if (!message.includes("duplicate key") || attempt === 2) throw error;
+    }
+  }
+  return null;
+}
+
+export async function getLookbooksForDesigner(designerId: string): Promise<Lookbook[]> {
+  if (!hasDatabase()) return [];
+  return query<Lookbook>(
+    "SELECT * FROM lookbooks WHERE designer_id = $1 ORDER BY created_at DESC",
+    [designerId],
+  );
+}
+
+export async function updateLookbookForDesigner(
+  designerId: string,
+  id: string,
+  input: Partial<{ title: string; tagline: string; items: LookbookItem[]; status: "published" | "hidden" }>,
+): Promise<Lookbook | null> {
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    return null;
+  }
+  return one<Lookbook>(
+    `UPDATE lookbooks
+     SET title = COALESCE($3, title),
+         tagline = COALESCE($4, tagline),
+         items = COALESCE($5::jsonb, items),
+         status = COALESCE($6, status),
+         updated_at = now()
+     WHERE id = $2 AND designer_id = $1
+     RETURNING *`,
+    [
+      designerId,
+      id,
+      input.title ?? null,
+      input.tagline ?? null,
+      input.items ? JSON.stringify(input.items) : null,
+      input.status ?? null,
+    ],
+  );
+}
+
+export async function deleteLookbookForDesigner(designerId: string, id: string): Promise<boolean> {
+  if (!hasDatabase()) return false;
+  const rows = await query<{ id: string }>(
+    "DELETE FROM lookbooks WHERE id = $2 AND designer_id = $1 RETURNING id",
+    [designerId, id],
+  );
+  return rows.length > 0;
+}
+
+export async function getPublishedLookbookBySlug(slug: string): Promise<PublicLookbook | null> {
+  if (!hasDatabase()) return null;
+  const [lookbook] = await query<PublicLookbook>(
+    `SELECT lookbooks.*,
+            designers.brand_name AS designer_brand_name,
+            designers.description AS designer_description,
+            designers.mood AS designer_mood
+       FROM lookbooks
+       JOIN designers ON designers.id = lookbooks.designer_id
+      WHERE lookbooks.slug = $1
+        AND lookbooks.status = 'published'
+        AND designers.approval_status = 'approved'`,
+    [slug],
+  );
+  return lookbook || null;
 }

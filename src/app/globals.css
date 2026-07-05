@@ -998,3 +998,21 @@ p {
     grid-template-columns: 1fr;
   }
 }
+
+/* ─── 공개 룩북 페이지 (/lookbook/slug) — 세로 스크롤 매거진 ─── */
+.lookbook-page { max-width: 760px; margin: 0 auto; padding: 64px 20px 80px; }
+.lb-cover { text-align: center; margin-bottom: 52px; }
+.lb-brand { margin: 0 0 14px; font-size: 13px; font-weight: 900; letter-spacing: .34em; text-transform: uppercase; color: #6b6559; }
+.lb-cover h1 { margin: 0; font-size: clamp(34px, 7vw, 56px); line-height: 1.08; letter-spacing: -.03em; }
+.lb-tagline { margin: 14px 0 0; font-size: 16px; color: #5f5a51; line-height: 1.6; }
+.lb-meta { margin: 18px 0 0; font-size: 11px; font-weight: 800; letter-spacing: .22em; color: #a39b8b; }
+.lb-stream { display: grid; gap: 44px; }
+.lb-stream figure { margin: 0; }
+.lb-stream img, .lb-stream video { display: block; width: 100%; border-radius: 4px; background: #f1ede4; }
+.lb-stream figcaption { display: flex; gap: 10px; align-items: baseline; margin-top: 10px; font-size: 12.5px; font-weight: 700; color: #6b6559; }
+.lb-no { font-size: 11px; font-weight: 900; letter-spacing: .14em; color: #a39b8b; }
+.lb-footer { margin-top: 64px; padding-top: 36px; border-top: 1px solid rgba(0,0,0,.12); text-align: center; }
+.lb-footer p { margin: 0 0 20px; color: #5f5a51; line-height: 1.7; }
+.lb-cta { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 0 30px; border-radius: 999px; background: #111; color: #fff; font-weight: 900; font-size: 15px; text-decoration: none; }
+.lb-cta:hover { background: #000; }
+.lb-home { display: block; margin-top: 22px; font-size: 11px; font-weight: 800; letter-spacing: .2em; color: #a39b8b; text-decoration: none; text-transform: uppercase; }
