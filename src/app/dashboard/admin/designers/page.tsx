@@ -7,7 +7,7 @@ import { getApprovalStatusLabel } from "@/lib/status-labels";
 
 function statusClass(status: string) {
   if (status === "approved") return "approved";
-  if (status === "disabled") return "disabled";
+  if (status === "disabled" || status === "rejected") return "disabled";
   return "pending";
 }
 

@@ -14,7 +14,7 @@ import { getApprovalStatusLabel, getGeneratedLookStatusLabel, getGenerationTypeL
 
 function statusClass(status: string) {
   if (status === "approved" || status === "active" || status === "generated") return "approved";
-  if (status === "disabled" || status === "hidden") return "disabled";
+  if (status === "disabled" || status === "hidden" || status === "rejected") return "disabled";
   return "pending";
 }
 

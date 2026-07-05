@@ -2,8 +2,12 @@
 
 // 관리자 AI 룩 검수: 공개/반려/숨김/삭제 + 승인 룩의 Veo 숏폼 영상 생성·미리보기
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { GeneratedLookStatus, GeneratedLookVideoStatus } from "@/lib/types";
 import { getGeneratedLookStatusLabel } from "@/lib/status-labels";
+
+// 8초 간격 폴링 상한 (약 5분) — 넘으면 지연 안내 후 중단
+const MAX_VIDEO_POLLS = 40;
 
 const VIDEO_LABEL: Record<GeneratedLookVideoStatus, string> = {
   none: "",
@@ -24,59 +28,79 @@ export default function AdminGeneratedLookActions({
   videoStatus?: GeneratedLookVideoStatus;
   videoUrl?: string | null;
 }) {
+  const router = useRouter();
   const [currentStatus, setCurrentStatus] = useState<GeneratedLookStatus>(status);
   const [message, setMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const [deleted, setDeleted] = useState(false);
   const [videoStatus, setVideoStatus] = useState<GeneratedLookVideoStatus>(initialVideoStatus);
   const [videoUrl, setVideoUrl] = useState<string | null>(initialVideoUrl);
+  // 상태가 그대로여도 다음 폴링이 예약되도록 하는 틱 카운터
+  const [pollTick, setPollTick] = useState(0);
 
-  // 생성이 진행 중이면 완료/실패까지 폴링
+  // 생성이 진행 중이면 완료/실패까지 8초 간격으로 반복 폴링
   useEffect(() => {
     if (videoStatus !== "queued" && videoStatus !== "processing") return;
+    if (pollTick >= MAX_VIDEO_POLLS) {
+      setMessage("영상 상태 확인이 지연되고 있어요. 잠시 후 페이지를 새로고침해주세요.");
+      return;
+    }
     const timer = setTimeout(async () => {
-      const res = await fetch(`/api/admin/generated-looks/${lookId}/generate-video`);
-      const data = await res.json().catch(() => ({}));
-      if (data.ok) {
-        setVideoStatus(data.videoStatus);
-        if (data.videoUrl) setVideoUrl(data.videoUrl);
+      try {
+        const res = await fetch(`/api/admin/generated-looks/${lookId}/generate-video`);
+        const data = await res.json().catch(() => ({}));
+        if (data.ok) {
+          setVideoStatus(data.videoStatus);
+          if (data.videoUrl) setVideoUrl(data.videoUrl);
+        }
+      } catch {
+        // 일시적 네트워크 오류는 다음 폴링에서 재시도
       }
+      setPollTick((tick) => tick + 1);
     }, 8000);
     return () => clearTimeout(timer);
-  }, [videoStatus, lookId]);
+  }, [videoStatus, pollTick, lookId]);
 
   const remove = async () => {
     if (!window.confirm("이 AI 룩을 영구 삭제할까요? 되돌릴 수 없습니다.")) return;
     setIsSaving(true);
     setMessage("");
-    const response = await fetch(`/api/admin/generated-looks/${lookId}`, { method: "DELETE" });
-    const result = await response.json().catch(() => ({}));
-    setIsSaving(false);
-    if (!response.ok) {
-      setMessage(result.error || "삭제에 실패했습니다.");
-      return;
+    try {
+      const response = await fetch(`/api/admin/generated-looks/${lookId}`, { method: "DELETE" });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setMessage(result.error || "삭제에 실패했습니다.");
+        return;
+      }
+      // 서버 목록 기준으로 즉시 카드 제거
+      router.refresh();
+    } catch {
+      setMessage("네트워크 오류로 삭제하지 못했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsSaving(false);
     }
-    setDeleted(true);
   };
 
   const mutate = async (nextStatus: GeneratedLookStatus) => {
     setIsSaving(true);
     setMessage("");
-    const response = await fetch(`/api/admin/generated-looks/${lookId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: nextStatus }),
-    });
-    const result = await response.json();
-    setIsSaving(false);
-
-    if (!response.ok) {
-      setMessage(result.error || "Update failed.");
-      return;
+    try {
+      const response = await fetch(`/api/admin/generated-looks/${lookId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: nextStatus }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.generatedLook) {
+        setMessage(result.error || "변경에 실패했습니다. 다시 시도해주세요.");
+        return;
+      }
+      setCurrentStatus(result.generatedLook.status);
+      setMessage(`상태를 '${getGeneratedLookStatusLabel(result.generatedLook.status)}'으로 변경했습니다.`);
+    } catch {
+      setMessage("네트워크 오류로 변경하지 못했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsSaving(false);
     }
-
-    setCurrentStatus(result.generatedLook.status);
-    setMessage(`상태를 '${getGeneratedLookStatusLabel(result.generatedLook.status)}'으로 변경했습니다.`);
   };
 
   const generateVideo = async () => {
@@ -97,10 +121,6 @@ export default function AdminGeneratedLookActions({
     currentStatus === "approved" ? "approved" :
     currentStatus === "hidden" || currentStatus === "rejected" ? "disabled" :
     "pending";
-
-  if (deleted) {
-    return <div className="admin-actions"><small>삭제됨 — 새로고침하면 목록에서 사라집니다.</small></div>;
-  }
 
   const isVideoBusy = videoStatus === "queued" || videoStatus === "processing";
 

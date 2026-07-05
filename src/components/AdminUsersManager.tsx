@@ -12,13 +12,14 @@ function segmentOf(u: AdminUserRow): Segment {
   if (u.role === "admin") return "admin";
   if (!u.designer_id) return "not_applied";
   if (u.approval_status === "approved") return "approved";
-  if (u.approval_status === "disabled") return "disabled";
+  // 반려는 '승인 대기'가 아니므로 비활성 세그먼트로 묶는다 (배지 라벨은 '반려'로 구분 표시)
+  if (u.approval_status === "disabled" || u.approval_status === "rejected") return "disabled";
   return "pending";
 }
 
 function statusClass(status: string) {
   if (status === "approved") return "approved";
-  if (status === "disabled") return "disabled";
+  if (status === "disabled" || status === "rejected") return "disabled";
   return "pending";
 }
 

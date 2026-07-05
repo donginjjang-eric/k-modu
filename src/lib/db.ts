@@ -668,6 +668,22 @@ export async function getAdminDashboardStats() {
   };
 }
 
+// 관리자 메뉴 뱃지용 처리 대기 카운트 (레이아웃에서 매 요청 조회 — 가볍게 유지)
+export async function getAdminPendingCounts() {
+  if (!hasDatabase()) {
+    return { pendingDesigners: 0, pendingLooks: 0 };
+  }
+  const [row] = await query<{ pending_designers: string; pending_looks: string }>(
+    `SELECT
+       (SELECT COUNT(*)::text FROM designers WHERE approval_status = 'pending') AS pending_designers,
+       (SELECT COUNT(*)::text FROM generated_looks WHERE status = 'generated') AS pending_looks`,
+  );
+  return {
+    pendingDesigners: Number(row?.pending_designers || 0),
+    pendingLooks: Number(row?.pending_looks || 0),
+  };
+}
+
 // 관리자 회원 목록: 가입 계정 + 연결된 디자이너 프로필 (신청 전 가입자도 보이도록 LEFT JOIN)
 export type AdminUserRow = Pick<User, "id" | "email" | "role" | "created_at"> & {
   designer_id: string | null;
@@ -1123,7 +1139,7 @@ export async function getDesignerForUser(userId: string): Promise<Designer | nul
   }
 }
 
-export async function updateDesignerApprovalStatus(id: string, status: "approved" | "disabled") {
+export async function updateDesignerApprovalStatus(id: string, status: "approved" | "disabled" | "rejected") {
   if (!hasDatabase()) {
     requireDatabaseForProduction();
     return toDemoDesigner();

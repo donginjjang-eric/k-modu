@@ -31,6 +31,7 @@ export default function AdminProductsManager({ products }: { products: AdminProd
   const [groupByBrand, setGroupByBrand] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState(false);
+  const [notice, setNotice] = useState("");
 
   const hoverRef = useRef<HTMLDivElement | null>(null);
   const hoverImg = useRef<HTMLImageElement | null>(null);
@@ -70,6 +71,7 @@ export default function AdminProductsManager({ products }: { products: AdminProd
 
   const setStatus = async (ids: string[], next: Status) => {
     setBusy(true);
+    setNotice("");
     const results = await Promise.allSettled(
       ids.map((id) => fetch(`/api/admin/products/${id}`, {
         method: "PATCH",
@@ -82,6 +84,11 @@ export default function AdminProductsManager({ products }: { products: AdminProd
       results.forEach((r) => { if (r.status === "fulfilled") copy[r.value] = next; });
       return copy;
     });
+    // 실패를 조용히 넘기지 않는다 — 몇 건이 안 됐는지 관리자에게 알린다
+    const failed = results.filter((r) => r.status === "rejected").length;
+    if (failed) {
+      setNotice(`${failed}개 상품은 변경에 실패했어요. 잠시 후 다시 시도해주세요.`);
+    }
     setBusy(false);
   };
 
@@ -166,6 +173,7 @@ export default function AdminProductsManager({ products }: { products: AdminProd
       </div>
 
       <p className="apm-result">{visible.length}개 표시 중</p>
+      {notice ? <p className="apm-notice" role="alert">{notice}</p> : null}
 
       {visible.length ? (
         grouped.map(({ brand, items }) => (
