@@ -1047,6 +1047,10 @@ body:has(.lbm-root) .studio-quick-banner { display: none; }
 .lbm-duo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px, 2vw, 24px); width: min(94vw, 900px); }
 .lbm-duo-grid figure img, .lbm-duo-grid figure video { width: 100%; height: min(72dvh, 640px); }
 
+/* ④-2 4장 그리드 */
+.lbm-grid-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: clamp(10px, 1.6vw, 18px); width: min(94vw, 820px); }
+.lbm-grid-grid figure img, .lbm-grid-grid figure video { width: 100%; height: min(37dvh, 340px); }
+
 /* ⑤ 히어로+서브 */
 .lbm-hero-grid { display: grid; grid-template-columns: 1.65fr 1fr; gap: clamp(12px, 2vw, 22px); width: min(94vw, 940px); }
 .lbm-hero-big img, .lbm-hero-big video { width: 100%; height: min(76dvh, 680px); }
@@ -1094,5 +1098,6 @@ body:has(.lbm-root) .studio-quick-banner { display: none; }
   .lbm-full .lbm-full-media { max-height: 240mm; }
   .lbm-duo-grid figure img, .lbm-duo-grid figure video { height: 200mm; }
   .lbm-hero-big img, .lbm-hero-big video { height: 220mm; }
+  .lbm-grid-grid figure img, .lbm-grid-grid figure video { height: 120mm; }
   .lbm-cta { border: 2px solid #111; }
 }

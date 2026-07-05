@@ -36,6 +36,7 @@ export default async function DesignerLookbooksPage() {
           .map((product) => ({ id: product.id, imageUrl: product.image_url, name: product.name })),
       }}
       initialLookbooks={lookbooks}
+      hasIntro={Boolean(designer.description || designer.mood)}
     />
   );
 }

@@ -1,5 +1,5 @@
 // 룩북 항목 입력 검증: API 경계에서 이미지 URL·타입을 정제해 저장 (XSS·임의 URL 차단)
-import type { LookbookItem } from "./types";
+import type { LookbookItem, LookbookLayout } from "./types";
 
 export const MAX_LOOKBOOK_ITEMS = 40;
 
@@ -25,4 +25,12 @@ export function sanitizeLookbookItems(raw: unknown): LookbookItem[] | null {
     items.push({ type, refId, imageUrl, videoUrl, label });
   }
   return items;
+}
+
+// 페이지 레이아웃 시퀀스 검증 — 허용된 값만, 최대 60페이지
+export function sanitizeLookbookLayouts(raw: unknown): LookbookLayout[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .filter((value): value is LookbookLayout => value === "full" || value === "duo" || value === "hero" || value === "grid")
+    .slice(0, 60);
 }

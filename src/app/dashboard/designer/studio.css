@@ -1101,3 +1101,45 @@ a.st-stat:hover { border-color: #94a3b8; transform: translateY(-2px); box-shadow
 .lb-lang { display: inline-grid; place-items: center; margin-left: 7px; padding: 1px 7px; border-radius: 999px; background: #1F4E79; color: #fff; font-size: 10px; font-style: normal; font-weight: 900; vertical-align: 2px; }
 .lb-row-actions .ai { border-color: #1F4E79; color: #1F4E79; }
 .lb-row-actions .ai:disabled { opacity: .55; }
+
+/* ─── 룩북 페이지 스트립 + 페이지 편집 패널 ─── */
+.lbps { display: flex; gap: 12px; overflow-x: auto; padding: 4px 2px 10px; }
+.lbps-pg { flex: none; width: 92px; padding: 0; border: 0; background: none; cursor: pointer; text-align: center; }
+.lbps-mini { position: relative; display: grid; width: 92px; height: 122px; border: 2px solid #d8d2c6; border-radius: 8px; background: #fff; overflow: hidden; gap: 2px; padding: 3px; }
+.lbps-pg.is-active .lbps-mini { border-color: #111; box-shadow: 0 6px 16px rgba(17,17,17,.16); }
+.lbps-mini img { width: 100%; height: 100%; object-fit: cover; border-radius: 3px; min-height: 0; }
+.lbps-mini.k-cover { padding: 0; gap: 0; }
+.lbps-mini.k-cover img { border-radius: 6px; }
+.lbps-mini.k-duo { grid-template-columns: 1fr 1fr; }
+.lbps-mini.k-hero { grid-template-columns: 1.5fr 1fr; grid-template-rows: 1fr 1fr; }
+.lbps-mini.k-hero img:first-child { grid-row: 1 / 3; }
+.lbps-mini.k-grid { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+.lbps-mini.k-index { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr; }
+.lbps-mini.k-intro, .lbps-mini.k-back { place-items: center; }
+.lbps-lines { width: 60%; height: 34px; background: repeating-linear-gradient(#d8d2c6 0 4px, transparent 4px 11px); }
+.lbps-qr { font-size: 13px; font-weight: 900; font-style: normal; color: #6b6559; }
+.lbps-pg small { display: block; margin-top: 6px; font-size: 11px; font-weight: 800; color: var(--muted); }
+.lbps-pg.is-active small { color: var(--ink); }
+
+.lbpe { margin-top: 6px; padding: 14px 16px; border: 1px solid var(--line2); border-radius: 12px; background: #fff; }
+.lbpe-head { margin: 0 0 10px; font-size: 12.5px; font-weight: 800; color: var(--muted); }
+.lbpe-head + .lbpe-head { margin-top: 16px; }
+.lbpe-presets { display: flex; gap: 8px; margin-bottom: 16px; }
+.lbpe-presets button { display: grid; place-items: center; gap: 6px; width: 76px; padding: 9px 0 7px; border: 2px solid var(--line2); border-radius: 10px; background: #fff; font-size: 11.5px; font-weight: 900; color: var(--muted); cursor: pointer; }
+.lbpe-presets button.is-active { border-color: #111; color: var(--ink); }
+.lbpe-glyph { display: grid; width: 40px; height: 50px; gap: 2px; }
+.lbpe-glyph i { background: #cfc8ba; border-radius: 2px; }
+.lbpe-presets button.is-active .lbpe-glyph i { background: #111; }
+.lbpe-glyph.g-duo { grid-template-columns: 1fr 1fr; }
+.lbpe-glyph.g-hero { grid-template-columns: 1.5fr 1fr; grid-template-rows: 1fr 1fr; }
+.lbpe-glyph.g-hero i:first-child { grid-row: 1 / 3; }
+.lbpe-glyph.g-grid { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+.lbpe-slots { display: flex; gap: 10px; flex-wrap: wrap; }
+.lbpe-slot { position: relative; }
+.lbpe-slot .pic { position: relative; display: block; padding: 0; border: 2px solid transparent; border-radius: 10px; overflow: hidden; background: none; cursor: pointer; }
+.lbpe-slot .pic img { display: block; width: 92px; height: 120px; object-fit: cover; }
+.lbpe-slot.is-picking .pic { border-color: #1F4E79; box-shadow: 0 0 0 3px rgba(31,78,121,.22); }
+.picking-tag { position: absolute; left: 50%; bottom: 6px; transform: translateX(-50%); padding: 2px 8px; border-radius: 999px; background: #1F4E79; color: #fff; font-size: 10px; font-weight: 900; white-space: nowrap; }
+.lbpe-slot .x { position: absolute; top: -7px; right: -7px; width: 22px; height: 22px; border: 0; border-radius: 50%; background: #111; color: #fff; font-size: 11px; font-weight: 900; cursor: pointer; }
+.lbpe-pick-hint { margin: 10px 0 0; font-size: 12.5px; font-weight: 800; color: #1F4E79; }
+.lbpe-note { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.6; }

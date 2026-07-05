@@ -33,6 +33,7 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
       items,
       lang: "en",
       intro: translated.intro,
+      layouts: lookbook.layouts,
     });
     if (!created) throw new Error("영어판 저장에 실패했어요.");
     return Response.json({ ok: true, lookbook: created });

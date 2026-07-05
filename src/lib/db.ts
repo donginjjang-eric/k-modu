@@ -2,7 +2,7 @@ import { randomBytes, randomUUID } from "node:crypto";
 import { Pool } from "pg";
 import type { QueryResultRow } from "pg";
 import { designer as phaseDesigner, modelTemplates as phaseTemplates, products as phaseProducts } from "./phase1-data";
-import type { ApprovalStatus, CollabRequest, CollabRequestStatus, CollabRequestType, Designer, DesignerPortfolioImage, GeneratedLook, Lookbook, LookbookItem, ModelTemplate, PortfolioImageStatus, Product, User } from "./types";
+import type { ApprovalStatus, CollabRequest, CollabRequestStatus, CollabRequestType, Designer, DesignerPortfolioImage, GeneratedLook, Lookbook, LookbookItem, LookbookLayout, ModelTemplate, PortfolioImageStatus, Product, User } from "./types";
 
 let pool: Pool | null = null;
 
@@ -1191,6 +1191,7 @@ export async function createLookbookForDesigner(input: {
   items: LookbookItem[];
   lang?: "ko" | "en";
   intro?: string;
+  layouts?: LookbookLayout[];
 }): Promise<Lookbook | null> {
   if (!hasDatabase()) {
     requireDatabaseForProduction();
@@ -1200,10 +1201,10 @@ export async function createLookbookForDesigner(input: {
   for (let attempt = 0; attempt < 3; attempt += 1) {
     try {
       return await one<Lookbook>(
-        `INSERT INTO lookbooks (designer_id, slug, title, tagline, items, lang, intro)
-         VALUES ($1, $2, $3, $4, $5::jsonb, $6, $7)
+        `INSERT INTO lookbooks (designer_id, slug, title, tagline, items, lang, intro, layouts)
+         VALUES ($1, $2, $3, $4, $5::jsonb, $6, $7, $8::jsonb)
          RETURNING *`,
-        [input.designerId, newLookbookSlug(), input.title, input.tagline, JSON.stringify(input.items), input.lang || "ko", input.intro || ""],
+        [input.designerId, newLookbookSlug(), input.title, input.tagline, JSON.stringify(input.items), input.lang || "ko", input.intro || "", JSON.stringify(input.layouts || [])],
       );
     } catch (error) {
       const message = error instanceof Error ? error.message : "";
@@ -1232,7 +1233,7 @@ export async function getLookbooksForDesigner(designerId: string): Promise<Lookb
 export async function updateLookbookForDesigner(
   designerId: string,
   id: string,
-  input: Partial<{ title: string; tagline: string; items: LookbookItem[]; status: "published" | "hidden" }>,
+  input: Partial<{ title: string; tagline: string; items: LookbookItem[]; status: "published" | "hidden"; layouts: LookbookLayout[] }>,
 ): Promise<Lookbook | null> {
   if (!hasDatabase()) {
     requireDatabaseForProduction();
@@ -1244,6 +1245,7 @@ export async function updateLookbookForDesigner(
          tagline = COALESCE($4, tagline),
          items = COALESCE($5::jsonb, items),
          status = COALESCE($6, status),
+         layouts = COALESCE($7::jsonb, layouts),
          updated_at = now()
      WHERE id = $2 AND designer_id = $1
      RETURNING *`,
@@ -1254,6 +1256,7 @@ export async function updateLookbookForDesigner(
       input.tagline ?? null,
       input.items ? JSON.stringify(input.items) : null,
       input.status ?? null,
+      input.layouts ? JSON.stringify(input.layouts) : null,
     ],
   );
 }

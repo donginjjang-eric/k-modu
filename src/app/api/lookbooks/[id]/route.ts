@@ -1,7 +1,7 @@
 // 디자이너 룩북 수정·삭제 API (본인 소유만)
 import { getApprovedDesignerForApi } from "@/lib/auth";
 import { deleteLookbookForDesigner, updateLookbookForDesigner } from "@/lib/db";
-import { sanitizeLookbookItems } from "@/lib/lookbooks";
+import { sanitizeLookbookItems, sanitizeLookbookLayouts } from "@/lib/lookbooks";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const auth = await getApprovedDesignerForApi();
@@ -18,9 +18,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     if (!items) return Response.json({ ok: false, error: "이미지를 1장 이상(최대 40장) 선택해주세요." }, { status: 400 });
   }
   if (title === "") return Response.json({ ok: false, error: "룩북 제목을 입력해주세요." }, { status: 400 });
+  const layouts = body.layouts !== undefined ? sanitizeLookbookLayouts(body.layouts) : undefined;
 
   try {
-    const lookbook = await updateLookbookForDesigner(auth.designer.id, id, { title, tagline, items, status });
+    const lookbook = await updateLookbookForDesigner(auth.designer.id, id, { title, tagline, items, status, layouts });
     if (!lookbook) return Response.json({ ok: false, error: "룩북을 찾을 수 없어요." }, { status: 404 });
     return Response.json({ ok: true, lookbook });
   } catch (error) {

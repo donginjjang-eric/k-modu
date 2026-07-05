@@ -172,3 +172,6 @@ CREATE INDEX IF NOT EXISTS lookbooks_designer_idx
 -- 룩북 다국어: 언어 표시 + 룩북 전용 인트로(영어판 번역본 저장)
 ALTER TABLE lookbooks ADD COLUMN IF NOT EXISTS lang text NOT NULL DEFAULT 'ko';
 ALTER TABLE lookbooks ADD COLUMN IF NOT EXISTS intro text NOT NULL DEFAULT '';
+
+-- 룩북 페이지 레이아웃: 룩 페이지별 배치(full/duo/hero/grid) 시퀀스. 빈 배열이면 자동 배치.
+ALTER TABLE lookbooks ADD COLUMN IF NOT EXISTS layouts jsonb NOT NULL DEFAULT '[]';

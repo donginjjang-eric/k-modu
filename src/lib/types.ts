@@ -103,6 +103,9 @@ export type GeneratedLook = {
   updated_at: string;
 };
 
+// 룩 페이지 레이아웃 종류 (1장/2장/3장/4장)
+export type LookbookLayout = "full" | "duo" | "hero" | "grid";
+
 // 룩북 구성 항목 — 선택 시점의 이미지 스냅샷을 저장해 원본 변경과 무관하게 유지
 export type LookbookItem = {
   type: "look" | "portfolio" | "product";
@@ -121,6 +124,7 @@ export type Lookbook = {
   status: "published" | "hidden";
   lang: "ko" | "en";
   intro: string;
+  layouts: LookbookLayout[];
   items: LookbookItem[];
   created_at: string;
   updated_at: string;

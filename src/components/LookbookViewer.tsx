@@ -2,18 +2,9 @@
 
 // 룩북 매거진 뷰어: 페이지 스냅 스크롤 + 키보드 넘김 + 페이지 카운터 + 인쇄(PDF)
 import { useEffect, useRef, useState } from "react";
-import type { LookbookItem } from "@/lib/types";
+import type { MagazineItem, MagazinePage } from "@/lib/lookbook-pages";
 
-export type MagazineItem = LookbookItem & { no?: number };
-
-export type MagazinePage =
-  | { kind: "cover" }
-  | { kind: "intro" }
-  | { kind: "full"; items: MagazineItem[] }
-  | { kind: "duo"; items: MagazineItem[] }
-  | { kind: "hero"; items: MagazineItem[] }
-  | { kind: "index"; items: MagazineItem[] }
-  | { kind: "back" };
+export type { MagazineItem, MagazinePage };
 
 type Props = {
   brand: string;
@@ -155,6 +146,20 @@ export default function LookbookViewer(props: Props) {
                     <figure key={i}>
                       <Media item={item} />
                       <figcaption className="lbm-cap"><b>{lookNo(item)}</b>{item.label ? <span>{item.label}</span> : null}</figcaption>
+                    </figure>
+                  ))}
+                </div>
+              </section>
+            );
+          }
+          if (page.kind === "grid") {
+            return (
+              <section className="lbm-pg lbm-gridpg" key={index}>
+                <div className="lbm-grid-grid">
+                  {page.items.map((item, i) => (
+                    <figure key={i}>
+                      <Media item={item} />
+                      <figcaption className="lbm-cap"><b>{lookNo(item)}</b></figcaption>
                     </figure>
                   ))}
                 </div>

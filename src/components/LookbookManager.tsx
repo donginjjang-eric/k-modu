@@ -1,9 +1,15 @@
 "use client";
 
-// 룩북 편집기: 사진 업로드/승인 자산 선택 → 순서 조정 → 게시(공개 링크 발급) + 내 룩북 목록 관리
-import { useMemo, useRef, useState } from "react";
+// 룩북 편집기: 사진 업로드/자산 선택 → 페이지 미리보기에서 레이아웃·사진 배치 → 게시 + 내 룩북 관리
+import { useEffect, useMemo, useRef, useState } from "react";
 import NavIcon from "@/components/NavIcons";
-import type { Lookbook, LookbookItem } from "@/lib/types";
+import { LAYOUT_COUNT, buildLookbookPages, extractLookLayouts, isLookPage } from "@/lib/lookbook-pages";
+import type { Lookbook, LookbookItem, LookbookLayout } from "@/lib/types";
+
+const PAGE_LABEL: Record<string, string> = {
+  cover: "표지", intro: "인트로", full: "룩 1장", duo: "룩 2장", hero: "룩 3장", grid: "룩 4장", index: "상품", back: "백커버",
+};
+const LAYOUT_LABEL: Record<LookbookLayout, string> = { full: "1장", duo: "2장", hero: "3장", grid: "4장" };
 
 type Assets = {
   looks: { id: string; imageUrl: string; videoUrl: string | null }[];
@@ -25,10 +31,12 @@ export default function LookbookManager({
   brandName,
   assets,
   initialLookbooks,
+  hasIntro = true,
 }: {
   brandName: string;
   assets: Assets;
   initialLookbooks: Lookbook[];
+  hasIntro?: boolean;
 }) {
   const [lookbooks, setLookbooks] = useState(initialLookbooks);
   const [title, setTitle] = useState("");
@@ -131,7 +139,53 @@ export default function LookbookManager({
     return map;
   }, [items]);
 
+  // ── 페이지 편집: 자동 초안 + 페이지별 레이아웃 오버라이드 + 슬롯 사진 교체
+  const [layouts, setLayouts] = useState<LookbookLayout[]>([]);
+  const [selectedPageIdx, setSelectedPageIdx] = useState<number | null>(null);
+  // 사진 교체 대기 중인 슬롯 (items 배열의 전역 인덱스)
+  const [pickSlotIdx, setPickSlotIdx] = useState<number | null>(null);
+
+  const built = useMemo(() => buildLookbookPages(items, { hasIntro, layouts }), [items, layouts, hasIntro]);
+  const selectedPage = selectedPageIdx !== null ? built.pages[selectedPageIdx] : null;
+
+  // 사진 수가 줄어 페이지가 사라지면 선택을 안전하게 보정
+  useEffect(() => {
+    if (selectedPageIdx !== null && selectedPageIdx >= built.pages.length) {
+      setSelectedPageIdx(built.pages.length ? built.pages.length - 1 : null);
+    }
+  }, [built.pages.length, selectedPageIdx]);
+
+  const changeLayout = (lookPageOrder: number, kind: LookbookLayout) => {
+    const current = extractLookLayouts(built.pages);
+    current[lookPageOrder] = kind;
+    setLayouts(current);
+    setPickSlotIdx(null);
+  };
+
+  const removeAt = (globalIndex: number) => {
+    setItems((current) => current.filter((_, index) => index !== globalIndex));
+    setPickSlotIdx(null);
+  };
+
   const toggleItem = (item: LookbookItem) => {
+    // 슬롯 교체 모드: 자산을 누르면 그 자리에 사진이 들어간다 (이미 담긴 사진이면 자리 맞교환)
+    if (pickSlotIdx !== null) {
+      setItems((current) => {
+        if (pickSlotIdx >= current.length) return current;
+        const next = [...current];
+        const existing = next.findIndex((entry) => itemKey(entry) === itemKey(item));
+        if (existing === pickSlotIdx) return current;
+        if (existing >= 0) {
+          [next[pickSlotIdx], next[existing]] = [next[existing], next[pickSlotIdx]];
+        } else {
+          next[pickSlotIdx] = item;
+        }
+        return next;
+      });
+      setPickSlotIdx(null);
+      setMessage({ text: "사진을 바꿨어요. 페이지 미리보기에서 확인해보세요.", ok: true });
+      return;
+    }
     setItems((current) => {
       const key = itemKey(item);
       if (current.some((entry) => itemKey(entry) === key)) return current.filter((entry) => itemKey(entry) !== key);
@@ -143,20 +197,13 @@ export default function LookbookManager({
     });
   };
 
-  const moveItem = (index: number, direction: -1 | 1) => {
-    setItems((current) => {
-      const next = [...current];
-      const target = index + direction;
-      if (target < 0 || target >= next.length) return current;
-      [next[index], next[target]] = [next[target], next[index]];
-      return next;
-    });
-  };
-
   const resetEditor = () => {
     setTitle("");
     setTagline("");
     setItems([]);
+    setLayouts([]);
+    setSelectedPageIdx(null);
+    setPickSlotIdx(null);
     setEditingId(null);
   };
 
@@ -165,6 +212,9 @@ export default function LookbookManager({
     setTitle(lookbook.title);
     setTagline(lookbook.tagline);
     setItems(lookbook.items);
+    setLayouts(lookbook.layouts || []);
+    setSelectedPageIdx(null);
+    setPickSlotIdx(null);
     setPublishedSlug(null);
     setMessage(null);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -195,7 +245,7 @@ export default function LookbookManager({
       const response = await fetch(editingId ? `/api/lookbooks/${editingId}` : "/api/lookbooks", {
         method: editingId ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: title.trim(), tagline: tagline.trim(), items }),
+        body: JSON.stringify({ title: title.trim(), tagline: tagline.trim(), items, layouts: extractLookLayouts(built.pages) }),
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok || !result.lookbook) throw new Error(result.error || "저장에 실패했어요. 다시 시도해주세요.");
@@ -365,20 +415,97 @@ export default function LookbookManager({
 
           {items.length ? (
             <div className="lb-composition">
-              <p className="lb-comp-head">구성 <b>{items.length}장</b> — 순서대로 룩북에 실려요</p>
-              <div className="lb-comp-list">
-                {items.map((item, index) => (
-                  <div className="lb-comp-item" key={itemKey(item)}>
-                    <img src={item.imageUrl} alt="" />
-                    <span className="lb-comp-no">{index + 1}</span>
-                    <div className="lb-comp-actions">
-                      <button type="button" aria-label="앞으로" disabled={index === 0} onClick={() => moveItem(index, -1)}>←</button>
-                      <button type="button" aria-label="뒤로" disabled={index === items.length - 1} onClick={() => moveItem(index, 1)}>→</button>
-                      <button type="button" aria-label="빼기" onClick={() => toggleItem(item)}>✕</button>
-                    </div>
-                  </div>
+              <p className="lb-comp-head">
+                페이지 미리보기 <b>{built.pages.length}페이지 · 사진 {items.length}장</b> — 페이지를 누르면 레이아웃과 사진을 바꿀 수 있어요
+              </p>
+
+              <div className="lbps" role="tablist" aria-label="룩북 페이지">
+                {built.pages.map((page, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    className={`lbps-pg${selectedPageIdx === index ? " is-active" : ""}`}
+                    onClick={() => { setSelectedPageIdx(selectedPageIdx === index ? null : index); setPickSlotIdx(null); }}
+                  >
+                    <span className={`lbps-mini k-${page.kind}`}>
+                      {page.kind === "intro" ? (
+                        <i className="lbps-lines" aria-hidden="true" />
+                      ) : page.kind === "back" ? (
+                        <i className="lbps-qr" aria-hidden="true">QR</i>
+                      ) : (
+                        page.items.slice(0, 4).map((item, i) => <img key={i} src={item.imageUrl} alt="" />)
+                      )}
+                    </span>
+                    <small>{index + 1}. {PAGE_LABEL[page.kind]}</small>
+                  </button>
                 ))}
               </div>
+
+              {selectedPage ? (
+                <div className="lbpe">
+                  {isLookPage(selectedPage.kind) ? (
+                    <>
+                      <p className="lbpe-head">레이아웃 고르기</p>
+                      <div className="lbpe-presets">
+                        {(Object.keys(LAYOUT_LABEL) as LookbookLayout[]).map((kind) => {
+                          const lookOrder = built.pages.slice(0, selectedPageIdx!).filter((page) => isLookPage(page.kind)).length;
+                          return (
+                            <button
+                              key={kind}
+                              type="button"
+                              className={selectedPage.kind === kind ? "is-active" : ""}
+                              onClick={() => changeLayout(lookOrder, kind)}
+                            >
+                              <span className={`lbpe-glyph g-${kind}`} aria-hidden="true">
+                                {Array.from({ length: LAYOUT_COUNT[kind] }).map((_, i) => <i key={i} />)}
+                              </span>
+                              {LAYOUT_LABEL[kind]}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <p className="lbpe-head">사진 바꾸기 — 자리를 누른 뒤, 아래 사진 목록에서 넣을 사진을 누르세요</p>
+                      <div className="lbpe-slots">
+                        {selectedPage.itemIndexes.map((globalIndex) => (
+                          <div className={`lbpe-slot${pickSlotIdx === globalIndex ? " is-picking" : ""}`} key={globalIndex}>
+                            <button type="button" className="pic" onClick={() => setPickSlotIdx(pickSlotIdx === globalIndex ? null : globalIndex)}>
+                              <img src={items[globalIndex]?.imageUrl} alt="" />
+                              {pickSlotIdx === globalIndex ? <span className="picking-tag">바꿀 자리</span> : null}
+                            </button>
+                            <button type="button" className="x" aria-label="이 사진 빼기" onClick={() => removeAt(globalIndex)}>✕</button>
+                          </div>
+                        ))}
+                      </div>
+                      {pickSlotIdx !== null ? (
+                        <p className="lbpe-pick-hint">이제 위 사진 목록에서 사진을 누르면 이 자리에 들어가요. (같은 자리를 다시 누르면 취소)</p>
+                      ) : null}
+                    </>
+                  ) : selectedPage.kind === "cover" ? (
+                    <>
+                      <p className="lbpe-head">표지 사진 — 누른 뒤 사진 목록에서 바꿀 사진을 고르세요</p>
+                      <div className="lbpe-slots">
+                        {built.coverItemIndex >= 0 ? (
+                          <div className={`lbpe-slot${pickSlotIdx === built.coverItemIndex ? " is-picking" : ""}`}>
+                            <button type="button" className="pic" onClick={() => setPickSlotIdx(pickSlotIdx === built.coverItemIndex ? null : built.coverItemIndex)}>
+                              <img src={items[built.coverItemIndex]?.imageUrl} alt="" />
+                              {pickSlotIdx === built.coverItemIndex ? <span className="picking-tag">바꿀 자리</span> : null}
+                            </button>
+                          </div>
+                        ) : null}
+                      </div>
+                      <p className="lbpe-note">표지에는 브랜드명·제목·무드 문구가 자동으로 얹혀요.</p>
+                    </>
+                  ) : (
+                    <p className="lbpe-note">
+                      {selectedPage.kind === "intro"
+                        ? "브랜드 프로필의 소개문·무드로 자동으로 만들어지는 페이지예요. 브랜드 프로필에서 수정할 수 있어요."
+                        : selectedPage.kind === "index"
+                          ? "상품 사진들이 자동으로 정리되는 바이어용 페이지예요. 상품은 위 '상품' 탭에서 담고 빼면 돼요."
+                          : "협업 제안 버튼과 QR코드가 자동으로 들어가는 마지막 페이지예요."}
+                    </p>
+                  )}
+                </div>
+              ) : null}
             </div>
           ) : null}
 

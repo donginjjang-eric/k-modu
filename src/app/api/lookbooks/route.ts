@@ -1,7 +1,7 @@
 // 디자이너 룩북 목록 조회·생성 API (본인 소유만, 승인 디자이너 전용)
 import { getApprovedDesignerForApi } from "@/lib/auth";
 import { createLookbookForDesigner, getLookbooksForDesigner } from "@/lib/db";
-import { sanitizeLookbookItems } from "@/lib/lookbooks";
+import { sanitizeLookbookItems, sanitizeLookbookLayouts } from "@/lib/lookbooks";
 
 export async function GET() {
   const auth = await getApprovedDesignerForApi();
@@ -18,12 +18,13 @@ export async function POST(request: Request) {
   const title = String(body.title || "").trim().slice(0, 60);
   const tagline = String(body.tagline || "").trim().slice(0, 120);
   const items = sanitizeLookbookItems(body.items);
+  const layouts = sanitizeLookbookLayouts(body.layouts);
 
   if (!title) return Response.json({ ok: false, error: "룩북 제목을 입력해주세요." }, { status: 400 });
   if (!items) return Response.json({ ok: false, error: "이미지를 1장 이상(최대 40장) 선택해주세요." }, { status: 400 });
 
   try {
-    const lookbook = await createLookbookForDesigner({ designerId: auth.designer.id, title, tagline, items });
+    const lookbook = await createLookbookForDesigner({ designerId: auth.designer.id, title, tagline, items, layouts });
     if (!lookbook) throw new Error("룩북을 저장하지 못했어요.");
     return Response.json({ ok: true, lookbook });
   } catch (error) {
