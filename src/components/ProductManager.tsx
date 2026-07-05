@@ -176,19 +176,32 @@ export default function ProductManager({ initialProducts }: { initialProducts: P
 
   const toggleVisibility = async (product: Product) => {
     const next = product.status === "active" ? "draft" : "active";
-    const res = await fetch(`/api/products/${product.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: next }),
-    });
-    const result = await res.json();
-    if (res.ok) setProducts((current) => current.map((item) => (item.id === product.id ? result.product : item)));
+    try {
+      const res = await fetch(`/api/products/${product.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: next }),
+      });
+      const result = await res.json().catch(() => ({}));
+      if (!res.ok || !result.product) throw new Error(result.error || "공개 상태 변경에 실패했어요. 잠시 후 다시 시도해주세요.");
+      setProducts((current) => current.map((item) => (item.id === product.id ? result.product : item)));
+    } catch (error) {
+      setMsg({ text: error instanceof Error ? error.message : "공개 상태 변경에 실패했어요.", ok: false });
+    }
   };
 
   const remove = async (product: Product) => {
     if (!window.confirm("이 상품을 삭제할까요?")) return;
-    const res = await fetch(`/api/products/${product.id}`, { method: "DELETE" });
-    if (res.ok) setProducts((current) => current.filter((item) => item.id !== product.id));
+    try {
+      const res = await fetch(`/api/products/${product.id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const result = await res.json().catch(() => ({}));
+        throw new Error(result.error || "삭제에 실패했어요. 잠시 후 다시 시도해주세요.");
+      }
+      setProducts((current) => current.filter((item) => item.id !== product.id));
+    } catch (error) {
+      setMsg({ text: error instanceof Error ? error.message : "삭제에 실패했어요.", ok: false });
+    }
   };
 
   const canSave = Boolean(imageUrl && form.name.trim() && !saving);

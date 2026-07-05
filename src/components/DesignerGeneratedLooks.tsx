@@ -66,17 +66,25 @@ export default function DesignerGeneratedLooks({ initialLooks, enabled = false }
 
   const updateStatus = async (look: GeneratedLook, status: "generated" | "hidden") => {
     setSavingId(look.id);
-    const response = await fetch(`/api/generated-looks/${look.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-    });
-    const result = await response.json();
-    setSavingId("");
-    if (!response.ok) return;
-
-    setLooks((current) => current.map((item) => (item.id === look.id ? result.generatedLook : item)));
-    setActiveLook((current) => current && current.id === look.id ? result.generatedLook : current);
+    setVideoError("");
+    try {
+      const response = await fetch(`/api/generated-looks/${look.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.generatedLook) {
+        setVideoError(result.error || "상태 변경에 실패했어요. 잠시 후 다시 시도해주세요.");
+        return;
+      }
+      setLooks((current) => current.map((item) => (item.id === look.id ? result.generatedLook : item)));
+      setActiveLook((current) => current && current.id === look.id ? result.generatedLook : current);
+    } catch {
+      setVideoError("네트워크 오류로 변경하지 못했어요. 다시 시도해주세요.");
+    } finally {
+      setSavingId("");
+    }
   };
 
   const startVideo = async (look: GeneratedLook) => {
