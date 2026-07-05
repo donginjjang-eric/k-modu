@@ -507,17 +507,34 @@ createServer(async (req, res) => {
     return;
   }
 
+  const serveFile = (fp) => {
+    res.writeHead(200, {
+      "Content-Type": types[path.extname(fp).toLowerCase()] || "application/octet-stream",
+    });
+    createReadStream(fp).pipe(res);
+  };
+
   stat(filePath, (error, stats) => {
     if (error || !stats.isFile()) {
+      // 확장자 없는 경로(/creators 등)는 .html 파일로 폴백 — 배포 환경 clean URL과 동일 동작
+      const htmlPath = `${filePath}.html`;
+      if (!path.extname(filePath) && htmlPath.startsWith(root)) {
+        stat(htmlPath, (htmlError, htmlStats) => {
+          if (htmlError || !htmlStats.isFile()) {
+            res.writeHead(404);
+            res.end("Not found");
+            return;
+          }
+          serveFile(htmlPath);
+        });
+        return;
+      }
       res.writeHead(404);
       res.end("Not found");
       return;
     }
 
-    res.writeHead(200, {
-      "Content-Type": types[path.extname(filePath).toLowerCase()] || "application/octet-stream",
-    });
-    createReadStream(filePath).pipe(res);
+    serveFile(filePath);
   });
 }).listen(port, "0.0.0.0", () => {
   console.log(`K-MODU local server: http://localhost:${port}`);
