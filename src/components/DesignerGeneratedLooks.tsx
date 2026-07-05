@@ -76,9 +76,27 @@ export default function DesignerGeneratedLooks({ initialLooks, enabled = false }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // 상태 변경 확인 창 (초보자 가이드 겸용) + 완료 토스트
+  const [confirmAction, setConfirmAction] = useState<{ look: GeneratedLook; next: "generated" | "hidden" } | null>(null);
+  const [toast, setToast] = useState<{ text: string; tone?: "success" | "warning" } | null>(null);
+
+  useEffect(() => {
+    if (!toast) return;
+    const timer = window.setTimeout(() => setToast(null), 3600);
+    return () => window.clearTimeout(timer);
+  }, [toast]);
+
+  useEffect(() => {
+    if (!confirmAction) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setConfirmAction(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [confirmAction]);
+
   const updateStatus = async (look: GeneratedLook, status: "generated" | "hidden") => {
     setSavingId(look.id);
-    setVideoError("");
     try {
       const response = await fetch(`/api/generated-looks/${look.id}`, {
         method: "PATCH",
@@ -87,13 +105,19 @@ export default function DesignerGeneratedLooks({ initialLooks, enabled = false }
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok || !result.generatedLook) {
-        setVideoError(result.error || "상태 변경에 실패했어요. 잠시 후 다시 시도해주세요.");
+        setToast({ text: result.error || "상태 변경에 실패했어요. 잠시 후 다시 시도해주세요.", tone: "warning" });
         return;
       }
       setLooks((current) => current.map((item) => (item.id === look.id ? result.generatedLook : item)));
       setActiveLook((current) => current && current.id === look.id ? result.generatedLook : current);
+      setToast({
+        text: status === "generated"
+          ? "공개 요청 완료! 관리자 검수가 끝나면 자동으로 공개 페이지에 올라가요."
+          : "비공개로 바꿨어요. 공개 페이지에서 내려가고, 언제든 다시 공개 요청할 수 있어요.",
+        tone: "success",
+      });
     } catch {
-      setVideoError("네트워크 오류로 변경하지 못했어요. 다시 시도해주세요.");
+      setToast({ text: "네트워크 오류로 변경하지 못했어요. 다시 시도해주세요.", tone: "warning" });
     } finally {
       setSavingId("");
     }
@@ -174,7 +198,7 @@ export default function DesignerGeneratedLooks({ initialLooks, enabled = false }
                 <button
                   type="button"
                   disabled={savingId === look.id}
-                  onClick={() => updateStatus(look, look.status === "hidden" ? "generated" : "hidden")}
+                  onClick={() => setConfirmAction({ look, next: look.status === "hidden" ? "generated" : "hidden" })}
                 >
                   {look.status === "hidden" ? "공개 요청" : "비공개"}
                 </button>
@@ -278,6 +302,58 @@ export default function DesignerGeneratedLooks({ initialLooks, enabled = false }
               </button>
             </div>
           </div>
+        </div>
+      ) : null}
+
+      {/* 공개/비공개 확인 창 — 무엇이 일어나는지 3단계로 안내 (초보자 가이드 겸용) */}
+      {confirmAction ? (
+        <div className="look-modal" role="alertdialog" aria-modal="true" aria-label="공개 상태 변경 확인">
+          <button type="button" className="look-modal-backdrop" onClick={() => setConfirmAction(null)} />
+          <div className="look-notice-panel">
+            {confirmAction.next === "generated" ? (
+              <>
+                <h3>이 룩을 공개 요청할까요?</h3>
+                <p>공개 요청하면 아래 순서로 진행돼요. 따로 하실 일은 없어요.</p>
+                <ol className="look-flow" style={{ marginTop: 14 }}>
+                  <li className="is-active"><span className="n">1</span>공개 요청<small>지금 이 단계</small></li>
+                  <li><span className="n">2</span>관리자 검수<small>보통 하루 안</small></li>
+                  <li><span className="n">3</span>공개 페이지 노출<small>크리에이터에게 보여요</small></li>
+                </ol>
+                <p style={{ marginTop: 12 }}>승인되면 크리에이터가 보는 공개 페이지에 자동으로 올라가요.</p>
+              </>
+            ) : (
+              <>
+                <h3>이 룩을 비공개로 바꿀까요?</h3>
+                <p>
+                  비공개로 바꾸면 <b>공개 페이지에서 내려가고 나만 볼 수 있어요.</b><br />
+                  룩이 지워지는 게 아니라서, 언제든 다시 공개 요청할 수 있어요.
+                </p>
+              </>
+            )}
+            <div className="look-notice-actions">
+              <button type="button" className="ghost" onClick={() => setConfirmAction(null)}>취소</button>
+              <button
+                type="button"
+                className="primary"
+                disabled={savingId === confirmAction.look.id}
+                onClick={() => {
+                  const { look, next } = confirmAction;
+                  setConfirmAction(null);
+                  updateStatus(look, next);
+                }}
+              >
+                {confirmAction.next === "generated" ? "공개 요청하기" : "비공개로 바꾸기"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {/* 상태 변경 결과 토스트 */}
+      {toast ? (
+        <div className={`styling-toast ${toast.tone || ""}`} role="status" aria-live="polite">
+          <span className="styling-toast-ic" aria-hidden="true">{toast.tone === "warning" ? "!" : "✓"}</span>
+          {toast.text}
         </div>
       ) : null}
 
