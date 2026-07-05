@@ -21,24 +21,31 @@ const ADMIN_NAV: NavItem[] = [
   { href: "/dashboard/admin/generated-looks", icon: "image", label: "AI 결과 검수", short: "AI" },
 ];
 
+// href별 처리 대기 건수 — 있으면 메뉴 옆에 뱃지로 표시
+export type AdminNavBadges = Record<string, number | undefined>;
+
 function isActive(pathname: string, href: string) {
   if (href === "/dashboard/admin") return pathname === href;
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function AdminSideNav({ email }: { email: string }) {
+export function AdminSideNav({ email, badges = {} }: { email: string; badges?: AdminNavBadges }) {
   const pathname = usePathname();
   const initial = (email || "A").trim().charAt(0).toUpperCase();
 
   return (
     <aside className="st-side">
       <nav>
-        {ADMIN_NAV.map((item) => (
-          <Link key={item.href} href={item.href} className={isActive(pathname, item.href) ? "is-active" : ""}>
-            <span className="ic"><NavIcon name={item.icon} /></span> {item.label}
-            {item.tag ? <span className="tag">{item.tag}</span> : null}
-          </Link>
-        ))}
+        {ADMIN_NAV.map((item) => {
+          const badge = badges[item.href];
+          return (
+            <Link key={item.href} href={item.href} className={isActive(pathname, item.href) ? "is-active" : ""}>
+              <span className="ic"><NavIcon name={item.icon} /></span> {item.label}
+              {badge ? <span className="nav-badge">{badge > 99 ? "99+" : badge}</span> : null}
+              {item.tag ? <span className="tag">{item.tag}</span> : null}
+            </Link>
+          );
+        })}
       </nav>
       <div className="st-account-card admin">
         <div className="st-account-avatar">{initial}</div>
@@ -55,16 +62,22 @@ export function AdminSideNav({ email }: { email: string }) {
   );
 }
 
-export function AdminTabBar() {
+export function AdminTabBar({ badges = {} }: { badges?: AdminNavBadges }) {
   const pathname = usePathname();
   return (
     <nav className="st-tabbar">
-      {ADMIN_NAV.map((item) => (
-        <Link key={item.href} href={item.href} className={isActive(pathname, item.href) ? "is-active" : ""}>
-          <span className="ic"><NavIcon name={item.icon} /></span>
-          {item.short}
-        </Link>
-      ))}
+      {ADMIN_NAV.map((item) => {
+        const badge = badges[item.href];
+        return (
+          <Link key={item.href} href={item.href} className={isActive(pathname, item.href) ? "is-active" : ""}>
+            <span className="ic">
+              <NavIcon name={item.icon} />
+              {badge ? <i className="tab-badge">{badge > 99 ? "99+" : badge}</i> : null}
+            </span>
+            {item.short}
+          </Link>
+        );
+      })}
     </nav>
   );
 }

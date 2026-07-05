@@ -609,6 +609,17 @@
 .admin-stats { grid-template-columns: repeat(5,1fr); margin-bottom: 18px; }
 .st-stat.is-alert { border-color: #c9a227; background: #fffaf0; }
 .st-stat.is-alert .n { color: #946c00; }
+/* 지표 카드가 링크일 때 — 텍스트 스타일 유지 + 클릭 가능함을 보여주는 호버 */
+a.st-stat { display: block; color: inherit; text-decoration: none; transition: border-color .15s ease, transform .15s ease, box-shadow .15s ease; }
+a.st-stat:hover { border-color: #94a3b8; transform: translateY(-2px); box-shadow: 0 14px 32px rgba(17,24,39,.08); }
+/* 사이드 메뉴 처리 대기 뱃지 */
+.st-side .nav-badge { margin-left: auto; min-width: 20px; padding: 2px 7px; border-radius: 999px; background: #b42318; color: #fff; font-size: 11px; font-weight: 900; line-height: 1.3; text-align: center; }
+.st-side a.is-active .nav-badge { background: #fff; color: #b42318; }
+/* 모바일 탭바 뱃지 — 아이콘 우상단 */
+.st-tabbar .ic { position: relative; }
+.st-tabbar .tab-badge { position: absolute; top: -6px; right: -12px; min-width: 16px; padding: 1px 4px; border-radius: 999px; background: #b42318; color: #fff; font-size: 9px; font-style: normal; font-weight: 900; line-height: 1.4; text-align: center; }
+/* 상품 검수 실패 알림 */
+.apm-notice { margin: -6px 0 12px; color: #b42318; font-size: 13px; font-weight: 800; }
 .admin-stats-label { margin: 0 0 10px; color: var(--muted); font-size: 12px; font-weight: 900; letter-spacing: .04em; }
 .admin-stats-sub { grid-template-columns: repeat(4,1fr); margin-bottom: 0; }
 .admin-stats-sub .st-stat { padding: 14px 16px; background: rgba(255,255,255,.6); }
