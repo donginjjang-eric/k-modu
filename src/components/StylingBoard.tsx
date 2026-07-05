@@ -60,7 +60,27 @@ export default function StylingBoard({
   const [resultLabel, setResultLabel] = useState("");
   // 디자이너가 입력하는 스타일링 프롬프트 (비우면 브랜드 무드 기본값)
   const [prompt, setPrompt] = useState("");
-  const [modal, setModal] = useState<{ title: string; message: string; tone?: "success" | "warning" | "error" } | null>(null);
+  // 모달은 결과(완료·실패)처럼 주의가 필요한 순간에만. imageUrl은 완료 썸네일, retry는 다시 시도 버튼 노출.
+  const [modal, setModal] = useState<{ title: string; message: string; tone?: "success" | "warning" | "error"; imageUrl?: string; retry?: boolean } | null>(null);
+  // 흐름을 막지 않는 안내(시작·선택 경고·초기화)는 자동으로 사라지는 토스트로
+  const [toast, setToast] = useState<{ text: string; tone?: "success" | "warning" } | null>(null);
+
+  // 토스트 3.2초 후 자동 닫힘
+  useEffect(() => {
+    if (!toast) return;
+    const timer = window.setTimeout(() => setToast(null), 3200);
+    return () => window.clearTimeout(timer);
+  }, [toast]);
+
+  // ESC로 모달 닫기
+  useEffect(() => {
+    if (!modal) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setModal(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [modal]);
   // 생성 대기 UX: 경과 시간(초) 카운트 + 완료 시 원래 탭 제목 복원용
   const [elapsed, setElapsed] = useState(0);
   const titleRef = useRef("");
@@ -112,9 +132,16 @@ export default function StylingBoard({
     try { sessionStorage.removeItem(PENDING_TRYON_KEY); } catch { /* 무시 */ }
     setPreviewImage(finalResult.imageUrl);
     setResultLabel(finalResult.cacheHit ? "저장된 룩" : "새 AI 룩");
-    const doneMessage = finalResult.cacheHit ? "저장된 AI 룩을 불러왔습니다." : "AI 룩 이미지가 생성되었습니다.";
+    const doneMessage = finalResult.cacheHit
+      ? "같은 조합으로 만들어 둔 룩이 있어 바로 불러왔어요."
+      : "왼쪽 미리보기에서 확인하고, '내가 만든 룩'에 자동 저장됐어요.";
     setStatusText(doneMessage);
-    setModal({ title: "AI 룩 준비 완료", message: doneMessage, tone: "success" });
+    setModal({
+      title: finalResult.cacheHit ? "저장된 AI 룩을 불러왔어요" : "AI 룩이 완성됐어요",
+      message: doneMessage,
+      tone: "success",
+      imageUrl: finalResult.imageUrl,
+    });
     document.title = "✅ AI 룩 완성 — K-MODU";
     window.setTimeout(() => { document.title = titleRef.current || "K-MODU"; }, 10000);
     playChime();
@@ -158,15 +185,15 @@ export default function StylingBoard({
         return groupProductCategory(selectedProduct?.category || "") === productCategory;
       }).length;
       if (selectedInCategory >= categoryLimit) {
-        const message = `${productCategory}는 최대 ${categoryLimit}개까지 선택할 수 있어요. 상의 1개, 하의 1개, 악세서리 2개 조합으로 선택해주세요.`;
+        const message = `${productCategory}는 최대 ${categoryLimit}개까지 선택할 수 있어요. 먼저 선택된 ${productCategory}를 해제해주세요.`;
         setStatusText(message);
-        setModal({ title: "카테고리 선택 확인", message, tone: "warning" });
+        setToast({ text: message, tone: "warning" });
         return current;
       }
       if (current.length >= maxAiProducts) {
-        const message = "상품은 최대 4개까지 조합할 수 있어요. 다른 상품을 고르려면 선택된 상품을 해제하거나 초기화해주세요.";
+        const message = "상품은 최대 4개까지 조합할 수 있어요. 선택된 상품을 해제하거나 초기화해주세요.";
         setStatusText(message);
-        setModal({ title: "선택 개수 확인", message, tone: "warning" });
+        setToast({ text: message, tone: "warning" });
         return current;
       }
       return [...current, productId];
@@ -177,9 +204,9 @@ export default function StylingBoard({
     setSelectedProductIds([]);
     setPreviewImage(designer.heroImage);
     setResultLabel("");
-    const message = "선택을 초기화했습니다. 상품 1~4개를 다시 골라 AI 룩을 생성해보세요.";
+    const message = "선택을 초기화했어요. 상품을 다시 골라주세요.";
     setStatusText(message);
-    setModal({ title: "선택 초기화 완료", message, tone: "success" });
+    setToast({ text: message, tone: "success" });
   };
 
   const pollGeneratedLook = async (cacheKey: string) => {
@@ -245,9 +272,8 @@ export default function StylingBoard({
 
     setIsGenerating(true);
     beginWaitUx();
-    const startMessage = "AI 룩 생성 중입니다. 보통 1~3분 정도 걸려요. 기다리는 동안 다른 탭을 보셔도 완료되면 알려드려요.";
-    setStatusText(startMessage);
-    setModal({ title: "AI 룩 생성을 시작했습니다", message: startMessage, tone: "success" });
+    setStatusText("AI 룩 생성 중입니다. 보통 1~3분 정도 걸려요. 다른 탭을 보셔도 완료되면 알려드려요.");
+    setToast({ text: "AI 룩 생성을 시작했어요 — 완료되면 소리로 알려드려요", tone: "success" });
     setResultLabel("");
 
     try {
@@ -286,7 +312,7 @@ export default function StylingBoard({
       document.title = titleRef.current || document.title;
       const errorMessage = error instanceof Error ? error.message : "AI 룩 생성에 실패했습니다.";
       setStatusText(errorMessage);
-      setModal({ title: "AI 생성 실패", message: errorMessage, tone: "error" });
+      setModal({ title: "AI 룩 생성에 실패했어요", message: errorMessage, tone: "error", retry: true });
     } finally {
       setIsGenerating(false);
     }
@@ -413,14 +439,33 @@ export default function StylingBoard({
       </div>
 
       {modal ? (
-        <div className="ai-notice-modal" role="dialog" aria-modal="true" aria-labelledby="aiNoticeTitle">
+        <div className="ai-notice-modal" role="alertdialog" aria-modal="true" aria-labelledby="aiNoticeTitle" aria-describedby="aiNoticeDesc">
           <button className="ai-notice-backdrop" type="button" aria-label="닫기" onClick={() => setModal(null)} />
           <div className={`ai-notice-card ${modal.tone || ""}`}>
-            <span className="ai-notice-mark">{modal.tone === "error" ? "!" : "AI"}</span>
+            <span className="ai-notice-mark" aria-hidden="true">{modal.tone === "error" ? "!" : "✓"}</span>
             <h2 id="aiNoticeTitle">{modal.title}</h2>
-            <p>{modal.message}</p>
-            <button type="button" onClick={() => setModal(null)}>확인</button>
+            <p id="aiNoticeDesc">{modal.message}</p>
+            {modal.imageUrl ? (
+              <img className="ai-notice-thumb" src={modal.imageUrl} alt="완성된 AI 룩 미리보기" />
+            ) : null}
+            <div className="ai-notice-actions">
+              {modal.retry ? (
+                <>
+                  <button type="button" className="ai-notice-ghost" onClick={() => setModal(null)}>닫기</button>
+                  <button type="button" onClick={() => { setModal(null); generateLook(); }}>다시 시도</button>
+                </>
+              ) : (
+                <button type="button" onClick={() => setModal(null)}>확인</button>
+              )}
+            </div>
           </div>
+        </div>
+      ) : null}
+
+      {toast ? (
+        <div className={`styling-toast ${toast.tone || ""}`} role="status" aria-live="polite">
+          <span className="styling-toast-ic" aria-hidden="true">{toast.tone === "warning" ? "!" : "✓"}</span>
+          {toast.text}
         </div>
       ) : null}
     </section>
