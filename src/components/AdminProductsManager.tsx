@@ -189,10 +189,18 @@ export default function AdminProductsManager({ products }: { products: AdminProd
                     <label className="apm-check"><input type="checkbox" checked={checked} onChange={() => toggleSelect(p.id)} /></label>
                     <div
                       className="img"
-                      style={{ backgroundImage: `url('${p.image_url}')` }}
                       onMouseEnter={(e) => showHover(e, p.image_url)}
                       onMouseLeave={hideHover}
                     >
+                      <img
+                        className="st-card-media"
+                        src={p.image_url}
+                        alt={`${p.name} 상품 이미지`}
+                        width={600}
+                        height={800}
+                        loading="lazy"
+                        decoding="async"
+                      />
                       <span className={`badge ${isPublic ? "pub" : "priv"}`}>{STATUS_LABEL[st]}</span>
                     </div>
                     <div className="b">
@@ -217,7 +225,17 @@ export default function AdminProductsManager({ products }: { products: AdminProd
                 ) : (
                   <div className={`apm-row${checked ? " is-checked" : ""}`} key={p.id}>
                     <label className="apm-check"><input type="checkbox" checked={checked} onChange={() => toggleSelect(p.id)} /></label>
-                    <div className="apm-row-thumb" style={{ backgroundImage: `url('${p.image_url}')` }} onMouseEnter={(e) => showHover(e, p.image_url)} onMouseLeave={hideHover} />
+                    <div className="apm-row-thumb" onMouseEnter={(e) => showHover(e, p.image_url)} onMouseLeave={hideHover}>
+                      <img
+                        className="st-card-media"
+                        src={p.image_url}
+                        alt={`${p.name} 상품 이미지`}
+                        width={96}
+                        height={96}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </div>
                     <div className="apm-row-name">{p.name}</div>
                     <div className="apm-row-brand">{p.designer_brand_name || "Unknown"}</div>
                     <div className="apm-row-cat">{groupCategory(p.category)}</div>
@@ -246,7 +264,9 @@ export default function AdminProductsManager({ products }: { products: AdminProd
         </div>
       ) : null}
 
-      <div className="styling-hover-preview" ref={hoverRef} aria-hidden="true"><img alt="" ref={hoverImg} /></div>
+      <div className="styling-hover-preview" ref={hoverRef} aria-hidden="true">
+        <img alt="" ref={hoverImg} width={300} height={400} loading="lazy" decoding="async" />
+      </div>
     </div>
   );
 }

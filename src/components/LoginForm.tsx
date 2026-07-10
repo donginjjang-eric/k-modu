@@ -1,7 +1,7 @@
 "use client";
 
 // 파트너 로그인: 구글 로그인 단일 방식. 로그인된 상태면 상태 카드(누구로 로그인됨 + 다음 행동)를 보여준다.
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 
 const PARAM_MESSAGES: Record<string, string> = {
   approval_required: "승인된 디자이너 계정만 사용할 수 있어요. 승인 완료 후 다시 로그인해주세요.",
@@ -21,17 +21,42 @@ type Me = {
   designer: { id: string; brandName: string; approvalStatus: string } | null;
 };
 
+declare global {
+  interface Window {
+    __kmoduLoginAuthMeRequest?: Promise<Me | null>;
+  }
+}
+
+const safeNextPathFromLocation = () => {
+  const next = new URLSearchParams(window.location.search).get("next") || "";
+  return next.startsWith("/") && !next.startsWith("//") ? next : "";
+};
+
+const googleLoginHref = (nextPath: string) =>
+  `/api/auth/google${nextPath ? `?next=${encodeURIComponent(nextPath)}` : ""}`;
+
+const loadLoginAuthState = () => {
+  if (window.__kmoduLoginAuthMeRequest) return window.__kmoduLoginAuthMeRequest;
+
+  const request: Promise<Me | null> = fetch("/api/auth/me", { cache: "no-store" })
+    .then((res) => (res.ok ? (res.json() as Promise<Me>) : null))
+    .catch(() => null);
+  window.__kmoduLoginAuthMeRequest = request;
+  return request;
+};
+
 export default function LoginForm({ googleEnabled = false }: { googleEnabled?: boolean }) {
   const [message, setMessage] = useState("");
   const [me, setMe] = useState<Me>({ user: null, designer: null });
-  // 깜빡임 방지: 로그인 상태 확인이 끝나기 전엔 폼/카드를 그리지 않는다.
-  const [checked, setChecked] = useState(false);
+  // 하이드레이션 직후 CTA를 열되, URL의 next 경로를 읽기 전 클릭되는 것은 막는다.
+  const [loginReady, setLoginReady] = useState(false);
   // 로그인 후 복귀할 사이트 내 경로 (예: /apply에서 유도된 경우)
   const [nextPath, setNextPath] = useState("");
   // 관리자 페이지 접근이 차단되어 온 경우: 계정 전환 안내를 최우선으로 보여준다.
   const [adminRequired, setAdminRequired] = useState(false);
   // 카카오톡 등 인앱 브라우저: 구글이 OAuth를 차단하므로 외부 브라우저로 탈출시킨다.
   const [inAppBrowser, setInAppBrowser] = useState(false);
+  const googleLoginStarted = useRef(false);
 
   useEffect(() => {
     const ua = navigator.userAgent.toLowerCase();
@@ -65,17 +90,30 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
     const key = params.get("notice") || params.get("error") || "";
     if (PARAM_MESSAGES[key]) setMessage(PARAM_MESSAGES[key]);
     if (params.get("error") === "admin_required") setAdminRequired(true);
-    const next = params.get("next") || "";
-    if (next.startsWith("/") && !next.startsWith("//")) setNextPath(next);
+    const next = safeNextPathFromLocation();
+    if (next) setNextPath(next);
+    setLoginReady(true);
 
-    fetch("/api/auth/me", { cache: "no-store" })
-      .then((res) => (res.ok ? res.json() : null))
+    loadLoginAuthState()
       .then((data) => {
         if (data && data.user) setMe({ user: data.user, designer: data.designer || null });
       })
-      .catch(() => {})
-      .finally(() => setChecked(true));
+      .catch(() => {});
   }, []);
+
+  const startGoogleLogin = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (googleLoginStarted.current) {
+      event.preventDefault();
+      return;
+    }
+
+    googleLoginStarted.current = true;
+    const target = googleLoginHref(safeNextPathFromLocation());
+    if (event.currentTarget.getAttribute("href") !== target) {
+      event.preventDefault();
+      window.location.assign(target);
+    }
+  };
 
   const logout = async () => {
     try {
@@ -101,7 +139,7 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
     );
   }
 
-  if (!checked) {
+  if (!loginReady) {
     return (
       <div className="generate-box login-form-card">
         <p className="login-google-hint">로그인 상태를 확인하는 중…</p>
@@ -182,7 +220,7 @@ export default function LoginForm({ googleEnabled = false }: { googleEnabled?: b
     <div className="generate-box login-form-card">
       {googleEnabled ? (
         <>
-          <a className="google-login-button" href={`/api/auth/google${nextPath ? `?next=${encodeURIComponent(nextPath)}` : ""}`}>
+          <a className="google-login-button" href={googleLoginHref(nextPath)} onClick={startGoogleLogin}>
             <span className="g-chip" aria-hidden="true">
               <svg width="18" height="18" viewBox="0 0 48 48">
                 <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />

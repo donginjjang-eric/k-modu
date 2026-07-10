@@ -18,7 +18,7 @@
 <body>
   <main class="platform creator-market">
     <header class="topbar creator-topbar">
-      <a class="brand" href="/#home"><img src="assets/k-modu-logo.png" alt="K-MODU" /></a>
+      <a class="brand" href="/#home"><img src="assets/k-modu-logo.png" alt="K-MODU" width="480" height="86" /></a>
       <nav class="topnav">
         <a href="/#about">소개</a>
         <a href="/designers">디자이너</a>
@@ -164,75 +164,62 @@
       </aside>
 
       <section class="creator-board" aria-label="Creator results">
-        <div class="board-head">
-          <div>
-            <p>Creator Network <span>/</span> <strong id="resultCount">전체 43명</strong></p>
-            <h2>Recommended Matching Board</h2>
-          </div>
-          <div class="board-tools">
-            <button class="filter-open-btn" id="filterOpenBtn" type="button" aria-label="필터 열기">
-              필터
-              <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><line x1="13.4" y1="13.4" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            </button>
-          </div>
-        </div>
-
         <div class="platform-kpi-strip platform-kpi-strip--creators" aria-label="크리에이터 네트워크 주요 지표">
           <article class="platform-kpi platform-kpi--reach">
             <span class="platform-kpi__label">Total Followers</span>
-            <strong><span id="creatorFollowerKpi" data-kpi-value="0">0</span><em>+</em></strong>
+            <strong><span id="creatorFollowerKpi" data-kpi-value="0">0</span></strong>
             <small>검증 크리에이터 통합 도달 규모</small>
           </article>
           <article class="platform-kpi">
             <span class="platform-kpi__label">Registered Creators</span>
-            <strong><span id="creatorRegisteredKpi" data-kpi-value="0">0</span><em>명</em></strong>
+            <strong><span id="creatorRegisteredKpi" data-kpi-value="0">0</span></strong>
             <small>브랜드 협업이 가능한 가입 크리에이터</small>
           </article>
         </div>
 
         <div class="creator-grid" id="creatorGrid">
           <article class="market-card" data-category="Fashion Creator Instagram Editorial TikTok Styling Global K-Fashion" data-status="open new" data-platform="Instagram" data-type="Daily" data-market="MY" data-fit="94" data-followers="12000" data-er="" data-search="syazwan evans syazwxnevans malaysia instagram tiktok k-fashion styling">
-            <div class="thumb"><img src="assets/inful/syazwan-evans-editorial.webp" alt="Syazwan Evans" /><span class="flag">TOP MATCH</span><button type="button" aria-label="Save Syazwan Evans">♡</button></div>
+            <div class="thumb"><img data-src="assets/creator-thumbnails/syazwan-evans-editorial-360.webp" data-srcset="assets/creator-thumbnails/syazwan-evans-editorial-360.webp 360w, assets/creator-thumbnails/syazwan-evans-editorial-720.webp 720w" sizes="(max-width: 900px) calc(50vw - 26px), calc((100vw - clamp(40px, 6.8vw, 128px) - 64px) / 5)" width="1086" height="1448" data-profile-src="assets/inful/syazwan-evans-editorial.webp" alt="Syazwan Evans" loading="lazy" decoding="async" fetchpriority="low" /><span class="flag">TOP MATCH</span><button type="button" aria-label="Save Syazwan Evans">♡</button></div>
             <div class="market-card-body"><div class="badges"><span>Instagram</span><span>OPEN</span><span>MY</span></div><h3>Syazwan Evans</h3><p>Malaysia / K-fashion styling / @syazwxnevans</p><div class="mini-stats"><span><strong>12K</strong>Followers</span><span><strong>—</strong>ER</span></div><strong class="reward">94% FIT</strong></div>
           </article>
 
           <article class="market-card" data-category="Fashion Creator Instagram TikTok Editorial K-Fashion" data-status="open" data-platform="TikTok" data-type="Editorial" data-market="MY" data-fit="90" data-followers="341400" data-er="" data-search="mizaqstna miza qistina malaysia instagram tiktok k-fashion editorial">
-            <div class="thumb"><img src="assets/inful/mizaqstna-editorial.webp" alt="mizaqstna" /><button type="button" aria-label="Save mizaqstna">♡</button></div>
+            <div class="thumb"><img data-src="assets/creator-thumbnails/mizaqstna-editorial-360.webp" data-srcset="assets/creator-thumbnails/mizaqstna-editorial-360.webp 360w, assets/creator-thumbnails/mizaqstna-editorial-720.webp 720w" sizes="(max-width: 900px) calc(50vw - 26px), calc((100vw - clamp(40px, 6.8vw, 128px) - 64px) / 5)" width="1086" height="1448" data-profile-src="assets/inful/mizaqstna-editorial.webp" alt="mizaqstna" loading="lazy" decoding="async" fetchpriority="low" /><button type="button" aria-label="Save mizaqstna">♡</button></div>
             <div class="market-card-body"><div class="badges"><span>TikTok</span><span>OPEN</span><span>MY</span></div><h3>mizaqstna</h3><p>Malaysia / fashion editorial / @mizaqstna</p><div class="mini-stats"><span><strong>341K</strong>Followers</span><span><strong>—</strong>ER</span></div><strong class="reward">90% FIT</strong></div>
           </article>
 
           <article class="market-card" data-category="Fashion Creator TikTok Styling YouTube Review" data-status="open" data-platform="TikTok" data-type="Daily" data-market="MY" data-fit="86" data-followers="39400" data-er="" data-search="eizzadjeffry eizzad jeffry malaysia tiktok motion designer content editor">
-            <div class="thumb"><img src="assets/inful/eizzadjeffry-editorial.webp" alt="eizzadjeffry" /><span class="flag">NEW</span><button type="button" aria-label="Save eizzadjeffry">♡</button></div>
+            <div class="thumb"><img data-src="assets/creator-thumbnails/eizzadjeffry-editorial-360.webp" data-srcset="assets/creator-thumbnails/eizzadjeffry-editorial-360.webp 360w, assets/creator-thumbnails/eizzadjeffry-editorial-720.webp 720w" sizes="(max-width: 900px) calc(50vw - 26px), calc((100vw - clamp(40px, 6.8vw, 128px) - 64px) / 5)" width="1086" height="1448" data-profile-src="assets/inful/eizzadjeffry-editorial.webp" alt="eizzadjeffry" loading="lazy" decoding="async" fetchpriority="low" /><span class="flag">NEW</span><button type="button" aria-label="Save eizzadjeffry">♡</button></div>
             <div class="market-card-body"><div class="badges"><span>TikTok</span><span>OPEN</span><span>MY</span></div><h3>eizzadjeffry</h3><p>Malaysia / motion creator / @eizzadjeffry</p><div class="mini-stats"><span><strong>39K</strong>Followers</span><span><strong>—</strong>ER</span></div><strong class="reward">86% FIT</strong></div>
           </article>
 
           <article class="market-card" data-category="Fashion Creator Instagram Editorial" data-status="open new" data-platform="Instagram" data-type="Editorial" data-market="MY" data-fit="88" data-followers="56200" data-er="" data-search="ziafmihar malaysia instagram visual storyteller digital editor portfolio">
-            <div class="thumb"><img src="assets/inful/ziafmihar-editorial.webp" alt="ziafmihar" /><span class="flag">NEW</span><button type="button" aria-label="Save ziafmihar">♡</button></div>
+            <div class="thumb"><img data-src="assets/creator-thumbnails/ziafmihar-editorial-360.webp" data-srcset="assets/creator-thumbnails/ziafmihar-editorial-360.webp 360w, assets/creator-thumbnails/ziafmihar-editorial-720.webp 720w" sizes="(max-width: 900px) calc(50vw - 26px), calc((100vw - clamp(40px, 6.8vw, 128px) - 64px) / 5)" width="1122" height="1402" data-profile-src="assets/inful/ziafmihar-editorial.webp" alt="ziafmihar" loading="lazy" decoding="async" fetchpriority="low" /><span class="flag">NEW</span><button type="button" aria-label="Save ziafmihar">♡</button></div>
             <div class="market-card-body"><div class="badges"><span>Instagram</span><span>OPEN</span><span>MY</span></div><h3>ziafmihar</h3><p>Malaysia / visual storytelling / @ziafmihar</p><div class="mini-stats"><span><strong>56K</strong>Followers</span><span><strong>—</strong>ER</span></div><strong class="reward">88% FIT</strong></div>
           </article>
 
           <article class="market-card" data-category="TikTok Styling Global K-Fashion YouTube Review" data-status="open" data-platform="TikTok" data-type="Editorial" data-market="MY" data-fit="93" data-followers="44100" data-er="" data-search="peanutflix alif haiqal malaysia tiktok styling k-fashion creative">
-            <div class="thumb"><img src="assets/inful/peanutflix-editorial.webp" alt="peanutflix" /><span class="flag">K-FIT</span><button type="button" aria-label="Save peanutflix">♡</button></div>
+            <div class="thumb"><img data-src="assets/creator-thumbnails/peanutflix-editorial-360.webp" data-srcset="assets/creator-thumbnails/peanutflix-editorial-360.webp 360w, assets/creator-thumbnails/peanutflix-editorial-720.webp 720w" sizes="(max-width: 900px) calc(50vw - 26px), calc((100vw - clamp(40px, 6.8vw, 128px) - 64px) / 5)" width="1086" height="1448" data-profile-src="assets/inful/peanutflix-editorial.webp" alt="peanutflix" loading="lazy" decoding="async" fetchpriority="low" /><span class="flag">K-FIT</span><button type="button" aria-label="Save peanutflix">♡</button></div>
             <div class="market-card-body"><div class="badges"><span>TikTok</span><span>OPEN</span><span>MY</span></div><h3>peanutflix</h3><p>Malaysia / creative styling / @peanutflix</p><div class="mini-stats"><span><strong>44K</strong>Followers</span><span><strong>—</strong>ER</span></div><strong class="reward">93% FIT</strong></div>
           </article>
 
           <article class="market-card" data-category="Fashion Creator Instagram Editorial" data-status="open" data-platform="Instagram" data-type="Editorial" data-market="MY" data-fit="87" data-followers="21300" data-er="" data-search="bebelancikmin malaysia instagram content creator modest fashion lifestyle">
-            <div class="thumb"><img src="assets/inful/bebelancikmin-editorial.webp" alt="bebelancikmin" /><button type="button" aria-label="Save bebelancikmin">♡</button></div>
+            <div class="thumb"><img data-src="assets/creator-thumbnails/bebelancikmin-editorial-360.webp" data-srcset="assets/creator-thumbnails/bebelancikmin-editorial-360.webp 360w, assets/creator-thumbnails/bebelancikmin-editorial-720.webp 720w" sizes="(max-width: 900px) calc(50vw - 26px), calc((100vw - clamp(40px, 6.8vw, 128px) - 64px) / 5)" width="1122" height="1402" data-profile-src="assets/inful/bebelancikmin-editorial.webp" alt="bebelancikmin" loading="lazy" decoding="async" fetchpriority="low" /><button type="button" aria-label="Save bebelancikmin">♡</button></div>
             <div class="market-card-body"><div class="badges"><span>Instagram</span><span>OPEN</span><span>MY</span></div><h3>bebelancikmin</h3><p>Malaysia / modest lifestyle / @bebelancikmin</p><div class="mini-stats"><span><strong>21K</strong>Followers</span><span><strong>—</strong>ER</span></div><strong class="reward">87% FIT</strong></div>
           </article>
 
           <article class="market-card" data-category="Fashion Creator YouTube Review" data-status="open" data-platform="TikTok" data-type="Daily" data-market="MY" data-fit="85" data-followers="24000" data-er="" data-search="alamantido malaysia tiktok social media creator visual identity short-form content">
-            <div class="thumb"><img src="assets/inful/alamantido-editorial.webp" alt="alamantido" /><span class="flag">NEW</span><button type="button" aria-label="Save alamantido">♡</button></div>
+            <div class="thumb"><img data-src="assets/creator-thumbnails/alamantido-editorial-360.webp" data-srcset="assets/creator-thumbnails/alamantido-editorial-360.webp 360w, assets/creator-thumbnails/alamantido-editorial-720.webp 720w" sizes="(max-width: 900px) calc(50vw - 26px), calc((100vw - clamp(40px, 6.8vw, 128px) - 64px) / 5)" width="1122" height="1402" data-profile-src="assets/inful/alamantido-editorial.webp" alt="alamantido" loading="lazy" decoding="async" fetchpriority="low" /><span class="flag">NEW</span><button type="button" aria-label="Save alamantido">♡</button></div>
             <div class="market-card-body"><div class="badges"><span>TikTok</span><span>OPEN</span><span>MY</span></div><h3>alamantido</h3><p>Malaysia / social media creator / @alamantido</p><div class="mini-stats"><span><strong>24K</strong>Followers</span><span><strong>—</strong>ER</span></div><strong class="reward">85% FIT</strong></div>
           </article>
 
           <article class="market-card" data-category="Fashion Creator TikTok Styling" data-status="open" data-platform="TikTok" data-type="Street" data-market="MY" data-fit="84" data-followers="25700" data-er="" data-search="itserfan malaysia tiktok fashion creator outfit ideas style tips">
-            <div class="thumb"><img src="assets/inful/itserfan-editorial.webp" alt="itserfan" /><button type="button" aria-label="Save itserfan">♡</button></div>
+            <div class="thumb"><img data-src="assets/creator-thumbnails/itserfan-editorial-360.webp" data-srcset="assets/creator-thumbnails/itserfan-editorial-360.webp 360w, assets/creator-thumbnails/itserfan-editorial-720.webp 720w" sizes="(max-width: 900px) calc(50vw - 26px), calc((100vw - clamp(40px, 6.8vw, 128px) - 64px) / 5)" width="1024" height="1536" data-profile-src="assets/inful/itserfan-editorial.webp" alt="itserfan" loading="lazy" decoding="async" fetchpriority="low" /><button type="button" aria-label="Save itserfan">♡</button></div>
             <div class="market-card-body"><div class="badges"><span>TikTok</span><span>OPEN</span><span>MY</span></div><h3>itserfan</h3><p>Malaysia / fashion creator / @itserfan</p><div class="mini-stats"><span><strong>26K</strong>Followers</span><span><strong>—</strong>ER</span></div><strong class="reward">84% FIT</strong></div>
           </article>
 
           <article class="market-card" data-category="Instagram Editorial Global K-Fashion" data-status="new" data-platform="Instagram" data-type="Minimal" data-market="MY" data-fit="89" data-followers="50300" data-er="" data-search="ash_rafflynn malaysia instagram content creator storyteller entertainer">
-            <div class="thumb"><img src="assets/inful/ash-rafflynn-editorial.webp" alt="ash_rafflynn" /><span class="flag">NEW</span><button type="button" aria-label="Save ash_rafflynn">♡</button></div>
+            <div class="thumb"><img data-src="assets/creator-thumbnails/ash-rafflynn-editorial-360.webp" data-srcset="assets/creator-thumbnails/ash-rafflynn-editorial-360.webp 360w, assets/creator-thumbnails/ash-rafflynn-editorial-720.webp 720w" sizes="(max-width: 900px) calc(50vw - 26px), calc((100vw - clamp(40px, 6.8vw, 128px) - 64px) / 5)" width="1122" height="1402" data-profile-src="assets/inful/ash-rafflynn-editorial.webp" alt="ash_rafflynn" loading="lazy" decoding="async" fetchpriority="low" /><span class="flag">NEW</span><button type="button" aria-label="Save ash_rafflynn">♡</button></div>
             <div class="market-card-body"><div class="badges"><span>Instagram</span><span>NEW</span><span>MY</span></div><h3>ash_rafflynn</h3><p>Malaysia / creator storytelling / @ash_rafflynn</p><div class="mini-stats"><span><strong>50K</strong>Followers</span><span><strong>—</strong>ER</span></div><strong class="reward">89% FIT</strong></div>
           </article>
 
@@ -247,7 +234,7 @@
         <button class="creator-sheet-close" type="button" aria-label="닫기">‹</button>
         <div class="creator-sheet-scroll">
         <div class="creator-sheet-visual">
-          <img id="creatorSheetImg" src="assets/hero-group.webp" alt="" />
+          <img id="creatorSheetImg" alt="" decoding="async" />
           <div class="creator-sheet-dots" id="creatorSheetDots" aria-label="Creator image navigation"></div>
           <div class="creator-sheet-count" id="creatorSheetCount" aria-live="polite">1 / 1</div>
         </div>
@@ -301,6 +288,17 @@
 
   <script>
     const grid = document.getElementById('creatorGrid');
+    const creatorCardSizes = '(max-width: 900px) calc(50vw - 26px), calc((100vw - clamp(40px, 6.8vw, 128px) - 64px) / 5)';
+    const creatorThumbnailPath = (source, width) => {
+      const basename = source.split('/').pop().replace(/\.[^.]+$/, '');
+      return `assets/creator-thumbnails/${basename}-${width}.webp`;
+    };
+    const creatorCardImageMarkup = (source, alt, width, height) => `
+      <img data-src="${creatorThumbnailPath(source, 360)}"
+        data-srcset="${creatorThumbnailPath(source, 360)} 360w, ${creatorThumbnailPath(source, 720)} 720w"
+        sizes="${creatorCardSizes}" width="${width}" height="${height}"
+        data-profile-src="${source}" alt="${alt}"
+        loading="lazy" decoding="async" fetchpriority="low" />`;
 
     // K-뷰티 무상 시딩 인플루언서(말레이시아) — 기존 .market-card 폼에 주입. 이미지는 임시 플레이스홀더(추후 교체).
     // [이름, 대표 플랫폼, 대표 팔로워, 카테고리, 타입, 우선순위] — 이메일/전화 등 개인정보는 미포함.
@@ -347,7 +345,7 @@
       const img = image || seedingImgs[i % seedingImgs.length];
       return `
       <article class="market-card is-seeding" data-category="${category}" data-status="seeding" data-platform="${platform}" data-type="${type}" data-market="MY" data-fit="" data-followers="${totalValue}" data-er="" data-search="${name.toLowerCase()} ${category.toLowerCase()} malaysia k-beauty seeding" data-priority="${priority}">
-        <div class="thumb"><img src="${img}" alt="${name}" loading="lazy" /><span class="flag">SEEDING</span><button type="button" aria-label="Save ${name}">♡</button></div>
+        <div class="thumb">${creatorCardImageMarkup(img, name, 900, 1200)}<span class="flag">SEEDING</span><button type="button" aria-label="Save ${name}">♡</button></div>
         <div class="market-card-body"><div class="badges"><span>${platform}</span><span>NO.${no}</span><span>MY</span></div><h3>${name}</h3><p>K-Beauty seeding / Malaysia / ${category}</p><div class="mini-stats"><span><strong>${total}</strong>Total</span><span><strong>${ig}</strong>IG · TT ${tiktok}</span></div><strong class="reward">PRIORITY ${priority}</strong></div>
       </article>`;
     }).join(''));
@@ -391,11 +389,7 @@
       if (n >= 1e3) return Math.round(n / 1e3) + 'K';
       return String(n);
     };
-    const formatKpiCompact = (value) => {
-      if (value >= 1e6) return `${(value / 1e6).toFixed(1).replace(/\.0$/, '')}M`;
-      if (value >= 1e3) return `${Math.round(value / 1e3)}K`;
-      return new Intl.NumberFormat('ko-KR').format(value);
-    };
+    const formatKpiFull = (value) => new Intl.NumberFormat('ko-KR').format(value);
     const animateKpi = (node, target, formatter = (value) => new Intl.NumberFormat('ko-KR').format(value)) => {
       if (!node) return;
       node.dataset.kpiValue = String(target);
@@ -414,7 +408,7 @@
       requestAnimationFrame(tick);
     };
     const creatorFollowerTotal = cards.reduce((total, card) => total + (Number(card.dataset.followers) || 0), 0);
-    animateKpi(creatorFollowerKpi, creatorFollowerTotal, formatKpiCompact);
+    animateKpi(creatorFollowerKpi, creatorFollowerTotal, formatKpiFull);
     animateKpi(creatorRegisteredKpi, cards.length);
     const deliverablesFor = (platform, type) => {
       const base = {
@@ -436,6 +430,55 @@
     let isCreatorSwiping = false;
     let creatorSwipeLocked = false;
     const isMobileCreatorSheet = () => window.matchMedia('(max-width: 900px)').matches;
+    const creatorImageObserver = 'IntersectionObserver' in window
+      ? new IntersectionObserver((entries, observer) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            loadCreatorCardImage(entry.target, false);
+            observer.unobserve(entry.target);
+          });
+        }, { rootMargin: '300px 0px', threshold: 0.01 })
+      : null;
+
+    function loadCreatorCardImage(image, highPriority) {
+      if (!image?.dataset.src) return;
+      if (image.dataset.srcset) image.srcset = image.dataset.srcset;
+      image.src = image.dataset.src;
+      image.loading = highPriority ? 'eager' : 'lazy';
+      image.fetchPriority = highPriority ? 'high' : 'low';
+      delete image.dataset.src;
+      delete image.dataset.srcset;
+    }
+
+    function observeDeferredCreatorImages() {
+      const deferred = cards
+        .map((card) => card.querySelector('.thumb img[data-src]'))
+        .filter(Boolean);
+      if (!creatorImageObserver) {
+        deferred.forEach((image) => loadCreatorCardImage(image, false));
+        return;
+      }
+      deferred.forEach((image) => creatorImageObserver.observe(image));
+    }
+
+    function prioritizeInitialCreatorImages() {
+      const viewportHeight = document.documentElement.clientHeight;
+      const visibleCards = cards.filter((card) => {
+        if (card.hidden) return false;
+        const bounds = card.getBoundingClientRect();
+        return bounds.bottom > 0 && bounds.top < viewportHeight;
+      });
+      const firstRowCount = window.matchMedia('(max-width: 900px)').matches ? 2 : 5;
+      const priorityCards = (visibleCards.length
+        ? visibleCards
+        : cards.filter((card) => !card.hidden)).slice(0, firstRowCount);
+
+      priorityCards.forEach((card) => {
+        const image = card.querySelector('.thumb img');
+        loadCreatorCardImage(image, true);
+      });
+      observeDeferredCreatorImages();
+    }
 
     function openBetaLaunchModal() {
       betaLaunchModal?.classList.add('is-open');
@@ -485,7 +528,8 @@
         grid.appendChild(card);
       });
 
-      resultCount.textContent = `전체 ${visibleCount}명`;
+      prioritizeInitialCreatorImages();
+      if (resultCount) resultCount.textContent = `전체 ${visibleCount}명`;
     }
 
     categoryButtons.forEach((button) => {
@@ -520,7 +564,7 @@
       document.body.classList.remove('sheet-open');
       setTimeout(() => { filterBackdrop.hidden = true; }, 320);
     }
-    filterOpenBtn.addEventListener('click', openFilter);
+    filterOpenBtn?.addEventListener('click', openFilter);
     filterClose.addEventListener('click', closeFilter);
     filterBackdrop.addEventListener('click', closeFilter);
     filterApply.addEventListener('click', closeFilter);
@@ -555,8 +599,10 @@
       const image = card.querySelector('img');
       const name = card.querySelector('h3')?.textContent || 'Creator';
       return [{
-        src: image?.getAttribute('src') || 'assets/hero-group.webp',
+        src: image?.dataset.profileSrc || image?.getAttribute('src') || 'assets/hero-group.webp',
         alt: name,
+        width: Number(image?.getAttribute('width')) || undefined,
+        height: Number(image?.getAttribute('height')) || undefined,
       }];
     }
 
@@ -565,6 +611,11 @@
       creatorGalleryIndex = (index + creatorGalleryImages.length) % creatorGalleryImages.length;
       const current = creatorGalleryImages[creatorGalleryIndex];
       creatorSheetImg.classList.add('is-switching');
+      if (current.width && current.height) {
+        creatorSheetImg.width = current.width;
+        creatorSheetImg.height = current.height;
+      }
+      creatorSheetImg.fetchPriority = 'high';
       window.setTimeout(() => {
         creatorSheetImg.src = current.src;
         creatorSheetImg.alt = current.alt;

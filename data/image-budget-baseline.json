@@ -1,0 +1,9 @@
+{
+  "metrics": {
+    "fileCount": 578,
+    "totalBytes": 172762279,
+    "largestBytes": 2541568,
+    "overOneMiBCount": 29,
+    "duplicateBytes": 10801600
+  }
+}

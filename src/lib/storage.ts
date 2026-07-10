@@ -105,6 +105,35 @@ function bucketKey(kind: StorageKind, fileName: string) {
   return `${bucketKeyPrefixes[kind]}/${path.basename(fileName)}`;
 }
 
+function getStablePublicMediaUrl(kind: StorageKind, fileName: string) {
+  if (!hasBucket()) return null;
+  const configuredBase = process.env.PUBLIC_MEDIA_BASE_URL?.trim();
+  if (!configuredBase) return null;
+
+  try {
+    const base = new URL(configuredBase.endsWith("/") ? configuredBase : `${configuredBase}/`);
+    if (!["http:", "https:"].includes(base.protocol) || base.username || base.password) return null;
+    base.search = "";
+    base.hash = "";
+    const encodedKey = bucketKey(kind, fileName)
+      .split("/")
+      .map((segment) => encodeURIComponent(segment))
+      .join("/");
+    return new URL(encodedKey, base).toString();
+  } catch {
+    return null;
+  }
+}
+
+function getStoredMediaUrl(kind: StorageKind, fileName: string) {
+  const stableUrl = getStablePublicMediaUrl(kind, fileName);
+  if (stableUrl) return stableUrl;
+  if (kind === "productUploads") return `/uploads/products/${fileName}`;
+  if (kind === "portfolioUploads") return `/uploads/portfolio/${fileName}`;
+  if (kind === "generatedLooks") return `/generated-looks/${fileName}`;
+  return `/model-templates/${fileName}`;
+}
+
 async function putBucketObject(kind: StorageKind, fileName: string, bytes: Buffer, contentType: string) {
   await getS3().send(new PutObjectCommand({
     Bucket: process.env.S3_BUCKET,
@@ -185,10 +214,7 @@ export async function saveStorageImage(kind: StorageKind, bytes: Buffer, mimeTyp
   }
   const imageHash = getImageHash(optimized);
 
-  if (kind === "productUploads") return { url: `/uploads/products/${fileName}`, imageHash };
-  if (kind === "portfolioUploads") return { url: `/uploads/portfolio/${fileName}`, imageHash };
-  if (kind === "generatedLooks") return { url: `/generated-looks/${fileName}`, imageHash };
-  return { url: `/model-templates/${fileName}`, imageHash };
+  return { url: getStoredMediaUrl(kind, fileName), imageHash };
 }
 
 export async function saveGeneratedPng(fileName: string, base64Image: string) {
@@ -203,7 +229,7 @@ export async function saveGeneratedPng(fileName: string, base64Image: string) {
     writeFileSync(path.join(/* turbopackIgnore: true */ roots.generatedLooks, safeFileName), bytes);
   }
   return {
-    url: `/generated-looks/${safeFileName}`,
+    url: getStoredMediaUrl("generatedLooks", safeFileName),
     imageHash: getImageHash(bytes),
   };
 }
@@ -260,13 +286,17 @@ export function streamStoredFile(filePath: string) {
   });
 }
 
-// 미디어 서빙 공통 진입점: 볼륨(레거시 파일) 우선, 없으면 버킷 presigned URL로 302.
-// presign은 로컬 서명이라 버킷에 없는 키도 URL이 만들어진다 — 그 경우 버킷이 404를 응답한다.
+// 미디어 서빙 공통 진입점: 볼륨(레거시 파일) 우선, 없으면 선택적 공개 미디어 URL,
+// 마지막으로 기존 버킷 presigned URL 순서로 302한다. PUBLIC_MEDIA_BASE_URL은 공개 읽기가
+// 실제로 설정된 CDN/버킷 origin일 때만 배포에서 선택적으로 사용한다.
 export async function serveStoredMedia(kind: StorageKind, fileName: string) {
   const filePath = resolveStoredFile(kind, fileName);
   if (filePath) return streamStoredFile(filePath);
 
   if (hasBucket()) {
+    const stableUrl = getStablePublicMediaUrl(kind, fileName);
+    if (stableUrl) return Response.redirect(stableUrl, 302);
+
     try {
       const url = await getSignedUrl(
         getS3(),

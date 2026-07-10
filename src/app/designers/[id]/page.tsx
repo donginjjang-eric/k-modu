@@ -58,11 +58,22 @@ export default async function DesignerDetailPage({ params }: { params: Promise<{
                 style={{
                   aspectRatio: "3 / 4",
                   border: "1px solid rgba(0,0,0,.12)",
-                  background: `#f4f1ea url('${image.image_url}') center top / cover no-repeat`,
+                  background: "#f4f1ea",
+                  overflow: "hidden",
                 }}
                 aria-label={image.title || `${designer.brand_name} portfolio image`}
                 title={image.title || undefined}
-              />
+              >
+                <img
+                  src={image.image_url}
+                  alt=""
+                  width={600}
+                  height={800}
+                  loading="lazy"
+                  decoding="async"
+                  style={{ display: "block", width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }}
+                />
+              </article>
             ))}
           </div>
         </section>
@@ -83,10 +94,21 @@ export default async function DesignerDetailPage({ params }: { params: Promise<{
                 style={{
                   aspectRatio: "3 / 4",
                   border: "1px solid rgba(0,0,0,.12)",
-                  background: `#f4f1ea url('${look.image_url}') center top / cover no-repeat`,
+                  background: "#f4f1ea",
+                  overflow: "hidden",
                 }}
                 aria-label={`${designer.brand_name} approved AI look`}
-              />
+              >
+                <img
+                  src={look.image_url}
+                  alt=""
+                  width={600}
+                  height={800}
+                  loading="lazy"
+                  decoding="async"
+                  style={{ display: "block", width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }}
+                />
+              </article>
             ))}
           </div>
         </section>

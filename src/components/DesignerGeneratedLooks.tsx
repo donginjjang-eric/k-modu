@@ -186,7 +186,14 @@ export default function DesignerGeneratedLooks({ initialLooks, enabled = false }
         {looks.map((look) => (
           <article className="look-card" key={look.id}>
             <button type="button" className="look-card-image" onClick={() => setActiveLook(look)}>
-              <img src={look.image_url} alt="생성된 AI 룩" />
+              <img
+                src={look.image_url}
+                alt="생성된 AI 룩"
+                width={600}
+                height={800}
+                loading="lazy"
+                decoding="async"
+              />
               <span className={`badge ${look.status === "hidden" || look.status === "rejected" ? "priv" : "pub"}`}>{getStatusLabel(look.status)}</span>
               {look.video_status === "completed" && look.video_url ? <span className="look-card-play"><NavIcon name="play" className="st-ico" /> 숏폼</span> : null}
             </button>
@@ -217,7 +224,14 @@ export default function DesignerGeneratedLooks({ initialLooks, enabled = false }
             {activeLook.video_status === "completed" && activeLook.video_url ? (
               <video className="look-modal-media" src={activeLook.video_url} controls autoPlay loop muted playsInline />
             ) : (
-              <img src={activeLook.image_url} alt="생성된 AI 룩 크게 보기" />
+              <img
+                src={activeLook.image_url}
+                alt="생성된 AI 룩 크게 보기"
+                width={600}
+                height={800}
+                loading="lazy"
+                decoding="async"
+              />
             )}
             <div className="look-modal-info">
               <em className={`look-status-chip ${activeLook.status}`}>{getStatusLabel(activeLook.status)}</em>

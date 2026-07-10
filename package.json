@@ -9,7 +9,13 @@
     "start": "node scripts/startup-validation.mjs && node scripts/ensure-schema.mjs && node scripts/migrate-volume-to-bucket.mjs && node scripts/cleanup-media.mjs && next start -H 0.0.0.0 -p ${PORT:-8010}",
     "legacy:start": "node local-static-server.mjs",
     "db:setup": "node scripts/db-setup.mjs",
-    "optimize:images": "node scripts/optimize-images.mjs"
+    "optimize:images": "node scripts/optimize-images.mjs",
+    "images:metadata": "node scripts/add-image-metadata.mjs",
+    "images:home": "node scripts/generate-home-thumbnails.mjs",
+    "images:creators": "node scripts/optimize-creator-images.mjs",
+    "audit:images": "node scripts/audit-image-assets.mjs",
+    "audit:images:strict": "node scripts/audit-image-assets.mjs --strict",
+    "check:inline-scripts": "node scripts/check-inline-scripts.mjs"
   },
   "engines": {
     "node": ">=20"

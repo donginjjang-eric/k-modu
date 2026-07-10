@@ -1453,8 +1453,7 @@
       overflow: visible;
     }
 
-    .footer::before {
-      content: "";
+    .footer-backdrop {
       position: absolute;
       z-index: 1;
       left: 50%;
@@ -1462,7 +1461,8 @@
       width: min(100%, 1220px);
       height: 976px;
       transform: translateX(-50%);
-      background: url("assets/foot_bg-cutout.webp?v=202606111724") center bottom / contain no-repeat;
+      object-fit: contain;
+      object-position: center bottom;
       opacity: 1;
       pointer-events: none;
     }
@@ -2510,7 +2510,7 @@
   </div>
   <main class="site">
     <header class="nav">
-      <a class="brand" href="#home"><img src="assets/k-modu-logo.png" alt="K-MODU" /></a>
+      <a class="brand" href="#home"><img src="assets/k-modu-logo.png" alt="K-MODU" width="480" height="86" /></a>
       <nav class="nav-center">
         <a href="#about">소개</a>
         <a href="/designers">디자이너</a>
@@ -2520,13 +2520,13 @@
       <div class="nav-right">
         <div class="locale-switch" id="localeSwitch" aria-label="언어 선택">
           <button class="locale-btn" type="button" aria-haspopup="true" aria-expanded="false">
-            <img src="assets/flags/kr.svg" alt="" /><b>KR</b><i class="caret">▾</i>
+            <img src="assets/flags/kr.svg" alt="" width="512" height="512" /><b>KR</b><i class="caret">▾</i>
           </button>
           <div class="locale-menu" role="menu">
-            <a class="locale-opt is-on" href="#" role="menuitem"><img src="assets/flags/kr.svg" alt="" /><strong>한국어</strong><em>현재</em></a>
-            <a class="locale-opt is-soon" role="menuitem"><img src="assets/flags/us.svg" alt="" /><strong>English</strong><em>준비중</em></a>
-            <a class="locale-opt is-soon" role="menuitem"><img src="assets/flags/cn.svg" alt="" /><strong>中文</strong><em>준비중</em></a>
-            <a class="locale-opt is-soon" role="menuitem"><img src="assets/flags/jp.svg" alt="" /><strong>日本語</strong><em>준비중</em></a>
+            <a class="locale-opt is-on" href="#" role="menuitem"><img src="assets/flags/kr.svg" alt="" width="512" height="512" /><strong>한국어</strong><em>현재</em></a>
+            <a class="locale-opt is-soon" role="menuitem"><img src="assets/flags/us.svg" alt="" width="512" height="512" /><strong>English</strong><em>준비중</em></a>
+            <a class="locale-opt is-soon" role="menuitem"><img src="assets/flags/cn.svg" alt="" width="512" height="512" /><strong>中文</strong><em>준비중</em></a>
+            <a class="locale-opt is-soon" role="menuitem"><img src="assets/flags/jp.svg" alt="" width="512" height="512" /><strong>日本語</strong><em>준비중</em></a>
           </div>
         </div>
         <a class="login-btn" data-auth-link href="/login">로그인</a>
@@ -2540,34 +2540,14 @@
         <a href="/creators">크리에이터</a>
         <a href="#contact">문의</a>
         <div class="mobile-utility" style="display:flex;align-items:center;gap:10px;">
-          <img src="assets/flags/kr.svg" alt="한국어" style="width:28px;height:28px;border-radius:999px;" />
-          <img src="assets/flags/us.svg" alt="English" style="width:28px;height:28px;border-radius:999px;" />
-          <img src="assets/flags/cn.svg" alt="中文" style="width:28px;height:28px;border-radius:999px;opacity:.38;" />
-          <img src="assets/flags/jp.svg" alt="日本語" style="width:28px;height:28px;border-radius:999px;opacity:.38;" />
+          <img src="assets/flags/kr.svg" alt="한국어" style="width:28px;height:28px;border-radius:999px;" width="512" height="512" />
+          <img src="assets/flags/us.svg" alt="English" style="width:28px;height:28px;border-radius:999px;" width="512" height="512" />
+          <img src="assets/flags/cn.svg" alt="中文" style="width:28px;height:28px;border-radius:999px;opacity:.38;" width="512" height="512" />
+          <img src="assets/flags/jp.svg" alt="日本語" style="width:28px;height:28px;border-radius:999px;opacity:.38;" width="512" height="512" />
         </div>
         <a class="mobile-login" data-auth-link href="/login">로그인</a>
       </div>
     </header>
-
-    <!-- 모바일 좌우 스와이프 캠페인 히어로 캐러셀 -->
-    <section class="hero-carousel" id="campaignCarousel" aria-label="K-MODU 캠페인" aria-roledescription="carousel">
-      <div class="hc-scroller" id="hcScroller">
-        <figure class="hc-slide"><img src="assets/designer-profile-01.webp" alt="K-MODU 디자이너 캠페인 1" loading="eager" /></figure>
-        <figure class="hc-slide"><img src="assets/designer-profile-02.webp" alt="K-MODU 디자이너 캠페인 2" loading="lazy" /></figure>
-        <figure class="hc-slide"><img src="assets/designer-profile-03.webp" alt="K-MODU 디자이너 캠페인 3" loading="lazy" /></figure>
-        <figure class="hc-slide"><img src="assets/designer-profile-04.webp" alt="K-MODU 디자이너 캠페인 4" loading="lazy" /></figure>
-        <figure class="hc-slide"><img src="assets/designer-profile-05.webp" alt="K-MODU 디자이너 캠페인 5" loading="lazy" /></figure>
-        <figure class="hc-slide"><img src="assets/designer-profile-06.webp" alt="K-MODU 디자이너 캠페인 6" loading="lazy" /></figure>
-        <figure class="hc-slide"><img src="assets/designer-profile-07.webp" alt="K-MODU 디자이너 캠페인 7" loading="lazy" /></figure>
-        <figure class="hc-slide"><img src="assets/designer-profile-08.webp" alt="K-MODU 디자이너 캠페인 8" loading="lazy" /></figure>
-      </div>
-      <button class="hc-arrow hc-prev" type="button" aria-label="이전 슬라이드">‹</button>
-      <button class="hc-arrow hc-next" type="button" aria-label="다음 슬라이드">›</button>
-      <div class="hc-status">
-        <button class="hc-toggle" type="button" aria-label="자동 재생 멈춤" aria-pressed="false"></button>
-        <span class="hc-count" aria-live="polite"><b id="hcCurrent">1</b> / <span id="hcTotal">8</span></span>
-      </div>
-    </section>
 
     <section class="hero" id="home">
       <h1 class="hero-title">DESIGNER</h1>
@@ -2585,31 +2565,31 @@
       </div>
 
       <div class="models" aria-label="K-MODU main campaign model">
-        <img decoding="async" fetchpriority="high" class="hero-person" src="assets/hero-group-transparent.webp" alt="K-MODU campaign model group" />
+        <img decoding="async" fetchpriority="high" class="hero-person" src="assets/hero-group-transparent.webp" alt="K-MODU campaign model group" width="1536" height="1024" />
       </div>
     </section>
 
     <section class="vision" id="campaign">
       <div class="match-node">K-MODU Matching Line</div>
       <div class="strip" aria-hidden="true">
-        <div class="thumb"><img loading="lazy" decoding="async" src="assets/mainmodel_2.webp" alt="" /></div>
-        <div class="thumb"><img loading="lazy" decoding="async" src="assets/mainmodel_3.webp" alt="" /></div>
-        <div class="thumb"><img loading="lazy" decoding="async" src="assets/mainmodel_3.webp" alt="" /></div>
-        <div class="thumb"><img loading="lazy" decoding="async" src="assets/hero-model.webp" alt="" /></div>
-        <div class="thumb"><img loading="lazy" decoding="async" src="assets/hero-group.webp" alt="" /></div>
-        <div class="thumb"><img loading="lazy" decoding="async" src="assets/mainmodel_2.webp" alt="" /></div>
-        <div class="thumb"><img loading="lazy" decoding="async" src="assets/mainmodel_3.webp" alt="" /></div>
-        <div class="thumb"><img loading="lazy" decoding="async" src="assets/mainmodel_3.webp" alt="" /></div>
-        <div class="thumb"><img loading="lazy" decoding="async" src="assets/hero-model.webp" alt="" /></div>
-        <div class="thumb"><img loading="lazy" decoding="async" src="assets/hero-group.webp" alt="" /></div>
-        <div class="thumb"><img loading="lazy" decoding="async" src="assets/mainmodel_2.webp" alt="" /></div>
-        <div class="thumb"><img loading="lazy" decoding="async" src="assets/mainmodel_3.webp" alt="" /></div>
-        <div class="thumb"><img loading="lazy" decoding="async" src="assets/mainmodel_3.webp" alt="" /></div>
+        <div class="thumb"><img loading="lazy" decoding="async" src="assets/mainmodel_2.webp" alt="" width="1448" height="1086" /></div>
+        <div class="thumb"><img loading="lazy" decoding="async" src="assets/mainmodel_3.webp" alt="" width="1448" height="1086" /></div>
+        <div class="thumb"><img loading="lazy" decoding="async" src="assets/mainmodel_3.webp" alt="" width="1448" height="1086" /></div>
+        <div class="thumb"><img loading="lazy" decoding="async" src="assets/hero-model.webp" alt="" width="1448" height="1086" /></div>
+        <div class="thumb"><img loading="lazy" decoding="async" src="assets/hero-group.webp" alt="" width="1536" height="1024" /></div>
+        <div class="thumb"><img loading="lazy" decoding="async" src="assets/mainmodel_2.webp" alt="" width="1448" height="1086" /></div>
+        <div class="thumb"><img loading="lazy" decoding="async" src="assets/mainmodel_3.webp" alt="" width="1448" height="1086" /></div>
+        <div class="thumb"><img loading="lazy" decoding="async" src="assets/mainmodel_3.webp" alt="" width="1448" height="1086" /></div>
+        <div class="thumb"><img loading="lazy" decoding="async" src="assets/hero-model.webp" alt="" width="1448" height="1086" /></div>
+        <div class="thumb"><img loading="lazy" decoding="async" src="assets/hero-group.webp" alt="" width="1536" height="1024" /></div>
+        <div class="thumb"><img loading="lazy" decoding="async" src="assets/mainmodel_2.webp" alt="" width="1448" height="1086" /></div>
+        <div class="thumb"><img loading="lazy" decoding="async" src="assets/mainmodel_3.webp" alt="" width="1448" height="1086" /></div>
+        <div class="thumb"><img loading="lazy" decoding="async" src="assets/mainmodel_3.webp" alt="" width="1448" height="1086" /></div>
       </div>
       <h2><span>K-FASHION,</span><span class="line-soft">ALL CONNECTED</span></h2>
       <p class="vision-subcopy">한국 디자이너 브랜드가 전세계 패션 크리에이터와 만나는 지점. K-MODU는 브랜드 스토리, 상품, 캠페인을 하나의 연결된 글로벌 확장 흐름으로 만듭니다.</p>
       <div class="center-model">
-        <img loading="lazy" decoding="async" src="assets/us-influencer-2-transparent.webp" alt="US influencer profile" />
+        <img loading="lazy" decoding="async" src="assets/us-influencer-2-transparent.webp" alt="US influencer profile" width="1122" height="1402" />
       </div>
     </section>
 
@@ -2617,16 +2597,16 @@
       <p class="gb-eyebrow">Global Creator Network</p>
       <h2 class="gb-title">전 세계 크리에이터가 함께합니다</h2>
       <div class="flag-row">
-        <div class="flag"><img loading="lazy" src="assets/flags/cn.svg" alt="중국 국기" /><span>중국</span></div>
-        <div class="flag"><img loading="lazy" src="assets/flags/jp.svg" alt="일본 국기" /><span>일본</span></div>
-        <div class="flag"><img loading="lazy" src="assets/flags/vn.svg" alt="베트남 국기" /><span>베트남</span></div>
-        <div class="flag"><img loading="lazy" src="assets/flags/th.svg" alt="태국 국기" /><span>태국</span></div>
-        <div class="flag"><img loading="lazy" src="assets/flags/id.svg" alt="인도네시아 국기" /><span>인도네시아</span></div>
-        <div class="flag"><img loading="lazy" src="assets/flags/my.svg" alt="말레이시아 국기" /><span>말레이시아</span></div>
-        <div class="flag"><img loading="lazy" src="assets/flags/sg.svg" alt="싱가포르 국기" /><span>싱가포르</span></div>
-        <div class="flag"><img loading="lazy" src="assets/flags/tw.svg" alt="대만 국기" /><span>대만</span></div>
-        <div class="flag soon"><img loading="lazy" src="assets/flags/us.svg" alt="미국 국기" /><span>미국</span></div>
-        <div class="flag soon"><img loading="lazy" src="assets/flags/fr.svg" alt="프랑스 국기" /><span>프랑스</span></div>
+        <div class="flag"><img loading="lazy" src="assets/flags/cn.svg" alt="중국 국기" width="512" height="512" /><span>중국</span></div>
+        <div class="flag"><img loading="lazy" src="assets/flags/jp.svg" alt="일본 국기" width="512" height="512" /><span>일본</span></div>
+        <div class="flag"><img loading="lazy" src="assets/flags/vn.svg" alt="베트남 국기" width="512" height="512" /><span>베트남</span></div>
+        <div class="flag"><img loading="lazy" src="assets/flags/th.svg" alt="태국 국기" width="512" height="512" /><span>태국</span></div>
+        <div class="flag"><img loading="lazy" src="assets/flags/id.svg" alt="인도네시아 국기" width="512" height="512" /><span>인도네시아</span></div>
+        <div class="flag"><img loading="lazy" src="assets/flags/my.svg" alt="말레이시아 국기" width="512" height="512" /><span>말레이시아</span></div>
+        <div class="flag"><img loading="lazy" src="assets/flags/sg.svg" alt="싱가포르 국기" width="512" height="512" /><span>싱가포르</span></div>
+        <div class="flag"><img loading="lazy" src="assets/flags/tw.svg" alt="대만 국기" width="512" height="512" /><span>대만</span></div>
+        <div class="flag soon"><img loading="lazy" src="assets/flags/us.svg" alt="미국 국기" width="512" height="512" /><span>미국</span></div>
+        <div class="flag soon"><img loading="lazy" src="assets/flags/fr.svg" alt="프랑스 국기" width="512" height="512" /><span>프랑스</span></div>
       </div>
       <div class="kpi-row">
         <div class="kpi"><div class="kpi-num" data-target="12480">0</div><div class="kpi-label">AI Generated Images</div></div>
@@ -2643,7 +2623,7 @@
       </div>
       <div class="campaign-row">
         <button class="campaign" type="button" data-name="Mia Harper" data-market="New York / Minimal Styling" data-followers="1.8M" data-views="420K" data-er="7.4%" data-fit="클린 럭셔리, 캡슐 워드로브, 서울 디자이너 브랜드 발견." data-img="assets/us-female-01.webp">
-          <div class="image"><img loading="lazy" decoding="async" src="assets/us-female-01.webp" alt="Mia Harper profile" /></div>
+          <div class="image"><img loading="lazy" decoding="async" src="assets/us-female-01.webp" alt="Mia Harper profile" width="900" height="1100" /></div>
           <span class="platform-tag">TikTok</span>
           <h3>MIA HARPER</h3>
           <p>New York 기반 패션 크리에이터. 조용한 럭셔리, 스타일링 전환, 디자이너 브랜드 발견에 강점이 있습니다.</p>
@@ -2651,7 +2631,7 @@
           <div class="influencer-stats"><span><strong>1.8M</strong>팔로워</span><span><strong>420K</strong>평균 조회</span><span><strong>7.4%</strong>ER</span></div>
         </button>
         <button class="campaign" type="button" data-name="Avery Stone" data-market="Los Angeles / Street Luxury" data-followers="960K" data-views="310K" data-er="6.1%" data-fit="스트리트에서 에디토리얼까지 이어지는 스타일링, 런칭 영상, 착장 분석." data-img="assets/us-female-02.webp">
-          <div class="image"><img loading="lazy" decoding="async" src="assets/us-female-02.webp" alt="Avery Stone profile" /></div>
+          <div class="image"><img loading="lazy" decoding="async" src="assets/us-female-02.webp" alt="Avery Stone profile" width="900" height="1100" /></div>
           <span class="platform-tag">TikTok</span>
           <h3>AVERY STONE</h3>
           <p>LA 기반 크리에이터. 세련된 스트리트 럭셔리 오디언스와 숏폼 스타일링 성과가 좋습니다.</p>
@@ -2659,7 +2639,7 @@
           <div class="influencer-stats"><span><strong>960K</strong>팔로워</span><span><strong>310K</strong>평균 조회</span><span><strong>6.1%</strong>ER</span></div>
         </button>
         <button class="campaign" type="button" data-name="Noa Ellis" data-market="Chicago / Editorial Fashion" data-followers="740K" data-views="185K" data-er="8.2%" data-fit="에디토리얼 착장, 크리에이터 스토리텔링, 높은 시청 유지율의 패션 클립." data-img="assets/us-female-03.webp">
-          <div class="image"><img loading="lazy" decoding="async" src="assets/us-female-03.webp" alt="Noa Ellis profile" /></div>
+          <div class="image"><img loading="lazy" decoding="async" src="assets/us-female-03.webp" alt="Noa Ellis profile" width="900" height="1100" /></div>
           <span class="platform-tag">TikTok</span>
           <h3>NOA ELLIS</h3>
           <p>신진 레이블과 런웨이 무드 룩에 대한 오디언스 신뢰가 높은 에디토리얼 패션 크리에이터입니다.</p>
@@ -2667,7 +2647,7 @@
           <div class="influencer-stats"><span><strong>740K</strong>팔로워</span><span><strong>185K</strong>평균 조회</span><span><strong>8.2%</strong>ER</span></div>
         </button>
         <button class="campaign" type="button" data-name="Sloane Carter" data-market="Austin / Everyday Premium" data-followers="520K" data-views="142K" data-er="5.8%" data-fit="접근성 있는 프리미엄 스타일링, 하울 편집, 구매 전환형 상품 스토리." data-img="assets/us-female-04.webp">
-          <div class="image"><img loading="lazy" decoding="async" src="assets/us-female-04.webp" alt="Sloane Carter profile" /></div>
+          <div class="image"><img loading="lazy" decoding="async" src="assets/us-female-04.webp" alt="Sloane Carter profile" width="900" height="1100" /></div>
           <span class="platform-tag">TikTok</span>
           <h3>SLOANE CARTER</h3>
           <p>패션 중심 브랜드를 데일리 착장과 구매 의도가 높은 쇼핑 순간으로 풀어내는 크리에이터입니다.</p>
@@ -2675,7 +2655,7 @@
           <div class="influencer-stats"><span><strong>520K</strong>팔로워</span><span><strong>142K</strong>평균 조회</span><span><strong>5.8%</strong>ER</span></div>
         </button>
         <button class="campaign" type="button" data-name="Riley Monroe" data-market="Miami / Resort Fashion" data-followers="1.2M" data-views="275K" data-er="6.9%" data-fit="리조트웨어, 서머 캡슐, 비주얼 중심 크리에이터 편집." data-img="assets/us-female-05.webp">
-          <div class="image"><img loading="lazy" decoding="async" src="assets/us-female-05.webp" alt="Riley Monroe profile" /></div>
+          <div class="image"><img loading="lazy" decoding="async" src="assets/us-female-05.webp" alt="Riley Monroe profile" width="900" height="1100" /></div>
           <span class="platform-tag">TikTok</span>
           <h3>RILEY MONROE</h3>
           <p>Miami 기반 크리에이터. 리조트 스타일링, 세련된 베이식, 정돈된 데일리 패션 클립에 강점이 있습니다.</p>
@@ -2683,7 +2663,7 @@
           <div class="influencer-stats"><span><strong>1.2M</strong>팔로워</span><span><strong>275K</strong>평균 조회</span><span><strong>6.9%</strong>ER</span></div>
         </button>
         <button class="campaign" type="button" data-name="Jade Kim" data-market="Seattle / K-Fashion Edit" data-followers="680K" data-views="166K" data-er="7.8%" data-fit="K-Fashion 설명형 콘텐츠, 스타일링 교육, 트렌드 해석." data-img="assets/us-female-06.webp">
-          <div class="image"><img loading="lazy" decoding="async" src="assets/us-female-06.webp" alt="Jade Kim profile" /></div>
+          <div class="image"><img loading="lazy" decoding="async" src="assets/us-female-06.webp" alt="Jade Kim profile" width="900" height="1100" /></div>
           <span class="platform-tag">TikTok</span>
           <h3>JADE KIM</h3>
           <p>한국 패션 실루엣을 실용적인 글로벌 스타일링 내러티브로 풀어내는 크리에이터입니다.</p>
@@ -2691,7 +2671,7 @@
           <div class="influencer-stats"><span><strong>680K</strong>팔로워</span><span><strong>166K</strong>평균 조회</span><span><strong>7.8%</strong>ER</span></div>
         </button>
         <button class="campaign" type="button" data-name="Carmen Vale" data-market="Brooklyn / Avant Minimal" data-followers="430K" data-views="98K" data-er="9.1%" data-fit="아방 미니멀 스타일링, 니치 디자이너 오디언스, 저장 반응이 높은 콘텐츠." data-img="assets/us-female-07.webp">
-          <div class="image"><img loading="lazy" decoding="async" src="assets/us-female-07.webp" alt="Carmen Vale profile" /></div>
+          <div class="image"><img loading="lazy" decoding="async" src="assets/us-female-07.webp" alt="Carmen Vale profile" width="900" height="1100" /></div>
           <span class="platform-tag">TikTok</span>
           <h3>CARMEN VALE</h3>
           <p>Brooklyn 기반 패션 크리에이터. 컨셉추얼 실루엣과 신진 레이블에 반응하는 니치 오디언스를 보유합니다.</p>
@@ -2699,7 +2679,7 @@
           <div class="influencer-stats"><span><strong>430K</strong>팔로워</span><span><strong>98K</strong>평균 조회</span><span><strong>9.1%</strong>ER</span></div>
         </button>
         <button class="campaign" type="button" data-name="Elle Brooks" data-market="San Francisco / Smart Casual" data-followers="810K" data-views="210K" data-er="5.9%" data-fit="워크웨어, 프리미엄 베이식, 워드로브 시스템, 상품 중심 스토리텔링." data-img="assets/us-female-08.webp">
-          <div class="image"><img loading="lazy" decoding="async" src="assets/us-female-08.webp" alt="Elle Brooks profile" /></div>
+          <div class="image"><img loading="lazy" decoding="async" src="assets/us-female-08.webp" alt="Elle Brooks profile" width="900" height="1100" /></div>
           <span class="platform-tag">TikTok</span>
           <h3>ELLE BROOKS</h3>
           <p>캡슐 워드로브와 데일리 착장 시스템에서 저장 반응이 좋은 스마트 캐주얼 패션 크리에이터입니다.</p>
@@ -2712,7 +2692,7 @@
     <section class="designer-editorial" id="designers">
       <div class="designer-layout">
         <div class="designer-cover">
-          <img loading="lazy" decoding="async" src="assets/hero-group.webp" alt="Korean designer brand editorial look" />
+          <img loading="lazy" decoding="async" src="assets/hero-group.webp" alt="Korean designer brand editorial look" width="1536" height="1024" />
           <div class="designer-cover-caption">
             <span>Featured Designer</span>
             <span>Seoul / New York</span>
@@ -2734,17 +2714,17 @@
       </div>
       <div class="designer-stories">
         <article class="designer-story">
-          <img loading="lazy" decoding="async" src="assets/us-influencer-2.webp" alt="Designer portrait editorial" />
+          <img loading="lazy" decoding="async" src="assets/us-influencer-2.webp" alt="Designer portrait editorial" width="1122" height="1402" />
           <h3>디자이너<br />프로필</h3>
           <p>브랜드 철학, 디자이너 스토리, 시즌 무드를 정리합니다.</p>
         </article>
         <article class="designer-story">
-          <img loading="lazy" decoding="async" src="assets/mainmodel_3.webp" alt="Designer product editorial" />
+          <img loading="lazy" decoding="async" src="assets/mainmodel_3.webp" alt="Designer product editorial" width="1448" height="1086" />
           <h3>상품<br />스토리</h3>
           <p>대표 상품의 소재, 실루엣, 가격대, 스타일링 포인트를 콘텐츠화합니다.</p>
         </article>
         <article class="designer-story">
-          <img loading="lazy" decoding="async" src="assets/mainmodel_3.webp" alt="Campaign brief editorial" />
+          <img loading="lazy" decoding="async" src="assets/mainmodel_3.webp" alt="Campaign brief editorial" width="1448" height="1086" />
           <h3>캠페인<br />브리프</h3>
           <p>크리에이터가 바로 콘텐츠를 만들 수 있도록 촬영 포인트와 협업 방향을 제공합니다.</p>
         </article>
@@ -2828,12 +2808,12 @@
         </div>
       </div>
       <div class="gallery">
-        <div class="main-look"><img loading="lazy" decoding="async" id="campaignGalleryMain" src="assets/us-female-03.webp" alt="K-MODU creator campaign visual" /></div>
+        <div class="main-look"><img loading="lazy" decoding="async" id="campaignGalleryMain" src="assets/us-female-03.webp" alt="K-MODU creator campaign visual" width="900" height="1100" /></div>
         <div class="side-looks">
-          <button class="mini" type="button" data-gallery-src="assets/mainmodel_3.webp" data-gallery-alt="Designer lookbook asset" aria-label="디자이너 룩북 이미지 보기"><img loading="lazy" decoding="async" src="assets/mainmodel_3.webp" alt="Designer lookbook asset" /></button>
-          <button class="mini" type="button" data-gallery-src="assets/us-female-02.webp" data-gallery-alt="Creator matching visual" aria-label="크리에이터 매칭 이미지 보기"><img loading="lazy" decoding="async" src="assets/us-female-02.webp" alt="Creator matching visual" /></button>
-          <button class="mini" type="button" data-gallery-src="assets/hero-group.webp" data-gallery-alt="Editorial campaign brief visual" aria-label="에디토리얼 캠페인 이미지 보기"><img loading="lazy" decoding="async" src="assets/hero-group.webp" alt="Editorial campaign brief visual" /></button>
-          <button class="mini" type="button" data-gallery-src="assets/us-female-04.webp" data-gallery-alt="Campaign launch visual" aria-label="캠페인 실행 이미지 보기"><img loading="lazy" decoding="async" src="assets/us-female-04.webp" alt="Campaign launch visual" /></button>
+          <button class="mini" type="button" data-gallery-src="assets/mainmodel_3.webp" data-gallery-alt="Designer lookbook asset" aria-label="디자이너 룩북 이미지 보기"><img loading="lazy" decoding="async" src="assets/mainmodel_3.webp" alt="Designer lookbook asset" width="1448" height="1086" /></button>
+          <button class="mini" type="button" data-gallery-src="assets/us-female-02.webp" data-gallery-alt="Creator matching visual" aria-label="크리에이터 매칭 이미지 보기"><img loading="lazy" decoding="async" src="assets/us-female-02.webp" alt="Creator matching visual" width="900" height="1100" /></button>
+          <button class="mini" type="button" data-gallery-src="assets/hero-group.webp" data-gallery-alt="Editorial campaign brief visual" aria-label="에디토리얼 캠페인 이미지 보기"><img loading="lazy" decoding="async" src="assets/hero-group.webp" alt="Editorial campaign brief visual" width="1536" height="1024" /></button>
+          <button class="mini" type="button" data-gallery-src="assets/us-female-04.webp" data-gallery-alt="Campaign launch visual" aria-label="캠페인 실행 이미지 보기"><img loading="lazy" decoding="async" src="assets/us-female-04.webp" alt="Campaign launch visual" width="900" height="1100" /></button>
         </div>
         <div class="gallery-note">Campaign Ready Assets</div>
       </div>
@@ -2848,8 +2828,8 @@
       <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalName">
         <button class="modal-icon-close" type="button" aria-label="Close">&times;</button>
         <div class="modal-media">
-          <img class="modal-media-bg" id="modalImgBg" src="assets/mainmodel_2.webp" alt="" aria-hidden="true" />
-          <img loading="lazy" decoding="async" id="modalImg" src="assets/mainmodel_2.webp" alt="" />
+          <img class="modal-media-bg" id="modalImgBg" alt="" aria-hidden="true" />
+          <img loading="lazy" decoding="async" id="modalImg" alt="" />
         </div>
         <div class="modal-content">
           <span class="platform-tag">TikTok Creator</span>
@@ -2896,7 +2876,28 @@
       </div>
     </div>
 
+    <!-- 하단 캠페인 캐러셀: 실제 노출 위치에 두어 초기 화면 이미지와 경쟁하지 않게 합니다. -->
+    <section class="hero-carousel" id="campaignCarousel" aria-label="K-MODU 캠페인" aria-roledescription="carousel">
+      <div class="hc-scroller" id="hcScroller">
+        <figure class="hc-slide"><img src="assets/home-carousel/designer-profile-01-640.webp" alt="K-MODU 디자이너 캠페인 1" loading="lazy" decoding="async" width="640" height="962" /></figure>
+        <figure class="hc-slide"><img src="assets/home-carousel/designer-profile-02-640.webp" alt="K-MODU 디자이너 캠페인 2" loading="lazy" decoding="async" width="640" height="960" /></figure>
+        <figure class="hc-slide"><img src="assets/home-carousel/designer-profile-03-640.webp" alt="K-MODU 디자이너 캠페인 3" loading="lazy" decoding="async" width="640" height="855" /></figure>
+        <figure class="hc-slide"><img src="assets/home-carousel/designer-profile-04-640.webp" alt="K-MODU 디자이너 캠페인 4" loading="lazy" decoding="async" width="640" height="478" /></figure>
+        <figure class="hc-slide"><img src="assets/home-carousel/designer-profile-05-640.webp" alt="K-MODU 디자이너 캠페인 5" loading="lazy" decoding="async" width="640" height="960" /></figure>
+        <figure class="hc-slide"><img src="assets/home-carousel/designer-profile-06-640.webp" alt="K-MODU 디자이너 캠페인 6" loading="lazy" decoding="async" width="640" height="960" /></figure>
+        <figure class="hc-slide"><img src="assets/home-carousel/designer-profile-07-640.webp" alt="K-MODU 디자이너 캠페인 7" loading="lazy" decoding="async" width="640" height="478" /></figure>
+        <figure class="hc-slide"><img src="assets/home-carousel/designer-profile-08-640.webp" alt="K-MODU 디자이너 캠페인 8" loading="lazy" decoding="async" width="640" height="962" /></figure>
+      </div>
+      <button class="hc-arrow hc-prev" type="button" aria-label="이전 슬라이드">‹</button>
+      <button class="hc-arrow hc-next" type="button" aria-label="다음 슬라이드">›</button>
+      <div class="hc-status">
+        <button class="hc-toggle" type="button" aria-label="자동 재생 멈춤" aria-pressed="false"></button>
+        <span class="hc-count" aria-live="polite"><b id="hcCurrent">1</b> / <span id="hcTotal">8</span></span>
+      </div>
+    </section>
+
     <footer class="footer" id="contact">
+      <img class="footer-backdrop" src="assets/foot_bg-cutout.webp?v=202606111724" alt="" width="1600" height="900" loading="lazy" decoding="async" />
       <div class="ticker">
         <span>서울에서 전세계 크리에이터로</span><span>*</span>
         <span>K-FASHION ALL CONNECTED</span><span>*</span>
@@ -3018,11 +3019,6 @@
       if (event.key === 'Escape' && betaModal.classList.contains('is-open')) closeDesignerBetaModal();
     });
   })();
-
-  // 캐러셀은 본문 마지막 섹션으로 이동해 하단에서 노출합니다.
-  const campaignCarousel = document.getElementById('campaignCarousel');
-  const footer = document.querySelector('.footer');
-  if (campaignCarousel && footer) footer.before(campaignCarousel);
 
   const nav = document.querySelector('.nav');
   // 헤더 로그인/스튜디오/로그아웃 분기는 공통 스크립트 auth-nav.js가 처리한다.
@@ -3203,15 +3199,14 @@
   document.querySelectorAll('.campaign[data-name]').forEach(bindInfluencerCard);
 
   // 메인 크리에이터 영역 — /creators 카테고리의 실제 크리에이터 카드를 가져와 메인 카드 스타일로 렌더
-  (async () => {
+  const hydrateHomeCreatorCards = async () => {
     const row = document.querySelector('#influencers .campaign-row');
     if (!row) return;
     try {
-      let res = await fetch('/creators', { cache: 'no-cache' });
-      if (!res.ok) res = await fetch('/creators.html', { cache: 'no-cache' });
+      const res = await fetch('/api/public/creators');
       if (!res.ok) return;
-      const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
-      const source = Array.from(doc.querySelectorAll('#creatorGrid .market-card'));
+      const payload = await res.json();
+      const source = Array.isArray(payload.creators) ? payload.creators : [];
       if (!source.length) return;
 
       const fmtFollowers = (v) => {
@@ -3232,26 +3227,23 @@
       };
       const marketCodes = { Malaysia: 'MY', Vietnam: 'VN', Thailand: 'TH' };
 
-      const cards = source.map((el) => {
-        const name = (el.querySelector('h3')?.textContent || '').trim();
-        const img = el.querySelector('.thumb img')?.getAttribute('src') || '';
-        const platform = (el.querySelector('.badges span')?.textContent || 'TikTok').trim();
-        const parts = (el.querySelector('.market-card-body p')?.textContent || '').split('/').map((s) => s.trim());
+      const cards = source.map((creator) => {
         return {
-          name,
-          img,
-          platform,
-          marketName: parts[0] || 'Malaysia',
-          specialty: parts[1] || 'K-Fashion Styling',
-          handle: parts[2] || '',
-          fit: Number(el.dataset.fit) || 0,
-          followers: fmtFollowers(el.dataset.followers),
+          name: creator.name,
+          img: creator.image,
+          profileImg: creator.profileImage || creator.image,
+          platform: creator.platform || 'TikTok',
+          marketName: creator.marketName || 'Malaysia',
+          specialty: creator.specialty || 'K-Fashion Styling',
+          handle: creator.handle || '',
+          fit: Number(creator.fit) || 0,
+          followers: fmtFollowers(creator.followers),
         };
       }).filter((c) => c.name && c.img).sort((a, b) => b.fit - a.fit).slice(0, 8);
       if (!cards.length) return;
 
       row.innerHTML = cards.map((c) => `
-        <button class="campaign" type="button" data-name="${c.name}" data-market="${c.marketName} / ${c.specialty}" data-followers="${c.followers}" data-views="—" data-er="—" data-score="${c.fit}%" data-fit="${fitDesc[c.platform] || fitDesc.TikTok}" data-img="${c.img}">
+        <button class="campaign" type="button" data-name="${c.name}" data-market="${c.marketName} / ${c.specialty}" data-followers="${c.followers}" data-views="—" data-er="—" data-score="${c.fit}%" data-fit="${fitDesc[c.platform] || fitDesc.TikTok}" data-img="${c.profileImg}">
           <div class="image"><img loading="lazy" decoding="async" src="${c.img}" alt="${c.name} profile" /></div>
           <span class="platform-tag">${c.platform}</span>
           <h3>${c.name.toUpperCase()}</h3>
@@ -3263,7 +3255,19 @@
     } catch (e) {
       // 네트워크 실패 시 기존 하드코딩 카드를 그대로 유지
     }
-  })();
+  };
+
+  const influencerSection = document.querySelector('#influencers');
+  if (!influencerSection || !('IntersectionObserver' in window)) {
+    hydrateHomeCreatorCards();
+  } else {
+    const creatorHydrationObserver = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      creatorHydrationObserver.disconnect();
+      hydrateHomeCreatorCards();
+    }, { rootMargin: '800px 0px' });
+    creatorHydrationObserver.observe(influencerSection);
+  }
 
   document.querySelectorAll('.modal-close, .modal-icon-close').forEach((button) => {
     button.addEventListener('click', closeModal);
@@ -3292,6 +3296,7 @@
     totalEl.textContent = total;
     let index = 0;
     let playing = true;
+    let inViewport = false;
     let timer = null;
     const INTERVAL = 3000;
 
@@ -3323,13 +3328,17 @@
     }, { passive: true });
 
     const stop = () => { if (timer) { clearInterval(timer); timer = null; } };
-    const start = () => { stop(); timer = setInterval(() => goTo(index + 1), INTERVAL); };
+    const start = () => {
+      stop();
+      if (!playing || !inViewport || document.hidden) return;
+      timer = setInterval(() => goTo(index + 1), INTERVAL);
+    };
 
     const setPlaying = (p) => {
       playing = p;
       toggle.setAttribute('aria-pressed', p ? 'false' : 'true');
       toggle.setAttribute('aria-label', p ? '자동 재생 멈춤' : '자동 재생 시작');
-      if (p) start(); else stop();
+      if (p && inViewport) start(); else stop();
     };
 
     prevBtn.addEventListener('click', () => goTo(index - 1));
@@ -3348,11 +3357,21 @@
     // 다른 탭으로 가면 멈춤
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) stop();
-      else if (playing) start();
+      else if (playing && inViewport) start();
     });
 
     requestAnimationFrame(() => goTo(0, false));
-    setPlaying(true);
+    if ('IntersectionObserver' in window) {
+      const carouselObserver = new IntersectionObserver((entries) => {
+        inViewport = entries.some((entry) => entry.isIntersecting);
+        if (inViewport && playing) start();
+        else stop();
+      }, { rootMargin: '300px 0px', threshold: 0.01 });
+      carouselObserver.observe(root);
+    } else {
+      inViewport = true;
+    }
+    setPlaying(!window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   })();
 
   // KPI 카운트업 (스크롤 진입 시 0→목표)

@@ -312,7 +312,8 @@
 /* product list */
 .st-plist { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px,1fr)); gap: 16px; }
 .st-pcard { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
-.st-pcard .img { position: relative; aspect-ratio: 3/4; background: #e6e0d4 center/cover; }
+.st-pcard .img { position: relative; aspect-ratio: 3/4; background: #e6e0d4 center/cover; overflow: hidden; }
+.st-card-media { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
 .st-pcard .badge { position: absolute; top: 10px; left: 10px; padding: 4px 11px; border-radius: 999px; font-size: 11px; font-weight: 800; color: #fff; backdrop-filter: blur(4px); }
 .st-pcard .badge.pub { background: rgba(31,122,77,.92); }
 .st-pcard .badge.priv { background: rgba(10,10,10,.72); }
@@ -913,7 +914,7 @@ a.st-stat:hover { border-color: #94a3b8; transform: translateY(-2px); box-shadow
 .apm-list { display: grid; gap: 8px; }
 .apm-row { display: grid; grid-template-columns: 28px 48px minmax(0,2fr) minmax(0,1.4fr) 70px 88px 92px; gap: 12px; align-items: center; padding: 8px 12px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
 .apm-row .apm-check { position: static; display: flex; justify-content: center; align-items: center; padding: 0; background: none; box-shadow: none; }
-.apm-row-thumb { width: 48px; height: 48px; border-radius: 8px; background: #e7e5df center/cover; }
+.apm-row-thumb { width: 48px; height: 48px; border-radius: 8px; background: #e7e5df center/cover; overflow: hidden; }
 .apm-row-name { font-weight: 800; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .apm-row-brand, .apm-row-cat { color: var(--muted); font-size: 13px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .apm-row .apm-action { width: auto; margin: 0; min-height: 32px; padding: 0 10px; }

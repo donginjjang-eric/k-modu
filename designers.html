@@ -19,7 +19,7 @@
 <body>
   <main class="platform designer-board">
     <header class="topbar">
-      <a class="brand" href="/#home"><img src="assets/k-modu-logo.png" alt="K-MODU" /></a>
+      <a class="brand" href="/#home"><img src="assets/k-modu-logo.png" width="480" height="86" decoding="async" alt="K-MODU" /></a>
       <nav class="topnav">
         <a href="/#about">소개</a>
         <a href="/designers" aria-current="page">디자이너</a>
@@ -82,14 +82,14 @@
         <button class="designer-proposal-close" type="button" aria-label="닫기">‹</button>
         <div class="designer-proposal-scroll">
         <div class="designer-proposal-visual">
-          <img id="proposalImage" src="assets/designer-samples/model_kfashion_base2.jpg" alt="" />
+          <img id="proposalImage" width="1024" height="1365" decoding="async" alt="" />
           <div class="tryon-loading-overlay" id="tryonLoadingOverlay" hidden>
             <strong>AI 룩 생성 중</strong>
             <span>선택한 제품으로 스타일링하는 중…</span>
           </div>
           <div class="styling-collage" id="stylingCollage" aria-label="Selected styling collage" hidden>
             <div class="styling-stage" id="stylingStage">
-              <img id="collageModel" src="assets/designer-samples/model_kfashion_base2.jpg" alt="Styling model preview" />
+              <img id="collageModel" width="1024" height="1365" decoding="async" alt="Styling model preview" />
               <div class="styling-collage-caption" id="stylingCollageCaption" hidden></div>
               <button class="stage-generate" id="stageGenerate" type="button" disabled>
                 <span class="stage-generate-spark" aria-hidden="true">✨</span> AI 룩 생성
@@ -135,7 +135,7 @@
               <p>브랜드가 보유한 제품과 추천 아이템을 조합해 크리에이터가 바로 촬영 콘셉트를 상상할 수 있는 보드입니다.</p>
             </div>
             <div class="styling-board">
-              <img id="stylingBoardImage" src="assets/styling-board-maison-lune-01.webp" alt="Maison Lune Seoul full look styling board" hidden />
+              <img id="stylingBoardImage" width="1122" height="1402" decoding="async" alt="Maison Lune Seoul full look styling board" hidden />
               <div class="styling-board-list">
                 <div class="styling-board-section">
                   <div class="styling-board-section-head">
@@ -185,8 +185,8 @@
                   <div class="shortform-player" id="shortformPlayer" hidden>
                     <div class="shortform-reel" id="shortformReel" aria-label="생성된 숏폼 영상 미리보기">
                       <div class="shortform-reel-stage">
-                        <img class="shortform-reel-media is-active" id="shortformReelMedia" data-sf-layer="a" src="" alt="숏폼 영상 미리보기" />
-                        <img class="shortform-reel-media" id="shortformReelMediaB" data-sf-layer="b" src="" alt="" aria-hidden="true" />
+                        <img class="shortform-reel-media is-active" id="shortformReelMedia" data-sf-layer="a" width="720" height="1280" decoding="async" alt="숏폼 영상 미리보기" />
+                        <img class="shortform-reel-media" id="shortformReelMediaB" data-sf-layer="b" width="720" height="1280" decoding="async" alt="" aria-hidden="true" />
                       </div>
                       <video class="shortform-reel-video" id="shortformReelVideo" muted loop playsinline preload="none"></video>
                       <div class="shortform-reel-progress"><span></span></div>
@@ -466,7 +466,15 @@
 
     board.innerHTML = '<p class="board-loading" style="padding:24px 4px;opacity:.6;">승인된 디자이너 프로필을 불러오는 중입니다…</p>';
 
+    const getPriorityCoverCount = () => {
+      const isCompactGrid = window.matchMedia('(max-width: 760px)').matches;
+      const minCardWidth = isCompactGrid ? 150 : 220;
+      const columnGap = isCompactGrid ? 14 : 20;
+      return Math.max(1, Math.floor((board.clientWidth + columnGap) / (minCardWidth + columnGap)));
+    };
+
     const renderDesignerBoard = () => {
+      const priorityCoverCount = getPriorityCoverCount();
       board.innerHTML = designerProfiles.map((item, index) => {
       const [variant, image, name, kicker, description, tags, shopInfo, designerId] = item;
       // 핀터레스트 지그재그: 기본은 3:4 세로 / 3:2 가로 번갈아. variant에 'pin-34'/'pin-32'가 있으면 그 카드만 고정(세로 풀룩 사진 보호용).
@@ -477,9 +485,16 @@
       const tagHtml = tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join('');
       const encodedTags = escapeHtml(tags.join('|'));
       const gallery = shopInfo?.gallery || [];
+      const isPriorityCover = index < priorityCoverCount;
+      const coverLoading = isPriorityCover ? 'eager' : 'lazy';
+      const coverPriority = isPriorityCover ? 'high' : 'low';
+      const coverDecoding = isPriorityCover ? 'auto' : 'async';
+      const coverSource = isPriorityCover
+        ? `src="${escapeHtml(image)}"`
+        : `data-src="${escapeHtml(image)}"`;
       const galleryHtml = isKFashion && gallery.length ? `
           <div class="kfashion-thumb-rail" aria-label="${escapeHtml(name)} detail thumbnails">
-            ${gallery.map((thumb, thumbIndex) => `<img src="${escapeHtml(thumb)}" alt="${escapeHtml(name)} detail ${thumbIndex + 1}" loading="lazy" />`).join('')}
+            ${gallery.map((thumb, thumbIndex) => `<img src="${escapeHtml(thumb)}" width="300" height="400" alt="${escapeHtml(name)} detail ${thumbIndex + 1}" loading="lazy" decoding="async" fetchpriority="low" />`).join('')}
           </div>` : '';
       const shopHtml = isKFashion && shopInfo ? `
           <div class="kfashion-shop-panel">
@@ -490,7 +505,7 @@
       return `
         <article class="${classes}" data-reveal data-index="${index}" data-brand="${escapeHtml(name)}" data-kicker="${escapeHtml(kicker)}" data-description="${escapeHtml(description)}" data-tags="${encodedTags}" data-image="${escapeHtml(image)}" ${designerId ? `data-designer-id="${escapeHtml(designerId)}"` : ''} ${shopInfo?.designerName ? `data-designer-name="${escapeHtml(shopInfo.designerName)}"` : ''} style="--reveal-delay: ${(index % 8) * 46}ms">
           <div class="kfashion-visual-wrap">
-            <img class="kfashion-main-image" src="${escapeHtml(image)}" alt="${escapeHtml(name)} designer profile look" loading="lazy" />
+            <img class="kfashion-main-image" ${coverSource} width="600" height="800" alt="${escapeHtml(name)} designer profile look" loading="${coverLoading}" decoding="${coverDecoding}" fetchpriority="${coverPriority}" />
             ${galleryHtml}
           </div>
           ${shopHtml}
@@ -504,6 +519,28 @@
         </article>`;
       }).join('');
       bindDesignerBoardCards();
+      observeDesignerCovers();
+    };
+
+    const observeDesignerCovers = () => {
+      const deferredCovers = board.querySelectorAll('.kfashion-main-image[data-src]');
+      const loadCover = (image) => {
+        if (!image.dataset.src) return;
+        image.src = image.dataset.src;
+        delete image.dataset.src;
+      };
+      if (!('IntersectionObserver' in window)) {
+        deferredCovers.forEach(loadCover);
+        return;
+      }
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          loadCover(entry.target);
+          observer.unobserve(entry.target);
+        });
+      }, { rootMargin: '300px 0px', threshold: 0.01 });
+      deferredCovers.forEach((image) => observer.observe(image));
     };
 
     const bindDesignerBoardCards = () => {
@@ -604,31 +641,17 @@
       };
       requestAnimationFrame(tick);
     };
-    const updateDesignerKpis = async (designers) => {
+    const updateDesignerKpis = (counts, designers) => {
       const productNode = document.getElementById('designerProductKpi');
       const brandNode = document.getElementById('designerBrandKpi');
       const aiNode = document.getElementById('designerAiKpi');
-      animateDesignerKpi(brandNode, designers.length);
-
-      const productRequests = designers.map(async (designer) => {
-        try {
-          const response = await fetch(publicReadUrl(`/api/public/styling-board?designerId=${encodeURIComponent(designer.id)}`), { cache: 'no-store' });
-          if (!response.ok) return 0;
-          const data = await response.json();
-          return Array.isArray(data.products) ? data.products.length : 0;
-        } catch (_) {
-          return 0;
-        }
-      });
-
-      const [productCounts, approvedLooks] = await Promise.all([
-        Promise.all(productRequests),
-        fetch(publicReadUrl('/api/public/approved-looks?limit=500'), { cache: 'no-store' })
-          .then((response) => response.ok ? response.json() : { looks: [] })
-          .catch(() => ({ looks: [] })),
-      ]);
-      animateDesignerKpi(productNode, productCounts.reduce((sum, count) => sum + count, 0));
-      animateDesignerKpi(aiNode, Array.isArray(approvedLooks.looks) ? approvedLooks.looks.length : 0);
+      const valueOr = (value, fallback = 0) => {
+        const number = Number(value);
+        return Number.isFinite(number) && number >= 0 ? number : fallback;
+      };
+      animateDesignerKpi(productNode, valueOr(counts?.products));
+      animateDesignerKpi(brandNode, valueOr(counts?.designers, designers.length));
+      animateDesignerKpi(aiNode, valueOr(counts?.generatedLooks));
     };
 
     // 공개 보드는 DB의 승인된 디자이너 목록으로 자동 생성. 로컬에서는 운영 공개 데이터를 읽는다.
@@ -643,7 +666,7 @@
         designerProfiles = data.designers.map(designerToProfile);
         isSampleBoard = false;
         renderDesignerBoard();
-        updateDesignerKpis(data.designers);
+        updateDesignerKpis(data.counts, data.designers);
         openDeepLinkedCard();
       } catch (error) {
         designerProfiles = sampleDesignerProfiles;
@@ -913,7 +936,7 @@
     const renderPubFlags = () => {
       if (!sfFlagRow) return;
       sfFlagRow.innerHTML = PUB_COUNTRIES.map(([code, name]) =>
-        `<button class="sf-flag${pubCountry === code ? ' sel' : ''}" type="button" data-code="${code}" title="${name}" aria-label="${name}"><img src="assets/flags/${code}.svg" alt="${name}" /></button>`
+        `<button class="sf-flag${pubCountry === code ? ' sel' : ''}" type="button" data-code="${code}" title="${name}" aria-label="${name}"><img src="assets/flags/${code}.svg" width="42" height="42" loading="lazy" decoding="async" alt="${name}" /></button>`
       ).join('');
       sfFlagRow.querySelectorAll('.sf-flag').forEach((b) => b.addEventListener('click', () => {
         pubCountry = b.dataset.code; renderPubFlags();
@@ -928,9 +951,14 @@
         pubPlatform = b.dataset.id; pubConnected = false; renderPubPlats(); renderPubAction();
       }));
     };
-    renderPubFlags();
-    renderPubPlats();
-    renderPubAction();
+    let publishControlsReady = false;
+    const ensurePublishControls = () => {
+      if (publishControlsReady) return;
+      publishControlsReady = true;
+      renderPubFlags();
+      renderPubPlats();
+      renderPubAction();
+    };
     const replayGeneratedShortform = async (entry) => {
       if (!entry || shortformLoading) return;
       shortformPlayer.hidden = false;
@@ -1048,6 +1076,10 @@
     };
     let currentProposalIndex = 0;
     let currentStylingBoard = defaultStylingBoard;
+    let stylingBoardSession = 0;
+    let currentStylingBoardPayload = null;
+    let currentStylingBoardRequest = null;
+    let renderedStylingBoardKey = '';
 
     // 풀스크린 사진 갤러리 라이트박스 (제안 시트 위에 표시)
     const lightbox = document.querySelector('#designerLightbox');
@@ -1079,7 +1111,7 @@
       dlbTotal.textContent = dlbImages.length;
       dlbCurrent.textContent = dlbIndex + 1;
       dlbScroller.innerHTML = dlbImages.map((src, i) => (
-        `<div class="dlb-slide"><img src="${escapeHtml(src)}" alt="이미지 ${i + 1}" /></div>`
+        `<div class="dlb-slide"><img src="${escapeHtml(src)}" alt="이미지 ${i + 1}" loading="${i === dlbIndex ? 'eager' : 'lazy'}" decoding="async" fetchpriority="${i === dlbIndex ? 'high' : 'low'}" /></div>`
       )).join('');
       dlbScroller.scrollLeft = 0;
       lightbox.classList.add('is-open');
@@ -1165,8 +1197,10 @@
         proposalImage.classList.remove('is-switching');
         proposalImage.hidden = true;
         stylingCollage.hidden = false;
+        ensurePublishControls();
         resetTryOnStage();
         showModelTemplatePreview();
+        ensureStylingBoardForCurrentDesigner();
       } else if (wasStyling) {
         resetTryOnStage();
         stylingCollage.hidden = true;
@@ -1181,7 +1215,7 @@
 
     const renderStylingItems = (items) => items.map((item) => `
       <button class="styling-item-card" type="button" data-product-id="${escapeHtml(item.productId || '')}" data-category="${escapeHtml(item.category)}" data-item-name="${escapeHtml(item.name)}" data-item-image="${escapeHtml(item.image)}" data-model-look-image="${escapeHtml(item.modelLookImage || '')}" aria-pressed="false">
-        <img src="${escapeHtml(item.image)}" alt="" loading="lazy" />
+        <img src="${escapeHtml(item.image)}" width="300" height="400" alt="" loading="lazy" decoding="async" />
         <div>
           <span>${escapeHtml(item.category)}</span>
           <strong>${escapeHtml(item.name)}</strong>
@@ -1447,7 +1481,7 @@
       aiSelectedStack.innerHTML = items.length
         ? items.map((item) => `
           <span class="ai-selected-thumb" title="${escapeHtml(item.category)} · ${escapeHtml(item.name)}">
-            <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy" />
+            <img src="${escapeHtml(item.image)}" width="300" height="400" alt="${escapeHtml(item.name)}" loading="lazy" decoding="async" />
             <b>${escapeHtml(item.category)}</b>
           </span>
         `).join('')
@@ -1489,7 +1523,7 @@
         const image = button.dataset.itemImage || '';
         const card = document.createElement('div');
         card.className = 'styling-flat-card';
-        card.innerHTML = `<button class="flat-remove" type="button" aria-label="Remove ${escapeHtml(category)}">×</button><img src="${escapeHtml(image)}" alt="" loading="lazy" /><span>${escapeHtml(category)}</span>`;
+        card.innerHTML = `<button class="flat-remove" type="button" aria-label="Remove ${escapeHtml(category)}">×</button><img src="${escapeHtml(image)}" width="300" height="400" alt="" loading="lazy" decoding="async" /><span>${escapeHtml(category)}</span>`;
         card.querySelector('.flat-remove').addEventListener('click', (event) => {
           event.stopPropagation();
           toggleStylingItemSelection(button);
@@ -1613,7 +1647,7 @@
       if (!looks.length) { generatedLooksEl.hidden = true; generatedLooksRow.innerHTML = ''; return; }
       generatedLooksEl.hidden = false;
       generatedLooksRow.innerHTML = looks.map((src, i) =>
-        `<button class="generated-look-thumb" type="button" aria-label="생성된 룩 ${i + 1} 무대에서 보기"><img src="${escapeHtml(src)}" alt="" loading="lazy" /></button>`
+        `<button class="generated-look-thumb" type="button" aria-label="생성된 룩 ${i + 1} 무대에서 보기"><img src="${escapeHtml(src)}" width="1086" height="1448" alt="" loading="lazy" decoding="async" /></button>`
       ).join('');
       Array.from(generatedLooksRow.children).forEach((btn, i) => {
         btn.addEventListener('click', () => {
@@ -1871,7 +1905,7 @@
       if (stylingHoverPreview) return stylingHoverPreview;
       const el = document.createElement('div');
       el.className = 'styling-hover-preview';
-      el.innerHTML = '<img alt="" />';
+      el.innerHTML = '<img width="360" height="480" decoding="async" alt="" />';
       document.body.appendChild(el);
       stylingHoverPreview = el;
       return el;
@@ -1906,7 +1940,6 @@
     const renderStylingBoard = (profileIndex) => {
       const board = stylingBoardData[profileIndex] || defaultStylingBoard;
       currentStylingBoard = board;
-      stylingBoardImage.src = board.fullLookImage;
       currentOwnedItems = board.ownedItems || [];
       setDefaultOwnedCategoryFilter();
       renderOwnedItems();
@@ -1951,22 +1984,56 @@
       bindStylingItemPreviews();
     };
 
-    // Fetch a designer's real products; falls back to the already-rendered board on failure.
-    const loadStylingBoardForDesigner = (designerId) => {
-      if (!designerId) return;
+    // Fetch at most once per opened modal, and only after the styling tab is opened.
+    // The response can be cached as data without creating any product/look <img> nodes.
+    const loadStylingBoardForDesigner = (designerId) => (
       fetch(publicReadUrl(`/api/public/styling-board?designerId=${encodeURIComponent(designerId)}`), { cache: 'no-store' })
         .then((response) => (response.ok ? response.json() : Promise.reject(new Error(`status ${response.status}`))))
         .then((data) => {
           if (!data || data.ok === false || !Array.isArray(data.products)) {
             throw new Error('invalid styling board payload');
           }
-          // 제품 0개여도 실데이터 기준으로 렌더 — DB 카드에 데모 보드를 보여주지 않는다
-          renderStylingBoardFromApi(data);
+          return data;
         })
-        .catch(() => {
-          // API 실패 시에도 데모 폴백 대신 정직한 빈 보드
-          renderStylingBoardFromApi({ products: [], approvedLooks: [] });
-        });
+        // API 실패 시에도 데모 폴백 대신 정직한 빈 보드
+        .catch(() => ({ products: [], approvedLooks: [] }))
+    );
+
+    const ensureStylingBoardForCurrentDesigner = () => {
+      const profileIndex = currentProposalIndex;
+      const designerId = currentDesignerId;
+      const boardKey = designerId || `sample:${profileIndex}`;
+
+      if (!designerId) {
+        if (renderedStylingBoardKey !== boardKey) {
+          renderStylingBoard(profileIndex);
+          renderedStylingBoardKey = boardKey;
+        }
+        return;
+      }
+
+      if (currentStylingBoardPayload) {
+        if (renderedStylingBoardKey !== boardKey) {
+          renderStylingBoardFromApi(currentStylingBoardPayload);
+          renderedStylingBoardKey = boardKey;
+        }
+        return;
+      }
+
+      if (renderedStylingBoardKey !== `${boardKey}:loading`) {
+        renderStylingBoardFromApi({ products: [], approvedLooks: [] });
+        renderedStylingBoardKey = `${boardKey}:loading`;
+      }
+      if (currentStylingBoardRequest) return;
+
+      const requestSession = stylingBoardSession;
+      currentStylingBoardRequest = loadStylingBoardForDesigner(designerId).then((data) => {
+        if (requestSession !== stylingBoardSession || currentDesignerId !== designerId) return;
+        currentStylingBoardPayload = data;
+        if (!proposalSheet.classList.contains('is-open') || !proposalSheet.classList.contains('is-styling')) return;
+        renderStylingBoardFromApi(data);
+        renderedStylingBoardKey = boardKey;
+      });
     };
 
     const getProposalGalleryImages = (startIndex) => {
@@ -2070,12 +2137,12 @@
       proposalSamplePreview.closest('.designer-asset-section').hidden = !samples.length;
       proposalProductPreview.innerHTML = products.map((image, index) => `
         <button type="button" data-asset-image="${escapeHtml(image)}" aria-label="Hero product ${index + 1}" aria-pressed="false">
-          <img src="${escapeHtml(image)}" alt="" loading="lazy" />
+          <img src="${escapeHtml(image)}" width="300" height="400" alt="" loading="lazy" decoding="async" />
         </button>
       `).join('');
       proposalSamplePreview.innerHTML = samples.map((image, index) => `
         <button type="button" data-asset-image="${escapeHtml(image)}" aria-label="Available sample ${index + 1}" aria-pressed="false">
-          <img src="${escapeHtml(image)}" alt="" loading="lazy" />
+          <img src="${escapeHtml(image)}" width="300" height="400" alt="" loading="lazy" decoding="async" />
         </button>
       `).join('');
       Array.from(proposalProductPreview.children).forEach((button, index) => {
@@ -2149,12 +2216,17 @@
       if (!proposalGalleryImages.length) return;
       proposalGalleryIndex = index;
       const item = proposalGalleryImages[proposalGalleryIndex];
-      proposalImage.classList.add('is-switching');
-      window.setTimeout(() => {
+      const applyImage = () => {
         proposalImage.src = item.image;
         proposalImage.alt = `${item.name} proposal portfolio visual`;
         proposalImage.classList.remove('is-switching');
-      }, 120);
+      };
+      if (proposalImage.hasAttribute('src')) {
+        proposalImage.classList.add('is-switching');
+        window.setTimeout(applyImage, 120);
+      } else {
+        applyImage();
+      }
       Array.from(proposalPortfolioDots.children).forEach((dot, dotIndex) => {
         const isActive = dotIndex === proposalGalleryIndex;
         dot.classList.toggle('is-active', isActive);
@@ -2199,7 +2271,7 @@
       )).join('');
       proposalPortfolioThumbs.innerHTML = proposalGalleryImages.map((item, index) => (
         `<button type="button" aria-label="${escapeHtml(item.name)} thumbnail" aria-pressed="${index === 0 ? 'true' : 'false'}" class="${index === 0 ? 'is-active' : ''}">
-          <img src="${escapeHtml(item.image)}" alt="" loading="lazy" />
+          <img src="${escapeHtml(item.image)}" width="300" height="400" alt="" loading="lazy" decoding="async" />
         </button>`
       )).join('');
       Array.from(proposalPortfolioDots.children).forEach((dot, index) => {
@@ -2239,6 +2311,10 @@
       const meta = getDesignerMeta(profileIndex, brand, kicker, tags);
       currentProposalIndex = profileIndex;
       currentDesignerId = card.dataset.designerId || '';
+      stylingBoardSession += 1;
+      currentStylingBoardPayload = null;
+      currentStylingBoardRequest = null;
+      renderedStylingBoardKey = '';
 
       proposalBrandName.textContent = brand;
       proposalBriefTitle.textContent = 'Representative looks and portfolio mood';
@@ -2275,9 +2351,6 @@
         document.querySelector('#proposalBriefActions').hidden = isDbCard;
         if (collabStatus) collabStatus.textContent = '';
       }
-      renderStylingBoard(profileIndex);
-      // Only cards linked to a real DB designer can replace samples with that designer's own data.
-      loadStylingBoardForDesigner(currentDesignerId);
       setProposalTab('profile');
       startProposalGallery(profileIndex);
       loadProposalPortfolioForDesigner(currentDesignerId, profileIndex, brand);

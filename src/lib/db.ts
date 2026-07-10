@@ -113,6 +113,54 @@ export async function getPublicDesigners(): Promise<Designer[]> {
   }
 }
 
+export type PublicDesignerCounts = {
+  products: number;
+  designers: number;
+  generatedLooks: number;
+};
+
+// Public designer-board KPIs in one indexed query. The supplied IDs are the
+// already-approved designers returned by getPublicDesigners(), so the totals
+// stay scoped to the brands that can actually appear on the public board.
+export async function getPublicDesignerCounts(designerIds: string[]): Promise<PublicDesignerCounts> {
+  const fallback = {
+    products: designerIds.includes(phaseDesigner.id)
+      ? toDemoProducts().filter((product) => product.status === "active").length
+      : 0,
+    designers: designerIds.length,
+    generatedLooks: 0,
+  };
+
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    return fallback;
+  }
+
+  try {
+    const row = await one<{ product_count: string; generated_look_count: string }>(
+      `SELECT
+         (SELECT COUNT(*)::text
+            FROM products
+           WHERE designer_id = ANY($1::text[])
+             AND status = 'active') AS product_count,
+         (SELECT COUNT(*)::text
+            FROM generated_looks
+           WHERE designer_id = ANY($1::text[])
+             AND status = 'approved') AS generated_look_count`,
+      [designerIds],
+    );
+
+    return {
+      products: Number(row?.product_count || 0),
+      designers: designerIds.length,
+      generatedLooks: Number(row?.generated_look_count || 0),
+    };
+  } catch (error) {
+    if (!canUseDemoData()) throw error;
+    return fallback;
+  }
+}
+
 export async function getAllDesigners(): Promise<Designer[]> {
   if (!hasDatabase()) {
     requireDatabaseForProduction();

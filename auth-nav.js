@@ -231,6 +231,19 @@
     showToast(`✓ ${who}님, 로그인되었습니다`);
   };
 
+  const loadAuthState = () => {
+    const isLoginPage = window.location.pathname === '/login' || window.location.pathname === '/login/';
+    if (isLoginPage && window.__kmoduLoginAuthMeRequest) {
+      return window.__kmoduLoginAuthMeRequest;
+    }
+
+    const request = fetch('/api/auth/me', { cache: 'no-store' })
+      .then((response) => (response.ok ? response.json() : null))
+      .catch(() => null);
+    if (isLoginPage) window.__kmoduLoginAuthMeRequest = request;
+    return request;
+  };
+
   const sync = async () => {
     try {
       const cached = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null');
@@ -238,9 +251,8 @@
     } catch (error) { /* 캐시 불량 시 기본 표시 유지 */ }
 
     try {
-      const response = await fetch('/api/auth/me', { cache: 'no-store' });
-      if (!response.ok) return;
-      const data = await response.json();
+      const data = await loadAuthState();
+      if (!data) return;
       const target = computeTarget(data && data.user, data && data.designer);
       applyTarget(target);
       maybeWelcome(data && data.user, data && data.designer);
@@ -251,13 +263,16 @@
     } catch (error) { /* 상태를 모르면 현재 표시 유지 */ }
   };
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      ensureStudioQuickBanner();
-      sync();
-    });
-  } else {
+  const startAuthNav = () => {
     ensureStudioQuickBanner();
     sync();
+  };
+
+  // Next.js 페이지에서는 React hydration이 끝난 뒤 DOM을 갱신해야 속성 불일치가 생기지 않는다.
+  // 정적 HTML 페이지도 load 직후 실행해 동일한 동작 순서를 유지한다.
+  if (document.readyState === 'complete') {
+    setTimeout(startAuthNav, 0);
+  } else {
+    window.addEventListener('load', () => setTimeout(startAuthNav, 0), { once: true });
   }
 })();

@@ -17,7 +17,10 @@ function isLocalPreview(request: Request) {
 
 function absolutizeProductionUrls(value: unknown): unknown {
   if (typeof value === "string") {
-    return value.startsWith("/uploads/") || value.startsWith("/assets/")
+    return value.startsWith("/uploads/")
+      || value.startsWith("/assets/")
+      || value.startsWith("/generated-looks/")
+      || value.startsWith("/model-templates/")
       ? `${PRODUCTION_ORIGIN}${value}`
       : value;
   }
@@ -28,6 +31,40 @@ function absolutizeProductionUrls(value: unknown): unknown {
     );
   }
   return value;
+}
+
+async function addLegacyDesignerCounts(data: unknown) {
+  if (!data || typeof data !== "object") return data;
+  const payload = data as { counts?: unknown; designers?: Array<{ id?: string }> };
+  if (payload.counts || !Array.isArray(payload.designers)) return data;
+
+  const designerIds = payload.designers.map((designer) => designer.id).filter((id): id is string => Boolean(id));
+  const productRequests = designerIds.map(async (designerId) => {
+    const url = new URL("/api/public/styling-board", PRODUCTION_ORIGIN);
+    url.searchParams.set("designerId", designerId);
+    try {
+      const response = await fetch(url, { cache: "no-store", headers: { Accept: "application/json" } });
+      if (!response.ok) return 0;
+      const board = await response.json();
+      return Array.isArray(board.products) ? board.products.length : 0;
+    } catch {
+      return 0;
+    }
+  });
+  const approvedLooksRequest = fetch(new URL("/api/public/approved-looks?limit=500", PRODUCTION_ORIGIN), {
+    cache: "no-store",
+    headers: { Accept: "application/json" },
+  }).then((response) => response.ok ? response.json() : { looks: [] }).catch(() => ({ looks: [] }));
+
+  const [productCounts, approvedLooks] = await Promise.all([Promise.all(productRequests), approvedLooksRequest]);
+  return {
+    ...payload,
+    counts: {
+      products: productCounts.reduce((total, count) => total + count, 0),
+      designers: designerIds.length,
+      generatedLooks: Array.isArray(approvedLooks.looks) ? approvedLooks.looks.length : 0,
+    },
+  };
 }
 
 export async function GET(
@@ -54,7 +91,8 @@ export async function GET(
       headers: { Accept: "application/json" },
     });
     const data = await response.json();
-    return Response.json(absolutizeProductionUrls(data), {
+    const compatibleData = resource === "designers" ? await addLegacyDesignerCounts(data) : data;
+    return Response.json(absolutizeProductionUrls(compatibleData), {
       status: response.status,
       headers: { "Cache-Control": "no-store" },
     });

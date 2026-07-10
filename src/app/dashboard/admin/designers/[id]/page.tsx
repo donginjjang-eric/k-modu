@@ -93,7 +93,16 @@ export default async function AdminDesignerDetailPage({ params }: { params: Prom
           {products.length ? (
             <div className="admin-look-grid">
               {products.slice(0, 8).map((product) => (
-                <div key={product.id} className="admin-look-thumb" style={{ backgroundImage: `url('${product.image_url}')` }}>
+                <div key={product.id} className="admin-look-thumb">
+                  <img
+                    className="st-card-media"
+                    src={product.image_url}
+                    alt={`${product.name} 상품 이미지`}
+                    width={300}
+                    height={400}
+                    loading="lazy"
+                    decoding="async"
+                  />
                   <span>{product.name}</span>
                 </div>
               ))}
@@ -112,7 +121,16 @@ export default async function AdminDesignerDetailPage({ params }: { params: Prom
           <div className="admin-gallery">
             {portfolioImages.slice(0, 16).map((image) => (
               <article className="st-pcard" key={image.id}>
-                <div className="img" style={{ backgroundImage: `url('${image.image_url}')` }}>
+                <div className="img">
+                  <img
+                    className="st-card-media"
+                    src={image.image_url}
+                    alt={image.title || `${designer.brand_name} 포트폴리오 이미지`}
+                    width={600}
+                    height={800}
+                    loading="lazy"
+                    decoding="async"
+                  />
                   <span className={`badge ${image.status === "approved" ? "pub" : "priv"}`}>{image.status}</span>
                 </div>
                 <div className="b">
@@ -137,7 +155,16 @@ export default async function AdminDesignerDetailPage({ params }: { params: Prom
           <div className="admin-gallery">
             {looks.slice(0, 12).map((look) => (
               <article className="st-pcard" key={look.id}>
-                <div className="img" style={{ backgroundImage: `url('${look.image_url}')` }}>
+                <div className="img">
+                  <img
+                    className="st-card-media"
+                    src={look.image_url}
+                    alt={`${designer.brand_name} AI 생성 룩`}
+                    width={600}
+                    height={800}
+                    loading="lazy"
+                    decoding="async"
+                  />
                   <span className={`badge ${look.status === "hidden" ? "priv" : "pub"}`}>{getGeneratedLookStatusLabel(look.status)}</span>
                 </div>
                 <div className="b">

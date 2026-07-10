@@ -5,7 +5,7 @@ export default function LoginEditorialPanel() {
     <section className="login-editorial" aria-label="K-MODU 브랜드 소개">
       <Image
         className="login-editorial-image"
-        src="/assets/LOGIN_IMG1.png"
+        src="/assets/LOGIN_IMG1.webp"
         alt="한국 디자이너 브랜드의 에디토리얼 룩북 이미지"
         width={1132}
         height={1390}

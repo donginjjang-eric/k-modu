@@ -1,10 +1,18 @@
 // 공개 디자이너 보드용: 승인된 디자이너 목록과 각자의 승인 포트폴리오 이미지를 반환하는 공개 API
 import type { DesignerPortfolioImage } from "@/lib/types";
-import { getApprovedPortfolioImagesForDesigners, getPublicDesigners } from "@/lib/db";
+import {
+  getApprovedPortfolioImagesForDesigners,
+  getPublicDesignerCounts,
+  getPublicDesigners,
+} from "@/lib/db";
 
 export async function GET() {
   const designers = await getPublicDesigners();
-  const images = await getApprovedPortfolioImagesForDesigners(designers.map((designer) => designer.id));
+  const designerIds = designers.map((designer) => designer.id);
+  const [images, counts] = await Promise.all([
+    getApprovedPortfolioImagesForDesigners(designerIds),
+    getPublicDesignerCounts(designerIds),
+  ]);
 
   const imagesByDesigner = new Map<string, DesignerPortfolioImage[]>();
   for (const image of images) {
@@ -15,6 +23,7 @@ export async function GET() {
 
   return Response.json({
     ok: true,
+    counts,
     designers: designers.map((designer) => ({
       id: designer.id,
       brandName: designer.brand_name,
