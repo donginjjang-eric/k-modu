@@ -14,7 +14,7 @@
   <title>Designers | K-MODU</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
-  <link rel="stylesheet" href="platform.css?v=20260614c" />
+  <link rel="stylesheet" href="platform.css?v=20260710-kpi" />
 </head>
 <body>
   <main class="platform designer-board">
@@ -46,6 +46,23 @@
       <p class="eyebrow">Designer Brands</p>
       <h1 class="page-title">Designer Profiles Ready For Creators</h1>
       <p class="page-lead">한국 디자이너 브랜드의 대표 룩, 시즌 무드, 협업 가능 포맷을 한눈에 볼 수 있는 프로필 보드입니다. 크리에이터는 브랜드 감도와 콘텐츠 방향을 보고 바로 협업을 제안할 수 있습니다.</p>
+      <div class="platform-kpi-strip platform-kpi-strip--designers" aria-label="디자이너 스튜디오 주요 지표">
+        <article class="platform-kpi">
+          <span class="platform-kpi__label">Registered Products</span>
+          <strong><span id="designerProductKpi" data-kpi-value="0">0</span><em>개</em></strong>
+          <small>협업과 AI 스타일링에 등록된 상품</small>
+        </article>
+        <article class="platform-kpi">
+          <span class="platform-kpi__label">Designer Brands</span>
+          <strong><span id="designerBrandKpi" data-kpi-value="0">0</span><em>개</em></strong>
+          <small>K-MODU에 입점한 디자이너 브랜드</small>
+        </article>
+        <article class="platform-kpi platform-kpi--ai">
+          <span class="platform-kpi__label">AI Images Generated</span>
+          <strong><span id="designerAiKpi" data-kpi-value="0">0</span><em>장</em></strong>
+          <small>공개 승인된 AI 룩 이미지</small>
+        </article>
+      </div>
       <div class="board-toolbar" aria-label="Designer profile filters">
         <span>New Designer</span>
         <span>Minimal Luxury</span>
@@ -564,10 +581,60 @@
       if (tab === 'styling' || tab === 'collab') setProposalTab(tab);
     };
 
-    // 공개 보드는 DB의 승인된 디자이너 목록으로 자동 생성. 실패/빈 목록일 때만 샘플 카드 폴백.
+    const isLocalLivePreview = ['localhost', '127.0.0.1', '0.0.0.0', '::1'].includes(window.location.hostname);
+    const publicReadUrl = (path) => (
+      isLocalLivePreview ? path.replace('/api/public/', '/api/live/') : path
+    );
+
+    const formatDesignerKpi = (value) => new Intl.NumberFormat('ko-KR').format(value);
+    const animateDesignerKpi = (node, target) => {
+      if (!node) return;
+      node.dataset.kpiValue = String(target);
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        node.textContent = formatDesignerKpi(target);
+        return;
+      }
+      const duration = 1000;
+      const start = performance.now();
+      const tick = (now) => {
+        const progress = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - progress, 4);
+        node.textContent = formatDesignerKpi(Math.round(target * eased));
+        if (progress < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+    const updateDesignerKpis = async (designers) => {
+      const productNode = document.getElementById('designerProductKpi');
+      const brandNode = document.getElementById('designerBrandKpi');
+      const aiNode = document.getElementById('designerAiKpi');
+      animateDesignerKpi(brandNode, designers.length);
+
+      const productRequests = designers.map(async (designer) => {
+        try {
+          const response = await fetch(publicReadUrl(`/api/public/styling-board?designerId=${encodeURIComponent(designer.id)}`), { cache: 'no-store' });
+          if (!response.ok) return 0;
+          const data = await response.json();
+          return Array.isArray(data.products) ? data.products.length : 0;
+        } catch (_) {
+          return 0;
+        }
+      });
+
+      const [productCounts, approvedLooks] = await Promise.all([
+        Promise.all(productRequests),
+        fetch(publicReadUrl('/api/public/approved-looks?limit=500'), { cache: 'no-store' })
+          .then((response) => response.ok ? response.json() : { looks: [] })
+          .catch(() => ({ looks: [] })),
+      ]);
+      animateDesignerKpi(productNode, productCounts.reduce((sum, count) => sum + count, 0));
+      animateDesignerKpi(aiNode, Array.isArray(approvedLooks.looks) ? approvedLooks.looks.length : 0);
+    };
+
+    // 공개 보드는 DB의 승인된 디자이너 목록으로 자동 생성. 로컬에서는 운영 공개 데이터를 읽는다.
     const initDesignerBoard = async () => {
       try {
-        const response = await fetch('/api/public/designers');
+        const response = await fetch(publicReadUrl('/api/public/designers'), { cache: 'no-store' });
         if (!response.ok) throw new Error(`status ${response.status}`);
         const data = await response.json();
         if (!data || data.ok === false || !Array.isArray(data.designers) || !data.designers.length) {
@@ -576,6 +643,7 @@
         designerProfiles = data.designers.map(designerToProfile);
         isSampleBoard = false;
         renderDesignerBoard();
+        updateDesignerKpis(data.designers);
         openDeepLinkedCard();
       } catch (error) {
         designerProfiles = sampleDesignerProfiles;
@@ -1886,7 +1954,7 @@
     // Fetch a designer's real products; falls back to the already-rendered board on failure.
     const loadStylingBoardForDesigner = (designerId) => {
       if (!designerId) return;
-      fetch(`/api/public/styling-board?designerId=${encodeURIComponent(designerId)}`)
+      fetch(publicReadUrl(`/api/public/styling-board?designerId=${encodeURIComponent(designerId)}`), { cache: 'no-store' })
         .then((response) => (response.ok ? response.json() : Promise.reject(new Error(`status ${response.status}`))))
         .then((data) => {
           if (!data || data.ok === false || !Array.isArray(data.products)) {
@@ -2032,7 +2100,7 @@
       if (!designerId) return;
       const requestKey = `${designerId}:${Date.now()}`;
       proposalSheet.dataset.portfolioRequest = requestKey;
-      fetch(`/api/public/designer-portfolio?designerId=${encodeURIComponent(designerId)}`)
+      fetch(publicReadUrl(`/api/public/designer-portfolio?designerId=${encodeURIComponent(designerId)}`), { cache: 'no-store' })
         .then((response) => (response.ok ? response.json() : Promise.reject(new Error(`status ${response.status}`))))
         .then((data) => {
           if (proposalSheet.dataset.portfolioRequest !== requestKey) return;
@@ -2056,7 +2124,7 @@
       const card = document.querySelector(`.work-pin[data-designer-id="${CSS.escape(designerId)}"]`);
       if (!card) return;
 
-      fetch(`/api/public/designer-portfolio?designerId=${encodeURIComponent(designerId)}`)
+      fetch(publicReadUrl(`/api/public/designer-portfolio?designerId=${encodeURIComponent(designerId)}`), { cache: 'no-store' })
         .then((response) => (response.ok ? response.json() : Promise.reject(new Error(`status ${response.status}`))))
         .then((data) => {
           if (!data || data.ok === false || !Array.isArray(data.images) || !data.images.length) return;

@@ -90,26 +90,136 @@ input {
 
 .login-page {
   width: min(1120px, calc(100% - 72px));
-  padding: 70px 0 120px;
+  padding: 28px 0 44px;
 }
 
 /* 로그인 화면은 카드가 인증 허브 — 상단 nav 링크(로그인/관리자콘솔/로그아웃)는 중복이라 숨김 */
 .site-shell:has(.login-page) .top-nav .nav-links { display: none; }
 
+body:has(.login-page) .studio-quick-banner,
+body:has(.login-page) .kakao-quick-banner { display: none !important; }
+
 .login-hero {
-  min-height: calc(100vh - 260px);
+  min-height: calc(100vh - 150px);
   display: grid;
-  grid-template-columns: minmax(320px, .82fr) minmax(420px, 1fr);
-  gap: clamp(42px, 7vw, 92px);
+  grid-template-columns: minmax(0, 1.05fr) minmax(380px, .95fr);
+  gap: clamp(36px, 5vw, 72px);
   align-items: center;
 }
 
-.login-copy {
-  padding-bottom: 18px;
+.login-editorial {
+  position: relative;
+  min-height: min(680px, calc(100vh - 190px));
+  overflow: hidden;
+  background: #d9cbb8;
+  isolation: isolate;
 }
 
-.login-copy .lead {
-  max-width: 540px;
+.login-editorial-image {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 34%;
+}
+
+.login-editorial-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(14, 12, 9, .06) 18%, rgba(14, 12, 9, .72) 100%);
+}
+
+.login-editorial-copy {
+  position: absolute;
+  right: clamp(22px, 4vw, 50px);
+  bottom: clamp(22px, 4vw, 50px);
+  left: clamp(22px, 4vw, 50px);
+  z-index: 2;
+  color: #fff;
+}
+
+.login-editorial-kicker,
+.login-auth-brand {
+  margin: 0 0 14px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+
+.login-editorial-copy h2 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(34px, 4.2vw, 64px);
+  font-weight: 500;
+  letter-spacing: -.045em;
+  line-height: .98;
+}
+
+.login-editorial-copy > p:not(.login-editorial-kicker) {
+  max-width: 420px;
+  margin: 20px 0 0;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.login-editorial-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 22px;
+}
+
+.login-editorial-tags span {
+  padding: 7px 9px;
+  border: 1px solid rgba(255, 255, 255, .4);
+  color: rgba(255, 255, 255, .88);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+
+.login-auth-column {
+  display: grid;
+  gap: 18px;
+  align-content: center;
+}
+
+.login-auth-intro {
+  padding-left: 4px;
+}
+
+.login-auth-brand {
+  margin-bottom: 12px;
+  color: #8a8478;
+}
+
+.login-auth-intro h1 {
+  margin: 0;
+  color: #14110b;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(36px, 4vw, 56px);
+  font-weight: 500;
+  letter-spacing: -.045em;
+  line-height: 1;
+}
+
+.login-auth-intro p:not(.login-auth-brand) {
+  margin: 18px 0 0;
+  color: #2f2b25;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.login-auth-intro span {
+  display: block;
+  margin-top: 7px;
+  color: #777067;
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 .kicker {
@@ -486,6 +596,20 @@ p {
   border: 1px solid #d8d1c5;
   background: rgba(255, 253, 248, .86);
   box-shadow: 0 24px 60px rgba(43, 35, 22, .08);
+}
+
+.login-legal {
+  margin: -4px 0 0;
+  color: #8a8478;
+  font-size: 11px;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.login-legal a {
+  color: #5d574e;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .login-field {
@@ -951,17 +1075,46 @@ p {
 
   .login-page {
     width: min(100% - 32px, 560px);
-    padding: 42px 0 80px;
+    padding: 22px 0 48px;
   }
 
   .login-hero {
     min-height: auto;
-    gap: 30px;
+    gap: 18px;
     align-items: start;
   }
 
-  .login-copy {
-    padding-bottom: 0;
+  .login-editorial {
+    min-height: 190px;
+    max-height: 230px;
+  }
+
+  .login-editorial-copy {
+    right: 20px;
+    bottom: 20px;
+    left: 20px;
+  }
+
+  .login-editorial-copy h2 {
+    font-size: clamp(30px, 10vw, 42px);
+  }
+
+  .login-editorial-copy > p:not(.login-editorial-kicker),
+  .login-editorial-tags {
+    display: none;
+  }
+
+  .login-auth-column {
+    gap: 14px;
+  }
+
+  .login-auth-intro h1 {
+    font-size: 36px;
+  }
+
+  .login-auth-intro p:not(.login-auth-brand) {
+    margin-top: 12px;
+    font-size: 16px;
   }
 
   .login-form-card {

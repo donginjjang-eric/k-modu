@@ -13,7 +13,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <title>Creators | K-MODU</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
-  <link rel="stylesheet" href="platform.css?v=20260619-creator-modal-fit" />
+  <link rel="stylesheet" href="platform.css?v=20260710-kpi" />
 </head>
 <body>
   <main class="platform creator-market">
@@ -166,7 +166,7 @@
       <section class="creator-board" aria-label="Creator results">
         <div class="board-head">
           <div>
-            <p>Creators <span>/</span> <strong id="resultCount">전체 12명</strong></p>
+            <p>Creator Network <span>/</span> <strong id="resultCount">전체 43명</strong></p>
             <h2>Recommended Matching Board</h2>
           </div>
           <div class="board-tools">
@@ -175,6 +175,19 @@
               <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><line x1="13.4" y1="13.4" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
             </button>
           </div>
+        </div>
+
+        <div class="platform-kpi-strip platform-kpi-strip--creators" aria-label="크리에이터 네트워크 주요 지표">
+          <article class="platform-kpi platform-kpi--reach">
+            <span class="platform-kpi__label">Total Followers</span>
+            <strong><span id="creatorFollowerKpi" data-kpi-value="0">0</span><em>+</em></strong>
+            <small>검증 크리에이터 통합 도달 규모</small>
+          </article>
+          <article class="platform-kpi">
+            <span class="platform-kpi__label">Registered Creators</span>
+            <strong><span id="creatorRegisteredKpi" data-kpi-value="0">0</span><em>명</em></strong>
+            <small>브랜드 협업이 가능한 가입 크리에이터</small>
+          </article>
         </div>
 
         <div class="creator-grid" id="creatorGrid">
@@ -365,6 +378,8 @@
     const creatorSheetMeta = document.getElementById('creatorSheetMeta');
     const creatorSheetTags = document.getElementById('creatorSheetTags');
     const creatorProposeLink = document.getElementById('creatorProposeLink');
+    const creatorFollowerKpi = document.getElementById('creatorFollowerKpi');
+    const creatorRegisteredKpi = document.getElementById('creatorRegisteredKpi');
     const betaLaunchModal = document.getElementById('betaLaunchModal');
     const betaLaunchBackdrop = betaLaunchModal?.querySelector('.beta-launch-backdrop');
     const betaLaunchConfirm = betaLaunchModal?.querySelector('.beta-launch-confirm');
@@ -376,6 +391,31 @@
       if (n >= 1e3) return Math.round(n / 1e3) + 'K';
       return String(n);
     };
+    const formatKpiCompact = (value) => {
+      if (value >= 1e6) return `${(value / 1e6).toFixed(1).replace(/\.0$/, '')}M`;
+      if (value >= 1e3) return `${Math.round(value / 1e3)}K`;
+      return new Intl.NumberFormat('ko-KR').format(value);
+    };
+    const animateKpi = (node, target, formatter = (value) => new Intl.NumberFormat('ko-KR').format(value)) => {
+      if (!node) return;
+      node.dataset.kpiValue = String(target);
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        node.textContent = formatter(target);
+        return;
+      }
+      const duration = 1100;
+      const start = performance.now();
+      const tick = (now) => {
+        const progress = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - progress, 4);
+        node.textContent = formatter(Math.round(target * eased));
+        if (progress < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+    const creatorFollowerTotal = cards.reduce((total, card) => total + (Number(card.dataset.followers) || 0), 0);
+    animateKpi(creatorFollowerKpi, creatorFollowerTotal, formatKpiCompact);
+    animateKpi(creatorRegisteredKpi, cards.length);
     const deliverablesFor = (platform, type) => {
       const base = {
         TikTok: ['Styling Reel', 'GRWM'],
