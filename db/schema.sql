@@ -143,6 +143,30 @@ CREATE TABLE IF NOT EXISTS collab_requests (
 CREATE INDEX IF NOT EXISTS collab_requests_designer_idx
   ON collab_requests(designer_id, status, created_at DESC);
 
+-- 브랜드/디자이너 → 운영팀 → 큐레이션 크리에이터 협업 제안
+CREATE TABLE IF NOT EXISTS creator_collab_proposals (
+  id text PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  requester_user_id text REFERENCES users(id) ON DELETE SET NULL,
+  creator_key text NOT NULL,
+  creator_name text NOT NULL,
+  creator_platform text NOT NULL DEFAULT '',
+  creator_market text NOT NULL DEFAULT '',
+  brand_name text NOT NULL,
+  requester_name text NOT NULL,
+  requester_contact text NOT NULL,
+  proposal_type text NOT NULL CHECK (proposal_type IN ('product_seeding', 'styling_content', 'campaign', 'long_term')),
+  budget text NOT NULL DEFAULT '',
+  message text NOT NULL DEFAULT '',
+  status text NOT NULL DEFAULT 'new' CHECK (status IN ('new', 'contacted', 'negotiating', 'matched', 'closed')),
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS creator_collab_proposals_status_idx
+  ON creator_collab_proposals(status, created_at DESC);
+CREATE INDEX IF NOT EXISTS creator_collab_proposals_creator_idx
+  ON creator_collab_proposals(creator_key, created_at DESC);
+
 -- 조회 성능 인덱스 (데이터가 쌓이기 전에 미리)
 CREATE INDEX IF NOT EXISTS generated_looks_designer_status_idx
   ON generated_looks(designer_id, status);

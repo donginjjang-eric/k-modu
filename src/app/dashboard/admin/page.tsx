@@ -6,6 +6,7 @@ export default async function AdminDashboardPage() {
   const stats = await getAdminDashboardStats();
 
   const totals = [
+    { n: stats.creatorProposalsNew, l: "신규 협업 제안", href: "/dashboard/admin/creator-proposals", alert: stats.creatorProposalsNew > 0 },
     { n: stats.usersTotal, l: "가입 회원", href: "/dashboard/admin/users" },
     { n: stats.designersTotal, l: "전체 디자이너", href: "/dashboard/admin/designers" },
     { n: stats.pendingDesigners, l: "승인 대기", href: "/dashboard/admin/designers", alert: stats.pendingDesigners > 0 },
@@ -13,6 +14,7 @@ export default async function AdminDashboardPage() {
     { n: stats.generatedLooksTotal, l: "AI 생성 이미지", href: "/dashboard/admin/generated-looks" },
   ];
   const trend = [
+    { n: stats.creatorProposalsTotal, l: "누적 협업 제안", href: "/dashboard/admin/creator-proposals" },
     { n: stats.signupsToday, l: "오늘 가입", href: "/dashboard/admin/users" },
     { n: stats.signupsWeek, l: "최근 7일 가입", href: "/dashboard/admin/users" },
     { n: stats.liveGenerationsToday, l: "AI 오늘 생성", href: "/dashboard/admin/generated-looks" },

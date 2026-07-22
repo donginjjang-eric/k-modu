@@ -9,8 +9,9 @@ import ScrollResetOnLoad from "@/components/ScrollResetOnLoad";
 export default async function AdminStudioLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser("admin");
   // 처리 대기 건수 — 메뉴 뱃지로 표시 (조회 실패 시 뱃지 없이 렌더)
-  const pending = await getAdminPendingCounts().catch(() => ({ pendingDesigners: 0, pendingLooks: 0 }));
+  const pending = await getAdminPendingCounts().catch(() => ({ pendingDesigners: 0, pendingLooks: 0, newCreatorProposals: 0 }));
   const badges = {
+    "/dashboard/admin/creator-proposals": pending.newCreatorProposals,
     "/dashboard/admin/designers": pending.pendingDesigners,
     "/dashboard/admin/generated-looks": pending.pendingLooks,
   };

@@ -22,6 +22,7 @@ const legacyFiles = new Set([
   "designer-match.html",
   "designers.html",
   "index.html",
+  "site-i18n.js",
   "platform.css",
   "privacy-policy.html",
   "robots.txt",

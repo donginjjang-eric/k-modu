@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.k-modu.co.kr"),
@@ -70,7 +71,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </header>
           {children}
         </div>
-        <script src="/auth-nav.js" defer />
+        <Script src="/site-i18n.js?v=20260723-global5" strategy="afterInteractive" />
+        <Script src="/auth-nav.js" strategy="afterInteractive" />
       </body>
     </html>
   );

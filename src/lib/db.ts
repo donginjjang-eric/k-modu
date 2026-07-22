@@ -2,7 +2,7 @@ import { randomBytes, randomUUID } from "node:crypto";
 import { Pool } from "pg";
 import type { QueryResultRow } from "pg";
 import { designer as phaseDesigner, modelTemplates as phaseTemplates, products as phaseProducts } from "./phase1-data";
-import type { ApprovalStatus, CollabRequest, CollabRequestStatus, CollabRequestType, Designer, DesignerPortfolioImage, GeneratedLook, Lookbook, LookbookItem, LookbookLayout, ModelTemplate, PortfolioImageStatus, Product, User } from "./types";
+import type { ApprovalStatus, CollabRequest, CollabRequestStatus, CollabRequestType, CreatorCollabProposal, CreatorProposalStatus, CreatorProposalType, Designer, DesignerPortfolioImage, GeneratedLook, Lookbook, LookbookItem, LookbookLayout, ModelTemplate, PortfolioImageStatus, Product, User } from "./types";
 
 let pool: Pool | null = null;
 
@@ -293,6 +293,89 @@ export async function updateCollabRequestStatus(
       WHERE id = $1 AND designer_id = $2
       RETURNING *`,
     [id, designerId, status],
+  );
+}
+
+// ── 브랜드 → 큐레이션 크리에이터 협업 제안 ──
+export async function createCreatorCollabProposal(input: {
+  requester_user_id?: string | null;
+  creator_key: string;
+  creator_name: string;
+  creator_platform: string;
+  creator_market: string;
+  brand_name: string;
+  requester_name: string;
+  requester_contact: string;
+  proposal_type: CreatorProposalType;
+  budget: string;
+  message: string;
+}): Promise<CreatorCollabProposal | null> {
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    const now = new Date().toISOString();
+    return {
+      ...input,
+      id: `demo-creator-proposal-${Date.now()}`,
+      requester_user_id: input.requester_user_id ?? null,
+      status: "new",
+      created_at: now,
+      updated_at: now,
+    };
+  }
+
+  return one<CreatorCollabProposal>(
+    `INSERT INTO creator_collab_proposals
+       (requester_user_id, creator_key, creator_name, creator_platform, creator_market,
+        brand_name, requester_name, requester_contact, proposal_type, budget, message)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+     RETURNING *`,
+    [
+      input.requester_user_id ?? null,
+      input.creator_key,
+      input.creator_name,
+      input.creator_platform,
+      input.creator_market,
+      input.brand_name,
+      input.requester_name,
+      input.requester_contact,
+      input.proposal_type,
+      input.budget,
+      input.message,
+    ],
+  );
+}
+
+export async function getCreatorCollabProposalsForAdmin(): Promise<CreatorCollabProposal[]> {
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    return [];
+  }
+  return query<CreatorCollabProposal>(
+    `SELECT * FROM creator_collab_proposals
+      ORDER BY CASE status
+        WHEN 'new' THEN 0
+        WHEN 'contacted' THEN 1
+        WHEN 'negotiating' THEN 2
+        WHEN 'matched' THEN 3
+        ELSE 4
+      END, created_at DESC`,
+  );
+}
+
+export async function updateCreatorCollabProposalStatus(
+  id: string,
+  status: CreatorProposalStatus,
+): Promise<CreatorCollabProposal | null> {
+  if (!hasDatabase()) {
+    requireDatabaseForProduction();
+    return null;
+  }
+  return one<CreatorCollabProposal>(
+    `UPDATE creator_collab_proposals
+        SET status = $2, updated_at = now()
+      WHERE id = $1
+      RETURNING *`,
+    [id, status],
   );
 }
 
@@ -668,6 +751,8 @@ export async function getAdminDashboardStats() {
       signupsToday: 0,
       signupsWeek: 0,
       aiGenerationsWeek: 0,
+      creatorProposalsNew: 0,
+      creatorProposalsTotal: 0,
     };
   }
 
@@ -682,6 +767,8 @@ export async function getAdminDashboardStats() {
     signups_today: string;
     signups_week: string;
     ai_generations_week: string;
+    creator_proposals_new: string;
+    creator_proposals_total: string;
   }>(
     `SELECT
        (SELECT COUNT(*)::text FROM users) AS users_total,
@@ -699,7 +786,9 @@ export async function getAdminDashboardStats() {
        (SELECT COUNT(*)::text
           FROM generation_logs
          WHERE cache_hit = false AND status = 'generated'
-           AND created_at >= now() - interval '7 days') AS ai_generations_week`,
+           AND created_at >= now() - interval '7 days') AS ai_generations_week,
+       (SELECT COUNT(*)::text FROM creator_collab_proposals WHERE status = 'new') AS creator_proposals_new,
+       (SELECT COUNT(*)::text FROM creator_collab_proposals) AS creator_proposals_total`,
   );
 
   return {
@@ -713,22 +802,26 @@ export async function getAdminDashboardStats() {
     signupsToday: Number(row?.signups_today || 0),
     signupsWeek: Number(row?.signups_week || 0),
     aiGenerationsWeek: Number(row?.ai_generations_week || 0),
+    creatorProposalsNew: Number(row?.creator_proposals_new || 0),
+    creatorProposalsTotal: Number(row?.creator_proposals_total || 0),
   };
 }
 
 // 관리자 메뉴 뱃지용 처리 대기 카운트 (레이아웃에서 매 요청 조회 — 가볍게 유지)
 export async function getAdminPendingCounts() {
   if (!hasDatabase()) {
-    return { pendingDesigners: 0, pendingLooks: 0 };
+    return { pendingDesigners: 0, pendingLooks: 0, newCreatorProposals: 0 };
   }
-  const [row] = await query<{ pending_designers: string; pending_looks: string }>(
+  const [row] = await query<{ pending_designers: string; pending_looks: string; new_creator_proposals: string }>(
     `SELECT
        (SELECT COUNT(*)::text FROM designers WHERE approval_status = 'pending') AS pending_designers,
-       (SELECT COUNT(*)::text FROM generated_looks WHERE status = 'generated') AS pending_looks`,
+       (SELECT COUNT(*)::text FROM generated_looks WHERE status = 'generated') AS pending_looks,
+       (SELECT COUNT(*)::text FROM creator_collab_proposals WHERE status = 'new') AS new_creator_proposals`,
   );
   return {
     pendingDesigners: Number(row?.pending_designers || 0),
     pendingLooks: Number(row?.pending_looks || 0),
+    newCreatorProposals: Number(row?.new_creator_proposals || 0),
   };
 }
 

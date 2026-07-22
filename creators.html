@@ -13,7 +13,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <title>Creators | K-MODU</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
-  <link rel="stylesheet" href="platform.css?v=20260722-responsive" />
+  <link rel="stylesheet" href="platform.css?v=20260723-creator-locale" />
 </head>
 <body>
   <main class="platform creator-market">
@@ -26,9 +26,17 @@
         <a href="/#contact">문의</a>
       </nav>
       <div class="top-actions">
-        <button class="icon-btn" type="button" aria-label="Search creators">
-          <span></span>
-        </button>
+        <div class="locale-switch platform-locale-switch" id="creatorLocaleSwitch" aria-label="언어 선택">
+          <button class="locale-btn" type="button" aria-haspopup="menu" aria-expanded="false">
+            <img src="assets/flags/kr.svg" alt="" width="512" height="512" /><b>KR</b><i class="caret">▾</i>
+          </button>
+          <div class="locale-menu" role="menu">
+            <a class="locale-opt is-on" href="/creators" role="menuitem"><img src="assets/flags/kr.svg" alt="" width="512" height="512" /><strong>한국어</strong><em>현재</em></a>
+            <button class="locale-opt is-soon" type="button" role="menuitem" disabled><img src="assets/flags/us.svg" alt="" width="512" height="512" /><strong>English</strong><em>준비중</em></button>
+            <button class="locale-opt is-soon" type="button" role="menuitem" disabled><img src="assets/flags/cn.svg" alt="" width="512" height="512" /><strong>中文</strong><em>준비중</em></button>
+            <button class="locale-opt is-soon" type="button" role="menuitem" disabled><img src="assets/flags/jp.svg" alt="" width="512" height="512" /><strong>日本語</strong><em>준비중</em></button>
+          </div>
+        </div>
         <a class="pill" data-auth-link href="/login">로그인</a>
       </div>
       <details class="platform-menu">
@@ -40,6 +48,7 @@
           <a href="/#contact">문의</a>
           <a href="/apply">입점 신청</a>
           <a data-auth-link href="/login">로그인</a>
+          <div class="platform-menu-locale"><img src="assets/flags/kr.svg" alt="" width="512" height="512" /><span>한국어</span><b>KR</b></div>
         </div>
       </details>
     </header>
@@ -267,20 +276,50 @@
             </ul>
           </div>
           <div class="creator-sheet-actions">
-            <a class="pill creator-propose" id="creatorProposeLink" href="/designer-brief">이 크리에이터에게 제안하기</a>
+            <button class="pill creator-propose" id="creatorProposeLink" type="button">이 크리에이터에게 제안하기</button>
           </div>
         </div>
         </div>
       </div>
     </div>
-    <div class="beta-launch-modal" id="betaLaunchModal" aria-hidden="true">
-      <button class="beta-launch-backdrop" type="button" aria-label="알림 닫기"></button>
-      <div class="beta-launch-card" role="dialog" aria-modal="true" aria-labelledby="betaLaunchTitle">
-        <span class="beta-launch-eyebrow">K-MODU BETA</span>
-        <h2 id="betaLaunchTitle">7월 20일 BETA 런칭 예정입니다</h2>
-        <p>크리에이터 제안 기능은 베타 오픈과 함께 순차적으로 제공됩니다.</p>
-        <button class="beta-launch-confirm" type="button">확인</button>
-      </div>
+    <div class="creator-proposal-modal" id="creatorProposalModal" aria-hidden="true">
+      <button class="creator-proposal-backdrop" type="button" aria-label="협업 제안 닫기"></button>
+      <section class="creator-proposal-card" role="dialog" aria-modal="true" aria-labelledby="creatorProposalTitle">
+        <button class="creator-proposal-close" type="button" aria-label="협업 제안 닫기">×</button>
+        <div class="creator-proposal-intro">
+          <span>K-MODU MATCHING DESK</span>
+          <h2 id="creatorProposalTitle"><b id="creatorProposalTarget">Creator</b>에게<br />협업 제안</h2>
+          <p>제안은 K-MODU 운영팀이 먼저 확인합니다. 크리에이터 의사와 조건을 확인한 뒤 담당자에게 연락드립니다.</p>
+        </div>
+        <ol class="creator-proposal-flow" aria-label="협업 제안 처리 단계">
+          <li><b>01</b><span>제안 접수</span></li>
+          <li><b>02</b><span>운영팀 검토</span></li>
+          <li><b>03</b><span>조건 조율</span></li>
+        </ol>
+        <form class="creator-proposal-form" id="creatorProposalForm" novalidate>
+          <input class="creator-proposal-honeypot" id="creatorProposalWebsite" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <div class="creator-proposal-form-grid">
+            <label><span>브랜드명 *</span><input id="creatorProposalBrand" name="brandName" type="text" maxlength="100" autocomplete="organization" placeholder="브랜드 또는 회사명" required /></label>
+            <label><span>담당자명 *</span><input id="creatorProposalRequester" name="requesterName" type="text" maxlength="80" autocomplete="name" placeholder="담당자 이름" required /></label>
+          </div>
+          <label><span>연락처 *</span><input id="creatorProposalContact" name="requesterContact" type="text" maxlength="140" autocomplete="email" placeholder="이메일 · 전화번호 · @SNS 계정" required /></label>
+          <div class="creator-proposal-form-grid">
+            <label><span>협업 형태 *</span><select id="creatorProposalType" name="proposalType" required><option value="product_seeding">제품 시딩</option><option value="styling_content">스타일링 콘텐츠</option><option value="campaign">브랜드 캠페인</option><option value="long_term">장기 파트너십</option></select></label>
+            <label><span>예산 범위</span><input id="creatorProposalBudget" name="budget" type="text" maxlength="80" inputmode="numeric" placeholder="예: 100~200만원 / 협의" /></label>
+          </div>
+          <label><span>제안 내용 *</span><textarea id="creatorProposalMessage" name="message" maxlength="1600" minlength="20" rows="5" placeholder="제품, 콘텐츠 형태, 일정, 희망 업로드 채널을 알려주세요." required></textarea></label>
+          <label class="creator-proposal-consent"><input id="creatorProposalConsent" type="checkbox" required /><span>제안 처리에 필요한 개인정보 수집·이용에 동의합니다. <a href="/privacy-policy" target="_blank" rel="noopener">내용 보기</a></span></label>
+          <p class="creator-proposal-status" id="creatorProposalStatus" role="alert" aria-live="polite"></p>
+          <button class="creator-proposal-submit" id="creatorProposalSubmit" type="submit">운영팀에 제안 접수하기 <span>→</span></button>
+        </form>
+        <div class="creator-proposal-success" id="creatorProposalSuccess" hidden>
+          <span class="creator-proposal-success-mark">✓</span>
+          <h3>협업 제안이 접수되었습니다.</h3>
+          <p>K-MODU 운영팀이 내용을 확인한 뒤 입력하신 연락처로 안내드립니다.</p>
+          <small id="creatorProposalReceipt"></small>
+          <button type="button" id="creatorProposalDone">확인</button>
+        </div>
+      </section>
     </div>
     <footer class="footer-mini footer-mini--board">
       <span>K-MODU Creator Matching Board</span>
@@ -442,11 +481,27 @@
     const creatorSheetMeta = document.getElementById('creatorSheetMeta');
     const creatorSheetTags = document.getElementById('creatorSheetTags');
     const creatorProposeLink = document.getElementById('creatorProposeLink');
+    const creatorProposalModal = document.getElementById('creatorProposalModal');
+    const creatorProposalBackdrop = creatorProposalModal.querySelector('.creator-proposal-backdrop');
+    const creatorProposalClose = creatorProposalModal.querySelector('.creator-proposal-close');
+    const creatorProposalTarget = document.getElementById('creatorProposalTarget');
+    const creatorProposalForm = document.getElementById('creatorProposalForm');
+    const creatorProposalBrand = document.getElementById('creatorProposalBrand');
+    const creatorProposalRequester = document.getElementById('creatorProposalRequester');
+    const creatorProposalContact = document.getElementById('creatorProposalContact');
+    const creatorProposalType = document.getElementById('creatorProposalType');
+    const creatorProposalBudget = document.getElementById('creatorProposalBudget');
+    const creatorProposalMessage = document.getElementById('creatorProposalMessage');
+    const creatorProposalConsent = document.getElementById('creatorProposalConsent');
+    const creatorProposalWebsite = document.getElementById('creatorProposalWebsite');
+    const creatorProposalStatus = document.getElementById('creatorProposalStatus');
+    const creatorProposalSubmit = document.getElementById('creatorProposalSubmit');
+    const creatorProposalSuccess = document.getElementById('creatorProposalSuccess');
+    const creatorProposalReceipt = document.getElementById('creatorProposalReceipt');
+    const creatorProposalDone = document.getElementById('creatorProposalDone');
+    const creatorLocaleSwitch = document.getElementById('creatorLocaleSwitch');
     const creatorFollowerKpi = document.getElementById('creatorFollowerKpi');
     const creatorRegisteredKpi = document.getElementById('creatorRegisteredKpi');
-    const betaLaunchModal = document.getElementById('betaLaunchModal');
-    const betaLaunchBackdrop = betaLaunchModal?.querySelector('.beta-launch-backdrop');
-    const betaLaunchConfirm = betaLaunchModal?.querySelector('.beta-launch-confirm');
     const marketLabels = { US: 'USA', JP: 'JAPAN', VN: 'VIETNAM', Global: 'GLOBAL' };
     const fmtFollowers = (value) => {
       const n = Number(value);
@@ -495,6 +550,8 @@
     let creatorSwipeStartY = 0;
     let isCreatorSwiping = false;
     let creatorSwipeLocked = false;
+    let selectedCreator = null;
+    let creatorProposalSubmitting = false;
     const isMobileCreatorSheet = () => window.matchMedia('(max-width: 900px)').matches;
     const creatorImageObserver = 'IntersectionObserver' in window
       ? new IntersectionObserver((entries, observer) => {
@@ -546,15 +603,44 @@
       observeDeferredCreatorImages();
     }
 
-    function openBetaLaunchModal() {
-      betaLaunchModal?.classList.add('is-open');
-      betaLaunchModal?.setAttribute('aria-hidden', 'false');
-      betaLaunchConfirm?.focus();
+    async function prefillCreatorProposal() {
+      if (creatorProposalBrand.value || creatorProposalContact.value) return;
+      try {
+        const response = await fetch('/api/auth/me', { cache: 'no-store' });
+        if (!response.ok) return;
+        const result = await response.json();
+        if (result.designer?.brandName) creatorProposalBrand.value = result.designer.brandName;
+        if (result.user?.email) creatorProposalContact.value = result.user.email;
+      } catch (error) {
+        // 로그인하지 않은 사용자도 제안을 보낼 수 있으므로 자동 입력 실패는 무시한다.
+      }
     }
 
-    function closeBetaLaunchModal() {
-      betaLaunchModal?.classList.remove('is-open');
-      betaLaunchModal?.setAttribute('aria-hidden', 'true');
+    function resetCreatorProposalView() {
+      creatorProposalForm.hidden = false;
+      creatorProposalSuccess.hidden = true;
+      creatorProposalStatus.textContent = '';
+      creatorProposalReceipt.textContent = '';
+      creatorProposalSubmit.disabled = false;
+      creatorProposalSubmit.innerHTML = '운영팀에 제안 접수하기 <span>→</span>';
+      creatorProposalSubmitting = false;
+    }
+
+    function openCreatorProposal() {
+      if (!selectedCreator) return;
+      resetCreatorProposalView();
+      creatorProposalTarget.textContent = selectedCreator.name;
+      creatorProposalModal.classList.add('is-open');
+      creatorProposalModal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('proposal-open');
+      prefillCreatorProposal().finally(() => creatorProposalBrand.focus());
+    }
+
+    function closeCreatorProposal() {
+      creatorProposalModal.classList.remove('is-open');
+      creatorProposalModal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('proposal-open');
+      creatorProposeLink.focus();
     }
 
     function selectedValues(key) {
@@ -811,7 +897,13 @@
         ].map(([label, value]) => `<div><span>${label}</span><strong>${value}</strong></div>`).join('');
         creatorSheetTags.innerHTML = deliverablesFor(d.platform, d.type)
           .map((tag) => `<span>${tag}</span>`).join('');
-        creatorProposeLink.href = `/designer-brief?creator=${encodeURIComponent(name)}`;
+        const handle = dir.match(/@[\w.]+/)?.[0];
+        selectedCreator = {
+          key: (handle || name).toLowerCase().replace(/\s+/g, '-').slice(0, 120),
+          name,
+          platform: d.platform || '',
+          market: marketLabels[d.market] || d.market || '',
+        };
         creatorSheet.classList.add('is-open');
         creatorSheet.setAttribute('aria-hidden', 'false');
         document.body.classList.add('sheet-open');
@@ -834,12 +926,81 @@
     creatorSheet.addEventListener('click', (event) => {
       if (event.target === creatorSheet) closeCreatorSheet();
     });
-    creatorProposeLink.addEventListener('click', (event) => {
-      event.preventDefault();
-      openBetaLaunchModal();
+    creatorProposeLink.addEventListener('click', openCreatorProposal);
+    creatorProposalBackdrop.addEventListener('click', closeCreatorProposal);
+    creatorProposalClose.addEventListener('click', closeCreatorProposal);
+    creatorProposalDone.addEventListener('click', () => {
+      closeCreatorProposal();
+      creatorProposalForm.reset();
     });
-    betaLaunchBackdrop?.addEventListener('click', closeBetaLaunchModal);
-    betaLaunchConfirm?.addEventListener('click', closeBetaLaunchModal);
+    creatorProposalForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      creatorProposalStatus.classList.remove('is-error');
+      if (creatorProposalSubmitting || !selectedCreator) return;
+      if (!creatorProposalForm.reportValidity()) return;
+      if (!creatorProposalConsent.checked) {
+        creatorProposalStatus.textContent = '개인정보 수집·이용 동의가 필요합니다.';
+        creatorProposalStatus.classList.add('is-error');
+        return;
+      }
+
+      creatorProposalSubmitting = true;
+      creatorProposalSubmit.disabled = true;
+      creatorProposalSubmit.textContent = '제안을 접수하고 있습니다…';
+      creatorProposalStatus.textContent = '';
+
+      try {
+        const response = await fetch('/api/public/creator-proposals', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            creatorKey: selectedCreator.key,
+            creatorName: selectedCreator.name,
+            creatorPlatform: selectedCreator.platform,
+            creatorMarket: selectedCreator.market,
+            brandName: creatorProposalBrand.value,
+            requesterName: creatorProposalRequester.value,
+            requesterContact: creatorProposalContact.value,
+            proposalType: creatorProposalType.value,
+            budget: creatorProposalBudget.value,
+            message: creatorProposalMessage.value,
+            website: creatorProposalWebsite.value,
+          }),
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || '제안을 접수하지 못했습니다.');
+
+        creatorProposalForm.hidden = true;
+        creatorProposalSuccess.hidden = false;
+        const receipt = String(result.id || '').slice(-8).toUpperCase();
+        creatorProposalReceipt.textContent = receipt ? `접수번호 · ${receipt}` : '';
+        creatorProposalDone.focus();
+      } catch (error) {
+        creatorProposalStatus.textContent = error instanceof Error ? error.message : '네트워크 오류가 발생했습니다.';
+        creatorProposalStatus.classList.add('is-error');
+        creatorProposalSubmit.disabled = false;
+        creatorProposalSubmit.innerHTML = '다시 접수하기 <span>→</span>';
+        creatorProposalSubmitting = false;
+      }
+    });
+    if (creatorLocaleSwitch) {
+      const localeButton = creatorLocaleSwitch.querySelector('.locale-btn');
+      localeButton.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const open = creatorLocaleSwitch.classList.toggle('open');
+        localeButton.setAttribute('aria-expanded', String(open));
+      });
+      document.addEventListener('click', () => {
+        creatorLocaleSwitch.classList.remove('open');
+        localeButton.setAttribute('aria-expanded', 'false');
+      });
+      creatorLocaleSwitch.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return;
+        creatorLocaleSwitch.classList.remove('open');
+        localeButton.setAttribute('aria-expanded', 'false');
+        localeButton.focus();
+      });
+    }
     creatorSheetHandle.addEventListener('pointerdown', (event) => {
       startCreatorDrag(event.clientY);
       creatorSheetHandle.setPointerCapture?.(event.pointerId);
@@ -909,7 +1070,10 @@
     });
     window.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
-        closeBetaLaunchModal();
+        if (creatorProposalModal.classList.contains('is-open')) {
+          closeCreatorProposal();
+          return;
+        }
         closeCreatorSheet();
         closeFilter();
       }
@@ -917,6 +1081,7 @@
 
     updateBoard();
   </script>
+  <script src="/site-i18n.js?v=20260723-global5" defer></script>
   <script src="/auth-nav.js" defer></script>
 </body>
 </html>

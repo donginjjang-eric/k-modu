@@ -14,7 +14,7 @@
   <title>Designers | K-MODU</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
-  <link rel="stylesheet" href="platform.css?v=20260722-responsive" />
+  <link rel="stylesheet" href="platform.css?v=20260723-live-service" />
 </head>
 <body>
   <main class="platform designer-board">
@@ -269,16 +269,6 @@
       </div>
       <button class="mobile-ai-clear" id="mobileAiQuickClear" type="button">초기화</button>
       <button class="mobile-ai-submit" id="mobileAiQuickGenerate" type="button" disabled>AI 룩 생성</button>
-    </div>
-
-    <div class="beta-launch-modal" id="designerBetaLaunchModal" aria-hidden="true">
-      <button class="beta-launch-backdrop" type="button" aria-label="알림 닫기"></button>
-      <div class="beta-launch-card" role="dialog" aria-modal="true" aria-labelledby="designerBetaLaunchTitle">
-        <span class="beta-launch-eyebrow">K-MODU BETA</span>
-        <h2 id="designerBetaLaunchTitle">7월 20일 BETA 런칭 예정입니다</h2>
-        <p>TikTok 업로드 기능은 베타 오픈과 함께 순차적으로 제공됩니다.</p>
-        <button class="beta-launch-confirm" type="button">확인</button>
-      </div>
     </div>
 
     <div class="ai-notice-modal" id="aiNoticeModal" role="dialog" aria-modal="true" aria-labelledby="aiNoticeTitle" aria-hidden="true">
@@ -896,22 +886,8 @@
     const sfPlatStep = document.querySelector('#sfPlatStep');
     const sfPlats = document.querySelector('#sfPlats');
     const sfPubAction = document.querySelector('#sfPubAction');
-    const designerBetaLaunchModal = document.querySelector('#designerBetaLaunchModal');
-    const designerBetaLaunchBackdrop = designerBetaLaunchModal?.querySelector('.beta-launch-backdrop');
-    const designerBetaLaunchConfirm = designerBetaLaunchModal?.querySelector('.beta-launch-confirm');
     const pubHandle = () => slugifyHandle((proposalBrandName.textContent || 'k-modu').trim()) || 'k-modu';
     const platName = () => (PUB_PLATFORMS.find((p) => p.id === pubPlatform) || {}).name || '';
-
-    const openDesignerBetaLaunchModal = () => {
-      designerBetaLaunchModal?.classList.add('is-open');
-      designerBetaLaunchModal?.setAttribute('aria-hidden', 'false');
-      designerBetaLaunchConfirm?.focus();
-    };
-
-    const closeDesignerBetaLaunchModal = () => {
-      designerBetaLaunchModal?.classList.remove('is-open');
-      designerBetaLaunchModal?.setAttribute('aria-hidden', 'true');
-    };
 
     const renderPubAction = () => {
       if (!sfPubAction) return;
@@ -931,7 +907,7 @@
       window.setTimeout(() => { pubConnected = true; renderPubAction(); }, 1300);
     }
     function pubUpload() {
-      openDesignerBetaLaunchModal();
+      window.location.href = '/dashboard/designer/short';
     }
     const renderPubFlags = () => {
       if (!sfFlagRow) return;
@@ -2495,8 +2471,6 @@
     if (mobileAiQuickClear) mobileAiQuickClear.addEventListener('click', resetTryOnStage);
     if (aiNoticeClose) aiNoticeClose.addEventListener('click', closeAiNotice);
     if (aiNoticeBackdrop) aiNoticeBackdrop.addEventListener('click', closeAiNotice);
-    if (designerBetaLaunchBackdrop) designerBetaLaunchBackdrop.addEventListener('click', closeDesignerBetaLaunchModal);
-    if (designerBetaLaunchConfirm) designerBetaLaunchConfirm.addEventListener('click', closeDesignerBetaLaunchModal);
     if (shortformGenerate) shortformGenerate.addEventListener('click', generateShortformVideo);
     if (ownedCategoryTabs) {
       ownedCategoryTabs.addEventListener('click', (event) => {
@@ -2559,7 +2533,6 @@
     })();
     window.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && proposalSheet.classList.contains('is-open')) closeProposalSheet();
-      if (event.key === 'Escape' && designerBetaLaunchModal?.classList.contains('is-open')) closeDesignerBetaLaunchModal();
     });
 
     if ('IntersectionObserver' in window && aiTryonPanel) {
@@ -2586,6 +2559,7 @@
     }
 
   </script>
+  <script src="/site-i18n.js?v=20260723-global5" defer></script>
   <script src="/auth-nav.js" defer></script>
 </body>
 </html>

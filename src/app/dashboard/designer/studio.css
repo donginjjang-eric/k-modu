@@ -630,7 +630,7 @@
 .admin-studio .st-bigbtn,
 .admin-studio .st-pcard { border-color: rgba(17,24,39,.12); box-shadow: 0 10px 28px rgba(17,24,39,.04); }
 .admin-studio .st-shell { max-width: 1320px; }
-.admin-stats { grid-template-columns: repeat(5,1fr); margin-bottom: 18px; }
+.admin-stats { grid-template-columns: repeat(auto-fit,minmax(150px,1fr)); margin-bottom: 18px; }
 .st-stat.is-alert { border-color: #c9a227; background: #fffaf0; }
 .st-stat.is-alert .n { color: #946c00; }
 /* 지표 카드가 링크일 때 — 텍스트 스타일 유지 + 클릭 가능함을 보여주는 호버 */
@@ -645,7 +645,7 @@ a.st-stat:hover { border-color: #94a3b8; transform: translateY(-2px); box-shadow
 /* 상품 검수 실패 알림 */
 .apm-notice { margin: -6px 0 12px; color: #b42318; font-size: 13px; font-weight: 800; }
 .admin-stats-label { margin: 0 0 10px; color: var(--muted); font-size: 12px; font-weight: 900; letter-spacing: .04em; }
-.admin-stats-sub { grid-template-columns: repeat(4,1fr); margin-bottom: 0; }
+.admin-stats-sub { grid-template-columns: repeat(auto-fit,minmax(150px,1fr)); margin-bottom: 0; }
 .admin-stats-sub .st-stat { padding: 14px 16px; background: rgba(255,255,255,.6); }
 .admin-stats-sub .st-stat .n { font-size: 26px; }
 .admin-stats-sub .st-stat .l { font-size: 12px; }
@@ -715,6 +715,23 @@ a.st-stat:hover { border-color: #94a3b8; transform: translateY(-2px); box-shadow
 .look-video-preview { width: 100%; margin-top: 6px; border-radius: 10px; background: #000; aspect-ratio: 9 / 16; max-height: 320px; object-fit: contain; }
 .st-empty.compact { padding: 24px 16px; }
 .st-empty.compact p { margin: 0; }
+
+/* 운영팀 크리에이터 협업 제안함 */
+.creator-proposal-admin-list { display: grid; gap: 0; }
+.creator-proposal-admin-card { padding: 22px 0; border-bottom: 1px solid var(--line); }
+.creator-proposal-admin-card:first-child { padding-top: 0; }
+.creator-proposal-admin-card:last-child { padding-bottom: 0; border-bottom: 0; }
+.creator-proposal-admin-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+.creator-proposal-admin-head span { color: var(--muted); font-size: 11px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+.creator-proposal-admin-head h2 { margin: 6px 0 0; font-size: 20px; line-height: 1.25; }
+.creator-proposal-admin-meta { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 10px; margin-top: 16px; }
+.creator-proposal-admin-meta div { min-width: 0; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px; background: #fbfaf7; }
+.creator-proposal-admin-meta span { display: block; margin-bottom: 4px; color: var(--muted); font-size: 11px; font-weight: 800; }
+.creator-proposal-admin-meta b { display: block; overflow-wrap: anywhere; font-size: 13px; line-height: 1.4; }
+.creator-proposal-admin-message { margin: 14px 0 0; padding: 14px 16px; border-left: 3px solid var(--ink); background: rgba(17,24,39,.035); color: #344054; font-size: 14px; line-height: 1.7; white-space: pre-wrap; }
+.proposal-admin-action { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
+.proposal-admin-action select { min-height: 40px; padding: 0 36px 0 12px; border: 1px solid var(--line2); border-radius: 9px; background: #fff; color: var(--ink); font: inherit; font-size: 13px; font-weight: 800; }
+.proposal-admin-action small { color: #b42318; font-weight: 800; }
 
 /* mobile */
 .st-mobile-account { display: none; }
@@ -1230,3 +1247,9 @@ a.st-stat:hover { border-color: #94a3b8; transform: translateY(-2px); box-shadow
 .lb-empty-tab a { color: #1F4E79; font-weight: 800; }
 .lb-save-row { align-items: center; }
 .lb-save-why { font-size: 12.5px; font-weight: 700; color: #a39b8b; }
+
+@media (max-width: 900px) {
+  .creator-proposal-admin-head { display: grid; gap: 10px; }
+  .creator-proposal-admin-meta { grid-template-columns: 1fr 1fr; }
+  .creator-proposal-admin-meta div:last-child { grid-column: 1 / -1; }
+}

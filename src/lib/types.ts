@@ -76,6 +76,29 @@ export type CollabRequest = {
   updated_at: string;
 };
 
+export type CreatorProposalType = "product_seeding" | "styling_content" | "campaign" | "long_term";
+export type CreatorProposalStatus = "new" | "contacted" | "negotiating" | "matched" | "closed";
+
+// 디자이너/브랜드 → 운영팀 → 큐레이션 크리에이터 협업 제안
+// 현재 공개 크리에이터는 운영자가 관리하므로 creator_key/name을 접수 시점 스냅샷으로 보존한다.
+export type CreatorCollabProposal = {
+  id: string;
+  requester_user_id: string | null;
+  creator_key: string;
+  creator_name: string;
+  creator_platform: string;
+  creator_market: string;
+  brand_name: string;
+  requester_name: string;
+  requester_contact: string;
+  proposal_type: CreatorProposalType;
+  budget: string;
+  message: string;
+  status: CreatorProposalStatus;
+  created_at: string;
+  updated_at: string;
+};
+
 export type ModelTemplate = {
   id: string;
   name: string;
