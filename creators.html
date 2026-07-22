@@ -146,6 +146,7 @@
             <h2>Market</h2>
             <label><input type="checkbox" value="US" data-filter-key="market" /> United States</label>
             <label><input type="checkbox" value="JP" data-filter-key="market" /> Japan</label>
+            <label><input type="checkbox" value="VN" data-filter-key="market" /> Vietnam</label>
             <label><input type="checkbox" value="Global" data-filter-key="market" /> Global</label>
           </div>
 
@@ -299,8 +300,49 @@
         sizes="${creatorCardSizes}" width="${width}" height="${height}"
         data-profile-src="${source}" alt="${alt}"
         loading="lazy" decoding="async" fetchpriority="low" />`;
+    const fmtSeedK = (n) => (n >= 1e6 ? (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M' : n >= 1e3 ? (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'K' : String(n));
 
-    // K-뷰티 무상 시딩 인플루언서(말레이시아) — 기존 .market-card 폼에 주입. 이미지는 임시 플레이스홀더(추후 교체).
+    // 베트남 K-뷰티 크리에이터 30명. 2026-07-23 공개 TikTok 프로필의 이름, 핸들, 팔로워를 대조했다.
+    // 폴더에 섞여 있던 이미지들은 카드에 인쇄된 크리에이터명과 공개 프로필을 기준으로 재매칭했다.
+    const vietnamBeautyCreators = [
+      { no: 1, name: 'Thảo Đoàn', handle: 'rosermae', followers: 1300000, direction: 'Beauty & makeup', type: 'Editorial', image: 'assets/influencer-sourcing/cards/vietnam-beauty/rosermae.webp' },
+      { no: 2, name: 'Vũ Thái Bình', handle: 'bbskincare1', followers: 1200000, direction: 'Skincare education', type: 'Daily', image: 'assets/influencer-sourcing/cards/vietnam-beauty/vu-thai-binh.webp' },
+      { no: 3, name: 'Kỳ Kỳ', handle: 'unofficiallykyky', followers: 513300, direction: 'Beauty review', type: 'Editorial', image: 'assets/influencer-sourcing/cards/vietnam-beauty/ky-ky.webp' },
+      { no: 4, name: 'Diệu Võ', handle: 'vodieu41', followers: 185700, direction: 'Beauty & lifestyle', type: 'Daily', image: 'assets/influencer-sourcing/cards/vietnam-beauty/dieu-vo.webp' },
+      { no: 5, name: 'Mai Trinh Hồ', handle: 'mai.trinh.h', followers: 271700, direction: 'Skincare review', type: 'Daily', image: 'assets/influencer-sourcing/cards/vietnam-beauty/mai-trinh-ho.webp' },
+      { no: 6, name: 'Trinh Meow', handle: 'trinhmeow.vlogger', followers: 549600, direction: 'Beauty & lifestyle', type: 'Daily', image: 'assets/influencer-sourcing/cards/vietnam-beauty/trinh-meow.webp' },
+      { no: 7, name: 'Hồ Ánh Trinh', handle: 'kikianhtrinh', followers: 523100, direction: 'Beauty & lifestyle', type: 'Daily', image: 'assets/influencer-sourcing/cards/vietnam-beauty/ho-anh-trinh.webp' },
+      { no: 8, name: 'Góc Của Rư', handle: 'goc.cua.ru', followers: 978700, direction: 'Skincare education', type: 'Daily', image: 'assets/influencer-sourcing/cards/vietnam-beauty/goc-cua-ru.webp' },
+      { no: 9, name: 'Quốc Review', handle: '.__.shin', followers: 159400, direction: 'Beauty review', type: 'Daily', image: 'assets/influencer-sourcing/cards/vietnam-beauty/quoc-review.webp' },
+      { no: 10, name: 'Nguyễn Ngọc Xuân Nhi', handle: 'xuannhilamgido', followers: 776400, direction: 'Beauty & lifestyle', type: 'Daily', image: 'assets/influencer-sourcing/cards/vietnam-beauty/nguyen-ngoc-xuan-nhi.webp' },
+      { no: 11, name: 'tomskincare', handle: 'tomskincare', followers: 629100, direction: 'Skincare', type: 'Daily', image: 'assets/influencer-sourcing/cards/vietnam-beauty/tomskincare.webp' },
+      { no: 12, name: 'Lương Đỗ', handle: 'im.lukedo', followers: 755000, direction: 'Beauty review', type: 'Editorial', image: 'assets/influencer-sourcing/cards/vietnam-beauty/luong-do.webp' },
+      { no: 13, name: 'Linh.Skincare', handle: 'linhhskincare', followers: 109500, direction: 'Skincare consulting', type: 'Daily', image: 'assets/influencer-sourcing/cards/vietnam-beauty/linh-skincare.webp' },
+      { no: 14, name: 'Ha Linh Official', handle: 'halinhofficial', followers: 5700000, direction: 'Beauty review', type: 'Daily', image: 'assets/influencer-sourcing/cards/vietnam-beauty/ha-linh-official.webp' },
+      { no: 15, name: 'Skincare Đúng Cách', handle: 'skincaredungcach.byson', followers: 624800, direction: 'Skincare education', type: 'Daily', image: 'assets/influencer-sourcing/cards/vietnam-beauty/skincare-dung-cach.webp' },
+      { no: 16, name: 'Trúc Bành', handle: 'trucbanhmd', followers: 173600, direction: 'Skin health', type: 'Daily', image: 'assets/influencer-sourcing/cards/vietnam-beauty/truc-banh.webp' },
+      { no: 17, name: 'Khổng Hạnh Nguyên', handle: 'drkhonghanhnguyen', followers: 615300, direction: 'Aesthetic medicine', type: 'Daily', image: 'assets/influencer-sourcing/cards/vietnam-beauty/khong-hanh-nguyen.webp' },
+      { no: 18, name: 'HannahOlala', handle: 'hannaholala', followers: 2100000, direction: 'Luxury beauty', type: 'Editorial', image: 'assets/influencer-sourcing/cards/vietnam-beauty/hannaholala.webp' },
+      { no: 19, name: 'Mợ Rảnh Hồng Phương', handle: 'okmoranh6892', followers: 213700, direction: 'Beauty & lifestyle', type: 'Daily', image: 'assets/influencer-sourcing/cards/vietnam-beauty/mo-ranh-hong-phuong.webp' },
+      { no: 20, name: 'Nguyên Thích', handle: 'nguyenvega', followers: 7606, direction: 'Beauty review', type: 'Daily', image: 'assets/influencer-sourcing/cards/vietnam-beauty/nguyen-thich.webp' },
+      { no: 21, name: 'Phương Đoàn Rì Viu', handle: 'imphuongdoan2409', followers: 240200, direction: 'Beauty review', type: 'Daily', image: 'assets/influencer-sourcing/cards/vietnam-beauty/phuong-doan-ri-viu.webp' },
+      { no: 22, name: 'Nguyễn Mai Thu Trang', handle: 'trangthichtrainghiemm', followers: 133000, direction: 'Beauty review', type: 'Daily', image: 'assets/influencer-sourcing/cards/vietnam-beauty/nguyen-mai-thu-trang.webp' },
+      { no: 23, name: 'Em Xinh Nghiện Đẹp', handle: 'emxinh.nghiendep', followers: 30700, direction: 'Beauty livestream', type: 'Daily', image: 'assets/influencer-sourcing/cards/vietnam-beauty/em-xinh-nghien-dep.webp' },
+      { no: 24, name: 'Cao Thị Thi', handle: 'hello.thine', followers: 219200, direction: 'Beauty & lifestyle', type: 'Daily', image: 'assets/influencer-sourcing/cards/vietnam-beauty/cao-thi-thi.webp' },
+      { no: 25, name: 'Mhuy skincare da dầu', handle: 'mhuy_skincare_dadau', followers: 4548, direction: 'Oily-skin care', type: 'Daily', image: 'assets/influencer-sourcing/cards/vietnam-beauty/mhuy-skincare-da-dau.webp' },
+      { no: 26, name: 'Vương Hằng', handle: 'vuonghang74', followers: 110300, direction: 'Beauty & makeup', type: 'Daily', image: 'assets/influencer-sourcing/cards/vietnam-beauty/vuong-hang.webp' },
+      { no: 27, name: 'Việt Pink', handle: 'vit.pink', followers: 8094, direction: 'Beauty review', type: 'Daily', image: 'assets/influencer-sourcing/cards/vietnam-beauty/viet-pink.webp' },
+      { no: 28, name: 'Sooharu', handle: 'sooaharu', followers: 70300, direction: 'K-beauty lifestyle', type: 'Editorial', image: 'assets/influencer-sourcing/cards/vietnam-beauty/sooharu.webp' },
+      { no: 29, name: 'Hạnh Ủn ở Hàn', handle: 'hanhun93', followers: 19200, direction: 'K-beauty from Korea', type: 'Daily', image: 'assets/influencer-sourcing/cards/vietnam-beauty/hanh-un-o-han.webp' },
+      { no: 30, name: 'Hứa Ngân Daily', handle: 'nganhuane', followers: 2700000, direction: 'Beauty & lifestyle', type: 'Daily', image: 'assets/influencer-sourcing/cards/vietnam-beauty/hua-ngan-daily.webp' },
+    ];
+    grid.insertAdjacentHTML('beforeend', vietnamBeautyCreators.map((c) => `
+      <article class="market-card is-seeding" data-featured="true" data-category="K-Beauty Creator Fashion Creator TikTok Styling" data-status="seeding new" data-platform="TikTok" data-type="${c.type}" data-market="VN" data-fit="" data-followers="${c.followers}" data-er="" data-search="${c.name.toLowerCase()} ${c.handle.toLowerCase()} ${c.direction.toLowerCase()} vietnam k-beauty skincare tiktok">
+        <div class="thumb">${creatorCardImageMarkup(c.image, c.name, 1086, 1448)}<span class="flag">K-BEAUTY</span><button type="button" aria-label="Save ${c.name}">♡</button></div>
+        <div class="market-card-body"><div class="badges"><span>TikTok</span><span>NO.${c.no}</span><span>VN</span></div><h3>${c.name}</h3><p>Vietnam / ${c.direction} / @${c.handle}</p><div class="mini-stats"><span><strong>${fmtSeedK(c.followers)}</strong>Followers</span><span><strong>—</strong>ER</span></div><strong class="reward">VERIFIED PROFILE</strong></div>
+      </article>`).join(''));
+
+    // K-뷰티 무상 시딩 인플루언서(말레이시아) — 기존 .market-card 폼에 주입. 검증된 카드 에셋을 사용한다.
     // [이름, 대표 플랫폼, 대표 팔로워, 카테고리, 타입, 우선순위] — 이메일/전화 등 개인정보는 미포함.
     const seedingCreators = [
       { no: 2, name: 'Nora Lunia', ig: '193K', tiktok: '139.5K', total: '332.5K', totalValue: 332500, platform: 'TikTok', category: 'TikTok Styling', type: 'Editorial', priority: 'S', image: 'assets/influencer-sourcing/cards/verified/nora-lunia-verified.webp' },
@@ -339,7 +381,6 @@
       { no: 44, name: 'Durian Kimchi', ig: '90K', tiktok: '210K', total: '300K', totalValue: 300000, platform: 'TikTok', category: 'Family Food', type: 'Daily', priority: 'B+', image: 'assets/influencer-sourcing/cards/pdf-malaysia/24-durian-kimchi-poster.webp' },
     ];
     const seedingImgs = ['assets/us-female-01.webp', 'assets/us-female-02.webp', 'assets/us-female-03.webp', 'assets/us-female-04.webp', 'assets/us-female-05.webp', 'assets/us-female-06.webp', 'assets/us-female-07.webp', 'assets/us-female-08.webp', 'assets/mainmodel_2.webp', 'assets/mainmodel_3.webp', 'assets/mainmodel_4.webp', 'assets/hero-model.webp'];
-    const fmtSeedK = (n) => (n >= 1e6 ? (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M' : Math.round(n / 1e3) + 'K');
     grid.insertAdjacentHTML('beforeend', seedingCreators.map((c, i) => {
       const { no, name, ig, tiktok, total, totalValue, platform, category, type, priority, image } = c;
       const img = image || seedingImgs[i % seedingImgs.length];
@@ -381,7 +422,7 @@
     const betaLaunchModal = document.getElementById('betaLaunchModal');
     const betaLaunchBackdrop = betaLaunchModal?.querySelector('.beta-launch-backdrop');
     const betaLaunchConfirm = betaLaunchModal?.querySelector('.beta-launch-confirm');
-    const marketLabels = { US: 'USA', JP: 'JAPAN', Global: 'GLOBAL' };
+    const marketLabels = { US: 'USA', JP: 'JAPAN', VN: 'VIETNAM', Global: 'GLOBAL' };
     const fmtFollowers = (value) => {
       const n = Number(value);
       if (!n) return '—';
@@ -510,7 +551,11 @@
       const fitValues = selectedValues('fit').map(Number);
       const minFit = fitValues.length ? Math.max(...fitValues) : 0;
 
-      cards.sort((a, b) => Number(b.dataset[sortSelect.value]) - Number(a.dataset[sortSelect.value]));
+      cards.sort((a, b) => {
+        const featuredDelta = Number(b.dataset.featured === 'true') - Number(a.dataset.featured === 'true');
+        if (featuredDelta) return featuredDelta;
+        return Number(b.dataset[sortSelect.value]) - Number(a.dataset[sortSelect.value]);
+      });
 
       let visibleCount = 0;
       cards.forEach((card) => {
