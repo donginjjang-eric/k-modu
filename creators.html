@@ -114,6 +114,7 @@
           <div class="filter-group filter-sort">
             <h2>정렬</h2>
             <select id="sortSelect" aria-label="크리에이터 정렬">
+              <option value="mix" selected>Curated Mix</option>
               <option value="fit">Fit Score</option>
               <option value="followers">Followers</option>
               <option value="er">Engagement</option>
@@ -337,7 +338,7 @@
       { no: 30, name: 'Hứa Ngân Daily', handle: 'nganhuane', followers: 2700000, direction: 'Beauty & lifestyle', type: 'Daily', image: 'assets/influencer-sourcing/cards/vietnam-beauty/hua-ngan-daily.webp' },
     ];
     grid.insertAdjacentHTML('beforeend', vietnamBeautyCreators.map((c) => `
-      <article class="market-card is-seeding" data-featured="true" data-category="K-Beauty Creator Fashion Creator TikTok Styling" data-status="seeding new" data-platform="TikTok" data-type="${c.type}" data-market="VN" data-fit="" data-followers="${c.followers}" data-er="" data-search="${c.name.toLowerCase()} ${c.handle.toLowerCase()} ${c.direction.toLowerCase()} vietnam k-beauty skincare tiktok">
+      <article class="market-card is-seeding" data-category="K-Beauty Creator Fashion Creator TikTok Styling" data-status="seeding new" data-platform="TikTok" data-type="${c.type}" data-market="VN" data-fit="" data-followers="${c.followers}" data-er="" data-search="${c.name.toLowerCase()} ${c.handle.toLowerCase()} ${c.direction.toLowerCase()} vietnam k-beauty skincare tiktok">
         <div class="thumb">${creatorCardImageMarkup(c.image, c.name, 1086, 1448)}<span class="flag">K-BEAUTY</span><button type="button" aria-label="Save ${c.name}">♡</button></div>
         <div class="market-card-body"><div class="badges"><span>TikTok</span><span>NO.${c.no}</span><span>VN</span></div><h3>${c.name}</h3><p>Vietnam / ${c.direction} / @${c.handle}</p><div class="mini-stats"><span><strong>${fmtSeedK(c.followers)}</strong>Followers</span><span><strong>—</strong>ER</span></div><strong class="reward">VERIFIED PROFILE</strong></div>
       </article>`).join(''));
@@ -392,6 +393,30 @@
     }).join(''));
 
     const cards = Array.from(grid.querySelectorAll('.market-card'));
+    const stableCardScore = (card) => {
+      const key = `${card.querySelector('h3')?.textContent || ''}|${card.dataset.search || ''}`;
+      let hash = 2166136261;
+      for (let i = 0; i < key.length; i += 1) {
+        hash ^= key.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+      }
+      return hash >>> 0;
+    };
+    const curatedGroups = [
+      cards.filter((card) => !card.classList.contains('is-seeding')),
+      cards.filter((card) => card.dataset.market === 'VN'),
+      cards.filter((card) => card.classList.contains('is-seeding') && card.dataset.market !== 'VN'),
+    ].map((group) => group.slice().sort((a, b) => stableCardScore(a) - stableCardScore(b)));
+    const curatedMix = [];
+    while (curatedGroups.some((group) => group.length)) {
+      curatedGroups.forEach((group) => {
+        const nextCard = group.shift();
+        if (nextCard) curatedMix.push(nextCard);
+      });
+    }
+    curatedMix.forEach((card, index) => {
+      card.dataset.mixRank = String(index);
+    });
     const categoryButtons = Array.from(document.querySelectorAll('.category-card'));
     const mobileCategorySelect = document.getElementById('mobileCategorySelect');
     const filterInputs = Array.from(document.querySelectorAll('.filter-panel input[type="checkbox"]'));
@@ -552,8 +577,9 @@
       const minFit = fitValues.length ? Math.max(...fitValues) : 0;
 
       cards.sort((a, b) => {
-        const featuredDelta = Number(b.dataset.featured === 'true') - Number(a.dataset.featured === 'true');
-        if (featuredDelta) return featuredDelta;
+        if (sortSelect.value === 'mix') {
+          return Number(a.dataset.mixRank) - Number(b.dataset.mixRank);
+        }
         return Number(b.dataset[sortSelect.value]) - Number(a.dataset[sortSelect.value]);
       });
 
