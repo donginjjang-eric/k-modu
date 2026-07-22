@@ -15,3 +15,9 @@ pnpm-workspace.yaml
 
 # Keep optimized image/video assets in deployment because designers.html
 # references styling looks and short-form sample media directly.
+
+# Source-only PNG originals already have WebP derivatives used by the site.
+# Excluding them keeps Railway's upload below the platform payload limit.
+assets/inful/*.png
+assets/DISIGNER/**/*.png
+assets/influencer-sourcing/1/
