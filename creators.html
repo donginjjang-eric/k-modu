@@ -202,9 +202,9 @@
       <section class="creator-board" aria-label="Creator results">
         <div class="platform-kpi-strip platform-kpi-strip--creators" aria-label="크리에이터 네트워크 주요 지표">
           <article class="platform-kpi platform-kpi--reach">
-            <span class="platform-kpi__label">Total Followers</span>
+            <span class="platform-kpi__label">Recorded Followers</span>
             <strong><span id="creatorFollowerKpi" data-kpi-value="0">0</span></strong>
-            <small>검증 크리에이터 통합 도달 규모</small>
+            <small id="creatorFollowerCoverage">팔로워 수 확인 중</small>
           </article>
           <article class="platform-kpi">
             <span class="platform-kpi__label">Registered Creators</span>
@@ -583,7 +583,9 @@
       };
       requestAnimationFrame(tick);
     };
-    const creatorFollowerTotal = cards.reduce((total, card) => total + (Number(card.dataset.followers) || 0), 0);
+    const cardsWithFollowerCounts = cards.filter((card) => card.dataset.followers !== '' && Number.isFinite(Number(card.dataset.followers)));
+    const creatorFollowerTotal = cardsWithFollowerCounts.reduce((total, card) => total + Number(card.dataset.followers), 0);
+    document.getElementById('creatorFollowerCoverage').textContent = `팔로워 수 입력 ${cardsWithFollowerCounts.length}/${cards.length}명 · 미입력 ${cards.length - cardsWithFollowerCounts.length}명 제외`;
     animateKpi(creatorFollowerKpi, creatorFollowerTotal, formatKpiFull);
     animateKpi(creatorRegisteredKpi, cards.length);
     const deliverablesFor = (platform, type) => {
