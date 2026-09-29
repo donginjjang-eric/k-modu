@@ -54,7 +54,7 @@ try {
     )
     : { rows: [] };
   await syncMalaysiaMeetingCreators(pool, adminUser?.id ?? null);
-  console.log("[schema] Malaysia meeting creators synchronized");
+  console.log("[schema] curated creators synchronized");
 
   // 테스트 계정 시드 (구글 로그인 없이 디자이너/크리에이터 동선을 확인하기 위한 비밀번호 계정).
   // TEST_ACCOUNT_PASSWORD가 설정된 경우에만 만들고, 매 부팅마다 비밀번호·승인 상태를 다시 맞춘다.

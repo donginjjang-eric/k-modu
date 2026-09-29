@@ -365,6 +365,7 @@
 
   <script src="data/malaysia-meeting-creators.js"></script>
   <script src="data/malaysia-new-meeting-creators.js"></script>
+  <script src="data/vietnam-artists.js"></script>
   <script>
     const grid = document.getElementById('creatorGrid');
     const creatorCardSizes = '(max-width: 900px) calc(50vw - 26px), calc((100vw - clamp(40px, 6.8vw, 128px) - 64px) / 5)';
@@ -388,6 +389,11 @@
     grid.insertAdjacentHTML('beforeend', globalThis.KMODU_RENDER_MALAYSIA_MEETING_CREATORS(
       globalThis.KMODU_MALAYSIA_MEETING_CREATORS,
       { formatFollowers: fmtSeedK, imageMarkup: creatorCardImageMarkup },
+    ));
+
+    grid.insertAdjacentHTML('beforeend', globalThis.KMODU_RENDER_VIETNAM_ARTISTS(
+      globalThis.KMODU_VIETNAM_ARTISTS,
+      { imageMarkup: creatorCardImageMarkup },
     ));
 
     // 베트남 K-뷰티 크리에이터 30명. 2026-07-23 공개 TikTok 프로필의 이름, 핸들, 팔로워를 대조했다.
@@ -943,7 +949,7 @@
         setCreatorGallery(card);
         creatorSheetBadges.innerHTML = [
           d.platform,
-          card.classList.contains('is-meeting') ? 'MEETING' : card.classList.contains('is-seeding') ? 'K-BEAUTY SEEDING' : 'VERIFIED',
+          card.classList.contains('is-meeting') ? 'MEETING' : card.classList.contains('is-artist') ? 'ARTIST' : card.classList.contains('is-seeding') ? 'K-BEAUTY SEEDING' : 'VERIFIED',
           marketLabels[d.market] || d.market,
         ].filter(Boolean).map((b) => `<span>${b}</span>`).join('');
         creatorSheetTitle.textContent = name;

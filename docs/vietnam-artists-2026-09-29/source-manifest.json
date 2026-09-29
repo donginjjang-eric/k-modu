@@ -1,0 +1,79 @@
+[
+  {
+    "name": "Chi Pu",
+    "slug": "chi-pu",
+    "instagram": "chipupu",
+    "direction": "Music · fashion · beauty",
+    "sourcePostUrl": "https://www.instagram.com/chipupu/reel/DdwNnXzBOjO/",
+    "sourceAlt": "Video by Chi Pu on September 26, 2026. 사람 1명 이상, 머리카락, 슬립, 슈미즈, 브라, 텍스트의 이미지일 수 있음.",
+    "sourceFile": "docs/vietnam-artists-2026-09-29/sources/chi-pu.jpg",
+    "width": 360,
+    "height": 640
+  },
+  {
+    "name": "Trang Pháp",
+    "slug": "trang-phap",
+    "instagram": "trang_phap",
+    "direction": "Music · fashion",
+    "sourcePostUrl": "https://www.instagram.com/trang_phap/p/C6BzMUVPYPT/",
+    "sourceAlt": "Photo by Trang Phap on April 21, 2024.",
+    "sourceFile": "docs/vietnam-artists-2026-09-29/sources/trang-phap.jpg",
+    "width": 512,
+    "height": 640
+  },
+  {
+    "name": "Đức Phúc",
+    "slug": "duc-phuc",
+    "instagram": "nguyenducphuc_",
+    "direction": "Music · lifestyle",
+    "sourcePostUrl": "https://www.instagram.com/nguyenducphuc_/p/DQeWfKuiZFW/",
+    "sourceAlt": "Photo by Nguyễn Đức Phúc on October 31, 2025.",
+    "sourceFile": "docs/vietnam-artists-2026-09-29/sources/duc-phuc.jpg",
+    "width": 512,
+    "height": 640
+  },
+  {
+    "name": "Hòa Minzy",
+    "slug": "hoa-minzy",
+    "instagram": "hoaminzy_rose",
+    "direction": "Music · family · lifestyle",
+    "sourcePostUrl": "https://www.instagram.com/hoaminzy_rose/p/Ddn4IK-knkq/",
+    "sourceAlt": "Photo by Hoà Minzy 🌺 on September 23, 2026.",
+    "sourceFile": "docs/vietnam-artists-2026-09-29/sources/hoa-minzy.jpg",
+    "width": 480,
+    "height": 640
+  },
+  {
+    "name": "Isaac",
+    "slug": "isaac-vn",
+    "instagram": "isaaclion",
+    "direction": "Music · fashion",
+    "sourcePostUrl": "https://www.instagram.com/isaaclion/p/DdngyByEU5F/",
+    "sourceAlt": "Photo by Isaac on September 22, 2026.",
+    "sourceFile": "docs/vietnam-artists-2026-09-29/sources/isaac-vn.jpg",
+    "width": 480,
+    "height": 640
+  },
+  {
+    "name": "Thiều Bảo Trâm",
+    "slug": "thieu-bao-tram",
+    "instagram": "thieubaotram",
+    "direction": "Music · beauty · fashion",
+    "sourcePostUrl": "https://www.instagram.com/thieubaotram/p/Ddnn_VHlEzi/",
+    "sourceAlt": "Photo by Thiều Bảo Trâm on September 22, 2026.",
+    "sourceFile": "docs/vietnam-artists-2026-09-29/sources/thieu-bao-tram.jpg",
+    "width": 480,
+    "height": 640
+  },
+  {
+    "name": "Văn Mai Hương",
+    "slug": "van-mai-huong",
+    "instagram": "vmhuong",
+    "direction": "Music · lifestyle",
+    "sourcePostUrl": "https://www.instagram.com/vmhuong/p/DdMMUMhn1S0/",
+    "sourceAlt": "Photo by Văn Mai Hương on September 12, 2026.",
+    "sourceFile": "docs/vietnam-artists-2026-09-29/sources/van-mai-huong.jpg",
+    "width": 494,
+    "height": 640
+  }
+]

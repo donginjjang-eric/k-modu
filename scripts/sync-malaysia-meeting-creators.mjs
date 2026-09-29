@@ -1,5 +1,6 @@
 import "../data/malaysia-meeting-creators.js";
 import "../data/malaysia-new-meeting-creators.js";
+import "../data/vietnam-artists.js";
 
 const FOLLOWERS_VERIFIED_AT = "2026-08-24T00:00:00+09:00";
 
@@ -25,15 +26,15 @@ export function toCreatorAccountImportRows(creators) {
       onboarding_source: "admin",
       claim_state: "unclaimed",
       platform: tiktokFollowers > instagramFollowers ? "TikTok" : "Instagram",
-      market: "Malaysia",
+      market: creator.market ?? "Malaysia",
       categories: categoriesFromDirection(creator.direction),
       profile_image_url: creator.image,
       specialty: creator.direction,
       instagram_handle: creator.instagram,
       instagram_url: creator.instagramUrl,
       instagram_followers: instagramFollowers,
-      tiktok_handle: creator.tiktok,
-      tiktok_url: creator.tiktokUrl,
+      tiktok_handle: creator.tiktok ?? null,
+      tiktok_url: creator.tiktokUrl ?? null,
       tiktok_followers: tiktokFollowers,
       followers_verified_at: creator.followersVerifiedAt === undefined ? FOLLOWERS_VERIFIED_AT : creator.followersVerifiedAt,
     };
@@ -51,6 +52,7 @@ export async function syncMalaysiaMeetingCreators(client, adminUserId) {
   const rows = toCreatorAccountImportRows([
     ...globalThis.KMODU_MALAYSIA_MEETING_CREATORS,
     ...globalThis.KMODU_MALAYSIA_NEW_MEETING_CREATORS,
+    ...globalThis.KMODU_VIETNAM_ARTISTS,
   ]);
 
   for (const row of rows) {

@@ -23,3 +23,14 @@ test("the legacy file route serves the new Malaysia meeting creator data script"
   assert.match(response.headers.get("content-type") || "", /^text\/javascript/);
   assert.match(await response.text(), /KMODU_MALAYSIA_NEW_MEETING_CREATORS/);
 });
+
+test("the legacy file route serves the Vietnam artist data script", async () => {
+  const response = await GET(
+    new Request("http://localhost/data/vietnam-artists.js"),
+    { params: Promise.resolve({ legacyPath: ["data", "vietnam-artists.js"] }) },
+  );
+
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("content-type") || "", /^text\/javascript/);
+  assert.match(await response.text(), /KMODU_VIETNAM_ARTISTS/);
+});
