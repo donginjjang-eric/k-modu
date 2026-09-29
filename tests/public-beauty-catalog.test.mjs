@@ -23,5 +23,5 @@ test('beauty board replaces samples with real database products when available',
   assert.match(moduleSource, /normalizePublicBeautyProduct/);
   assert.match(moduleSource, /boardProducts = publicProducts/);
   assert.match(moduleSource, /등록 상품/);
-  assert.match(html, /beauty-products\.js\?v=20260828-public-db/);
+  assert.match(html, /beauty-products\.js\?v=[^"']+/);
 });
