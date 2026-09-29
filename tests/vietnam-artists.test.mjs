@@ -24,8 +24,9 @@ test("seven Vietnam artists have distinct Instagram accounts and attributable so
     assert.ok(existsSync(source.sourceFile));
     assert.ok(existsSync(artist.image));
     for (const width of [360, 720]) assert.ok(existsSync(`assets/creator-thumbnails/${artist.slug}-${width}.webp`));
-    assert.equal(artist.totalFollowers, null);
-    assert.equal(artist.followersVerifiedAt, null);
+    assert.equal(artist.totalFollowers, artist.instagramFollowers);
+    assert.equal(artist.followersVerifiedAt, "2026-09-29");
     assert.equal(artist.market, "Vietnam");
   }
+  assert.equal(artists.reduce((total, artist) => total + artist.totalFollowers, 0), 19_393_000);
 });

@@ -45,8 +45,8 @@ test("curated creator synchronization adds 45 accounts without replacing account
     client.queries.slice(45).map(({ params }) => params[0]),
   );
   assert.equal(new Set(client.queries.slice(0, 45).map(({ params }) => params[0])).size, 45);
-  assert.equal(client.queries.slice(24, 38).every(({ params }) => params[19] === null), true);
-  assert.equal(client.queries.slice(38, 45).every(({ params }) => params[9] === "Vietnam" && params[16] === null && params[19] === null), true);
+  assert.equal(client.queries.slice(24, 38).every(({ params }) => params[19] === "2026-09-29" && params[15] > 0 && params[18] > 0), true);
+  assert.equal(client.queries.slice(38, 45).every(({ params }) => params[9] === "Vietnam" && params[16] === null && params[15] > 0 && params[19] === "2026-09-29"), true);
   assert.equal(client.queries.every(({ params }) => params[2] === null), true);
   assert.equal(client.queries.every(({ params }) => params[3] === ""), true);
   assert.equal(client.queries.every(({ params }) => params[6] === "unclaimed"), true);

@@ -6,7 +6,7 @@ import test from "node:test";
 import "../data/malaysia-meeting-creators.js";
 import "../data/malaysia-new-meeting-creators.js";
 
-test("14 new creators have unique handles, source photos, and no public rates or guessed followers", () => {
+test("14 new creators have unique handles, source photos, and checked follower counts", () => {
   const creators = globalThis.KMODU_MALAYSIA_NEW_MEETING_CREATORS;
   const old = globalThis.KMODU_MALAYSIA_MEETING_CREATORS;
   const manifest = JSON.parse(readFileSync("docs/creator-roster-2026-09-29/source-manifest.json", "utf8"));
@@ -23,9 +23,10 @@ test("14 new creators have unique handles, source photos, and no public rates or
     assert.ok(existsSync(source.sourceFile));
     assert.ok(existsSync(creator.image));
     for (const size of [360, 720]) assert.ok(existsSync(`assets/creator-thumbnails/${creator.slug}-${size}.webp`));
-    assert.equal(creator.totalFollowers, null);
-    assert.equal(creator.followersVerifiedAt, null);
+    assert.equal(creator.totalFollowers, creator.instagramFollowers + creator.tiktokFollowers);
+    assert.equal(creator.followersVerifiedAt, "2026-09-29");
   }
+  assert.equal(creators.reduce((total, creator) => total + creator.totalFollowers, 0), 1_733_079);
   const publicCode = readFileSync("data/malaysia-new-meeting-creators.js", "utf8");
   assert.doesNotMatch(publicCode, /RM\s*\d|\bprice\b|\brate\b/i);
 });

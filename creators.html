@@ -202,7 +202,7 @@
       <section class="creator-board" aria-label="Creator results">
         <div class="platform-kpi-strip platform-kpi-strip--creators" aria-label="크리에이터 네트워크 주요 지표">
           <article class="platform-kpi platform-kpi--reach">
-            <span class="platform-kpi__label">Recorded Followers</span>
+            <span class="platform-kpi__label">Approx. Followers</span>
             <strong><span id="creatorFollowerKpi" data-kpi-value="0">0</span></strong>
             <small id="creatorFollowerCoverage">팔로워 수 확인 중</small>
           </article>
@@ -383,7 +383,7 @@
 
     grid.insertAdjacentHTML('beforeend', globalThis.KMODU_RENDER_MALAYSIA_NEW_MEETING_CREATORS(
       globalThis.KMODU_MALAYSIA_NEW_MEETING_CREATORS,
-      { imageMarkup: creatorCardImageMarkup },
+      { imageMarkup: creatorCardImageMarkup, formatFollowers: fmtSeedK },
     ));
     // 2026-08 말레이시아 추가 미팅 크리에이터 24명. 공개 Instagram/TikTok 프로필 기준.
     grid.insertAdjacentHTML('beforeend', globalThis.KMODU_RENDER_MALAYSIA_MEETING_CREATORS(
@@ -393,7 +393,7 @@
 
     grid.insertAdjacentHTML('beforeend', globalThis.KMODU_RENDER_VIETNAM_ARTISTS(
       globalThis.KMODU_VIETNAM_ARTISTS,
-      { imageMarkup: creatorCardImageMarkup },
+      { imageMarkup: creatorCardImageMarkup, formatFollowers: fmtSeedK },
     ));
 
     // 베트남 K-뷰티 크리에이터 30명. 2026-07-23 공개 TikTok 프로필의 이름, 핸들, 팔로워를 대조했다.
@@ -565,7 +565,7 @@
       if (n >= 1e3) return Math.round(n / 1e3) + 'K';
       return String(n);
     };
-    const formatKpiFull = (value) => new Intl.NumberFormat('ko-KR').format(value);
+    const formatKpiApprox = (value) => `약 ${new Intl.NumberFormat('ko-KR').format(Math.round(value / 1e6) * 100)}만`;
     const animateKpi = (node, target, formatter = (value) => new Intl.NumberFormat('ko-KR').format(value)) => {
       if (!node) return;
       node.dataset.kpiValue = String(target);
@@ -585,8 +585,8 @@
     };
     const cardsWithFollowerCounts = cards.filter((card) => card.dataset.followers !== '' && Number.isFinite(Number(card.dataset.followers)));
     const creatorFollowerTotal = cardsWithFollowerCounts.reduce((total, card) => total + Number(card.dataset.followers), 0);
-    document.getElementById('creatorFollowerCoverage').textContent = `팔로워 수 입력 ${cardsWithFollowerCounts.length}/${cards.length}명 · 미입력 ${cards.length - cardsWithFollowerCounts.length}명 제외`;
-    animateKpi(creatorFollowerKpi, creatorFollowerTotal, formatKpiFull);
+    document.getElementById('creatorFollowerCoverage').textContent = `팔로워 수 입력 ${cardsWithFollowerCounts.length}/${cards.length}명 · IG·TT 합산, 중복·반올림 포함`;
+    animateKpi(creatorFollowerKpi, creatorFollowerTotal, formatKpiApprox);
     animateKpi(creatorRegisteredKpi, cards.length);
     const deliverablesFor = (platform, type) => {
       const base = {
