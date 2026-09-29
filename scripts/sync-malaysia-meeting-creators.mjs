@@ -1,4 +1,5 @@
 import "../data/malaysia-meeting-creators.js";
+import "../data/malaysia-new-meeting-creators.js";
 
 const FOLLOWERS_VERIFIED_AT = "2026-08-24T00:00:00+09:00";
 
@@ -34,7 +35,7 @@ export function toCreatorAccountImportRows(creators) {
       tiktok_handle: creator.tiktok,
       tiktok_url: creator.tiktokUrl,
       tiktok_followers: tiktokFollowers,
-      followers_verified_at: creator.followersVerifiedAt || FOLLOWERS_VERIFIED_AT,
+      followers_verified_at: creator.followersVerifiedAt === undefined ? FOLLOWERS_VERIFIED_AT : creator.followersVerifiedAt,
     };
   });
 }
@@ -47,7 +48,10 @@ export function malaysiaMeetingFollowerTotal(rows) {
 }
 
 export async function syncMalaysiaMeetingCreators(client, adminUserId) {
-  const rows = toCreatorAccountImportRows(globalThis.KMODU_MALAYSIA_MEETING_CREATORS);
+  const rows = toCreatorAccountImportRows([
+    ...globalThis.KMODU_MALAYSIA_MEETING_CREATORS,
+    ...globalThis.KMODU_MALAYSIA_NEW_MEETING_CREATORS,
+  ]);
 
   for (const row of rows) {
     await client.query(

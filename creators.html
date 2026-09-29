@@ -364,6 +364,7 @@
   </main>
 
   <script src="data/malaysia-meeting-creators.js"></script>
+  <script src="data/malaysia-new-meeting-creators.js"></script>
   <script>
     const grid = document.getElementById('creatorGrid');
     const creatorCardSizes = '(max-width: 900px) calc(50vw - 26px), calc((100vw - clamp(40px, 6.8vw, 128px) - 64px) / 5)';
@@ -379,6 +380,10 @@
         loading="lazy" decoding="async" fetchpriority="low" />`;
     const fmtSeedK = (n) => (n >= 1e6 ? (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M' : n >= 1e3 ? (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'K' : String(n));
 
+    grid.insertAdjacentHTML('beforeend', globalThis.KMODU_RENDER_MALAYSIA_NEW_MEETING_CREATORS(
+      globalThis.KMODU_MALAYSIA_NEW_MEETING_CREATORS,
+      { imageMarkup: creatorCardImageMarkup },
+    ));
     // 2026-08 말레이시아 추가 미팅 크리에이터 24명. 공개 Instagram/TikTok 프로필 기준.
     grid.insertAdjacentHTML('beforeend', globalThis.KMODU_RENDER_MALAYSIA_MEETING_CREATORS(
       globalThis.KMODU_MALAYSIA_MEETING_CREATORS,
@@ -938,7 +943,7 @@
         setCreatorGallery(card);
         creatorSheetBadges.innerHTML = [
           d.platform,
-          card.classList.contains('is-seeding') ? 'K-BEAUTY SEEDING' : 'VERIFIED',
+          card.classList.contains('is-meeting') ? 'MEETING' : card.classList.contains('is-seeding') ? 'K-BEAUTY SEEDING' : 'VERIFIED',
           marketLabels[d.market] || d.market,
         ].filter(Boolean).map((b) => `<span>${b}</span>`).join('');
         creatorSheetTitle.textContent = name;

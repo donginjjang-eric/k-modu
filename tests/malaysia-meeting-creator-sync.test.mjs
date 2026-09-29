@@ -33,18 +33,19 @@ test("Malaysia meeting roster converts into 24 approved, unclaimed admin imports
   assert.equal(malaysiaMeetingFollowerTotal(rows), 5_031_738);
 });
 
-test("Malaysia meeting synchronization is repeatable without replacing account ownership", async () => {
+test("Malaysia meeting synchronization adds 38 accounts without replacing account ownership", async () => {
   const client = new RecordingClient();
 
   await syncMalaysiaMeetingCreators(client, "admin-backup");
   await syncMalaysiaMeetingCreators(client, "admin-backup");
 
-  assert.equal(client.queries.length, 48);
+  assert.equal(client.queries.length, 76);
   assert.deepEqual(
-    client.queries.slice(0, 24).map(({ params }) => params[0]),
-    client.queries.slice(24).map(({ params }) => params[0]),
+    client.queries.slice(0, 38).map(({ params }) => params[0]),
+    client.queries.slice(38).map(({ params }) => params[0]),
   );
-  assert.equal(new Set(client.queries.slice(0, 24).map(({ params }) => params[0])).size, 24);
+  assert.equal(new Set(client.queries.slice(0, 38).map(({ params }) => params[0])).size, 38);
+  assert.equal(client.queries.slice(24, 38).every(({ params }) => params[19] === null), true);
   assert.equal(client.queries.every(({ params }) => params[2] === null), true);
   assert.equal(client.queries.every(({ params }) => params[3] === ""), true);
   assert.equal(client.queries.every(({ params }) => params[6] === "unclaimed"), true);
