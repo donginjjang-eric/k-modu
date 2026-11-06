@@ -7,3 +7,5 @@
 Railway CLI 인증은 현재 만료되어 `Unauthorized`가 나온다. GitHub 푸시 후 실제 공개 이미지와 화면으로 배포 결과를 확인한다.
 
 서명 회귀 테스트는 수정 전 `sin !== auto`로 실패했고, 수정 후 통과했다. `tests/public-beauty-catalog.test.mjs` 2개도 통과했다. 첫 `npm run build`는 Windows `.next` junction 충돌, Webpack 빌드는 `.next` 폴더의 권한 오류로 실패했다. 동일한 Turbopack 빌드를 권한 제한 없이 다시 실행하자 TypeScript와 70개 정적 페이지 생성까지 성공했다. 기존 `src/lib/storage.ts`의 넓은 파일 추적 경고는 여전히 출력된다.
+
+운영 확인. 수정 커밋 `17221c2`를 GitHub에 올린 뒤 공개 상품 이미지의 서명 범위가 `sin`에서 `auto`로 바뀌었다. 첫 상품 GET은 403에서 이미지 200(1,550,288바이트)으로 회복됐다. 운영 공개 API의 앞 10개 이미지가 모두 200이고 실제 Chrome 화면에서 앞 5개 카드 사진이 정상 표시됐다. 검증 스크린샷은 로컬 `tmp/beauty-images-2026-11-06/live.png`에 있다. Railway CLI 인증이 만료돼 배포 상태 자체는 읽지 못했지만 실제 운영 응답과 화면으로 반영을 검증했다.
