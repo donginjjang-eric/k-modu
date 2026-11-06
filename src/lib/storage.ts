@@ -90,9 +90,11 @@ export function hasBucket() {
 let s3Client: S3Client | null = null;
 function getS3() {
   if (!s3Client) {
+    const endpoint = process.env.S3_ENDPOINT;
+    const railwayBucket = endpoint && new URL(endpoint).hostname.endsWith(".storageapi.dev");
     s3Client = new S3Client({
-      region: process.env.S3_REGION || "auto",
-      endpoint: process.env.S3_ENDPOINT,
+      region: railwayBucket ? "auto" : (process.env.S3_REGION || "auto"),
+      endpoint,
       credentials: {
         accessKeyId: process.env.S3_ACCESS_KEY_ID || "",
         secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || "",
