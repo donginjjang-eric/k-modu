@@ -506,11 +506,12 @@ export default function ProductManager({ initialProducts, mode = "fashion", memb
           {visibleProducts.length ? (
             <div className="st-plist">
               {visibleProducts.map((product) => {
-                const isPublic = product.status === "active";
+                const isBlocked = product.approval_status === "disabled";
+                const isPublic = product.status === "active" && !isBlocked;
                 return (
                   <article className="st-pcard" key={product.id}>
                     <div className="img" style={{ backgroundImage: `url('${product.image_url}')` }}>
-                      <span className={`badge ${isPublic ? "pub" : "priv"}`}>{isPublic ? "공개 중" : "비공개"}</span>
+                      <span className={`badge ${isPublic ? "pub" : "priv"}`}>{isBlocked ? "관리자 비공개" : isPublic ? "공개 중" : "비공개"}</span>
                     </div>
                     <div className="b">
                       <div className="c">{groupProductCategory(product.category, mode)}</div>
@@ -519,11 +520,13 @@ export default function ProductManager({ initialProducts, mode = "fashion", memb
                         {product.supply_price ? <span className="supply">공급가 {product.supply_price}</span> : null}
                         {product.price ? <span className="retail">판매가 {product.price}</span> : null}
                       </div>
-                      <div className="row">
-                        <button type="button" onClick={() => startEdit(product)}>수정</button>
-                        <button type="button" onClick={() => toggleVisibility(product)}>{isPublic ? "비공개로 전환" : "다시 공개"}</button>
-                        <button type="button" onClick={() => setPendingDelete(product)}>삭제</button>
-                      </div>
+                      {isBlocked ? <p className="st-msg err">관리자가 비공개 처리했습니다.{product.moderation_reason ? ` 사유: ${product.moderation_reason}` : ""} 문의 후 다시 이용해 주세요.</p> : (
+                        <div className="row">
+                          <button type="button" onClick={() => startEdit(product)}>수정</button>
+                          <button type="button" onClick={() => toggleVisibility(product)}>{isPublic ? "비공개로 전환" : "다시 공개"}</button>
+                          <button type="button" onClick={() => setPendingDelete(product)}>삭제</button>
+                        </div>
+                      )}
                     </div>
                   </article>
                 );

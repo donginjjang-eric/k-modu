@@ -42,6 +42,7 @@ export async function POST(request: Request) {
       imageHash: body.imageHash ? String(body.imageHash) : null,
       mood: body.mood ? String(body.mood) : null,
       status: body.status === "draft" || body.status === "hidden" ? body.status : "active",
+      approvalStatus: auth.workspace.workspace_type === "beauty_partner" ? "approved" : undefined,
     });
     return Response.json({ ok: true, product });
   } catch (error) {

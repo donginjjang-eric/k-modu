@@ -67,7 +67,7 @@ export type BeautySettlementRow = Pick<CampaignParticipation, "id" | "campaign_i
 
 async function lockBeautyPartner(client: DatabaseTransactionClient, designerId: string, actorUserId: string) {
   const result = await client.query<{ id: string; user_id: string | null }>(
-    "SELECT id, user_id FROM designers WHERE id = $1 AND user_id = $2 FOR UPDATE",
+    "SELECT id, user_id FROM designers WHERE id = $1 AND user_id = $2 AND approval_status = 'approved' FOR UPDATE",
     [designerId, actorUserId],
   );
   if (!result.rows[0]) throw new Error("Beauty partner access is required.");
@@ -76,7 +76,7 @@ async function lockBeautyPartner(client: DatabaseTransactionClient, designerId: 
 
 async function lockOwnedProduct(client: DatabaseTransactionClient, productId: string, designerId: string) {
   const result = await client.query<{ id: string; designer_id: string; status: string }>(
-    "SELECT id, designer_id, status FROM products WHERE id = $1 AND designer_id = $2 AND status <> 'hidden' FOR SHARE",
+    "SELECT id, designer_id, status FROM products WHERE id = $1 AND designer_id = $2 AND status = 'active' AND approval_status = 'approved' FOR SHARE",
     [productId, designerId],
   );
   if (!result.rows[0]) throw new Error("An owned product was not found.");

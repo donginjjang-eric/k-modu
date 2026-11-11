@@ -19,6 +19,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const { designer } = auth;
   const { id } = await params;
   const body = await request.json().catch(() => ({}));
+  const current = await getProductForDesigner(designer.id, id);
+  if (current?.approval_status === "disabled") {
+    return Response.json({ ok: false, error: "관리자가 비공개 처리한 상품입니다. 문의 후 다시 이용해 주세요." }, { status: 403 });
+  }
   const hasImageUrls = Object.hasOwn(body, "imageUrls") || Object.hasOwn(body, "image_urls");
   const imageUrls = hasImageUrls ? normalizeProductImages(body.imageUrls ?? body.image_urls, body.imageUrl || "") : undefined;
   const hasDetailImageUrls = Object.hasOwn(body, "detailImageUrls") || Object.hasOwn(body, "detail_image_urls");
@@ -49,6 +53,10 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
   if (!auth.ok) return Response.json({ ok: false, error: auth.error }, { status: auth.status });
   const { designer } = auth;
   const { id } = await params;
+  const current = await getProductForDesigner(designer.id, id);
+  if (current?.approval_status === "disabled") {
+    return Response.json({ ok: false, error: "관리자가 비공개 처리한 상품은 삭제할 수 없습니다." }, { status: 403 });
+  }
   const product = await updateProductForDesigner(designer.id, id, { status: "hidden" });
   if (!product) return Response.json({ ok: false, error: "Product not found." }, { status: 404 });
   return Response.json({ ok: true, product });

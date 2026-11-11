@@ -200,7 +200,7 @@ export async function requireFashionPartner() {
     return { ...legacy, workspace: null };
   }
   const designer = await getDesignerForUserAndId(auth.user.id, auth.workspace.resource_id);
-  if (!designer) redirect("/dashboard/workspaces?next=%2Fdashboard%2Fdesigner%2Fbrand");
+  if (!designer || designer.approval_status !== "approved") redirect("/dashboard/workspaces?next=%2Fdashboard%2Fdesigner%2Fbrand");
   return { ...auth, designer };
 }
 
@@ -213,7 +213,7 @@ export async function requireBeautyPartner() {
     return { ...legacy, workspace: null };
   }
   const designer = await getDesignerForUserAndId(auth.user.id, auth.workspace.resource_id);
-  if (!designer) redirect("/dashboard/workspaces?next=%2Fdashboard%2Fbeauty");
+  if (!designer || designer.approval_status !== "approved") redirect("/dashboard/workspaces?next=%2Fdashboard%2Fbeauty");
   return { ...auth, designer };
 }
 
@@ -239,7 +239,7 @@ export async function getSelectedPartnerForApi(request: Request) {
   const resource = authorizePartnerResource({ workspaceType, workspaceResourceId: authorization.workspace.resource_id });
   if (!resource.ok) return { ok: false as const, status: resource.status, error: "브랜드 작업공간 소유권을 확인할 수 없습니다." };
   const designer = await getDesignerForUserAndId(user.id, resource.designerId);
-  if (!designer) return { ok: false as const, status: 403, error: "브랜드 작업공간 소유권을 확인할 수 없습니다." };
+  if (!designer || designer.approval_status !== "approved") return { ok: false as const, status: 403, error: "현재 이용할 수 없는 브랜드입니다." };
   return { ok: true as const, user, designer, workspace: authorization.workspace };
 }
 

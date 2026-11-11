@@ -16,7 +16,7 @@ export default async function BeautyPartnerPage() {
     Boolean(designer.mood.trim()),
     hasApprovedCover,
   ];
-  const publishedProductCount = products.filter((product) => product.status === "active").length;
+  const publishedProductCount = products.filter((product) => product.status === "active" && product.approval_status === "approved").length;
   const nextSteps = [
     {
       done: profileChecks.every(Boolean),

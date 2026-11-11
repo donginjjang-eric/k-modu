@@ -13,7 +13,9 @@ export default async function BeautyCampaignsPage() {
     listBeautyPartnerCampaigns(designer.id),
     getProductsForDesigner(designer.id),
   ]);
-  const campaignProducts = products.map(({ id, name, category }) => ({ id, name, category }));
+  const campaignProducts = products
+    .filter((product) => product.status === "active" && product.approval_status === "approved")
+    .map(({ id, name, category }) => ({ id, name, category }));
 
   const campaignFormValue = (campaign: typeof campaigns[number]): BeautyCampaignFormValue => ({
     id: campaign.id,
@@ -33,7 +35,7 @@ export default async function BeautyCampaignsPage() {
   return <div className="beauty-operations-page">
     <header className="beauty-page-heading"><p>K-MODU CREATOR CAMPAIGN</p><h1>캠페인·매칭</h1><span>내 상품으로 캠페인을 만들고 신청부터 배송·제작·정산까지 현재 단계에 맞춰 운영하세요.</span></header>
 
-    {products.length ? <details className="beauty-create-panel" open={!campaigns.length}>
+    {campaignProducts.length ? <details className="beauty-create-panel" open={!campaigns.length}>
       <summary><span><b>새 상품 캠페인</b><small>먼저 초안으로 저장한 뒤 준비가 끝나면 모집을 시작합니다.</small></span><i>+</i></summary>
       <BeautyCampaignForm products={campaignProducts} />
     </details> : <section className="beauty-empty-state"><h2>캠페인에 연결할 상품이 없습니다.</h2><p>상품을 먼저 등록하면 해당 상품을 기준으로 크리에이터 모집 캠페인을 만들 수 있습니다.</p><Link className="beauty-action primary" href="/dashboard/beauty/products">상품 등록하기</Link></section>}
@@ -47,6 +49,6 @@ export default async function BeautyCampaignsPage() {
       <section className="beauty-participant-section"><div className="beauty-subheading"><h3>신청·참여 현황</h3><span>{campaign.participants.length}명</span></div>
         {campaign.participants.length ? <div className="beauty-participant-list">{campaign.participants.map((participant) => <article key={participant.id}><div><strong>{participant.creator_display_name}</strong><span>{participant.creator_platform || "플랫폼 미등록"} · {participant.creator_market || "시장 미등록"} · {participationSourceLabel(participant.source)}</span></div><b className={`beauty-status is-${participant.status}`}>{participationStatusLabel(participant.status)}</b>{participant.status !== "review" ? <BeautyParticipationActions participationId={participant.id} status={participant.status} /> : <Link className="beauty-action" href="/dashboard/beauty/content">최신 제출물에서 검수</Link>}</article>)}</div> : <div className="beauty-empty-inline"><p>아직 신청한 크리에이터가 없습니다.</p><span>모집을 시작하면 타깃 조건에 맞는 크리에이터 센터에 캠페인이 노출됩니다.</span></div>}
       </section>
-    </article>)}</section> : products.length ? <section className="beauty-empty-state"><h2>아직 만든 캠페인이 없습니다.</h2><p>위의 새 상품 캠페인을 열어 첫 캠페인 초안을 만들어 보세요.</p></section> : null}
+    </article>)}</section> : campaignProducts.length ? <section className="beauty-empty-state"><h2>아직 만든 캠페인이 없습니다.</h2><p>위의 새 상품 캠페인을 열어 첫 캠페인 초안을 만들어 보세요.</p></section> : null}
   </div>;
 }

@@ -10,11 +10,17 @@ export default function AdminDesignerActions({ designerId, status }: { designerI
   const router = useRouter();
 
   const mutate = async (action: "approve" | "disable" | "reject", confirmText?: string) => {
-    if (confirmText && !window.confirm(confirmText)) return;
+    let reason = "";
+    if (action === "disable") {
+      reason = window.prompt("이용 중단 사유를 입력해 주세요. 해당 브랜드의 상품과 센터 이용이 중단됩니다.")?.trim() || "";
+      if (!reason) return;
+    } else if (confirmText && !window.confirm(confirmText)) return;
     setMessage("");
     setBusy(true);
     try {
-      const response = await fetch(`/api/admin/designers/${designerId}/${action}`, { method: "POST" });
+      const response = await fetch(`/api/admin/designers/${designerId}/${action}`, {
+        method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ reason }),
+      });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) {
         setMessage(result.error || "변경에 실패했습니다.");

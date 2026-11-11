@@ -434,7 +434,7 @@ export async function getPublicProductsForDesigner(designerId: string): Promise<
     // DB가 정상이면 DB가 유일한 진실. (과거에는 데모 상품을 합쳐 넣었지만,
     // 숨김 처리한 상품이 폴백으로 되살아나는 문제가 있어 제거 — 2026-06-12)
     return await query<Product>(
-      "SELECT * FROM products WHERE designer_id = $1 AND status = 'active' ORDER BY created_at DESC",
+      "SELECT * FROM products WHERE designer_id = $1 AND status = 'active' AND approval_status = 'approved' ORDER BY created_at DESC",
       [designerId],
     );
   } catch (error) {
@@ -493,19 +493,30 @@ export async function getProductForDesigner(designerId: string, productId: strin
 export async function updateProductForAdmin(productId: string, input: Partial<{
   status: Product["status"];
   approvalStatus: ApprovalStatus;
-}>) {
+  reason: string;
+}>, actorUserId?: string) {
   if (!hasDatabase()) throw new Error("DATABASE_URL is required for product updates.");
-  return one<AdminProduct>(
-    `UPDATE products
+  return withDatabaseTransaction(async (client) => {
+    const updated = await client.query<AdminProduct>(`UPDATE products
         SET status = COALESCE($2, status),
             approval_status = COALESCE($3, approval_status),
+            moderation_reason = CASE WHEN $3 = 'disabled' THEN $4 WHEN $3 = 'approved' THEN NULL ELSE moderation_reason END,
             updated_at = now()
       WHERE products.id = $1
       RETURNING products.*,
                 (SELECT brand_name FROM designers WHERE designers.id = products.designer_id) AS designer_brand_name,
                 (SELECT approval_status FROM designers WHERE designers.id = products.designer_id) AS designer_approval_status`,
-    [productId, input.status ?? null, input.approvalStatus ?? null],
-  );
+      [productId, input.status ?? null, input.approvalStatus ?? null, input.reason ?? null]);
+    const product = updated.rows[0] ?? null;
+    if (product && actorUserId) {
+      await client.query(
+        `INSERT INTO creator_management_audit_logs (actor_user_id, action, metadata)
+         VALUES ($1, 'admin_product_status_changed', $2::jsonb)`,
+        [actorUserId, JSON.stringify({ productId, status: input.status, approvalStatus: input.approvalStatus, reason: input.reason || "" })],
+      );
+    }
+    return product;
+  });
 }
 
 export async function getOwnedProductsForGeneration(designerId: string, productIds: string[]): Promise<Product[]> {
@@ -612,7 +623,7 @@ export async function getPublicProductsForGeneration(designerId: string, product
     ));
   }
   const products = await query<Product>(
-    "SELECT * FROM products WHERE designer_id = $1 AND id = ANY($2::text[]) AND status = 'active'",
+    "SELECT * FROM products WHERE designer_id = $1 AND id = ANY($2::text[]) AND status = 'active' AND approval_status = 'approved'",
     [designerId, productIds],
   );
   if (products.length !== new Set(productIds).size && designerId === phaseDesigner.id) {
@@ -708,7 +719,7 @@ export async function updateProductForDesigner(designerId: string, productId: st
          mood = COALESCE($14, mood),
          status = COALESCE($15, status),
          updated_at = now()
-     WHERE designer_id = $1 AND id = $2
+     WHERE designer_id = $1 AND id = $2 AND approval_status <> 'disabled'
      RETURNING *`,
     [
       designerId,

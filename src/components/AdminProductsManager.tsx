@@ -155,7 +155,7 @@ export default function AdminProductsManager({ products }: { products: AdminProd
 
   const toggleOne = (p: AdminProduct) => {
     const st = statusMap[p.id];
-    if (st === "hidden") return; // 숨김은 디자이너/시스템 영역 — 여기선 공개↔비공개만
+    if (st === "hidden" || approvalMap[p.id] === "disabled") return;
     setStatus([p.id], st === "active" ? "draft" : "active");
   };
 
@@ -172,6 +172,28 @@ export default function AdminProductsManager({ products }: { products: AdminProd
       setApprovalMap((current) => ({ ...current, [productId]: "approved" }));
     } catch (error) {
       setNotice(error instanceof Error ? error.message : "상품 승인에 실패했어요.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const suspendOne = async (productId: string) => {
+    const reason = window.prompt("상품을 내리는 이유를 입력해 주세요. 사업자는 직접 다시 공개할 수 없습니다.")?.trim();
+    if (!reason) return;
+    setBusy(true);
+    setNotice("");
+    try {
+      const response = await fetch(`/api/admin/products/${productId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ approvalStatus: "disabled", reason }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || "상품을 내리지 못했습니다.");
+      setApprovalMap((current) => ({ ...current, [productId]: "disabled" }));
+      setNotice("상품을 비공개 처리했습니다.");
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : "상품을 내리지 못했습니다.");
     } finally {
       setBusy(false);
     }
@@ -285,8 +307,9 @@ export default function AdminProductsManager({ products }: { products: AdminProd
               {items.map((p) => {
                 const st = statusMap[p.id];
                 const field = productField(p);
-                const isPublic = st === "active";
                 const isApproved = approvalMap[p.id] === "approved";
+                const isBlocked = approvalMap[p.id] === "disabled";
+                const isPublic = st === "active" && !isBlocked;
                 const checked = selectedOnPage.has(p.id);
                 return viewMode === "grid" ? (
                   <article className={`st-pcard apm-card${checked ? " is-checked" : ""}`} key={p.id}>
@@ -301,7 +324,7 @@ export default function AdminProductsManager({ products }: { products: AdminProd
                     </div>
                     <div className="b">
                       <span className={`apm-field-badge is-${field}`} title={FIELD_LABEL[field].ko}>{FIELD_LABEL[field].en}</span>
-                      <span className={`status-badge ${isApproved ? "approved" : "pending"}`}>{isApproved ? "승인 완료" : "승인 대기"}</span>
+                      <span className={`status-badge ${isApproved ? "approved" : isBlocked ? "disabled" : "pending"}`}>{isApproved ? "승인 완료" : isBlocked ? "관리자 비공개" : "승인 대기"}</span>
                       <span className="status-badge approved">상세 {p.detail_image_urls?.length || 0}/{MAX_PRODUCT_DETAIL_IMAGES}</span>
                       <div className="c">
                         {p.designer_id ? <Link href={`/dashboard/admin/designers/${p.designer_id}`}>{p.designer_brand_name || "Unknown"}</Link> : (p.designer_brand_name || "Unknown")}
@@ -314,12 +337,12 @@ export default function AdminProductsManager({ products }: { products: AdminProd
                       <button
                         className={`apm-action ${isPublic ? "danger" : "primary"}`}
                         type="button"
-                        disabled={busy || st === "hidden"}
+                        disabled={busy || st === "hidden" || isBlocked}
                         onClick={() => toggleOne(p)}
                       >
-                        {st === "hidden" ? "숨김 상품" : isPublic ? "비공개로 전환" : "공개로 전환"}
+                        {isBlocked ? "제재 중" : st === "hidden" ? "숨김 상품" : isPublic ? "비공개로 전환" : "공개로 전환"}
                       </button>
-                      {!isApproved ? <button className="apm-action primary" type="button" disabled={busy} onClick={() => approveOne(p.id)}>승인하기</button> : null}
+                      {!isApproved ? <button className="apm-action primary" type="button" disabled={busy} onClick={() => approveOne(p.id)}>{isBlocked ? "복구하기" : "승인하기"}</button> : <button className="apm-action danger" type="button" disabled={busy} onClick={() => suspendOne(p.id)}>관리자 비공개</button>}
                     </div>
                   </article>
                 ) : (
@@ -331,12 +354,12 @@ export default function AdminProductsManager({ products }: { products: AdminProd
                     <div className="apm-row-name"><span className={`apm-field-badge is-${field}`} title={FIELD_LABEL[field].ko}>{FIELD_LABEL[field].en}</span>{p.name}<small>상세 {p.detail_image_urls?.length || 0}/{MAX_PRODUCT_DETAIL_IMAGES}</small></div>
                     <div className="apm-row-brand">{p.designer_brand_name || "Unknown"}</div>
                     <div className="apm-row-cat">{groupCategory(p.category)}</div>
-                    <span className={`status-badge ${isPublic ? "approved" : st === "hidden" ? "disabled" : "pending"}`}>{STATUS_LABEL[st]}</span>
-                    <span className={`status-badge ${isApproved ? "approved" : "pending"}`}>{isApproved ? "승인 완료" : "승인 대기"}</span>
-                    <button className={`apm-action ${isPublic ? "danger" : "primary"}`} type="button" disabled={busy || st === "hidden"} onClick={() => toggleOne(p)}>
-                      {st === "hidden" ? "숨김" : isPublic ? "비공개로" : "공개로"}
+                    <span className={`status-badge ${isPublic ? "approved" : st === "hidden" || isBlocked ? "disabled" : "pending"}`}>{isBlocked ? "공개 차단" : STATUS_LABEL[st]}</span>
+                    <span className={`status-badge ${isApproved ? "approved" : isBlocked ? "disabled" : "pending"}`}>{isApproved ? "승인 완료" : isBlocked ? "관리자 비공개" : "승인 대기"}</span>
+                    <button className={`apm-action ${isPublic ? "danger" : "primary"}`} type="button" disabled={busy || st === "hidden" || isBlocked} onClick={() => toggleOne(p)}>
+                      {isBlocked ? "제재 중" : st === "hidden" ? "숨김" : isPublic ? "비공개로" : "공개로"}
                     </button>
-                    {!isApproved ? <button className="apm-action primary" type="button" disabled={busy} onClick={() => approveOne(p.id)}>승인하기</button> : null}
+                    {!isApproved ? <button className="apm-action primary" type="button" disabled={busy} onClick={() => approveOne(p.id)}>{isBlocked ? "복구하기" : "승인하기"}</button> : <button className="apm-action danger" type="button" disabled={busy} onClick={() => suspendOne(p.id)}>관리자 비공개</button>}
                   </div>
                 );
               })}

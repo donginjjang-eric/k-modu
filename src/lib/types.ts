@@ -189,6 +189,7 @@ export type Product = {
   mood: string | null;
   status: ProductStatus;
   approval_status: ApprovalStatus;
+  moderation_reason?: string | null;
   created_at: string;
   updated_at: string;
 };

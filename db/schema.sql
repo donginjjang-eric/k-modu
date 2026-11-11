@@ -49,6 +49,9 @@ ALTER TABLE designers ADD COLUMN IF NOT EXISTS designer_name text NOT NULL DEFAU
 ALTER TABLE designers ADD COLUMN IF NOT EXISTS contact_email text NOT NULL DEFAULT '';
 ALTER TABLE designers ADD COLUMN IF NOT EXISTS contact_phone text NOT NULL DEFAULT '';
 ALTER TABLE designers ADD COLUMN IF NOT EXISTS brand_category text NOT NULL DEFAULT '미분류';
+-- 뷰티 셀프 가입 화면에서 받는 최소 브랜드 정보.
+ALTER TABLE designers ADD COLUMN IF NOT EXISTS primary_product_category text;
+ALTER TABLE designers ADD COLUMN IF NOT EXISTS brand_channel_url text;
 -- 디자이너별 공개 AI 생성 일일 한도 (관리자가 조정). 비용 가드의 핵심.
 ALTER TABLE designers ADD COLUMN IF NOT EXISTS daily_generation_limit integer NOT NULL DEFAULT 20;
 
@@ -79,6 +82,7 @@ ALTER TABLE products ADD COLUMN IF NOT EXISTS image_urls jsonb NOT NULL DEFAULT 
 ALTER TABLE products ADD COLUMN IF NOT EXISTS detail_image_urls jsonb NOT NULL DEFAULT '[]'::jsonb;
 -- 현재 운영 정책은 자동 승인. 기존 상품도 승인 완료로 안전하게 백필된다.
 ALTER TABLE products ADD COLUMN IF NOT EXISTS approval_status text NOT NULL DEFAULT 'approved';
+ALTER TABLE products ADD COLUMN IF NOT EXISTS moderation_reason text;
 
 -- 상세페이지 기능 도입 전에 등록된 뷰티 상품은 기존 갤러리를 상세 영역에도 표시한다.
 -- 이미 상세 이미지를 등록한 상품과 패션 브랜드 상품은 변경하지 않는다.
