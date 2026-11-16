@@ -53,9 +53,9 @@
           box-shadow: 0 18px 44px rgba(17, 24, 39, .18);
         }
         .quick-link-stack .beauty-quick-banner {
-          border-color: #852148;
-          background: #a12d5a;
-          box-shadow: 0 18px 44px rgba(161, 45, 90, .28);
+          border-color: #284535;
+          background: #365647;
+          box-shadow: 0 18px 44px rgba(40, 69, 53, .24);
         }
         .quick-link-stack .kakao-quick-banner {
           top: auto;
@@ -74,8 +74,8 @@
           box-shadow: 0 22px 54px rgba(17, 24, 39, .24);
         }
         .quick-link-stack .beauty-quick-banner:hover {
-          background: #852148;
-          box-shadow: 0 22px 54px rgba(161, 45, 90, .36);
+          background: #284535;
+          box-shadow: 0 22px 54px rgba(40, 69, 53, .32);
         }
         .quick-link-stack .kakao-quick-banner:hover {
           background: #f7dc00;

@@ -77,11 +77,13 @@ test("기존 브랜드 센터 버튼과 첫 화면 뷰티 스튜디오 바로가
     readFile("index.html", "utf8"),
   ]);
   assert.match(join, /button\.className = "google-button existing-beauty-center-button"/);
-  assert.match(join, /\.existing-beauty-center-button\s*\{[^}]*background:\s*#a12d5a/s);
+  assert.match(join, /\.existing-beauty-center-button\s*\{[^}]*background:\s*#365647/s);
+  assert.match(navigation, /\.beauty-quick-banner\s*\{[^}]*background:\s*#365647/s);
+  assert.match(home, /\.hero-mini-cta\.is-beauty,[\s\S]*?background:\s*#365647/);
   assert.match(navigation, /beautyBanner\.href = BEAUTY_STUDIO_PATH/);
   assert.match(navigation, /뷰티<br>스튜디오/);
   assert.ok(navigation.indexOf("stack.appendChild(beautyBanner)") < navigation.indexOf("stack.appendChild(banner)"));
-  assert.match(home, /auth-nav\.js\?v=20261116-beauty-studio/);
+  assert.match(home, /auth-nav\.js\?v=20261116-beauty-sage/);
 });
 
 test("신규 뷰티 판매자가 PC·모바일 첫 화면과 작업공간 없음 화면에서 가입으로 이동할 수 있다", async () => {
