@@ -1,5 +1,6 @@
 import { requireUser } from "@/lib/auth";
 import { listUserWorkspaces } from "@/lib/workspace-access";
+import Link from "next/link";
 
 const labels = {
   admin: "관리자 콘솔",
@@ -13,6 +14,8 @@ export default async function WorkspaceSelectionPage({ searchParams }: { searchP
   const user = await requireUser();
   const memberships = await listUserWorkspaces(user.id);
   const { next = "" } = await searchParams;
+  const showBeautySignup = !memberships.some((membership) => membership.workspace_type === "beauty_partner")
+    && (next.startsWith("/dashboard/beauty") || memberships.length === 0);
   const groups = [
     { status: "active", title: "사용 가능" },
     { status: "pending", title: "승인 대기" },
@@ -24,6 +27,13 @@ export default async function WorkspaceSelectionPage({ searchParams }: { searchP
       <p style={{ color: "#8c6a2f", fontWeight: 800 }}>K-MODU WORKSPACES</p>
       <h1 style={{ fontSize: 42, margin: "8px 0 12px" }}>이용할 화면을 선택하세요</h1>
       <p style={{ color: "#667085", marginBottom: 40 }}>{user.email} 계정에 연결된 작업공간입니다.</p>
+      {showBeautySignup ? (
+        <section aria-label="뷰티 브랜드 가입" style={{ marginBottom: 32, padding: 24, border: "1px solid #a12d5a", background: "#fff5f8" }}>
+          <strong style={{ display: "block", fontSize: 20 }}>뷰티 상품을 처음 등록하시나요?</strong>
+          <p>브랜드를 가입하고 상품 사진과 정보를 바로 올릴 수 있습니다.</p>
+          <Link href="/beauty/join" style={{ display: "inline-block", padding: "12px 18px", background: "#a12d5a", color: "#fff", textDecoration: "none", fontWeight: 700 }}>뷰티 판매자 가입·상품 등록 →</Link>
+        </section>
+      ) : null}
       {groups.map((group) => {
         const items = memberships.filter((membership) => membership.status === group.status);
         return (

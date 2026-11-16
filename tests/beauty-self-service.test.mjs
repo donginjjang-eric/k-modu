@@ -83,3 +83,17 @@ test("기존 브랜드 센터 버튼과 첫 화면 뷰티 스튜디오 바로가
   assert.ok(navigation.indexOf("stack.appendChild(beautyBanner)") < navigation.indexOf("stack.appendChild(banner)"));
   assert.match(home, /auth-nav\.js\?v=20261116-beauty-studio/);
 });
+
+test("신규 뷰티 판매자가 PC·모바일 첫 화면과 작업공간 없음 화면에서 가입으로 이동할 수 있다", async () => {
+  const [home, workspaces, signup] = await Promise.all([
+    readFile("index.html", "utf8"),
+    readFile("src/app/dashboard/workspaces/page.tsx", "utf8"),
+    readFile("src/app/api/beauty/signup/route.ts", "utf8"),
+  ]);
+  assert.match(home, /class="hero-mini-cta is-beauty" href="\/beauty\/join">뷰티 판매자 가입·상품 등록/);
+  assert.match(home, /class="hero-beauty-signup-mobile" href="\/beauty\/join"/);
+  assert.match(home, /\.hero-beauty-signup-mobile\s*\{[^}]*display:\s*flex;/s);
+  assert.match(workspaces, /!memberships\.some\(\(membership\) => membership\.workspace_type === "beauty_partner"\)/);
+  assert.match(workspaces, /<Link href="\/beauty\/join"/);
+  assert.match(signup, /redirectTo: "\/dashboard\/beauty\/products"/);
+});
