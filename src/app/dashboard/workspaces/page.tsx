@@ -33,6 +33,7 @@ export default async function WorkspaceSelectionPage({ searchParams }: { searchP
               {items.map((membership) => (
                 <article key={membership.id} style={{ border: "1px solid #ddd6c9", padding: 20, background: "#fff" }}>
                   <strong>{labels[membership.workspace_type]}</strong>
+                  {membership.brand_name ? <p style={{ margin: "6px 0 0", fontWeight: 700 }}>{membership.brand_name}</p> : null}
                   {group.status === "active" ? (
                     <form action="/api/workspaces/select" method="post" style={{ marginTop: 14 }}>
                       <input type="hidden" name="membershipId" value={membership.id} />

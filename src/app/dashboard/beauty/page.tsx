@@ -5,7 +5,7 @@ import BeautyPartnerHome from "@/components/BeautyPartnerHome";
 export default async function BeautyPartnerPage() {
   const { designer } = await requireBeautyPartner();
   const [products, portfolio] = await Promise.all([
-    getProductsForDesigner(designer.id),
+    getProductsForDesigner(designer.id, "beauty_partner"),
     getPortfolioImagesForDesigner(designer.id),
   ]);
 

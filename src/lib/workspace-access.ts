@@ -3,6 +3,7 @@ import type { UserWorkspaceMembership, WorkspaceType } from "./types";
 
 export type ResolvedWorkspace = UserWorkspaceMembership & {
   brand_category: string | null;
+  brand_name: string | null;
   designer_user_id: string | null;
 };
 
@@ -49,7 +50,8 @@ const workspaceSelect = `
              THEN designers.brand_category
            ELSE NULL
          END AS brand_category,
-         designers.user_id AS designer_user_id
+         designers.user_id AS designer_user_id,
+         designers.brand_name AS brand_name
     FROM user_workspace_memberships memberships
     LEFT JOIN designers
       ON designers.id = memberships.resource_id

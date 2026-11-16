@@ -182,9 +182,7 @@ export async function requireWorkspace(type: WorkspaceType) {
     ? selectedId
     : matching.length === 1
       ? matching[0].id
-      : isMasterAdminEmail(user.email) && matching.length > 0
-        ? matching[0].id
-        : null);
+      : null);
 
   if (!membershipId) redirect(`/dashboard/workspaces?next=${encodeURIComponent(destination)}`);
   const membership = await resolveUserWorkspace({ userId: user.id, workspaceType: type, membershipId, requireActive: true });
@@ -240,7 +238,7 @@ export async function getSelectedPartnerForApi(request: Request) {
   if (!resource.ok) return { ok: false as const, status: resource.status, error: "브랜드 작업공간 소유권을 확인할 수 없습니다." };
   const designer = await getDesignerForUserAndId(user.id, resource.designerId);
   if (!designer || designer.approval_status !== "approved") return { ok: false as const, status: 403, error: "현재 이용할 수 없는 브랜드입니다." };
-  return { ok: true as const, user, designer, workspace: authorization.workspace };
+  return { ok: true as const, user, designer, workspace: { ...authorization.workspace, workspace_type: workspaceType } };
 }
 
 export async function getApprovedDesignerForApi() {

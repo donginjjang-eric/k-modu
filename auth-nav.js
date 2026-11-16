@@ -53,10 +53,10 @@
         }
         .quick-link-stack .kakao-quick-banner {
           top: auto;
-          border-color: rgba(57, 40, 0, .14);
-          background: #fee500;
-          color: #191600;
-          box-shadow: 0 18px 44px rgba(57, 40, 0, .18);
+          border-color: #1646c7;
+          background: #2458df;
+          color: #fff;
+          box-shadow: 0 18px 44px rgba(36, 88, 223, .28);
         }
         .quick-link-stack .studio-quick-banner:hover {
           transform: translateX(-2px);
@@ -68,8 +68,8 @@
           box-shadow: 0 22px 54px rgba(17, 24, 39, .24);
         }
         .quick-link-stack .kakao-quick-banner:hover {
-          background: #f7dc00;
-          box-shadow: 0 22px 54px rgba(57, 40, 0, .25);
+          background: #1646c7;
+          box-shadow: 0 22px 54px rgba(36, 88, 223, .36);
         }
         .studio-quick-banner-mark {
           display: inline-flex;
@@ -85,8 +85,8 @@
           line-height: 1;
         }
         .kakao-quick-banner .studio-quick-banner-mark {
-          background: #191600;
-          color: #fee500;
+          background: #fff;
+          color: #2458df;
         }
         .creator-quick-banner .studio-quick-banner-mark {
           background: #111827;
@@ -102,7 +102,7 @@
           text-align: center;
         }
         .kakao-quick-banner strong {
-          color: #191600;
+          color: #fff;
         }
         .creator-quick-banner strong {
           color: #111827;
@@ -117,7 +117,7 @@
           text-transform: uppercase;
         }
         .kakao-quick-banner span:not(.studio-quick-banner-mark) {
-          color: rgba(25, 22, 0, .68);
+          color: rgba(255, 255, 255, .84);
         }
         .creator-quick-banner span:not(.studio-quick-banner-mark) {
           color: rgba(17, 24, 39, .62);

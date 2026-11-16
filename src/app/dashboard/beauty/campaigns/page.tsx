@@ -11,7 +11,7 @@ export default async function BeautyCampaignsPage() {
   const { designer } = await requireBeautyPartner();
   const [campaigns, products] = await Promise.all([
     listBeautyPartnerCampaigns(designer.id),
-    getProductsForDesigner(designer.id),
+    getProductsForDesigner(designer.id, "beauty_partner"),
   ]);
   const campaignProducts = products
     .filter((product) => product.status === "active" && product.approval_status === "approved")

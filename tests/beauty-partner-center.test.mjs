@@ -16,10 +16,10 @@ test("beauty routes use the guarded partner identity and owner-scoped existing d
     assert.match(routeSource, /requireBeautyPartner\(\)/);
     assert.doesNotMatch(routeSource, /requireApprovedDesigner\(/);
   }
-  assert.match(home, /getProductsForDesigner\(designer\.id\)/);
+  assert.match(home, /getProductsForDesigner\(designer\.id, "beauty_partner"\)/);
   assert.match(home, /getPortfolioImagesForDesigner\(designer\.id\)/);
   assert.match(brand, /getPortfolioImagesForDesigner\(designer\.id\)/);
-  assert.match(products, /getProductsForDesigner\(designer\.id\)/);
+  assert.match(products, /getProductsForDesigner\(designer\.id, "beauty_partner"\)/);
   assert.match(brand, /<BrandProfileStudio[\s\S]*mode="beauty"/);
   assert.match(products, /<ProductManager[\s\S]*mode="beauty"/);
 });
@@ -66,7 +66,7 @@ test("existing product mutations use the selected workspace owner guard", async 
   assert.match(collection, /createProductForDesigner\(\{[\s\S]*designerId:\s*designer\.id/);
   assert.match(item, /getSelectedPartnerForApi\(request\)/);
   assert.doesNotMatch(item, /getApprovedDesignerForApi/);
-  assert.match(item, /getProductForDesigner\(designer\.id, id\)/);
+  assert.match(item, /getProductForDesigner\(designer\.id, id, auth\.workspace\.workspace_type\)/);
   assert.match(item, /updateProductForDesigner\(designer\.id, id/);
   assert.match(item, /updateProductForDesigner\(designer\.id, id, \{ status: "hidden" \}\)/);
 });

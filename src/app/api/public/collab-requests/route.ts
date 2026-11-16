@@ -1,5 +1,5 @@
 // 공개: 크리에이터가 디자이너에게 샘플 요청/협업 제안을 보내는 API (로그인 불필요)
-import { createCollabRequest, getApprovedDesigner } from "@/lib/db";
+import { createCollabRequest, getApprovedFashionDesigner } from "@/lib/db";
 
 function cleanText(value: unknown, maxLength: number) {
   return typeof value === "string" ? value.trim().slice(0, maxLength) : "";
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
     return Response.json({ ok: false, error: "연락처는 이메일 또는 @SNS 계정 형식으로 입력해주세요." }, { status: 400 });
   }
 
-  const designer = await getApprovedDesigner(designerId);
+  const designer = await getApprovedFashionDesigner(designerId);
   if (!designer) {
     return Response.json({ ok: false, error: "디자이너를 찾을 수 없습니다." }, { status: 404 });
   }

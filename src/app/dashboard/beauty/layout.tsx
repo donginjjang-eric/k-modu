@@ -9,7 +9,7 @@ import ScrollResetOnLoad from "@/components/ScrollResetOnLoad";
 export default async function BeautyPartnerLayout({ children }: { children: React.ReactNode }) {
   const { user, designer } = await requireBeautyPartner();
 
-  const publicHref = `/designers?open=${designer.id}`;
+  const publicHref = "/beauty";
 
   return (
     <div className="studio beauty-partner">
@@ -21,7 +21,7 @@ export default async function BeautyPartnerLayout({ children }: { children: Reac
           <span className="beauty-role-chip">뷰티 파트너 센터</span>
         </Link>
         <div className="top-context">
-          <Link className="top-link" href={publicHref}>공개 프로필</Link>
+          <Link className="top-link" href={publicHref}>공개 상품</Link>
           <div className="me compact">
             <span className="role-label">BEAUTY BRAND</span>
             <span>{designer.brand_name}</span>

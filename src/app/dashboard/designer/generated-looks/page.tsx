@@ -7,7 +7,7 @@ import DesignerGeneratedLooks from "@/components/DesignerGeneratedLooks";
 export default async function DesignerAiLookPage() {
   const { designer } = await requireFashionPartner();
   const [products, templates, looks] = await Promise.all([
-    getProductsForDesigner(designer.id),
+    getProductsForDesigner(designer.id, "fashion_partner"),
     getModelTemplates(),
     getGeneratedLooksForDesigner(designer.id),
   ]);

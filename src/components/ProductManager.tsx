@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import type { Product } from "@/lib/types";
 import { MAX_PRODUCT_DETAIL_IMAGES } from "@/lib/product-detail-images";
 import DraggableTabs from "./DraggableTabs";
@@ -55,7 +56,7 @@ const emptyForm = (mode: "fashion" | "beauty"): FormState => ({
   visibility: "active",
 });
 
-export default function ProductManager({ initialProducts, mode = "fashion", membershipId }: { initialProducts: Product[]; mode?: "fashion" | "beauty"; membershipId: string }) {
+export default function ProductManager({ initialProducts, mode = "fashion", membershipId, brandName }: { initialProducts: Product[]; mode?: "fashion" | "beauty"; membershipId: string; brandName?: string }) {
   const workspaceType = mode === "beauty" ? "beauty_partner" : "fashion_partner";
   const workspaceHeaders = { "x-kmodu-workspace": workspaceType, "x-kmodu-membership": membershipId };
   const productKinds = mode === "beauty" ? BEAUTY_PRODUCT_KINDS : FASHION_PRODUCT_KINDS;
@@ -346,6 +347,7 @@ export default function ProductManager({ initialProducts, mode = "fashion", memb
   return (
     <>
       <h1 className="st-title">{mode === "beauty" ? "상품 관리" : "상품 등록"}</h1>
+      {brandName ? <div className="st-brand-context"><span>현재 브랜드 <b>{brandName}</b></span><Link href={`/dashboard/workspaces?next=${encodeURIComponent(mode === "beauty" ? "/dashboard/beauty/products" : "/dashboard/designer/products")}`}>다른 브랜드 선택 →</Link></div> : null}
       <p className="st-sub">{mode === "beauty" ? "협업할 뷰티 상품을 등록하고 공개 상태를 관리하세요." : "상품 사진과 정보를 등록하면 내 상품 목록과 스타일링 보드에 바로 반영돼요."}</p>
 
       <div className="st-grid2col">

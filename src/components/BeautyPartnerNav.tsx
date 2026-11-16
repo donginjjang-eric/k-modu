@@ -48,7 +48,7 @@ export function BeautyPartnerSideNav({ brandName, publicHref, googleName, google
         detail={googleLabel}
         avatarUrl={googleAvatar}
         publicHref={publicHref}
-        publicLabel="공개 프로필"
+        publicLabel="공개 상품"
         tone="beauty"
       />
     </aside>

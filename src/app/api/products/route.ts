@@ -1,13 +1,13 @@
 import { getSelectedPartnerForApi } from "@/lib/auth";
-import { createProductForDesigner, getProductsForDesigner } from "@/lib/db";
+import { createProductForDesigner, getProductsForDesigner, isBeautyProductCategory } from "@/lib/db";
 import { normalizeProductImages } from "@/lib/product-images";
 import { normalizeProductDetailImages } from "@/lib/product-detail-images";
 
 export async function GET(request: Request) {
   const auth = await getSelectedPartnerForApi(request);
   if (!auth.ok) return Response.json({ ok: false, error: auth.error }, { status: auth.status });
-  const { designer } = auth;
-  const products = await getProductsForDesigner(designer.id);
+  const { designer, workspace } = auth;
+  const products = await getProductsForDesigner(designer.id, workspace.workspace_type);
   return Response.json({ ok: true, products });
 }
 
@@ -24,6 +24,9 @@ export async function POST(request: Request) {
   const detailImageUrls = normalizeProductDetailImages(body.detailImageUrls ?? body.detail_image_urls);
   if (!name || !category || !imageUrl) {
     return Response.json({ ok: false, error: "name, category, and imageUrl are required." }, { status: 400 });
+  }
+  if (isBeautyProductCategory(category) !== (auth.workspace.workspace_type === "beauty_partner")) {
+    return Response.json({ ok: false, error: "현재 브랜드 센터의 상품 분야를 선택해 주세요." }, { status: 400 });
   }
 
   try {

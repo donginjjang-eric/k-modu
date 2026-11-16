@@ -11,8 +11,12 @@ import type { PartnerWorkspaceType } from "./partner-workspace-access";
 import { normalizeProductImages } from "./product-images";
 import { initialProductApprovalStatus } from "./product-approval";
 import { normalizeProductDetailImages } from "./product-detail-images";
+import { normalizeBrandCategory } from "./brand-partner-center";
 
 let pool: Pool | null = null;
+
+const beautyProductCategories = ["스킨케어", "메이크업", "헤어·바디", "기타", "skincare", "makeup", "hair-body", "hair", "body", "beauty", "beauty-tool", "beauty-tools"];
+export const isBeautyProductCategory = (category: string) => beautyProductCategories.includes(category.trim().toLowerCase());
 
 export type DatabaseTransactionClient = PoolClient;
 
@@ -135,7 +139,8 @@ export async function getPublicDesigners(): Promise<Designer[]> {
     return [toDemoDesigner()];
   }
   try {
-    return await query<Designer>("SELECT * FROM designers WHERE approval_status = 'approved' ORDER BY created_at DESC");
+    const designers = await query<Designer>("SELECT * FROM designers WHERE approval_status = 'approved' ORDER BY created_at DESC");
+    return designers.filter((designer) => normalizeBrandCategory(designer.brand_category) !== "beauty");
   } catch (error) {
     if (!canUseDemoData()) throw error;
     return [toDemoDesigner()];
@@ -154,7 +159,7 @@ export type PublicDesignerCounts = {
 export async function getPublicDesignerCounts(designerIds: string[]): Promise<PublicDesignerCounts> {
   const fallback = {
     products: designerIds.includes(phaseDesigner.id)
-      ? toDemoProducts().filter((product) => product.status === "active").length
+      ? toDemoProducts().filter((product) => product.status === "active" && !isBeautyProductCategory(product.category)).length
       : 0,
     designers: designerIds.length,
     generatedLooks: 0,
@@ -171,12 +176,13 @@ export async function getPublicDesignerCounts(designerIds: string[]): Promise<Pu
          (SELECT COUNT(*)::text
             FROM products
            WHERE designer_id = ANY($1::text[])
-             AND status = 'active') AS product_count,
+             AND status = 'active'
+             AND lower(trim(category)) <> ALL($2::text[])) AS product_count,
          (SELECT COUNT(*)::text
             FROM generated_looks
            WHERE designer_id = ANY($1::text[])
              AND status = 'approved') AS generated_look_count`,
-      [designerIds],
+      [designerIds, beautyProductCategories],
     );
 
     return {
@@ -219,6 +225,11 @@ export async function getDesigner(id: string): Promise<Designer | null> {
 export async function getApprovedDesigner(id: string): Promise<Designer | null> {
   const designer = await getDesigner(id);
   return designer && designer.approval_status === "approved" ? designer : null;
+}
+
+export async function getApprovedFashionDesigner(id: string): Promise<Designer | null> {
+  const designer = await getApprovedDesigner(id);
+  return designer && normalizeBrandCategory(designer.brand_category) !== "beauty" ? designer : null;
 }
 
 export function toDemoPortfolioImages(): DesignerPortfolioImage[] {
@@ -409,19 +420,22 @@ export async function updateCreatorCollabProposalStatus(
   );
 }
 
-export async function getProductsForDesigner(designerId: string): Promise<Product[]> {
+export async function getProductsForDesigner(designerId: string, workspaceType?: PartnerWorkspaceType): Promise<Product[]> {
   if (!hasDatabase()) {
     requireDatabaseForProduction();
-    return designerId === phaseDesigner.id ? toDemoProducts() : [];
+    const products = designerId === phaseDesigner.id ? toDemoProducts() : [];
+    return workspaceType ? products.filter((product) => isBeautyProductCategory(product.category) === (workspaceType === "beauty_partner")) : products;
   }
   try {
-    return await query<Product>(
+    const products = await query<Product>(
       "SELECT * FROM products WHERE designer_id = $1 AND status <> 'hidden' ORDER BY created_at DESC",
       [designerId],
     );
+    return workspaceType ? products.filter((product) => isBeautyProductCategory(product.category) === (workspaceType === "beauty_partner")) : products;
   } catch (error) {
     if (!canUseDemoData()) throw error;
-    return designerId === phaseDesigner.id ? toDemoProducts() : [];
+    const products = designerId === phaseDesigner.id ? toDemoProducts() : [];
+    return workspaceType ? products.filter((product) => isBeautyProductCategory(product.category) === (workspaceType === "beauty_partner")) : products;
   }
 }
 
@@ -434,8 +448,8 @@ export async function getPublicProductsForDesigner(designerId: string): Promise<
     // DB가 정상이면 DB가 유일한 진실. (과거에는 데모 상품을 합쳐 넣었지만,
     // 숨김 처리한 상품이 폴백으로 되살아나는 문제가 있어 제거 — 2026-06-12)
     return await query<Product>(
-      "SELECT * FROM products WHERE designer_id = $1 AND status = 'active' AND approval_status = 'approved' ORDER BY created_at DESC",
-      [designerId],
+      "SELECT * FROM products WHERE designer_id = $1 AND status = 'active' AND approval_status = 'approved' AND lower(trim(category)) <> ALL($2::text[]) ORDER BY created_at DESC",
+      [designerId, beautyProductCategories],
     );
   } catch (error) {
     if (!canUseDemoData()) throw error;
@@ -479,15 +493,16 @@ export async function getProductsForAdmin(): Promise<AdminProduct[]> {
   );
 }
 
-export async function getProductForDesigner(designerId: string, productId: string): Promise<Product | null> {
+export async function getProductForDesigner(designerId: string, productId: string, workspaceType?: PartnerWorkspaceType): Promise<Product | null> {
   if (!hasDatabase()) {
     requireDatabaseForProduction();
-    return toDemoProducts().find((product) => product.designer_id === designerId && product.id === productId) ?? null;
+    return toDemoProducts().find((product) => product.designer_id === designerId && product.id === productId && (!workspaceType || isBeautyProductCategory(product.category) === (workspaceType === "beauty_partner"))) ?? null;
   }
-  return one<Product>(
+  const product = await one<Product>(
     "SELECT * FROM products WHERE designer_id = $1 AND id = $2 AND status <> 'hidden'",
     [designerId, productId],
   );
+  return product && (!workspaceType || isBeautyProductCategory(product.category) === (workspaceType === "beauty_partner")) ? product : null;
 }
 
 export async function updateProductForAdmin(productId: string, input: Partial<{
@@ -525,8 +540,8 @@ export async function getOwnedProductsForGeneration(designerId: string, productI
     return toDemoProducts().filter((product) => product.designer_id === designerId && productIds.includes(product.id));
   }
   return query<Product>(
-    "SELECT * FROM products WHERE designer_id = $1 AND id = ANY($2::text[]) AND status <> 'hidden'",
-    [designerId, productIds],
+    "SELECT * FROM products WHERE designer_id = $1 AND id = ANY($2::text[]) AND status <> 'hidden' AND lower(trim(category)) <> ALL($3::text[])",
+    [designerId, productIds, beautyProductCategories],
   );
 }
 
@@ -623,8 +638,8 @@ export async function getPublicProductsForGeneration(designerId: string, product
     ));
   }
   const products = await query<Product>(
-    "SELECT * FROM products WHERE designer_id = $1 AND id = ANY($2::text[]) AND status = 'active' AND approval_status = 'approved'",
-    [designerId, productIds],
+    "SELECT * FROM products WHERE designer_id = $1 AND id = ANY($2::text[]) AND status = 'active' AND approval_status = 'approved' AND lower(trim(category)) <> ALL($3::text[])",
+    [designerId, productIds, beautyProductCategories],
   );
   if (products.length !== new Set(productIds).size && designerId === phaseDesigner.id) {
     const existingIds = new Set(products.map((product) => product.id));
@@ -2090,6 +2105,7 @@ export async function getPublicBeautyProducts(limit = 100): Promise<PublicBeauty
        JOIN designers ON designers.id = products.designer_id
       WHERE products.status = 'active'
         AND products.approval_status = 'approved'
+        AND lower(trim(products.category)) = ANY($2::text[])
         AND designers.approval_status = 'approved'
         AND EXISTS (
           SELECT 1
@@ -2100,7 +2116,7 @@ export async function getPublicBeautyProducts(limit = 100): Promise<PublicBeauty
         )
       ORDER BY products.created_at DESC
       LIMIT $1`,
-    [Math.max(1, Math.min(limit, 100))],
+    [Math.max(1, Math.min(limit, 100)), beautyProductCategories],
   );
 }
 

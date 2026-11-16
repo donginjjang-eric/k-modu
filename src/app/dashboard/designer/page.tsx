@@ -6,7 +6,7 @@ import { getProductsForDesigner, getGeneratedLooksForDesigner, getPortfolioImage
 export default async function DesignerHome() {
   const { designer } = await requireFashionPartner();
   const [products, looks, portfolio] = await Promise.all([
-    getProductsForDesigner(designer.id),
+    getProductsForDesigner(designer.id, "fashion_partner"),
     getGeneratedLooksForDesigner(designer.id),
     getPortfolioImagesForDesigner(designer.id),
   ]);

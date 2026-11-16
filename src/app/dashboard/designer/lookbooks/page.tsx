@@ -13,7 +13,7 @@ export default async function DesignerLookbooksPage() {
   const [looks, portfolioImages, products, lookbooks] = await Promise.all([
     getApprovedGeneratedLooksForDesigner(designer.id, 60),
     getApprovedPortfolioImagesForDesigner(designer.id),
-    getProductsForDesigner(designer.id),
+    getProductsForDesigner(designer.id, "fashion_partner"),
     getLookbooksForDesigner(designer.id),
   ]);
 

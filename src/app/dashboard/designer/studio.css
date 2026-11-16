@@ -112,6 +112,9 @@
 .st-title { font-size: 30px; font-weight: 900; letter-spacing: -.03em; margin: 0 0 6px; }
 .st-sub { color: var(--muted); margin: 0 0 26px; font-size: 15px; }
 .st-sub.tight { margin: 4px 0 0; }
+.st-brand-context { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin: 10px 0 8px; font-size: 13px; color: var(--muted); }
+.st-brand-context b { color: var(--ink); }
+.st-brand-context a { color: var(--ink); font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
 .studio .kicker { margin: 0 0 8px; color: var(--muted); font-size: 11px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
 
 /* home */

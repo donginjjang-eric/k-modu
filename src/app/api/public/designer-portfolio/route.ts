@@ -1,4 +1,4 @@
-import { getApprovedDesigner, getApprovedPortfolioImagesForDesigner } from "@/lib/db";
+import { getApprovedFashionDesigner, getApprovedPortfolioImagesForDesigner } from "@/lib/db";
 
 export async function GET(request: Request) {
   const designerId = new URL(request.url).searchParams.get("designerId")?.trim() || "";
@@ -6,7 +6,7 @@ export async function GET(request: Request) {
     return Response.json({ ok: false, error: "designerId is required." }, { status: 400 });
   }
 
-  const designer = await getApprovedDesigner(designerId);
+  const designer = await getApprovedFashionDesigner(designerId);
   if (!designer) {
     return Response.json({ ok: false, error: "Designer not found." }, { status: 404 });
   }
