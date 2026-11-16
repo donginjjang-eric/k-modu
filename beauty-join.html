@@ -186,6 +186,13 @@
       font-size: 14px;
     }
     .google-g { font-weight: 800; font-size: 19px; color: #4285f4; }
+    .existing-beauty-center-button {
+      margin-top: 12px;
+      border-color: #a12d5a;
+      background: #a12d5a;
+      color: #fff;
+    }
+    .existing-beauty-center-button:hover { background: #852148; }
     .divider {
       display: flex;
       align-items: center;
@@ -358,8 +365,7 @@
         if (existing) {
           const button = document.createElement("button");
           button.type = "button";
-          button.className = "google-button";
-          button.style.marginTop = "12px";
+          button.className = "google-button existing-beauty-center-button";
           button.textContent = "기존 뷰티 브랜드 센터 열기";
           button.addEventListener("click", async () => {
             const result = await fetch("/api/workspaces/select", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ membershipId: existing.membershipId, next: "/dashboard/beauty/products" }) });

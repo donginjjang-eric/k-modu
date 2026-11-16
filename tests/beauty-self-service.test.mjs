@@ -69,3 +69,17 @@ test("실제 가입 화면의 스크립트가 파싱되고 뷰티 전용 경로�
   assert.match(beauty, /href="\/beauty\/join"/);
   assert.match(html, /fetch\("\/api\/beauty\/signup"/);
 });
+
+test("기존 브랜드 센터 버튼과 첫 화면 뷰티 스튜디오 바로가기가 눈에 띄게 표시된다", async () => {
+  const [join, navigation, home] = await Promise.all([
+    readFile("beauty-join.html", "utf8"),
+    readFile("auth-nav.js", "utf8"),
+    readFile("index.html", "utf8"),
+  ]);
+  assert.match(join, /button\.className = "google-button existing-beauty-center-button"/);
+  assert.match(join, /\.existing-beauty-center-button\s*\{[^}]*background:\s*#a12d5a/s);
+  assert.match(navigation, /beautyBanner\.href = BEAUTY_STUDIO_PATH/);
+  assert.match(navigation, /뷰티<br>스튜디오/);
+  assert.ok(navigation.indexOf("stack.appendChild(beautyBanner)") < navigation.indexOf("stack.appendChild(banner)"));
+  assert.match(home, /auth-nav\.js\?v=20261116-beauty-studio/);
+});

@@ -47,10 +47,9 @@ test("여러 브랜드가 있으면 이름을 보고 고르고 상품 관리에�
   assert.match(manager, /다른 브랜드 선택/);
 });
 
-test("오른쪽 문의 버튼은 노란색 대신 파란색으로 구분한다", async () => {
+test("오른쪽 카카오 문의 버튼은 기존 색을 유지한다", async () => {
   const script = await readFile("auth-nav.js", "utf8");
-  assert.match(script, /\.kakao-quick-banner \{[\s\S]*?background: #2458df;/);
-  assert.doesNotMatch(script, /background: #fee500;/);
+  assert.match(script, /\.kakao-quick-banner \{[\s\S]*?background: #fee500;/);
 });
 
 test("상품 목록과 수정 API가 선택한 센터의 상품만 다룬다", async () => {

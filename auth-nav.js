@@ -3,6 +3,7 @@
 (() => {
   const CACHE_KEY = 'kmodu-auth-nav-state';
   const STUDIO_PATH = '/dashboard/designer';
+  const BEAUTY_STUDIO_PATH = '/dashboard/beauty';
   const KAKAO_CHANNEL_URL = '#contact';
 
   const ensureStudioQuickBanner = () => {
@@ -51,12 +52,17 @@
           color: #111827;
           box-shadow: 0 18px 44px rgba(17, 24, 39, .18);
         }
+        .quick-link-stack .beauty-quick-banner {
+          border-color: #852148;
+          background: #a12d5a;
+          box-shadow: 0 18px 44px rgba(161, 45, 90, .28);
+        }
         .quick-link-stack .kakao-quick-banner {
           top: auto;
-          border-color: #1646c7;
-          background: #2458df;
-          color: #fff;
-          box-shadow: 0 18px 44px rgba(36, 88, 223, .28);
+          border-color: rgba(57, 40, 0, .14);
+          background: #fee500;
+          color: #191600;
+          box-shadow: 0 18px 44px rgba(57, 40, 0, .18);
         }
         .quick-link-stack .studio-quick-banner:hover {
           transform: translateX(-2px);
@@ -67,9 +73,13 @@
           background: #fff;
           box-shadow: 0 22px 54px rgba(17, 24, 39, .24);
         }
+        .quick-link-stack .beauty-quick-banner:hover {
+          background: #852148;
+          box-shadow: 0 22px 54px rgba(161, 45, 90, .36);
+        }
         .quick-link-stack .kakao-quick-banner:hover {
-          background: #1646c7;
-          box-shadow: 0 22px 54px rgba(36, 88, 223, .36);
+          background: #f7dc00;
+          box-shadow: 0 22px 54px rgba(57, 40, 0, .25);
         }
         .studio-quick-banner-mark {
           display: inline-flex;
@@ -85,8 +95,8 @@
           line-height: 1;
         }
         .kakao-quick-banner .studio-quick-banner-mark {
-          background: #fff;
-          color: #2458df;
+          background: #191600;
+          color: #fee500;
         }
         .creator-quick-banner .studio-quick-banner-mark {
           background: #111827;
@@ -102,7 +112,7 @@
           text-align: center;
         }
         .kakao-quick-banner strong {
-          color: #fff;
+          color: #191600;
         }
         .creator-quick-banner strong {
           color: #111827;
@@ -117,7 +127,7 @@
           text-transform: uppercase;
         }
         .kakao-quick-banner span:not(.studio-quick-banner-mark) {
-          color: rgba(255, 255, 255, .84);
+          color: rgba(25, 22, 0, .68);
         }
         .creator-quick-banner span:not(.studio-quick-banner-mark) {
           color: rgba(17, 24, 39, .62);
@@ -175,10 +185,19 @@
     }
 
     if (document.querySelector('.quick-link-stack')) return;
-    document.querySelectorAll('.studio-quick-banner, .creator-quick-banner, .kakao-quick-banner').forEach((link) => link.remove());
+    document.querySelectorAll('.studio-quick-banner, .creator-quick-banner, .kakao-quick-banner, .beauty-quick-banner').forEach((link) => link.remove());
 
     const stack = document.createElement('aside');
     stack.className = 'quick-link-stack';
+
+    if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
+      const beautyBanner = document.createElement('a');
+      beautyBanner.className = 'studio-quick-banner beauty-quick-banner';
+      beautyBanner.href = BEAUTY_STUDIO_PATH;
+      beautyBanner.setAttribute('aria-label', '뷰티 스튜디오 바로가기');
+      beautyBanner.innerHTML = '<span class="studio-quick-banner-mark">K</span><strong>뷰티<br>스튜디오</strong><span>Beauty</span>';
+      stack.appendChild(beautyBanner);
+    }
 
     const banner = document.createElement('a');
     banner.className = 'studio-quick-banner';
