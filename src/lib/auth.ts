@@ -261,20 +261,21 @@ export async function getApprovedDesignerForApi() {
   return { ok: true as const, user, designer };
 }
 
-export async function requireApprovedCreator(): Promise<{ user: SessionUser; creator: CreatorAccount }> {
+export async function requireApprovedCreator(): Promise<{ user: SessionUser; creator: CreatorAccount; isPreview: boolean }> {
   const user = await getCurrentUser();
   if (!user) redirect("/login?error=creator_required");
 
   if (user.role === "admin") {
     const adminCreator = await getOrCreateAdminCreatorAccount(user.id, user.email);
     if (!adminCreator) redirect("/login?notice=creator_preview_unavailable");
-    return { user, creator: adminCreator };
+    if (adminCreator.approval_status === "disabled") redirect("/login?error=creator_required");
+    return { user, creator: adminCreator, isPreview: adminCreator.creator_key === `admin-operator-${user.id}` };
   }
 
   const creator = await getCreatorAccountForUser(user.id);
   if (!creator) redirect("/login?error=creator_required");
   if (creator.approval_status === "disabled") redirect("/login?error=creator_required");
-  return { user, creator };
+  return { user, creator, isPreview: false };
 }
 
 export async function getApprovedCreatorForApi() {

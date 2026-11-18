@@ -12,10 +12,10 @@ function dateLabel(value: string | null) {
 }
 
 export default async function MyCampaignsPage({ searchParams }: { searchParams: Promise<{ persona?: string }> }) {
-  const { user, creator } = await requireApprovedCreator();
+  const { creator, isPreview } = await requireApprovedCreator();
   const persona = creatorPersona((await searchParams).persona);
   const allParticipations = await getCreatorMissionParticipations(creator.id);
-  const participations = user.role === "admin" ? allParticipations.filter((item) => missionMatchesPersona(item, persona)) : allParticipations;
+  const participations = isPreview ? allParticipations.filter((item) => missionMatchesPersona(item, persona)) : allParticipations;
   const activeMissions = participations.filter((item) => isActiveMission(item.status));
   const completedMissions = participations.filter((item) => isCompletedMission(item.status));
   const attentionMissions = activeMissions.filter((item) => creatorMissionPresentation(item.status).group === "attention");

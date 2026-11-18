@@ -1343,7 +1343,11 @@ export async function getOrCreateAdminCreatorAccount(userId: string, email: stri
   }
   try {
     return await one<CreatorAccount>(
-      `WITH updated AS (
+      `WITH existing_creator AS (
+         SELECT * FROM creator_accounts
+          WHERE user_id = $1 AND creator_key <> $2
+          LIMIT 1
+       ), updated AS (
          UPDATE creator_accounts
             SET user_id = $1,
                 creator_key = $2,
@@ -1354,13 +1358,15 @@ export async function getOrCreateAdminCreatorAccount(userId: string, email: stri
                 market = 'South Korea',
                 categories = $4::jsonb,
                 updated_at = now()
-          WHERE user_id = $1 OR creator_key = $2
+          WHERE user_id = $1 AND creator_key = $2
+            AND NOT EXISTS (SELECT 1 FROM existing_creator)
           RETURNING *
        ), inserted AS (
          INSERT INTO creator_accounts
            (user_id, creator_key, display_name, google_email, approval_status, platform, market, categories)
          SELECT $1, $2, 'K-MODU 운영자', $3, 'approved', 'K-MODU', 'South Korea', $4::jsonb
-          WHERE NOT EXISTS (SELECT 1 FROM updated)
+          WHERE NOT EXISTS (SELECT 1 FROM existing_creator)
+            AND NOT EXISTS (SELECT 1 FROM updated)
          ON CONFLICT (creator_key) DO UPDATE
            SET user_id = EXCLUDED.user_id,
                display_name = EXCLUDED.display_name,
@@ -1372,6 +1378,8 @@ export async function getOrCreateAdminCreatorAccount(userId: string, email: stri
                updated_at = now()
          RETURNING *
        )
+       SELECT * FROM existing_creator
+       UNION ALL
        SELECT * FROM updated
        UNION ALL
        SELECT * FROM inserted

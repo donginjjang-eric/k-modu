@@ -25,14 +25,14 @@ function deadlineLabel(deadline: string | Date | null) {
 }
 
 export default async function CreatorCampaignsPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
-  const { user, creator } = await requireApprovedCreator();
+  const { creator, isPreview } = await requireApprovedCreator();
   const filters = await searchParams;
   const category = selectedValue(filters.category);
   const market = selectedValue(filters.market);
   const platform = selectedValue(filters.platform);
   const persona = creatorPersona(filters.persona);
   const recommended = await getRecommendedCampaigns(creator.id);
-  const personaCampaigns = user.role === "admin" ? recommended.filter((campaign) => campaignMatchesPersona(campaign.markets, persona)) : recommended;
+  const personaCampaigns = isPreview ? recommended.filter((campaign) => campaignMatchesPersona(campaign.markets, persona)) : recommended;
   const campaigns = personaCampaigns.filter((campaign) => campaign.status === "recruiting")
     .filter((campaign) => !category || campaign.category === category)
     .filter((campaign) => !market || campaign.markets.includes(market))
@@ -45,7 +45,7 @@ export default async function CreatorCampaignsPage({ searchParams }: { searchPar
     <div className="creator-campaigns-page">
       <header className="creator-page-heading"><p>추천 캠페인</p><h1>내게 맞는 모집 캠페인</h1><span>활동 국가, 채널, 관심 분야를 내 프로필과 비교해 추천합니다.</span></header>
       <form className="creator-campaign-filters" action="/dashboard/creator/campaigns">
-        {user.role === "admin" ? <input type="hidden" name="persona" value={persona} /> : null}
+        {isPreview ? <input type="hidden" name="persona" value={persona} /> : null}
         <label>카테고리<select name="category" defaultValue={category}><option value="">전체 카테고리</option>{categories.map((item) => <option key={item} value={item}>{item}</option>)}</select></label>
         <label>활동 국가<select name="market" defaultValue={market}><option value="">전체 국가</option>{markets.map((item) => <option key={item} value={item}>{item}</option>)}</select></label>
         <label>활동 채널<select name="platform" defaultValue={platform}><option value="">전체 채널</option>{platforms.map((item) => <option key={item} value={item}>{item}</option>)}</select></label>

@@ -11,14 +11,14 @@ function dateLabel(value: string) {
 }
 
 export default async function CreatorSettlementPage({ searchParams }: { searchParams: Promise<{ persona?: string }> }) {
-  const { user, creator } = await requireApprovedCreator();
+  const { creator, isPreview } = await requireApprovedCreator();
   const persona = creatorPersona((await searchParams).persona);
   const [allSummary, allItems] = await Promise.all([
     getCreatorSettlementSummary(creator.id),
     getCreatorSettlementItems(creator.id),
   ]);
-  const summary = user.role === "admin" ? allSummary.filter((item) => currencyMatchesPersona(item.currency, persona)) : allSummary;
-  const items = user.role === "admin" ? allItems.filter((item) => currencyMatchesPersona(item.currency, persona)) : allItems;
+  const summary = isPreview ? allSummary.filter((item) => currencyMatchesPersona(item.currency, persona)) : allSummary;
+  const items = isPreview ? allItems.filter((item) => currencyMatchesPersona(item.currency, persona)) : allItems;
 
   return <div className="creator-campaigns-page creator-settlement-page">
     <header className="creator-page-heading creator-page-heading-wide"><p>수익 및 정산 관리</p><h1>수익·정산</h1><span>캠페인에서 발생한 보상과 지급 진행 상황을 현지 통화 기준으로 확인하세요. 서로 다른 통화는 합산하지 않습니다.</span></header>

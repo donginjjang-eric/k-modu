@@ -6,10 +6,10 @@ import { creatorNextActionLabel, creatorPersona, missionMatchesPersona } from "@
 import { creatorStatusLabel } from "@/lib/creator-copy";
 
 export default async function CreatorSubmissionsPage({ searchParams }: { searchParams: Promise<{ persona?: string }> }) {
-  const { user, creator } = await requireApprovedCreator();
+  const { creator, isPreview } = await requireApprovedCreator();
   const persona = creatorPersona((await searchParams).persona);
   const allParticipations = await getCreatorMissionParticipations(creator.id);
-  const participations = user.role === "admin" ? allParticipations.filter((item) => missionMatchesPersona(item, persona)) : allParticipations;
+  const participations = isPreview ? allParticipations.filter((item) => missionMatchesPersona(item, persona)) : allParticipations;
   const missions = await Promise.all(participations.map(async (participation) => ({ participation, submissions: await getContentSubmissionsForParticipation(participation.id) })));
   const editable = missions.filter(({ participation }) => participation.status === "creating" || participation.status === "review").length;
   const reviews = missions.filter(({ participation }) => participation.status === "review").length;

@@ -10,10 +10,10 @@ const GRADES = [
 ];
 
 export default async function CreatorGradePage({ searchParams }: { searchParams: Promise<{ persona?: string }> }) {
-  const { user, creator } = await requireApprovedCreator();
+  const { creator, isPreview } = await requireApprovedCreator();
   const persona = creatorPersona((await searchParams).persona);
   const allMissions = await getCreatorMissionParticipations(creator.id);
-  const missions = user.role === "admin" ? allMissions.filter((item) => missionMatchesPersona(item, persona)) : allMissions;
+  const missions = isPreview ? allMissions.filter((item) => missionMatchesPersona(item, persona)) : allMissions;
   const completed = missions.filter((mission) => mission.status === "completed").length;
   const progress = creatorGradeProgress(completed);
   const currentGrade = GRADES.find((grade) => grade.name === progress.current)!;

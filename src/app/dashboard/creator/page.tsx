@@ -30,18 +30,18 @@ function deadlineLabel(value: string | Date | null) {
 }
 
 export default async function CreatorActionHomePage({ searchParams }: { searchParams: Promise<{ persona?: string }> }) {
-  const { user, creator } = await requireApprovedCreator();
+  const { creator, isPreview } = await requireApprovedCreator();
   const persona = creatorPersona((await searchParams).persona);
   const [allRecommended, allMissions, allPerformanceRows] = await Promise.all([
     getRecommendedCampaigns(creator.id),
     getCreatorMissionParticipations(creator.id),
     getCreatorPerformanceRows(creator.id),
   ]);
-  const recommended = user.role === "admin" ? allRecommended.filter((item) => campaignMatchesPersona(item.markets, persona)) : allRecommended;
-  const missions = user.role === "admin" ? allMissions.filter((item) => missionMatchesPersona(item, persona)) : allMissions;
-  const performanceRows = user.role === "admin" ? allPerformanceRows.filter((item) => currencyMatchesPersona(item.currency, persona)) : allPerformanceRows;
+  const recommended = isPreview ? allRecommended.filter((item) => campaignMatchesPersona(item.markets, persona)) : allRecommended;
+  const missions = isPreview ? allMissions.filter((item) => missionMatchesPersona(item, persona)) : allMissions;
+  const performanceRows = isPreview ? allPerformanceRows.filter((item) => currencyMatchesPersona(item.currency, persona)) : allPerformanceRows;
   const metrics = buildCreatorCenterMetrics({
-    market: user.role === "admin" ? CREATOR_PERSONAS[persona].market : creator.market,
+    market: isPreview ? CREATOR_PERSONAS[persona].market : creator.market,
     recommendedCount: recommended.length,
     deadlineCount: recommended.filter((campaign) => isToday(campaign.application_deadline)).length,
     workItems: missions.map((mission) => ({
@@ -61,7 +61,7 @@ export default async function CreatorActionHomePage({ searchParams }: { searchPa
         <p>크리에이터 활동·수익 관리</p>
         <h1>오늘의 활동</h1>
         <span>한국 공급자의 K-뷰티·패션 제품을 해외 크리에이터의 콘텐츠와 판매로 연결합니다.</span>
-        {user.role === "admin" ? <b className="creator-persona-context">{CREATOR_PERSONAS[persona].label} 크리에이터 화면 · {CREATOR_PERSONAS[persona].currency}</b> : null}
+        {isPreview ? <b className="creator-persona-context">{CREATOR_PERSONAS[persona].label} 크리에이터 화면 · {CREATOR_PERSONAS[persona].currency}</b> : null}
       </header>
 
       <section className="creator-today-card" aria-labelledby="today-action-heading">

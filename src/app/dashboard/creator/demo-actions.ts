@@ -12,8 +12,8 @@ async function getAdminCreatorForDemoAction() {
   }
 
   const creator = await getOrCreateAdminCreatorAccount(user.id, user.email);
-  if (!creator) {
-    throw new Error("관리자 크리에이터 프로필을 준비할 수 없습니다.");
+  if (!creator || creator.creator_key !== `admin-operator-${user.id}`) {
+    throw new Error("체험 데이터는 관리자 미리보기 프로필에서만 사용할 수 있습니다.");
   }
 
   return { user, creator };

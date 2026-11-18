@@ -7,10 +7,10 @@ const number = (value: number) => new Intl.NumberFormat("en-US").format(value);
 const money = (value: number, currency: string) => currency === "MYR" ? `RM ${number(value)}` : `${currency} ${number(value)}`;
 
 export default async function CreatorPerformancePage({ searchParams }: { searchParams: Promise<{ persona?: string }> }) {
-  const { user, creator } = await requireApprovedCreator();
+  const { creator, isPreview } = await requireApprovedCreator();
   const persona = creatorPersona((await searchParams).persona);
   const allRows = await getCreatorPerformanceRows(creator.id);
-  const rows = user.role === "admin" ? allRows.filter((row) => currencyMatchesPersona(row.currency, persona)) : allRows;
+  const rows = isPreview ? allRows.filter((row) => currencyMatchesPersona(row.currency, persona)) : allRows;
   const totals = rows.reduce((sum, row) => ({ views: sum.views + Number(row.views), likes: sum.likes + Number(row.likes), comments: sum.comments + Number(row.comments), orders: sum.orders + Number(row.orders) }), { views: 0, likes: 0, comments: 0, orders: 0 });
 
   return <div className="creator-campaigns-page creator-performance-page">

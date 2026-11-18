@@ -7,11 +7,11 @@ import { CreatorPersonaSwitch } from "@/components/CreatorPersonaSwitch";
 import MasterRoleSwitcher from "@/components/MasterRoleSwitcher";
 
 export default async function CreatorCenterLayout({ children }: { children: React.ReactNode }) {
-  const { user, creator } = await requireApprovedCreator();
+  const { user, creator, isPreview } = await requireApprovedCreator();
   return (
     <div className="creator-center">
       <MasterRoleSwitcher userId={user.id} email={user.email} active="creator" />
-      {user.role === "admin" ? (
+      {isPreview ? (
         <div className="creator-admin-preview">
           <div className="creator-admin-preview-copy" role="status">
             <strong>관리자 미리보기</strong>
