@@ -1,0 +1,157 @@
+/* 로그인 후 센터 선택 화면의 레이아웃과 버튼을 정의합니다. */
+.site-shell:has(.workspace-picker) > .top-nav,
+body:has(.workspace-picker) .quick-link-stack {
+  display: none;
+}
+
+.workspace-picker {
+  --picker-ink: #222622;
+  --picker-muted: #536059;
+  --picker-line: #dedfd8;
+  --picker-sage: #365647;
+  --picker-sage-soft: #eef3ec;
+  min-height: 100vh;
+  background: #f7f7f2;
+  color: var(--picker-ink);
+  font-family: Pretendard, system-ui, sans-serif;
+}
+
+.workspace-picker :is(a, button):focus-visible {
+  outline: 2px solid var(--picker-sage);
+  outline-offset: 4px;
+}
+
+.workspace-picker-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 68px;
+  padding: 10px max(20px, calc((100% - 1000px) / 2));
+  border-bottom: 1px solid var(--picker-line);
+}
+
+.workspace-picker-bar img { display: block; object-fit: contain; }
+.workspace-picker-logout {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  color: var(--picker-muted);
+  font-size: 14px;
+  font-weight: 650;
+}
+.workspace-picker-logout:hover { color: var(--picker-ink); text-decoration: underline; }
+
+.workspace-picker-main {
+  width: min(100% - 40px, 840px);
+  margin-inline: auto;
+  padding-block: clamp(38px, 7vw, 92px) 56px;
+}
+
+.workspace-picker-main h1 {
+  margin: 0;
+  font-size: clamp(28px, 5vw, 42px);
+  line-height: 1.2;
+  letter-spacing: -.06em;
+}
+
+.workspace-picker-account {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 30px;
+  color: var(--picker-muted);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.workspace-picker .nav-svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.workspace-picker-group { margin-top: 26px; }
+.workspace-picker-group h2 { margin: 0 0 12px; font-size: 14px; color: var(--picker-muted); }
+.workspace-picker-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+
+.workspace-picker-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid var(--picker-line);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.workspace-picker-card[data-center="beauty_partner"] {
+  border-color: #d2dfd2;
+  background: var(--picker-sage-soft);
+}
+
+.workspace-picker-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 14px;
+  border-radius: 9px;
+  background: #edf0ed;
+  color: var(--picker-ink);
+}
+.workspace-picker-card[data-center="beauty_partner"] .workspace-picker-icon {
+  background: #dce9db;
+  color: var(--picker-sage);
+}
+
+.workspace-picker-card h3 { margin: 0; font-size: 20px; letter-spacing: -.035em; }
+.workspace-picker-brand { margin: 5px 0 0; font-size: 14px; font-weight: 700; overflow-wrap: anywhere; }
+.workspace-picker-description { margin: 8px 0 0; color: var(--picker-muted); font-size: 14px; line-height: 1.5; }
+.workspace-picker-card form { margin-top: auto; padding-top: 18px; }
+
+.workspace-picker-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 46px;
+  padding: 8px 14px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: var(--picker-ink);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.workspace-picker-card .workspace-picker-action { width: 100%; }
+.workspace-picker-action:hover { filter: brightness(1.16); }
+.workspace-picker-card[data-center="beauty_partner"] .workspace-picker-action,
+.workspace-picker-signup .workspace-picker-action { background: var(--picker-sage); }
+
+.workspace-picker-signup {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 20px;
+  border: 1px solid #d2dfd2;
+  border-radius: 14px;
+  background: var(--picker-sage-soft);
+}
+.workspace-picker-signup h2 { margin: 0; font-size: 18px; }
+.workspace-picker-signup p { margin: 8px 0 0; font-size: 14px; color: var(--picker-muted); line-height: 1.55; }
+.workspace-picker-signup .workspace-picker-action { flex-shrink: 0; }
+.workspace-picker-error { padding: 14px 16px; border-radius: 8px; background: #faeee8; color: #783821; font-size: 14px; }
+
+@media (max-width: 600px) {
+  .workspace-picker-grid { grid-template-columns: 1fr; gap: 10px; }
+  .workspace-picker-card { padding: 17px; }
+  .workspace-picker-signup { align-items: stretch; flex-direction: column; }
+}
