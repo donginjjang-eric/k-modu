@@ -28,6 +28,13 @@ try {
 
   const schema = readFileSync(path.join(root, "db", "schema.sql"), "utf8");
   await applyRequiredSchema(pool, schema);
+  // 승인된 데이터 변경은 K-MODU 운영 서비스의 데이터베이스에만 적용합니다.
+  if (process.env.RAILWAY_ENVIRONMENT_ID === "67e0f1dd-c9b8-493a-8667-9f02c5693b61"
+    && process.env.RAILWAY_SERVICE_ID === "0eaf0527-9601-4c86-b899-576483292d6d") {
+    const operation = readFileSync(path.join(root, "db", "operations", "2026-11-18-studioooat-admin.sql"), "utf8");
+    await pool.query(operation);
+    console.log("[schema] authorized administrator assignment verified");
+  }
   requiredSchemaApplied = true;
   console.log("[schema] applied and validated db/schema.sql");
 
